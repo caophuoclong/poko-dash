@@ -1,0 +1,51 @@
+import type {
+  GetAffiliateLinksResponse,
+  GetProductsByProductIdResponse,
+} from '#/dtos'
+import z from 'zod'
+
+export const AffiliateLinkSchema = z.object({
+  linkId: z.string(),
+  productId: z.string(),
+  merchant: z.string(),
+  originalUrl: z.string(),
+  affiliateUrl: z.string(),
+  shortUrl: z.string().optional(),
+  platform: z.string(),
+  commissionRate: z.number().optional(),
+  couponCode: z.string().optional(),
+  deeplinkStatus: z.enum(['valid', 'broken', 'pending', 'expired']),
+  active: z.boolean(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+}) satisfies z.ZodType<GetAffiliateLinksResponse[number]>
+
+export const ProductSchema = z.object({
+  productId: z.string(),
+  canonicalTitle: z.string(),
+  brand: z.string().optional(),
+  category: z.string(),
+  subCategory: z.string().optional(),
+  specsKeyFacts: z.string().optional(),
+  priceCurrent: z.string().optional(),
+  priceSale: z.string().optional(),
+  currency: z.string().optional(),
+  rating: z.number().optional(),
+  reviewCount: z.number().optional(),
+  sourceBestUrl: z.string(),
+  imageCover: z.string().optional(),
+  imageVariants: z.string().optional(),
+  videoUrl: z.string().optional(),
+  descriptionImages: z.string().optional(),
+  notes: z.string().optional(),
+  variants: z.string().optional(),
+  availability: z.string().optional(),
+  sellerName: z.string().optional(),
+  dealScore: z.number(),
+  publishScore: z.number(),
+  freshUntil: z.string().optional(),
+  status: z.enum(['active', 'processing', 'done', 'failed']),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  affiliateProduct: AffiliateLinkSchema.optional(),
+}) satisfies z.ZodType<GetProductsByProductIdResponse>

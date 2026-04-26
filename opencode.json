@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "code-review-graph": {
+      "type": "local",
+      "command": ["uvx", "code-review-graph", "serve"],
+      "enabled": true
+    }
+  },
+  "default_agent": "Leon",
+
+  "agent": {
+    "Leon": {
+      "description": "Expert AI programming assistant focused on frontend in frontend/ (Astro/React), detects API mismatches, and requests backend contract updates when needed.",
+      "mode": "primary",
+      "color": "primary",
+      "model": "glm-5.1",
+      "temperature": 0.2,
+      "max_steps": 20
+    }
+  }
+}
