@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useUpdateContentPost } from '../../hooks/use-content-posts'
 import { statusOptions } from '../post-edit-page/constants'
-import { getStatusMeta, POST_STATUS } from '#/shared/status'
+import { getStatusMeta, POST_STATUS } from '#/shared/constants'
 import { Badge } from '#/components/ui/badge'
 
 export function StatusCell({

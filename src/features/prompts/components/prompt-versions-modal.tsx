@@ -7,7 +7,7 @@ import {
 } from '#/components/ui/dialog'
 import { Button } from '#/components/ui/button'
 import { usePromptVersions } from '../hooks/use-prompts'
-import type { Prompt } from '../types/prompt'
+import type { Prompt } from '../types'
 
 interface PromptVersionsModalProps {
   prompt: Prompt | null

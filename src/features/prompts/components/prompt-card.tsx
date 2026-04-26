@@ -10,10 +10,10 @@ import {
 } from 'lucide-react'
 import { Button } from '#/components/ui/button'
 import { cn } from '#/shared/utils'
-import type { Prompt } from '../types/prompt'
+import type { Prompt } from '../types'
 
 import { TYPE_LABELS, CATEGORY_LABELS } from '../types'
-import { STATUS_COLORS } from '@/shared/constants'
+import { STATUS_COLORS } from '#/shared/constants'
 
 const typeColors: Record<string, string> = {
   content_generation:
@@ -91,7 +91,7 @@ export default function PromptCard({
             <span
               className={cn(
                 'text-xs px-2 py-0.5 rounded-full font-medium',
-                statusColors[prompt.status],
+                STATUS_COLORS[prompt.status],
               )}
             >
               {prompt.status}

@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { SimplePage } from '@/components/ui/simple-page'
+import { SimplePage } from '#/components/ui/simple-page'
 import { Facebook } from 'lucide-react'
 
 export const Route = createFileRoute('/dash/pages')({

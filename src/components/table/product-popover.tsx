@@ -8,7 +8,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useProducts } from '@/features/products/hooks/use-products'
-import type { Product } from '@/features/products/types/product'
+import type { Product } from '#/features/products/types/product'
 
 interface ProductPopoverProps {
   productIds: string[]

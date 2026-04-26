@@ -8,7 +8,7 @@ import {
 import type {
   GetProductsResponse,
   GetProductsByProductIdResponse,
-} from '../types/products.dto'
+} from '#/dtos/products'
 import type { GetAffiliateLinksResponse } from '#/dtos/affiliate-links'
 
 export const productsQueryOptions = (params?: {

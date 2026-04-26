@@ -11,7 +11,7 @@ import { Button } from '#/components/ui/button'
 import { Textarea } from '#/components/ui/textarea'
 import { Input } from '#/components/ui/input'
 import { useRefinePrompt } from '../hooks/use-prompts'
-import type { Prompt, PromptRole } from '../types/prompt'
+import type { Prompt, PromptRole } from '../types'
 
 function extractVariables(template: string): string[] {
   const matches = template.match(/\{\{(\w+)\}\}/g) ?? []

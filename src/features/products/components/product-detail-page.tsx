@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { parseDelimitedList } from '#/shared/product-utils'
+import { parseDelimitedList } from '#/shared/utils'
 import { useProduct } from '../hooks/use-products'
 import MediaGallery from './media-gallery'
 import ProductOverviewCard from './product-overview-card'

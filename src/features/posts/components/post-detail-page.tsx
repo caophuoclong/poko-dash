@@ -8,7 +8,7 @@ import { useContentPost } from '@/features/posts/hooks/use-content-posts'
 import { useScheduledJobForPost } from '@/features/scheduler/hooks/use-scheduler'
 import TiptapViewer from '#/components/editor/tiptap-viewer'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { POST_STATUS, getStatusMeta } from '#/shared/status'
+import { POST_STATUS, getStatusMeta } from '#/shared/constants'
 import { Link } from '@tanstack/react-router'
 
 interface PostDetailPageProps {

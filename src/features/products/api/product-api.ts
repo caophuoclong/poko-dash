@@ -5,7 +5,7 @@ import type {
   PatchProductsByProductIdRequest,
   PatchProductsByProductIdResponse,
   GetProductsByProductIdResponse,
-} from '../types/products.dto'
+} from '#/dtos/products'
 import type {
   GetAffiliateLinksResponse,
   PostAffiliateLinksRequest,

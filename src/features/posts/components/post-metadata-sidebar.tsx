@@ -6,7 +6,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { Badge } from '@/components/ui/badge'
-import { POST_STATUS, EXECUTION_STATUS, getStatusMeta } from '#/shared/status'
+import { POST_STATUS, EXECUTION_STATUS, getStatusMeta } from '#/shared/constants'
 
 interface PostMetadataSidebarProps {
   post: GetContentPostsByPostIdResponse

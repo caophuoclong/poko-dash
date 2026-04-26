@@ -1,7 +1,7 @@
 // layer: logic
-import { useApiQuery, useApiMutation } from '@/hooks/use-api-query'
-import type { Prompt, CreatePromptRequest, UpdatePromptRequest } from '../types'
-import * as promptApi from '../api'
+import { useApiQuery, useApiMutation } from '#/shared/hooks'
+import type { CreatePromptRequest, UpdatePromptRequest } from '../types'
+import * as promptApi from '../api/prompt-api'
 
 export function usePrompts(params?: { status?: string }) {
   return useApiQuery(

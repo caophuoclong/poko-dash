@@ -2,8 +2,7 @@ import type {
   GetContentIdeasResponse,
   PatchContentIdeasByIdeaIdRequest,
 } from '#/dtos/content-ideas'
-import { useApiMutation, useApiQuery } from '#/hooks/use-api-query'
-import { MOCK_CONTENT_IDEAS } from '#/shared/mock-data'
+import { useApiMutation, useApiQuery } from '#/shared/hooks'
 import {
   fetchContentIdeas,
   createContentIdea,
@@ -13,13 +12,8 @@ import {
 export function useContentIdeas() {
   return useApiQuery(
     ['content-ideas'],
-    async () => {
-      const ideas = await fetchContentIdeas()
-      return ideas.length > 0
-        ? ideas
-        : (MOCK_CONTENT_IDEAS as GetContentIdeasResponse)
-    },
-    { fallback: MOCK_CONTENT_IDEAS as GetContentIdeasResponse },
+    () => fetchContentIdeas(),
+    { fallback: [] as unknown as GetContentIdeasResponse },
   )
 }
 

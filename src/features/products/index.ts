@@ -1,6 +1,3 @@
-export * from './types/product'
-export * from './types/products.dto'
-export * from './types/product.schema'
 export * from './types/manual-import'
 export * from './hooks/use-products'
 export * from './api/product-api'

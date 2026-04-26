@@ -5,7 +5,7 @@ import {
   useMostUsedPrompts,
   useHighestRatedPrompts,
 } from '../hooks/use-prompts'
-import type { Prompt } from '../types/prompt'
+import type { Prompt } from '../types'
 import { cn } from '#/shared/utils'
 
 interface PromptTrendingProps {

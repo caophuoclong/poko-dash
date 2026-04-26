@@ -1,7 +1,6 @@
 import type {
   GetProductsResponse,
-  GetProductsByProductIdResponse,
-} from '../types/products.dto'
+} from '#/dtos/products'
 import type { GetAffiliateLinksResponse } from '#/dtos/affiliate-links'
 import type { ManualImportRequest } from '../types/manual-import'
 import {
@@ -11,32 +10,22 @@ import {
   fetchAffiliateLinksByProduct,
   manualImportProduct,
 } from '../api/product-api'
-import { MOCK_PRODUCT, MOCK_AFFILIATE_LINK } from '../components/mock-data'
-import { useApiQuery, useApiMutation } from '@/hooks/use-api-query'
+import { useApiQuery, useApiMutation } from '#/shared/hooks'
 
 export function useProducts() {
   return useApiQuery(
     ['products'],
-    async () => {
-      const products = await fetchProducts()
-      return products.length > 0
-        ? products
-        : ([MOCK_PRODUCT] as GetProductsResponse)
-    },
-    { fallback: [MOCK_PRODUCT] as GetProductsResponse },
+    () => fetchProducts(),
+    { fallback: [] as unknown as GetProductsResponse },
   )
 }
 
 export function useProduct(productId: string) {
   return useApiQuery(
     ['products', productId],
-    async () => {
-      const product = await fetchProductById(productId)
-      return (product ?? MOCK_PRODUCT) as GetProductsByProductIdResponse
-    },
+    () => fetchProductById(productId),
     {
       enabled: !!productId,
-      fallback: MOCK_PRODUCT as GetProductsByProductIdResponse,
     },
   )
 }
@@ -44,28 +33,18 @@ export function useProduct(productId: string) {
 export function useAllAffiliateLinks() {
   return useApiQuery(
     ['affiliate-links'],
-    async () => {
-      const links = await fetchAllAffiliateLinks()
-      return links.length > 0
-        ? links
-        : ([MOCK_AFFILIATE_LINK] as GetAffiliateLinksResponse)
-    },
-    { fallback: [MOCK_AFFILIATE_LINK] as GetAffiliateLinksResponse },
+    () => fetchAllAffiliateLinks(),
+    { fallback: [] as unknown as GetAffiliateLinksResponse },
   )
 }
 
 export function useAffiliateLinks(productId: string) {
   return useApiQuery(
     ['affiliate-links', productId],
-    async () => {
-      const links = await fetchAffiliateLinksByProduct(productId)
-      return links.length > 0
-        ? links
-        : ([MOCK_AFFILIATE_LINK] as GetAffiliateLinksResponse)
-    },
+    () => fetchAffiliateLinksByProduct(productId),
     {
       enabled: !!productId,
-      fallback: [MOCK_AFFILIATE_LINK] as GetAffiliateLinksResponse,
+      fallback: [] as unknown as GetAffiliateLinksResponse,
     },
   )
 }

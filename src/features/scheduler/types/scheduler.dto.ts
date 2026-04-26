@@ -50,10 +50,3 @@ export interface ListScheduledJobsParams {
 export type CreateScheduledJobRequest = PostSchedulerJobsRequest
 export type PatchScheduledJobRequest = PatchSchedulerJobsByJobIdRequest
 
-// ─── Namespace re-export ────────────────────────────────────────────────────
-export namespace Scheduler {
-  export type PostSchedulerJobsRequest =
-    import('./scheduler').PostSchedulerJobsRequest
-  export type PatchSchedulerJobsByJobIdRequest =
-    import('./scheduler').PatchSchedulerJobsByJobIdRequest
-}

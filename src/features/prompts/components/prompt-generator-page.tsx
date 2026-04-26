@@ -15,7 +15,7 @@ import type {
   PromptType,
   PromptCategory,
   PromptRole,
-} from '../types/prompt'
+} from '../types'
 import { cn } from '#/shared/utils'
 
 type Tab = 'library' | 'trending' | 'my-prompts'

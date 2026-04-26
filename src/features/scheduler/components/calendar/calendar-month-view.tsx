@@ -4,7 +4,7 @@ import {
   generateCalendarMonth,
   getMonthLabel,
   navigateMonth,
-} from '#/shared/calendar-utils'
+} from '#/features/scheduler/services/calendar.service'
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { Button } from '#/components/ui/button'
 import CalendarDayCell from './calendar-day-cell'

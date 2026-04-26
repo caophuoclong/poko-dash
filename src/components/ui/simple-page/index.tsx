@@ -1,5 +1,5 @@
 // layer: component
-import { ComponentType } from 'react'
+import type { ComponentType } from 'react'
 
 interface SimplePageProps {
   title: string

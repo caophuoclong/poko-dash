@@ -1,13 +1,16 @@
 // layer: component
-import { Input, Textarea, type InputProps, type TextareaProps } from '@/components/ui'
-import { cn } from '@/shared/utils'
+import { Input } from '#/components/ui/input'
+import { Textarea } from '#/components/ui/textarea'
+import { cn } from '#/shared/utils'
 
-interface FormFieldProps extends Omit<InputProps, 'label'> {
+interface FormFieldProps {
   label: string
   required?: boolean
   error?: string
   as?: 'input' | 'textarea'
   textareaRows?: number
+  className?: string
+  [key: string]: unknown
 }
 
 export function FormField({

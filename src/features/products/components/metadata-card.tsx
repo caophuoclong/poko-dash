@@ -1,6 +1,6 @@
 import type { Product } from '../types/product'
 import StatusBadge, { productStatusVariant } from './status-badge'
-import { formatDate, scoreBg, scoreColor } from '#/shared/product-utils'
+import { formatDate, scoreBg, scoreColor } from '#/shared/utils'
 
 interface MetadataCardProps {
   product: Product
@@ -28,7 +28,7 @@ export default function MetadataCard({ product }: MetadataCardProps) {
         </div>
 
         <div className="grid grid-cols-2 gap-4 pt-2 border-t border-frost">
-          <Field label="Fresh until" value={formatDate(product.freshUntil)} />
+          <Field label="Fresh until" value={product.freshUntil ? formatDate(product.freshUntil) : '—'} />
           <Field label="Product ID" value={product.productId} mono />
         </div>
 

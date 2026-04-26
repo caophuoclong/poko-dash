@@ -6,7 +6,7 @@ import {
   cancelScheduledJob,
 } from "../api/scheduler-api";
 import type { ListScheduledJobsParams } from "../types/scheduler.dto";
-import { useApiQuery, useApiMutation } from "@/hooks/use-api-query";
+import { useApiQuery, useApiMutation } from '#/shared/hooks'
 
 export function useScheduledJobs(params?: ListScheduledJobsParams) {
   return useApiQuery(

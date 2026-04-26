@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/autocomplete'
 import { useEffect, useState } from 'react'
 import { cn } from '#/shared/utils'
-import { formatDate } from '#/shared/product-utils'
+import { formatDate } from '#/shared/utils'
 import type { ContentIdeaTableForm } from '../components/ContentPostPage'
 import {
   IdeaType,

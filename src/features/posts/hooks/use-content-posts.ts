@@ -1,6 +1,5 @@
 import type {
   GetContentPostsResponse,
-  GetContentPostsByPostIdResponse,
   PatchContentPostsByPostIdRequest,
 } from '#/dtos/content-posts'
 import {
@@ -12,16 +11,12 @@ import {
   updateContentPost,
   deleteContentPost,
 } from '../api/content-post-api'
-import { useApiQuery, useApiMutation } from '@/hooks/use-api-query'
-import { MOCK_CONTENT_POSTS } from '#/shared/mock-data'
+import { useApiQuery, useApiMutation } from '#/shared/hooks'
 
 export function useContentPosts() {
   return useApiQuery(
     ['content-posts'],
-    async () => {
-      const posts = await fetchContentPosts()
-      return posts.length > 0 ? posts : ([] as GetContentPostsResponse)
-    },
+    () => fetchContentPosts(),
     { fallback: [] as GetContentPostsResponse },
   )
 }
@@ -29,15 +24,7 @@ export function useContentPosts() {
 export function useContentPost(postId: string) {
   return useApiQuery(
     ['content-posts', postId],
-    async () => {
-      const res = await fetchContentPost(postId, true)
-      if (!res) {
-        const mockPost = MOCK_CONTENT_POSTS.find((p) => p.postId === postId)
-        if (!mockPost) throw new Error('Post not found')
-        return mockPost as GetContentPostsByPostIdResponse
-      }
-      return res
-    },
+    () => fetchContentPost(postId, true),
     {
       enabled: !!postId,
       silentError: false,

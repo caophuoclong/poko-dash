@@ -11,7 +11,7 @@ import type {
   PromptStatus,
   PromptRole,
   CreatePromptRequest,
-} from '../types/prompt'
+} from '../types'
 import { cn } from '#/shared/utils'
 
 import { PROMPT_TYPES, PROMPT_CATEGORIES, PROMPT_STATUSES, PROMPT_ROLES } from '../types'

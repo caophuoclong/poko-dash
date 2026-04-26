@@ -1,6 +1,6 @@
 import type { AffiliateLink } from '../types/product'
 import StatusBadge, { deeplinkStatusVariant } from './status-badge'
-import { dash, formatDate } from '#/shared/product-utils'
+import { dash, formatDate } from '#/shared/utils'
 
 interface AffiliateLinkCardProps {
   link: AffiliateLink

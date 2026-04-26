@@ -5,7 +5,7 @@ import {
   parsePrice,
   parsePriceRange,
   parseDelimitedList,
-} from '#/shared/product-utils'
+} from '#/shared/utils'
 
 interface ProductOverviewCardProps {
   product: Product

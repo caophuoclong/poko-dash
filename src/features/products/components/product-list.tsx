@@ -18,8 +18,8 @@ import {
   formatPriceNum,
   parsePrice,
   parsePriceRange,
-} from '#/shared/product-utils'
-import { getStatusMeta, PRODUCT_STATUS } from '#/shared/status'
+} from '#/shared/utils'
+import { getStatusMeta, PRODUCT_STATUS } from '#/shared/constants'
 
 interface ProductRow extends Product {
   linkCount: number

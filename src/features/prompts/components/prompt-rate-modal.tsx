@@ -9,7 +9,7 @@ import {
 } from '#/components/ui/dialog'
 import { Button } from '#/components/ui/button'
 import { useRatePrompt } from '../hooks/use-prompts'
-import type { Prompt } from '../types/prompt'
+import type { Prompt } from '../types'
 import { cn } from '#/shared/utils'
 
 interface PromptRateModalProps {

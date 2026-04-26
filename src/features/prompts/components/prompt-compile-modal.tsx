@@ -10,7 +10,7 @@ import {
 import { Button } from "#/components/ui/button";
 import { Input } from "#/components/ui/input";
 import { useCompilePrompt, useRecordPromptUsage } from "../hooks/use-prompts";
-import type { Prompt } from "../types/prompt";
+import type { Prompt } from '../types';
 
 function decodeTemplate(raw: string): string {
   return raw.replace(/\\n/g, "\n").replace(/\\t/g, "\t");
