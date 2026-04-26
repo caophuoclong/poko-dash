@@ -16,18 +16,32 @@ import { formatRelativeTime } from '@/shared/utils/date'
 import { StatusCell } from './post-list/StatusCell'
 import { statusOptions } from './post-edit-page/constants'
 import type { GetContentPostsResponse } from '#/dtos/content-posts'
+import { useContentIdeas } from '#/features/contents/hooks/use-content-ideas'
+
+const NO_IDEA_SENTINEL = '__none__'
 
 type PostSummary = GetContentPostsResponse[number]
 
 interface Props {
   posts: GetContentPostsResponse
+  ideaId?: string
 }
 export default function PostList(props: Props) {
-  const { posts } = props
+  const { posts, ideaId } = props
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedPlatform, setSelectedPlatform] = useState<string>()
   const [selectedStatus, setSelectedStatus] = useState<string>()
+  const selectedIdea = ideaId
   const navigate = useNavigate()
+  const { data: ideas = [] } = useContentIdeas()
+
+  const setSelectedIdea = (value: string | undefined) => {
+    void navigate({
+      to: '/dash/posts',
+      search: { ideaId: value },
+      replace: true,
+    })
+  }
 
   const platforms = useMemo(() => {
     const uniquePlatforms = Array.from(
@@ -38,6 +52,29 @@ export default function PostList(props: Props) {
       label: platform.charAt(0).toUpperCase() + platform.slice(1),
     }))
   }, [posts])
+
+  // Build postId → ideaId map from ideas' postIds arrays
+  const postIdeaMap = useMemo(() => {
+    const map = new Map<string, string>()
+    for (const idea of ideas) {
+      for (const postId of idea.postIds ?? []) {
+        map.set(postId, idea.ideaId)
+      }
+    }
+    return map
+  }, [ideas])
+
+  const ideaOptions = useMemo(
+    () => [
+      { value: NO_IDEA_SENTINEL, label: 'Không có ý tưởng' },
+      ...ideas
+        .filter((idea) => (idea.postIds?.length ?? 0) > 0)
+        .map((idea) => ({ value: idea.ideaId, label: idea.hook })),
+    ],
+    [ideas],
+  )
+
+  const selectedIdeaData = ideas.find((i) => i.ideaId === selectedIdea)
 
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
@@ -50,9 +87,22 @@ export default function PostList(props: Props) {
 
       const matchesStatus = !selectedStatus || post.status === selectedStatus
 
-      return matchesSearch && matchesPlatform && matchesStatus
+      const matchesIdea =
+        !selectedIdea ||
+        (selectedIdea === NO_IDEA_SENTINEL
+          ? !postIdeaMap.has(post.postId)
+          : postIdeaMap.get(post.postId) === selectedIdea)
+
+      return matchesSearch && matchesPlatform && matchesStatus && matchesIdea
     })
-  }, [posts, searchTerm, selectedPlatform, selectedStatus])
+  }, [
+    posts,
+    searchTerm,
+    selectedPlatform,
+    selectedStatus,
+    selectedIdea,
+    postIdeaMap,
+  ])
 
   const formatDate = (dateString: string) => {
     return formatRelativeTime(dateString)
@@ -80,6 +130,33 @@ export default function PostList(props: Props) {
             {getValue<string>()}
           </div>
         ),
+      },
+      {
+        id: 'idea',
+        header: 'Ý tưởng',
+        size: 200,
+        cell: ({ row }) => {
+          const linkedIdeaId = postIdeaMap.get(row.original.postId)
+          const linkedIdea = ideas.find((i) => i.ideaId === linkedIdeaId)
+          if (!linkedIdea) {
+            return <span className="text-sm text-muted-text">—</span>
+          }
+          return (
+            <button
+              type="button"
+              className="text-sm text-accent-blue hover:underline truncate max-w-full text-left"
+              onClick={(e) => {
+                e.stopPropagation()
+                void navigate({
+                  to: '/dash/posts',
+                  search: { ideaId: linkedIdea.ideaId },
+                })
+              }}
+            >
+              {linkedIdea.hook}
+            </button>
+          )
+        },
       },
       {
         accessorKey: 'platform',
@@ -154,7 +231,7 @@ export default function PostList(props: Props) {
         ),
       },
     ],
-    [],
+    [postIdeaMap, ideas, navigate, formatDate],
   )
 
   const table = useReactTable({
@@ -166,8 +243,18 @@ export default function PostList(props: Props) {
   return (
     <div className="max-w-full">
       <PageHeader
-        title="Bài viết"
-        subtitle="Quản lý toàn bộ bài viết của bạn"
+        title={
+          selectedIdea && selectedIdea !== NO_IDEA_SENTINEL && selectedIdeaData
+            ? `Bài viết từ ý tưởng: ${selectedIdeaData.hook}`
+            : selectedIdea === NO_IDEA_SENTINEL
+              ? 'Bài viết không có ý tưởng'
+              : 'Bài viết'
+        }
+        subtitle={
+          selectedIdea
+            ? `Hiển thị ${filteredPosts.length} bài viết`
+            : 'Quản lý toàn bộ bài viết của bạn'
+        }
         actions={
           <Button
             color="orange"
@@ -183,10 +270,13 @@ export default function PostList(props: Props) {
       <PostsFilterBar
         platforms={platforms}
         statuses={statusOptions}
+        ideas={ideaOptions}
         selectedPlatform={selectedPlatform}
         selectedStatus={selectedStatus}
+        selectedIdea={selectedIdea}
         onPlatformChange={setSelectedPlatform}
         onStatusChange={setSelectedStatus}
+        onIdeaChange={setSelectedIdea}
       />
 
       {filteredPosts.length === 0 ? (
@@ -194,12 +284,12 @@ export default function PostList(props: Props) {
           icon={<FileText />}
           title="Không tìm thấy bài viết nào"
           description={
-            searchTerm || selectedPlatform || selectedStatus
+            searchTerm || selectedPlatform || selectedStatus || selectedIdea
               ? 'Thử thay đổi bộ lọc hoặc từ khoá tìm kiếm'
               : undefined
           }
           action={
-            searchTerm || selectedPlatform || selectedStatus ? (
+            searchTerm || selectedPlatform || selectedStatus || selectedIdea ? (
               <Button
                 variant="ghost"
                 size="sm"
@@ -207,6 +297,7 @@ export default function PostList(props: Props) {
                   setSearchTerm('')
                   setSelectedPlatform(undefined)
                   setSelectedStatus(undefined)
+                  setSelectedIdea(undefined)
                 }}
               >
                 Xóa bộ lọc

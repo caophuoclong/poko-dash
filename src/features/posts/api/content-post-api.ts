@@ -15,16 +15,25 @@ export function fetchContentPosts(params?: {
   page?: number
   limit?: number
   includeProducts?: boolean
+  ideaId?: string
 }): Promise<GetContentPostsResponse> {
   const query = new URLSearchParams()
   if (params?.page) query.set('page', params.page.toString())
   if (params?.limit) query.set('limit', params.limit.toString())
   if (params?.includeProducts) query.set('include', 'products')
+  if (params?.ideaId) query.set('ideaId', params.ideaId)
 
   const queryString = query.toString()
   return apiRequest<GetContentPostsResponse>(
     `/content-posts${queryString ? `?${queryString}` : ''}`,
   )
+}
+
+export function fetchContentPostsByIdea(
+  ideaId: string,
+  includeProducts = false,
+): Promise<GetContentPostsResponse> {
+  return fetchContentPosts({ ideaId, includeProducts })
 }
 
 export function fetchContentPost(

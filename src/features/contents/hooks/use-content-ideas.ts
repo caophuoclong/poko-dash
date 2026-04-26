@@ -5,6 +5,7 @@ import type {
 import { useApiMutation, useApiQuery } from '#/shared/hooks'
 import {
   fetchContentIdeas,
+  fetchContentIdea,
   createContentIdea,
   updateContentIdea,
 } from '../api/content-idea-api'
@@ -14,6 +15,14 @@ export function useContentIdeas() {
     ['content-ideas'],
     () => fetchContentIdeas(),
     { fallback: [] as unknown as GetContentIdeasResponse },
+  )
+}
+
+export function useContentIdea(ideaId: string | undefined) {
+  return useApiQuery(
+    ['content-ideas', ideaId ?? ''],
+    () => fetchContentIdea(ideaId!),
+    { enabled: !!ideaId },
   )
 }
 

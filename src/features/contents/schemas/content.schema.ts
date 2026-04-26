@@ -49,7 +49,7 @@ export const contentIdeasSchema = z.array(
     ideaId: z.string(),
     createdAt: z.string(),
     updatedAt: z.string(),
-    postId: z.string().optional(),
+    postIds: z.array(z.string()).optional(),
   }),
 )
 export type ContentIdeaEntity = z.infer<typeof contentIdeasSchema>[number]

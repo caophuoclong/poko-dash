@@ -274,34 +274,34 @@ export function Autocomplete<
     createLabel,
     createOption,
     onCreateOption,
-    placeholder = "Search...",
-    emptyText = "No options found",
-    loadingText = "Loading...",
+    placeholder = 'Search...',
+    emptyText = 'No options found',
+    loadingText = 'Loading...',
     disabled,
     className,
     contentClassName,
     limitTags,
     sortSelectedFirst = true,
     truncateChipLabel = true,
-    emitValue = "auto",
-  } = props;
+    emitValue = 'auto',
+  } = props
 
-  const [inputValue, setInputValue] = React.useState("");
+  const [inputValue, setInputValue] = React.useState('')
   const [loadedOptions, setLoadedOptions] = React.useState<
     AutocompleteOption<TValue>[]
-  >([]);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isOpen, setIsOpen] = React.useState(false);
+  >([])
+  const [isLoading, setIsLoading] = React.useState(false)
+  const [isOpen, setIsOpen] = React.useState(false)
   const preventCloseRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null,
-  );
-  const requestIdRef = React.useRef(0);
-  const anchorRef = React.useRef<HTMLDivElement>(null);
+  )
+  const requestIdRef = React.useRef(0)
+  const anchorRef = React.useRef<HTMLDivElement>(null)
 
   const defaultSelection = (multiple ? [] : null) as
     | AutocompleteOption<TValue>[]
     | AutocompleteOption<TValue>
-    | null;
+    | null
 
   const [selection, setSelection] = useControllableSelection(
     props.value,
@@ -312,145 +312,173 @@ export function Autocomplete<
         | AutocompleteValueInput<TValue>
         | null,
     ) => void,
-  );
+  )
 
   const emitsRawValue = React.useMemo(() => {
-    if (emitValue === "raw") {
-      return true;
+    if (emitValue === 'raw') {
+      return true
     }
 
-    if (emitValue === "option") {
-      return false;
+    if (emitValue === 'option') {
+      return false
     }
 
     if (multiple) {
-      const source = props.value ?? props.defaultValue;
+      const source = props.value ?? props.defaultValue
       if (!Array.isArray(source) || source.length === 0) {
-        return false;
+        return false
       }
 
-      return !isOptionObject(source[0]);
+      return !isOptionObject(source[0])
     }
 
-    const source = props.value ?? props.defaultValue;
+    const source = props.value ?? props.defaultValue
     if (source === null || source === undefined) {
-      return false;
+      return false
     }
 
-    return !isOptionObject(source);
-  }, [emitValue, multiple, props.defaultValue, props.value]);
+    return !isOptionObject(source)
+  }, [emitValue, multiple, props.defaultValue, props.value])
 
   const mapOptionForOutput = React.useCallback(
     (option: AutocompleteOption<TValue> | null) => {
       if (!option) {
-        return null;
+        return null
       }
 
-      return emitsRawValue ? option.value : option;
+      return emitsRawValue ? option.value : option
     },
     [emitsRawValue],
-  );
+  )
 
   const mapOptionsForOutput = React.useCallback(
     (items: AutocompleteOption<TValue>[]) => {
-      return emitsRawValue ? items.map((option) => option.value) : items;
+      return emitsRawValue ? items.map((option) => option.value) : items
     },
     [emitsRawValue],
-  );
+  )
 
   const fallbackOptions = React.useMemo(
     () => (options ?? []).map((item) => normalizeOption(item)),
     [options],
-  );
+  )
 
   const applyClientFilter = React.useCallback(
     (items: AutocompleteOption<TValue>[], query: string) => {
-      return (filterOptions ?? defaultFilter)(items, query);
+      return (filterOptions ?? defaultFilter)(items, query)
     },
     [filterOptions],
-  );
+  )
 
   React.useEffect(() => {
     if (!getData) {
-      setLoadedOptions(applyClientFilter(fallbackOptions, inputValue));
-      return;
+      setLoadedOptions(applyClientFilter(fallbackOptions, inputValue))
+      return
     }
 
-    let active = true;
-    const currentRequestId = ++requestIdRef.current;
-    const query = inputValue;
+    let active = true
+    const currentRequestId = ++requestIdRef.current
+    const query = inputValue
 
-    setIsLoading(true);
+    setIsLoading(true)
 
-    const result = getData(query);
+    const result = getData(query)
     const resolveData = isPromiseLike<TRaw[]>(result)
       ? result
-      : Promise.resolve(result);
+      : Promise.resolve(result)
 
     void resolveData
       .then((data) => {
         if (!active || currentRequestId !== requestIdRef.current) {
-          return;
+          return
         }
 
         const next = getOptions
           ? getOptions(data, query)
           : (data as unknown as Array<AutocompleteOption<TValue> | TValue>).map(
               (item) => normalizeOption(item),
-            );
+            )
 
-        setLoadedOptions(next);
+        setLoadedOptions(next)
       })
       .catch(() => {
         if (!active || currentRequestId !== requestIdRef.current) {
-          return;
+          return
         }
 
-        setLoadedOptions([]);
+        setLoadedOptions([])
       })
       .finally(() => {
         if (!active || currentRequestId !== requestIdRef.current) {
-          return;
+          return
         }
 
-        setIsLoading(false);
-      });
+        setIsLoading(false)
+      })
 
     return () => {
-      active = false;
-    };
-  }, [applyClientFilter, fallbackOptions, getData, getOptions, inputValue]);
+      active = false
+    }
+  }, [applyClientFilter, fallbackOptions, getData, getOptions, inputValue])
 
   React.useEffect(() => {
     return () => {
       if (preventCloseRef.current) {
-        clearTimeout(preventCloseRef.current);
+        clearTimeout(preventCloseRef.current)
       }
-    };
-  }, []);
+    }
+  }, [])
+
+  const normalizedSelection = React.useMemo(() => {
+    const availableSelectionOptions = [...loadedOptions, ...fallbackOptions]
+
+    if (Array.isArray(selection)) {
+      return selection.map((item) =>
+        normalizeSelectionItem(item, availableSelectionOptions),
+      )
+    }
+
+    if (!selection) {
+      return null
+    }
+
+    return normalizeSelectionItem(selection, availableSelectionOptions)
+  }, [fallbackOptions, loadedOptions, selection])
+
+  // Sync the visible input text with the selected item's label when the
+  // dropdown is closed. This handles both initial render with a pre-selected
+  // value and controlled-value changes from outside the component.
+  React.useEffect(() => {
+    if (isOpen || multiple) return
+    setInputValue(
+      normalizedSelection
+        ? (normalizedSelection as AutocompleteOption<TValue>).label
+        : '',
+    )
+  }, [normalizedSelection, isOpen, multiple])
 
   const createCandidate = React.useMemo<InternalOption<TValue> | null>(() => {
-    const next = inputValue.trim();
+    const next = inputValue.trim()
     if (!allowCreate || !next || hasOptionLabel(loadedOptions, next)) {
-      return null;
+      return null
     }
 
     return {
       label: createLabel ? createLabel(next) : `Create "${next}"`,
       value: CREATE_SENTINEL as TValue,
       __meta: {
-        kind: "create",
+        kind: 'create',
         input: next,
       },
-    };
-  }, [allowCreate, createLabel, inputValue, loadedOptions]);
+    }
+  }, [allowCreate, createLabel, inputValue, loadedOptions])
 
   const sortedOptions = React.useMemo(() => {
     if (!sortSelectedFirst) {
-      return loadedOptions;
+      return loadedOptions
     }
 
-    const availableSelectionOptions = [...loadedOptions, ...fallbackOptions];
+    const availableSelectionOptions = [...loadedOptions, ...fallbackOptions]
 
     const selectedItems = Array.isArray(selection)
       ? selection.map((item) =>
@@ -458,49 +486,34 @@ export function Autocomplete<
         )
       : selection
         ? [normalizeSelectionItem(selection, availableSelectionOptions)]
-        : [];
+        : []
 
     if (selectedItems.length === 0) {
-      return loadedOptions;
+      return loadedOptions
     }
 
-    const selected: AutocompleteOption<TValue>[] = [];
-    const unselected: AutocompleteOption<TValue>[] = [];
+    const selected: AutocompleteOption<TValue>[] = []
+    const unselected: AutocompleteOption<TValue>[] = []
 
     for (const option of loadedOptions) {
       if (selectedItems.some((item) => sameOptionValue(item, option))) {
-        selected.push(option);
+        selected.push(option)
       } else {
-        unselected.push(option);
+        unselected.push(option)
       }
     }
 
-    return [...selected, ...unselected];
-  }, [fallbackOptions, loadedOptions, selection, sortSelectedFirst]);
+    return [...selected, ...unselected]
+  }, [fallbackOptions, loadedOptions, selection, sortSelectedFirst])
 
-  const normalizedSelection = React.useMemo(() => {
-    const availableSelectionOptions = [...loadedOptions, ...fallbackOptions];
-
-    if (Array.isArray(selection)) {
-      return selection.map((item) =>
-        normalizeSelectionItem(item, availableSelectionOptions),
-      );
-    }
-
-    if (!selection) {
-      return null;
-    }
-
-    return normalizeSelectionItem(selection, availableSelectionOptions);
-  }, [fallbackOptions, loadedOptions, selection]);
 
   const renderedOptions = React.useMemo(() => {
     if (!createCandidate) {
-      return sortedOptions;
+      return sortedOptions
     }
 
-    return [createCandidate, ...sortedOptions];
-  }, [createCandidate, sortedOptions]);
+    return [createCandidate, ...sortedOptions]
+  }, [createCandidate, sortedOptions])
 
   const finalizeCreate = React.useCallback(
     async (input: string) => {
@@ -509,38 +522,38 @@ export function Autocomplete<
         : ({
             label: input,
             value: input as TValue,
-          } satisfies AutocompleteOption<TValue>);
+          } satisfies AutocompleteOption<TValue>)
 
       if (!built) {
-        return;
+        return
       }
 
       setLoadedOptions((prev) => {
         if (prev.some((option) => sameOptionValue(option, built))) {
-          return prev;
+          return prev
         }
 
-        return [built, ...prev];
-      });
+        return [built, ...prev]
+      })
 
-      onCreateOption?.(built);
+      onCreateOption?.(built)
 
       if (multiple) {
         const current =
-          (normalizedSelection as AutocompleteOption<TValue>[]) ?? [];
+          (normalizedSelection as AutocompleteOption<TValue>[]) ?? []
         if (current.some((option) => sameOptionValue(option, built))) {
-          return;
+          return
         }
 
-        setSelection(mapOptionsForOutput([...current, built]));
+        setSelection(mapOptionsForOutput([...current, built]))
       } else {
-        setSelection(mapOptionForOutput(built));
+        setSelection(mapOptionForOutput(built))
       }
 
-      setInputValue("");
+      setInputValue('')
     },
     [createOption, multiple, normalizedSelection, onCreateOption, setSelection],
-  );
+  )
 
   const handleSelectionChange = React.useCallback(
     (
@@ -554,42 +567,42 @@ export function Autocomplete<
       if (multiple) {
         const nextList = (
           Array.isArray(next) ? next : []
-        ) as InternalOption<TValue>[];
+        ) as InternalOption<TValue>[]
         const createOptionItem = nextList.find(
-          (item) => item.__meta?.kind === "create",
-        );
+          (item) => item.__meta?.kind === 'create',
+        )
 
         if (createOptionItem?.__meta?.input) {
           const withoutCreate = nextList.filter(
-            (item) => item.__meta?.kind !== "create",
-          );
-          setSelection(mapOptionsForOutput(withoutCreate));
-          void finalizeCreate(createOptionItem.__meta.input);
-          return;
+            (item) => item.__meta?.kind !== 'create',
+          )
+          setSelection(mapOptionsForOutput(withoutCreate))
+          void finalizeCreate(createOptionItem.__meta.input)
+          return
         }
 
-        setSelection(mapOptionsForOutput(nextList));
+        setSelection(mapOptionsForOutput(nextList))
 
         // Prevent dropdown from closing for 50ms after selection to handle
         // the onOpenChange callback timing
         if (preventCloseRef.current) {
-          clearTimeout(preventCloseRef.current);
+          clearTimeout(preventCloseRef.current)
         }
         preventCloseRef.current = setTimeout(() => {
-          preventCloseRef.current = null;
-        }, 50);
+          preventCloseRef.current = null
+        }, 50)
 
-        return;
+        return
       }
 
-      const single = next as InternalOption<TValue> | null;
-      if (single?.__meta?.kind === "create") {
-        setSelection(null);
-        void finalizeCreate(single.__meta.input);
-        return;
+      const single = next as InternalOption<TValue> | null
+      if (single?.__meta?.kind === 'create') {
+        setSelection(null)
+        void finalizeCreate(single.__meta.input)
+        return
       }
 
-      setSelection(mapOptionForOutput(single));
+      setSelection(mapOptionForOutput(single))
     },
     [
       finalizeCreate,
@@ -599,7 +612,7 @@ export function Autocomplete<
       setSelection,
       options,
     ],
-  );
+  )
 
   return (
     <Combobox<InternalOption<TValue>, boolean>
@@ -612,9 +625,9 @@ export function Autocomplete<
       onOpenChange={(nextOpen) => {
         // In multiple mode, prevent closing immediately after selection
         if (multiple && !nextOpen && preventCloseRef.current) {
-          setIsOpen(true);
+          setIsOpen(true)
         } else {
-          setIsOpen(nextOpen);
+          setIsOpen(nextOpen)
         }
       }}
       items={renderedOptions}
@@ -627,14 +640,12 @@ export function Autocomplete<
           <ComboboxChips className={className}>
             {(() => {
               const items =
-                (normalizedSelection as AutocompleteOption<TValue>[]) ?? [];
-              const displayItems = limitTags
-                ? items.slice(0, limitTags)
-                : items;
+                (normalizedSelection as AutocompleteOption<TValue>[]) ?? []
+              const displayItems = limitTags ? items.slice(0, limitTags) : items
               const hiddenCount =
                 limitTags && items.length > limitTags
                   ? items.length - limitTags
-                  : 0;
+                  : 0
 
               return (
                 <>
@@ -658,7 +669,7 @@ export function Autocomplete<
                     </div>
                   )}
                 </>
-              );
+              )
             })()}
             <ComboboxChipsInput placeholder={placeholder} />
           </ComboboxChips>
@@ -677,7 +688,7 @@ export function Autocomplete<
           <ComboboxCollection>
             {(item) => (
               <ComboboxItem value={item} disabled={isLoading || item.disabled}>
-                {item.__meta?.kind === "create" ? (
+                {item.__meta?.kind === 'create' ? (
                   <span className="inline-flex items-center gap-2">
                     <PlusIcon className="size-4" />
                     {item.label}
@@ -700,5 +711,5 @@ export function Autocomplete<
         </ComboboxList>
       </ComboboxContent>
     </Combobox>
-  );
+  )
 }

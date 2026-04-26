@@ -13,10 +13,13 @@ import {
 } from '../api/content-post-api'
 import { useApiQuery, useApiMutation } from '#/shared/hooks'
 
-export function useContentPosts() {
+export function useContentPosts(options?: { ideaId?: string }) {
   return useApiQuery(
-    ['content-posts'],
-    () => fetchContentPosts(),
+    ['content-posts', options?.ideaId ?? 'all'],
+    () =>
+      fetchContentPosts(
+        options?.ideaId ? { ideaId: options.ideaId } : undefined,
+      ),
     { fallback: [] as GetContentPostsResponse },
   )
 }

@@ -68,7 +68,7 @@ export function PostCreatePage() {
     try {
       const payload = postCreationService.transformFormDataToPayload(data)
       await createPost.mutateAsync(payload)
-      void navigate({ to: '/dash/posts' })
+      void navigate({ to: '/dash/posts', search: { ideaId: undefined } })
     } finally {
       setIsSaving(false)
     }
@@ -79,11 +79,11 @@ export function PostCreatePage() {
       if (
         confirm('Bạn có chắc chắn muốn hủy? Các thay đổi chưa lưu sẽ bị mất.')
       ) {
-        void navigate({ to: '/dash/posts' })
+        void navigate({ to: '/dash/posts', search: { ideaId: undefined } })
       }
       return
     }
-    void navigate({ to: '/dash/posts' })
+    void navigate({ to: '/dash/posts', search: { ideaId: undefined } })
   }
 
   const status = watch('status')

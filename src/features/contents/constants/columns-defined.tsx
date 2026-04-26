@@ -496,24 +496,34 @@ export const getColumns: (
         }
 
         if (isProduced) {
+          const postCount = idea.postIds?.length ?? 0
           return (
             <div className="flex justify-center">
-              <Button
-                variant={'link'}
-                color="blue"
-                size={'sm'}
-                className="inline-flex items-center gap-1 text-[11px] text-muted-text cursor-pointer select-none"
-                disabled={!idea.postId}
-                asChild
-              >
-                <Link
-                  to="/dash/posts/$postId"
-                  params={{ postId: idea.postId! }}
+              {postCount > 0 ? (
+                <Button
+                  variant={'link'}
+                  color="blue"
+                  size={'sm'}
+                  className="inline-flex items-center gap-1 text-[11px] text-muted-text cursor-pointer select-none"
+                  asChild
+                >
+                  <Link to="/dash/posts" search={{ ideaId: idea.ideaId }}>
+                    <CheckCircle size={11} />
+                    View {postCount} post{postCount !== 1 ? 's' : ''}
+                  </Link>
+                </Button>
+              ) : (
+                <Button
+                  variant={'link'}
+                  color="blue"
+                  size={'sm'}
+                  className="inline-flex items-center gap-1 text-[11px] text-muted-text cursor-pointer select-none"
+                  disabled
                 >
                   <CheckCircle size={11} />
-                  Link to post
-                </Link>
-              </Button>
+                  View 0 posts
+                </Button>
+              )}
             </div>
           )
         }
