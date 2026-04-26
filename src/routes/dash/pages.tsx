@@ -1,13 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { SimplePage } from '@/components/ui/simple-page'
+import { Facebook } from 'lucide-react'
 
 export const Route = createFileRoute('/dash/pages')({
   component: PagesPage,
 })
 
 function PagesPage() {
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-near-white">Facebook Pages</h1>
-    </div>
-  )
+  return <SimplePage title="Facebook Pages" subtitle="Quản lý các trang Facebook đã kết nối" icon={Facebook} />
 }

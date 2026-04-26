@@ -6,7 +6,7 @@ import type {
   RatePromptRequest,
   CompilePromptRequest,
   CompilePromptResponse,
-} from '../types/prompt'
+} from '../types'
 import { apiRequest } from '#/shared/api'
 
 export function fetchPrompts(params?: {

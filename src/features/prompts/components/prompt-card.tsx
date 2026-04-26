@@ -12,12 +12,8 @@ import { Button } from '#/components/ui/button'
 import { cn } from '#/shared/utils'
 import type { Prompt } from '../types/prompt'
 
-const typeLabels: Record<string, string> = {
-  content_generation: 'Content Gen',
-  analysis: 'Analysis',
-  refinement: 'Refinement',
-  custom: 'Custom',
-}
+import { TYPE_LABELS, CATEGORY_LABELS } from '../types'
+import { STATUS_COLORS } from '@/shared/constants'
 
 const typeColors: Record<string, string> = {
   content_generation:
@@ -27,21 +23,6 @@ const typeColors: Record<string, string> = {
   refinement:
     'bg-accent-orange-dim text-accent-orange border border-accent-orange-border',
   custom: 'bg-surface-2 text-muted-text border border-frost',
-}
-
-const categoryLabels: Record<string, string> = {
-  social_media: 'Social',
-  blog: 'Blog',
-  video: 'Video',
-  email: 'Email',
-  general: 'General',
-}
-
-const statusColors: Record<string, string> = {
-  active:
-    'bg-accent-green-dim text-accent-green border border-accent-green-border',
-  draft: 'bg-surface-2 text-muted-text border border-frost',
-  archived: 'bg-surface-2 text-muted-text border border-frost',
 }
 
 interface PromptCardProps {
@@ -91,10 +72,10 @@ export default function PromptCard({
               typeColors[prompt.promptType] || 'bg-surface-2 text-muted-text',
             )}
           >
-            {typeLabels[prompt.promptType] || prompt.promptType}
+            {TYPE_LABELS[prompt.promptType] || prompt.promptType}
           </span>
           <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-surface-2 text-muted-text border border-frost">
-            {categoryLabels[prompt.category] || prompt.category}
+            {CATEGORY_LABELS[prompt.category] || prompt.category}
           </span>
           <span
             className={cn(

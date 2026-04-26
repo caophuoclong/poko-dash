@@ -1,13 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { SimplePage } from '@/components/ui/simple-page'
+import { Calendar } from 'lucide-react'
 
 export const Route = createFileRoute('/dash/posts/scheduled')({
   component: ScheduledPostsPage,
 })
 
 function ScheduledPostsPage() {
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-near-white">Bài viết đã lên lịch</h1>
-    </div>
-  )
+  return <SimplePage title="Bài viết đã lên lịch" subtitle="Xem và quản lý các bài viết đã lên lịch" icon={Calendar} />
 }

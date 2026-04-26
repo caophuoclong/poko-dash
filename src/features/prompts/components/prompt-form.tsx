@@ -14,39 +14,7 @@ import type {
 } from '../types/prompt'
 import { cn } from '#/shared/utils'
 
-const PROMPT_TYPES: { value: PromptType; label: string }[] = [
-  { value: 'content_generation', label: 'Content Generation' },
-  { value: 'analysis', label: 'Analysis' },
-  { value: 'refinement', label: 'Refinement' },
-  { value: 'custom', label: 'Custom' },
-]
-
-const PROMPT_CATEGORIES: { value: PromptCategory; label: string }[] = [
-  { value: 'social_media', label: 'Social Media' },
-  { value: 'blog', label: 'Blog' },
-  { value: 'video', label: 'Video' },
-  { value: 'email', label: 'Email' },
-  { value: 'general', label: 'General' },
-]
-
-const PROMPT_STATUSES: { value: PromptStatus; label: string }[] = [
-  { value: 'active', label: 'Active' },
-  { value: 'draft', label: 'Draft' },
-  { value: 'archived', label: 'Archived' },
-]
-
-const PROMPT_ROLES: {
-  value: PromptRole
-  label: string
-  description: string
-}[] = [
-  { value: 'user', label: 'User', description: 'Task / instruction prompt' },
-  {
-    value: 'system',
-    label: 'System',
-    description: 'Behavior / context prompt',
-  },
-]
+import { PROMPT_TYPES, PROMPT_CATEGORIES, PROMPT_STATUSES, PROMPT_ROLES } from '../types'
 
 function extractVariables(template: string): string[] {
   const matches = template.match(/\{\{(\w+)\}\}/g) ?? []

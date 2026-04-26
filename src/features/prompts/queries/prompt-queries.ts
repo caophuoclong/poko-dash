@@ -1,6 +1,7 @@
+// layer: logic
 import { queryOptions } from '@tanstack/react-query'
-import { fetchPrompts, fetchPromptById } from '../api/prompt-api'
-import type { Prompt } from '../types/prompt'
+import { fetchPrompts, fetchPromptById } from '../api'
+import type { Prompt } from '../types'
 
 export const promptsQueryOptions = (params?: {
   page?: number

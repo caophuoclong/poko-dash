@@ -1,134 +1,101 @@
-import type { CreatePromptRequest, UpdatePromptRequest, RefinePromptRequest, RatePromptRequest, CompilePromptRequest } from "../types/prompt";
-import {
-  fetchPrompts,
-  fetchPromptById,
-  createPrompt,
-  updatePrompt,
-  deletePrompt,
-  refinePrompt,
-  ratePrompt,
-  compilePrompt,
-  recordPromptUsage,
-  fetchPromptVersions,
-  searchPrompts,
-  fetchMostUsedPrompts,
-  fetchHighestRatedPrompts,
-  fetchPromptsByType,
-  fetchPromptsByCategory,
-  fetchPromptsByRole,
-  fetchPromptsByTags,
-} from "../api/prompt-api";
-import { useApiQuery, useApiMutation } from "@/hooks/use-api-query";
+// layer: logic
+import { useApiQuery, useApiMutation } from '@/hooks/use-api-query'
+import type { Prompt, CreatePromptRequest, UpdatePromptRequest } from '../types'
+import * as promptApi from '../api'
 
 export function usePrompts(params?: { status?: string }) {
   return useApiQuery(
-    ["prompts", params],
-    () => fetchPrompts(params),
+    ['prompts', params],
+    () => promptApi.fetchPrompts(params),
     { fallback: [] },
-  );
+  )
 }
 
 export function usePrompt(promptId: string) {
   return useApiQuery(
-    ["prompts", promptId],
-    () => fetchPromptById(promptId),
+    ['prompts', promptId],
+    () => promptApi.fetchPromptById(promptId),
     { enabled: !!promptId, silentError: false },
-  );
+  )
 }
 
 export function useMostUsedPrompts(limit = 10) {
   return useApiQuery(
-    ["prompts", "trending", "most-used", limit],
-    () => fetchMostUsedPrompts(limit),
+    ['prompts', 'trending', 'most-used', limit],
+    () => promptApi.fetchMostUsedPrompts(limit),
     { fallback: [] },
-  );
+  )
 }
 
 export function useHighestRatedPrompts(limit = 10) {
   return useApiQuery(
-    ["prompts", "trending", "highest-rated", limit],
-    () => fetchHighestRatedPrompts(limit),
+    ['prompts', 'trending', 'highest-rated', limit],
+    () => promptApi.fetchHighestRatedPrompts(limit),
     { fallback: [] },
-  );
+  )
 }
 
 export function usePromptVersions(promptId: string) {
   return useApiQuery(
-    ["prompts", promptId, "versions"],
-    () => fetchPromptVersions(promptId),
+    ['prompts', promptId, 'versions'],
+    () => promptApi.fetchPromptVersions(promptId),
     { enabled: !!promptId, fallback: { versions: [] } },
-  );
+  )
 }
 
 export function useSearchPrompts(query: string) {
   return useApiQuery(
-    ["prompts", "search", query],
-    () => searchPrompts(query),
+    ['prompts', 'search', query],
+    () => promptApi.searchPrompts(query),
     { enabled: query.length > 1, fallback: [] },
-  );
+  )
 }
 
 export function useCreatePrompt() {
-  return useApiMutation((data: CreatePromptRequest) => createPrompt(data), {
-    invalidateKeys: [["prompts"]],
-  });
+  return useApiMutation((data: CreatePromptRequest) => promptApi.createPrompt(data), {
+    invalidateKeys: [['prompts']],
+  })
 }
 
 export function useUpdatePrompt() {
   return useApiMutation(
     ({ promptId, data }: { promptId: string; data: UpdatePromptRequest }) =>
-      updatePrompt(promptId, data),
-    { invalidateKeys: [["prompts"]] },
-  );
+      promptApi.updatePrompt(promptId, data),
+    { invalidateKeys: [['prompts']] },
+  )
 }
 
 export function useDeletePrompt() {
-  return useApiMutation((promptId: string) => deletePrompt(promptId), {
-    invalidateKeys: [["prompts"]],
-  });
+  return useApiMutation((promptId: string) => promptApi.deletePrompt(promptId), {
+    invalidateKeys: [['prompts']],
+  })
 }
 
 export function useCompilePrompt() {
   return useApiMutation(
-    ({ promptId, data }: { promptId: string; data: CompilePromptRequest }) =>
-      compilePrompt(promptId, data),
-  );
+    ({ promptId, data }: { promptId: string; data: { variables: Record<string, unknown> } }) =>
+      promptApi.compilePrompt(promptId, data),
+  )
 }
 
 export function useRecordPromptUsage() {
-  return useApiMutation((promptId: string) => recordPromptUsage(promptId), {
-    invalidateKeys: [["prompts"]],
-  });
+  return useApiMutation((promptId: string) => promptApi.recordPromptUsage(promptId), {
+    invalidateKeys: [['prompts']],
+  })
 }
 
 export function useRefinePrompt() {
   return useApiMutation(
-    ({ promptId, data }: { promptId: string; data: RefinePromptRequest }) =>
-      refinePrompt(promptId, data),
-    { invalidateKeys: [["prompts"]] },
-  );
+    ({ promptId, data }: { promptId: string; data: { changes: Partial<CreatePromptRequest> } }) =>
+      promptApi.refinePrompt(promptId, data),
+    { invalidateKeys: [['prompts']] },
+  )
 }
 
 export function useRatePrompt() {
   return useApiMutation(
-    ({ promptId, data }: { promptId: string; data: RatePromptRequest }) =>
-      ratePrompt(promptId, data),
-    { invalidateKeys: [["prompts"]] },
-  );
-}
-
-export function useFetchPromptsByRole() {
-  return useApiMutation((role: string) => fetchPromptsByRole(role));
-}
-
-export function useFetchPromptsByType() {
-  return useApiMutation((type: string) => fetchPromptsByType(type));
-}
-
-export function useFetchPromptsByCategory() {
-  return useApiMutation((category: string) => fetchPromptsByCategory(category));
-}
-
-export function useFetchPromptsByTags() {
-  return useApiMutation((tags: string[]) => fetchPromptsByTags(tags));
+    ({ promptId, data }: { promptId: string; data: { rating: number } }) =>
+      promptApi.ratePrompt(promptId, data),
+    { invalidateKeys: [['prompts']] },
+  )
 }

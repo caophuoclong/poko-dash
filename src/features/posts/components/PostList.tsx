@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { FileText } from 'lucide-react'
-import { Link } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import PostsToolbar from './posts-toolbar'
 import PostsFilterBar from './posts-filter-bar'
 import { CommonTable } from '@/components/table'
@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { PageHeader } from '@/components/ui/page-header'
 import { EmptyState } from '@/components/ui/empty-state'
+import { formatRelativeTime } from '@/shared/utils/date'
 import { StatusCell } from './post-list/StatusCell'
 import { statusOptions } from './post-edit-page/constants'
 import type { GetContentPostsResponse } from '#/dtos/content-posts'
@@ -26,6 +27,7 @@ export default function PostList(props: Props) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedPlatform, setSelectedPlatform] = useState<string>()
   const [selectedStatus, setSelectedStatus] = useState<string>()
+  const navigate = useNavigate()
 
   const platforms = useMemo(() => {
     const uniquePlatforms = Array.from(
@@ -53,18 +55,7 @@ export default function PostList(props: Props) {
   }, [posts, searchTerm, selectedPlatform, selectedStatus])
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffMs = now.getTime() - date.getTime()
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMs / 3600000)
-    const diffDays = Math.floor(diffMs / 86400000)
-
-    if (diffMins < 1) return 'Vừa xong'
-    if (diffMins < 60) return `${diffMins} phút trước`
-    if (diffHours < 24) return `${diffHours} giờ trước`
-    if (diffDays < 7) return `${diffDays} ngày trước`
-    return date.toLocaleDateString('vi-VN')
+    return formatRelativeTime(dateString)
   }
 
   const columns = useMemo<ColumnDef<PostSummary>[]>(
@@ -109,7 +100,7 @@ export default function PostList(props: Props) {
             return <span className="text-sm text-muted-text">—</span>
           }
           return (
-            <span className="text-sm truncate text-near-white">
+            <span className="text-sm line-clamp-1  text-near-white">
               {row.original.primaryProduct.canonicalTitle}
             </span>
           )
@@ -132,21 +123,33 @@ export default function PostList(props: Props) {
         enableSorting: false,
         cell: ({ row }) => (
           <div className="flex gap-2">
-            <Link
-              to="/dash/posts/$postId"
-              params={{ postId: row.original.postId }}
-              className="text-xs text-accent-blue hover:underline"
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs text-accent-blue hover:underline h-auto p-0"
+              onClick={() =>
+                navigate({
+                  to: '/dash/posts/$postId',
+                  params: { postId: row.original.postId },
+                })
+              }
             >
               Xem
-            </Link>
+            </Button>
             <span className="text-muted-text">|</span>
-            <Link
-              to="/dash/posts/$postId/edit"
-              params={{ postId: row.original.postId }}
-              className="text-xs text-accent-blue hover:underline"
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs text-accent-blue hover:underline h-auto p-0"
+              onClick={() =>
+                navigate({
+                  to: '/dash/posts/$postId/edit',
+                  params: { postId: row.original.postId },
+                })
+              }
             >
               Sửa
-            </Link>
+            </Button>
           </div>
         ),
       },
@@ -166,9 +169,12 @@ export default function PostList(props: Props) {
         title="Bài viết"
         subtitle="Quản lý toàn bộ bài viết của bạn"
         actions={
-          <Link to="/dash/posts/new">
-            <Button color="orange">Tạo bài viết</Button>
-          </Link>
+          <Button
+            color="orange"
+            onClick={() => navigate({ to: '/dash/posts/new' })}
+          >
+            Tạo bài viết
+          </Button>
         }
       />
 
@@ -209,9 +215,7 @@ export default function PostList(props: Props) {
               <Button
                 color="orange"
                 size="sm"
-                onClick={() => {
-                  window.location.href = '/dash/posts/new'
-                }}
+                onClick={() => navigate({ to: '/dash/posts/new' })}
               >
                 Tạo bài viết đầu tiên
               </Button>
@@ -222,7 +226,10 @@ export default function PostList(props: Props) {
         <CommonTable
           table={table}
           onRowClick={(row) => {
-            window.location.href = `/dash/posts/${row.postId}`
+            navigate({
+              to: '/dash/posts/$postId',
+              params: { postId: row.postId },
+            })
           }}
           className="bg-surface"
         />
