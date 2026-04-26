@@ -352,7 +352,7 @@ export interface PostContentPostsGenerateErrorResponse {
   details?: unknown;
 }
 
-export interface PostContentPostsGenerateFromIdeaByIdeaIdResponse {
+export type PostContentPostsGenerateFromIdeaByIdeaIdResponse = Array<{
   postId: string;
   ideaId?: string;
   primaryProductId: string;
@@ -377,7 +377,7 @@ export interface PostContentPostsGenerateFromIdeaByIdeaIdResponse {
   generationModel?: string;
   createdAt: string;
   updatedAt: string;
-}
+}>;
 
 export interface PostContentPostsGenerateFromIdeaByIdeaIdErrorResponse {
   error: string;

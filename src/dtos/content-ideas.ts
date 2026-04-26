@@ -23,7 +23,8 @@ export type GetContentIdeasResponse = Array<{
   updatedAt: string;
   /** Associated product UUIDs */
   productIds?: Array<string>;
-  postId?: string;
+  /** IDs of posts generated from this idea */
+  postIds?: Array<string>;
 }>;
 
 export interface GetContentIdeasErrorResponse {
@@ -66,7 +67,8 @@ export interface PostContentIdeasResponse {
   updatedAt: string;
   /** Associated product UUIDs */
   productIds?: Array<string>;
-  postId?: string;
+  /** IDs of posts generated from this idea */
+  postIds?: Array<string>;
 }
 
 export interface PostContentIdeasErrorResponse {
@@ -126,7 +128,8 @@ export interface PostContentIdeasGenerateResponse {
     updatedAt: string;
     /** Associated product UUIDs */
     productIds?: Array<string>;
-    postId?: string;
+    /** IDs of posts generated from this idea */
+    postIds?: Array<string>;
   }>;
 }
 
