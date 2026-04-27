@@ -20,10 +20,13 @@ import { Route as DashContentRouteImport } from './routes/dash/content'
 import { Route as DashAnalyticsRouteImport } from './routes/dash/analytics'
 import { Route as DashProductsIndexRouteImport } from './routes/dash/products/index'
 import { Route as DashPostsIndexRouteImport } from './routes/dash/posts/index'
+import { Route as DashContentIndexRouteImport } from './routes/dash/content/index'
 import { Route as DashProductsManualImportRouteImport } from './routes/dash/products/manual-import'
 import { Route as DashProductsProductIdRouteImport } from './routes/dash/products/$productId'
 import { Route as DashPostsScheduledRouteImport } from './routes/dash/posts/scheduled'
 import { Route as DashPostsNewRouteImport } from './routes/dash/posts/new'
+import { Route as DashContentNewRouteImport } from './routes/dash/content/new'
+import { Route as DashContentIdeaIdRouteImport } from './routes/dash/content/$ideaId'
 import { Route as DashPostsPostIdIndexRouteImport } from './routes/dash/posts/$postId/index'
 import { Route as DashPostsPostIdEditRouteImport } from './routes/dash/posts/$postId/edit'
 
@@ -82,6 +85,11 @@ const DashPostsIndexRoute = DashPostsIndexRouteImport.update({
   path: '/posts/',
   getParentRoute: () => DashRoute,
 } as any)
+const DashContentIndexRoute = DashContentIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashContentRoute,
+} as any)
 const DashProductsManualImportRoute =
   DashProductsManualImportRouteImport.update({
     id: '/products/manual-import',
@@ -103,6 +111,16 @@ const DashPostsNewRoute = DashPostsNewRouteImport.update({
   path: '/posts/new',
   getParentRoute: () => DashRoute,
 } as any)
+const DashContentNewRoute = DashContentNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => DashContentRoute,
+} as any)
+const DashContentIdeaIdRoute = DashContentIdeaIdRouteImport.update({
+  id: '/$ideaId',
+  path: '/$ideaId',
+  getParentRoute: () => DashContentRoute,
+} as any)
 const DashPostsPostIdIndexRoute = DashPostsPostIdIndexRouteImport.update({
   id: '/posts/$postId/',
   path: '/posts/$postId/',
@@ -118,16 +136,19 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dash': typeof DashRouteWithChildren
   '/dash/analytics': typeof DashAnalyticsRoute
-  '/dash/content': typeof DashContentRoute
+  '/dash/content': typeof DashContentRouteWithChildren
   '/dash/pages': typeof DashPagesRoute
   '/dash/prompts': typeof DashPromptsRoute
   '/dash/schedule': typeof DashScheduleRoute
   '/dash/settings': typeof DashSettingsRoute
   '/dash/': typeof DashIndexRoute
+  '/dash/content/$ideaId': typeof DashContentIdeaIdRoute
+  '/dash/content/new': typeof DashContentNewRoute
   '/dash/posts/new': typeof DashPostsNewRoute
   '/dash/posts/scheduled': typeof DashPostsScheduledRoute
   '/dash/products/$productId': typeof DashProductsProductIdRoute
   '/dash/products/manual-import': typeof DashProductsManualImportRoute
+  '/dash/content/': typeof DashContentIndexRoute
   '/dash/posts/': typeof DashPostsIndexRoute
   '/dash/products/': typeof DashProductsIndexRoute
   '/dash/posts/$postId/edit': typeof DashPostsPostIdEditRoute
@@ -136,16 +157,18 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dash/analytics': typeof DashAnalyticsRoute
-  '/dash/content': typeof DashContentRoute
   '/dash/pages': typeof DashPagesRoute
   '/dash/prompts': typeof DashPromptsRoute
   '/dash/schedule': typeof DashScheduleRoute
   '/dash/settings': typeof DashSettingsRoute
   '/dash': typeof DashIndexRoute
+  '/dash/content/$ideaId': typeof DashContentIdeaIdRoute
+  '/dash/content/new': typeof DashContentNewRoute
   '/dash/posts/new': typeof DashPostsNewRoute
   '/dash/posts/scheduled': typeof DashPostsScheduledRoute
   '/dash/products/$productId': typeof DashProductsProductIdRoute
   '/dash/products/manual-import': typeof DashProductsManualImportRoute
+  '/dash/content': typeof DashContentIndexRoute
   '/dash/posts': typeof DashPostsIndexRoute
   '/dash/products': typeof DashProductsIndexRoute
   '/dash/posts/$postId/edit': typeof DashPostsPostIdEditRoute
@@ -156,16 +179,19 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dash': typeof DashRouteWithChildren
   '/dash/analytics': typeof DashAnalyticsRoute
-  '/dash/content': typeof DashContentRoute
+  '/dash/content': typeof DashContentRouteWithChildren
   '/dash/pages': typeof DashPagesRoute
   '/dash/prompts': typeof DashPromptsRoute
   '/dash/schedule': typeof DashScheduleRoute
   '/dash/settings': typeof DashSettingsRoute
   '/dash/': typeof DashIndexRoute
+  '/dash/content/$ideaId': typeof DashContentIdeaIdRoute
+  '/dash/content/new': typeof DashContentNewRoute
   '/dash/posts/new': typeof DashPostsNewRoute
   '/dash/posts/scheduled': typeof DashPostsScheduledRoute
   '/dash/products/$productId': typeof DashProductsProductIdRoute
   '/dash/products/manual-import': typeof DashProductsManualImportRoute
+  '/dash/content/': typeof DashContentIndexRoute
   '/dash/posts/': typeof DashPostsIndexRoute
   '/dash/products/': typeof DashProductsIndexRoute
   '/dash/posts/$postId/edit': typeof DashPostsPostIdEditRoute
@@ -183,10 +209,13 @@ export interface FileRouteTypes {
     | '/dash/schedule'
     | '/dash/settings'
     | '/dash/'
+    | '/dash/content/$ideaId'
+    | '/dash/content/new'
     | '/dash/posts/new'
     | '/dash/posts/scheduled'
     | '/dash/products/$productId'
     | '/dash/products/manual-import'
+    | '/dash/content/'
     | '/dash/posts/'
     | '/dash/products/'
     | '/dash/posts/$postId/edit'
@@ -195,16 +224,18 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dash/analytics'
-    | '/dash/content'
     | '/dash/pages'
     | '/dash/prompts'
     | '/dash/schedule'
     | '/dash/settings'
     | '/dash'
+    | '/dash/content/$ideaId'
+    | '/dash/content/new'
     | '/dash/posts/new'
     | '/dash/posts/scheduled'
     | '/dash/products/$productId'
     | '/dash/products/manual-import'
+    | '/dash/content'
     | '/dash/posts'
     | '/dash/products'
     | '/dash/posts/$postId/edit'
@@ -220,10 +251,13 @@ export interface FileRouteTypes {
     | '/dash/schedule'
     | '/dash/settings'
     | '/dash/'
+    | '/dash/content/$ideaId'
+    | '/dash/content/new'
     | '/dash/posts/new'
     | '/dash/posts/scheduled'
     | '/dash/products/$productId'
     | '/dash/products/manual-import'
+    | '/dash/content/'
     | '/dash/posts/'
     | '/dash/products/'
     | '/dash/posts/$postId/edit'
@@ -314,6 +348,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashPostsIndexRouteImport
       parentRoute: typeof DashRoute
     }
+    '/dash/content/': {
+      id: '/dash/content/'
+      path: '/'
+      fullPath: '/dash/content/'
+      preLoaderRoute: typeof DashContentIndexRouteImport
+      parentRoute: typeof DashContentRoute
+    }
     '/dash/products/manual-import': {
       id: '/dash/products/manual-import'
       path: '/products/manual-import'
@@ -342,6 +383,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashPostsNewRouteImport
       parentRoute: typeof DashRoute
     }
+    '/dash/content/new': {
+      id: '/dash/content/new'
+      path: '/new'
+      fullPath: '/dash/content/new'
+      preLoaderRoute: typeof DashContentNewRouteImport
+      parentRoute: typeof DashContentRoute
+    }
+    '/dash/content/$ideaId': {
+      id: '/dash/content/$ideaId'
+      path: '/$ideaId'
+      fullPath: '/dash/content/$ideaId'
+      preLoaderRoute: typeof DashContentIdeaIdRouteImport
+      parentRoute: typeof DashContentRoute
+    }
     '/dash/posts/$postId/': {
       id: '/dash/posts/$postId/'
       path: '/posts/$postId'
@@ -359,9 +414,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DashContentRouteChildren {
+  DashContentIdeaIdRoute: typeof DashContentIdeaIdRoute
+  DashContentNewRoute: typeof DashContentNewRoute
+  DashContentIndexRoute: typeof DashContentIndexRoute
+}
+
+const DashContentRouteChildren: DashContentRouteChildren = {
+  DashContentIdeaIdRoute: DashContentIdeaIdRoute,
+  DashContentNewRoute: DashContentNewRoute,
+  DashContentIndexRoute: DashContentIndexRoute,
+}
+
+const DashContentRouteWithChildren = DashContentRoute._addFileChildren(
+  DashContentRouteChildren,
+)
+
 interface DashRouteChildren {
   DashAnalyticsRoute: typeof DashAnalyticsRoute
-  DashContentRoute: typeof DashContentRoute
+  DashContentRoute: typeof DashContentRouteWithChildren
   DashPagesRoute: typeof DashPagesRoute
   DashPromptsRoute: typeof DashPromptsRoute
   DashScheduleRoute: typeof DashScheduleRoute
@@ -379,7 +450,7 @@ interface DashRouteChildren {
 
 const DashRouteChildren: DashRouteChildren = {
   DashAnalyticsRoute: DashAnalyticsRoute,
-  DashContentRoute: DashContentRoute,
+  DashContentRoute: DashContentRouteWithChildren,
   DashPagesRoute: DashPagesRoute,
   DashPromptsRoute: DashPromptsRoute,
   DashScheduleRoute: DashScheduleRoute,

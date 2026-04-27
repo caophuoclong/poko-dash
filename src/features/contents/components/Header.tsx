@@ -1,3 +1,5 @@
+import { Link } from '@tanstack/react-router'
+
 type Props = {
   ideasLength?: number
   dirtyCount?: number
@@ -36,6 +38,12 @@ export default function Header({
           )}
         </div>
       </div>
+      <Link
+        to="/dash/content/new"
+        className="inline-flex items-center gap-1.5 rounded-lg bg-accent-orange px-3 py-1.5 text-sm font-medium text-accent-on hover:bg-accent-orange-light transition-colors"
+      >
+        + Ý tưởng mới
+      </Link>
     </div>
   )
 }

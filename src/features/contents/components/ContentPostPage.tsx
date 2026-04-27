@@ -60,7 +60,7 @@ export default function ContentPage({
         targetPlatform: idea.targetPlatform,
         category: idea.category,
         priority: idea.priority,
-        productIds: idea.productIds ?? [],
+        ideaProducts: idea.ideaProducts ?? [],
       }
     })
     reset({ rows })
@@ -109,12 +109,12 @@ export default function ContentPage({
         targetPlatform: row.targetPlatform,
         category: row.category,
         priority: row.priority,
-        productIds: row.productIds,
+        ideaProducts: row.ideaProducts,
       }
 
       const payload: Record<string, unknown> = {
         ...data,
-        productIds: data.productIds ?? [],
+        ideaProducts: data.ideaProducts ?? [],
       }
 
       if (idea.status !== 'draft') {
@@ -162,10 +162,14 @@ export default function ContentPage({
     getSortedRowModel: getSortedRowModel(),
     getRowId: (row) => row.ideaId,
   })
-  console.log('🚀 ~ ContentPage ~ ideaTable:', ideaTable)
   return (
     <FormProvider {...contentIdeaForm}>
-      <Header />
+      <Header
+        ideasLength={ideas.length}
+        dirtyCount={Object.keys(dirtyFields.rows ?? {}).length}
+        draftCount={ideas.filter((i) => i.status === 'draft').length}
+        approvedCount={ideas.filter((i) => i.status === 'approved').length}
+      />
       <form onSubmit={handleSubmit(() => undefined)}>
         <CommonTable
           table={ideaTable}

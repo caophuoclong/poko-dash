@@ -41,7 +41,7 @@ export const ContentSchema = z.object({
   priority: z.number().min(0).max(100).optional(),
   status: z.nativeEnum(IdeaStatus).optional(),
   owner: z.string().optional(),
-  productIds: z.array(z.string()).optional(),
+  ideaProducts: z.array(z.string()).optional(),
 }) satisfies z.ZodType<PostContentIdeasRequest>
 
 export const contentIdeasSchema = z.array(

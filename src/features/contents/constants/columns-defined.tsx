@@ -166,7 +166,6 @@ export const getColumns: (
   defaultAngle = [],
 ) => {
   const [angle, setAngle] = useState<AutocompleteOption[]>([])
-  console.log('🚀 ~ form:', form)
 
   useEffect(() => {
     if (defaultAngle.length > 0) setAngle(defaultAngle)
@@ -228,14 +227,33 @@ export const getColumns: (
               const val = (field.value as string | undefined) ?? idea.hook
               const error = fieldState.error?.message || null
               return (
-                <TextCell
-                  {...field}
-                  value={val}
-                  disabled={idea.status === COMPLETE_STATUS}
-                  placeholder="Nhập hook..."
-                  width="280px"
-                  error={error}
-                />
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <TextCell
+                    {...field}
+                    value={val}
+                    disabled={idea.status === COMPLETE_STATUS}
+                    placeholder="Nhập hook..."
+                    width="240px"
+                    error={error}
+                  />
+                  <Link
+                    to="/dash/content/$ideaId"
+                    params={{ ideaId: idea.ideaId }}
+                    className="shrink-0 text-muted-text hover:text-accent-blue transition-colors"
+                    title="Xem chi tiết"
+                  >
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                    >
+                      <path d="M10 6H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-4M14 2h-4m4 0v4m0-4L8 8" />
+                    </svg>
+                  </Link>
+                </div>
               )
             }}
           />
@@ -281,14 +299,14 @@ export const getColumns: (
       },
     },
     {
-      accessorKey: 'productIds',
+      accessorKey: 'ideaProducts',
       header: 'Sản phẩm',
       size: 120,
       cell: ({ row }) => {
         const idea = row.original
         return (
           <Controller
-            name={`rows.${idea.ideaId}.productIds` as const}
+            name={`rows.${idea.ideaId}.ideaProducts` as const}
             control={control}
             render={({ field }) => (
               <ProductPopover
