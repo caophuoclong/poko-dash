@@ -9,6 +9,7 @@ interface CommonTableBodyProps<TData> {
   compact: boolean
   isRowDirty?: CommonTableProps<TData>['isRowDirty']
   onRowClick?: CommonTableProps<TData>['onRowClick']
+  onRowDoubleClick?: CommonTableProps<TData>['onRowDoubleClick']
   getRowClassName?: CommonTableProps<TData>['getRowClassName']
   footerRow?: ReactNode
 }
@@ -19,6 +20,7 @@ export function CommonTableBody<TData>({
   compact,
   isRowDirty,
   onRowClick,
+  onRowDoubleClick,
   getRowClassName,
   footerRow,
 }: CommonTableBodyProps<TData>) {
@@ -36,6 +38,7 @@ export function CommonTableBody<TData>({
             compact={compact}
             isDirty={dirty}
             onRowClick={onRowClick}
+            onRowDoubleClick={onRowDoubleClick}
             rowClassName={customClass}
           />
         )

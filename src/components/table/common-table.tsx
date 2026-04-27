@@ -12,6 +12,7 @@ export function CommonTable<TData>({
   loadingMessage,
   minWidth,
   onRowClick,
+  onRowDoubleClick,
   isRowDirty,
   getRowClassName,
   footerRow,
@@ -53,6 +54,7 @@ export function CommonTable<TData>({
             compact={compact}
             isRowDirty={isRowDirty}
             onRowClick={onRowClick}
+            onRowDoubleClick={onRowDoubleClick}
             getRowClassName={getRowClassName}
             footerRow={footerRow}
           />

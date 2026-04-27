@@ -8,11 +8,8 @@ import { useCreateContentPost } from '@/features/posts/hooks/use-content-posts'
 import { useScheduledJobs } from '@/features/scheduler/hooks/use-scheduler'
 import { transformScheduledJobsToEvents } from '@/features/scheduler/services/calendar.service'
 import { postCreationService } from '@/features/posts/services/post-creation.service'
-import {
-  ContentPostCreateSchema
-  
-} from '#/features/posts/schemas/content-post.schema'
-import type {ContentPostCreateFormData} from '#/features/posts/schemas/content-post.schema';
+import { ContentPostCreateSchema } from '#/features/posts/schemas/content-post.schema'
+import type { ContentPostCreateFormData } from '#/features/posts/schemas/content-post.schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '#/components/ui/button'
 

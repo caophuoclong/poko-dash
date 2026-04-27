@@ -24,10 +24,9 @@ import {
   ContentSchema,
   IdeaType,
   IdeaStatus,
-  TargetPlatform
-  
+  TargetPlatform,
 } from '../schemas/content.schema'
-import type {ContentSchemaFormData} from '../schemas/content.schema';
+import type { ContentSchemaFormData } from '../schemas/content.schema'
 import { Link } from '@tanstack/react-router'
 
 const IDEA_TYPE_OPTIONS = [
@@ -108,7 +107,7 @@ function ContentIdeaDetailPageInner({ ideaId }: ContentIdeaDetailPageProps) {
           angle: idea.angle ?? '',
           priority: idea.priority,
           status: idea.status as IdeaStatus,
-          productIds: idea.productIds ?? [],
+          ideaProducts: idea.ideaProducts ?? [],
         }
       : undefined,
   })
@@ -137,7 +136,12 @@ function ContentIdeaDetailPageInner({ ideaId }: ContentIdeaDetailPageProps) {
   const statusLabel =
     STATUS_OPTIONS.find((s) => s.value === idea.status)?.label ?? idea.status
   const statusTone = STATUS_TONE[idea.status as IdeaStatus] ?? 'neutral'
-
+  console.log(
+    'Rendering ContentIdeaDetailPage for ideaId:',
+    ideaId,
+    'with data:',
+    idea,
+  )
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <PageHeader
@@ -198,7 +202,7 @@ function ContentIdeaDetailPageInner({ ideaId }: ContentIdeaDetailPageProps) {
             />
             <SectionCardBody className="p-5">
               <Controller
-                name="productIds"
+                name="ideaProducts"
                 control={control}
                 render={({ field }) => (
                   <div className="space-y-3">

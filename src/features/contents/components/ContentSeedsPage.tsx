@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react'
-import { Link } from '@tanstack/react-router'
+import { useState, useCallback, useMemo } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import {
   Search,
   Plus,
@@ -18,9 +18,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Autocomplete } from '@/components/ui/autocomplete'
-import type { AutocompleteOption } from '@/components/ui/autocomplete'
 import { useFilteredList } from '@/shared/hooks/use-filtered-list'
 import { CommonTable } from '@/components/table'
+import { EmptyState, emptyStatePresets } from '@/components/ui/empty-state'
 import {
   useReactTable,
   getCoreRowModel,
@@ -29,11 +29,18 @@ import {
 import type { SortingState } from '@tanstack/react-table'
 import { cn } from '#/shared/utils'
 import type { ContentIdeaEntity } from '../schemas/content.schema'
-import { getColumns } from '../constants/columns-defined'
-import { FormProvider, useForm } from 'react-hook-form'
+import { getSeedsColumns } from '../constants/seeds-columns'
+import type { IdeaGenerationSummary } from '../constants/seeds-columns'
+import {
+  useGenerateFromIdea,
+  useContentPosts,
+} from '@/features/posts/hooks/use-content-posts'
 import { useUpdateContentIdea } from '../hooks/use-content-ideas'
-import { useGenerateFromIdea } from '@/features/posts/hooks/use-content-posts'
-import type { ContentIdeaTableForm } from './ContentPostPage'
+import { useProducts } from '@/features/products/hooks/use-products'
+import { SeedDetailDrawer } from './SeedDetailDrawer'
+import type { AutocompleteOption } from '@/components/ui/autocomplete'
+import type { Product } from '@/features/products/types/product'
+import { generateContentPosts } from '@/features/posts/api/content-post-api'
 
 type SortOption = 'updated' | 'priority' | 'posts' | 'review'
 
@@ -44,6 +51,52 @@ const SORT_OPTIONS: { value: SortOption; label: string }[] = [
   { value: 'review', label: 'Needs review' },
 ]
 
+const STATUS_OPTIONS: AutocompleteOption[] = [
+  { value: 'draft', label: 'Draft' },
+  { value: 'approved', label: 'Approved' },
+  { value: 'queued', label: 'Queued' },
+  { value: 'produced', label: 'Produced' },
+  { value: 'rejected', label: 'Rejected' },
+]
+
+const IDEA_TYPE_OPTIONS: AutocompleteOption[] = [
+  { value: 'review', label: 'Review' },
+  { value: 'comparison', label: 'Comparison' },
+  { value: 'roundup', label: 'Roundup' },
+  { value: 'tutorial', label: 'Tutorial' },
+  { value: 'deal', label: 'Deal' },
+  { value: 'trending', label: 'Trending' },
+]
+
+const PLATFORM_OPTIONS: AutocompleteOption[] = [
+  { value: 'facebook', label: 'Facebook' },
+  { value: 'tiktok', label: 'TikTok' },
+  { value: 'instagram', label: 'Instagram' },
+  { value: 'youtube', label: 'YouTube' },
+  { value: 'blog', label: 'Blog' },
+]
+
+const CATEGORY_OPTIONS: AutocompleteOption[] = [
+  { value: 'Điện tử', label: 'Điện tử' },
+  { value: 'Phụ kiện', label: 'Phụ kiện' },
+  { value: 'Gia dụng', label: 'Gia dụng' },
+  { value: 'Thời trang', label: 'Thời trang' },
+  { value: 'Làm đẹp', label: 'Làm đẹp' },
+  { value: 'Thể thao', label: 'Thể thao' },
+  { value: 'uncategorized', label: 'Khác' },
+]
+
+const PRODUCT_COUNT_OPTIONS: AutocompleteOption[] = [
+  { value: 'none', label: 'No products' },
+  { value: 'single', label: '1 product' },
+  { value: 'multiple', label: '2+ products' },
+]
+
+const OUTPUT_STATUS_OPTIONS: AutocompleteOption[] = [
+  { value: 'produced', label: 'Produced' },
+  { value: 'not-produced', label: 'Not produced' },
+]
+
 type ViewMode = 'table' | 'board'
 
 export default function ContentSeedsPage({
@@ -51,182 +104,239 @@ export default function ContentSeedsPage({
 }: {
   ideas: ContentIdeaEntity[]
 }) {
-  const updateIdea = useUpdateContentIdea()
+  const navigate = useNavigate()
   const generateFromIdea = useGenerateFromIdea()
+  const updateContentIdea = useUpdateContentIdea()
   const [viewMode, setViewMode] = useState<ViewMode>('table')
   const [sorting, setSorting] = useState<SortingState>([])
   const [sortOption, setSortOption] = useState<SortOption>('updated')
+  const [generatingId, setGeneratingId] = useState<string | null>(null)
+  const [selectedIdea, setSelectedIdea] = useState<ContentIdeaEntity | null>(
+    null,
+  )
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [generatingProductIds, setGeneratingProductIds] = useState<string[]>([])
 
-  const contentIdeaForm = useForm<ContentIdeaTableForm>({
-    mode: 'onChange',
-    defaultValues: {
-      rows: {},
-    },
-  })
+  const { data: allProducts = [] } = useProducts()
+  const { data: allPosts = [] } = useContentPosts()
 
-  const {
-    getValues,
-    clearErrors,
-    resetField,
-    trigger,
-    reset,
-    formState: { dirtyFields },
-    handleSubmit,
-  } = contentIdeaForm
+  const productsMap = useMemo<Record<string, Product>>(
+    () =>
+      allProducts.reduce<Record<string, Product>>((acc, p) => {
+        acc[p.productId] = p
+        return acc
+      }, {}),
+    [allProducts],
+  )
 
-  const filteredIdeas = useFilteredList(ideas, {
-    search: (item, term) => {
-      const searchLower = term.toLowerCase()
-      return (
-        item.hook.toLowerCase().includes(searchLower) ||
-        (item.angle && item.angle.toLowerCase().includes(searchLower)) ||
-        item.category.toLowerCase().includes(searchLower) ||
-        item.ideaProducts.some((p) => p.toLowerCase().includes(searchLower))
+  const generationSummaries = useMemo<
+    Record<string, IdeaGenerationSummary>
+  >(() => {
+    const map: Record<string, IdeaGenerationSummary> = {}
+    for (const idea of ideas) {
+      const productIds = idea.ideaProducts ?? []
+      const ideaPosts = allPosts.filter(
+        (post) =>
+          idea.postIds?.includes(post.postId) &&
+          post.primaryProduct &&
+          productIds.includes(post.primaryProduct.productId),
       )
-    },
-    filterMap: {
-      status: (item, value) => item.status === value,
-      ideaType: (item, value) => item.ideaType === value,
-      targetPlatform: (item, value) => item.targetPlatform === value,
-      category: (item, value) => item.category === value,
-      productCount: (item, value) => {
-        const count = item.ideaProducts?.length ?? 0
-        if (value === 'none') return count === 0
-        if (value === 'single') return count === 1
-        if (value === 'multiple') return count > 1
-        return true
+
+      const productPostCount: Record<string, number> = {}
+      for (const post of ideaPosts) {
+        if (post.primaryProduct) {
+          productPostCount[post.primaryProduct.productId] =
+            (productPostCount[post.primaryProduct.productId] ?? 0) + 1
+        }
+      }
+
+      const productInfo = productIds.map((pid) => ({
+        productId: pid,
+        hasPosts: productPostCount[pid] ? productPostCount[pid] > 0 : false,
+        postCount: productPostCount[pid] ?? 0,
+      }))
+
+      map[idea.ideaId] = {
+        totalProducts: productIds.length,
+        generatedProducts: productInfo.filter((p) => p.hasPosts).length,
+        totalPosts: ideaPosts.length,
+        productInfo,
+      }
+    }
+    return map
+  }, [ideas, allPosts])
+
+  const filterConfig = useMemo(
+    () => ({
+      search: (item: ContentIdeaEntity, term: string) => {
+        const searchLower = term.toLowerCase()
+        return (
+          item.hook.toLowerCase().includes(searchLower) ||
+          (item.angle && item.angle.toLowerCase().includes(searchLower)) ||
+          item.category.toLowerCase().includes(searchLower) ||
+          item.ideaProducts?.some((p) =>
+            p.toLowerCase().includes(searchLower),
+          ) ||
+          false
+        )
       },
-      outputStatus: (item, value) => {
-        if (value === 'produced') return item.status === 'produced'
-        if (value === 'not-produced') return item.status !== 'produced'
-        return true
+      filterMap: {
+        status: (item: ContentIdeaEntity, value: unknown) =>
+          item.status === value,
+        ideaType: (item: ContentIdeaEntity, value: unknown) =>
+          item.ideaType === value,
+        targetPlatform: (item: ContentIdeaEntity, value: unknown) =>
+          item.targetPlatform === value,
+        category: (item: ContentIdeaEntity, value: unknown) =>
+          item.category === value,
+        productCount: (item: ContentIdeaEntity, value: unknown) => {
+          const count = item.ideaProducts?.length ?? 0
+          if (value === 'none') return count === 0
+          if (value === 'single') return count === 1
+          if (value === 'multiple') return count > 1
+          return true
+        },
+        outputStatus: (item: ContentIdeaEntity, value: unknown) => {
+          if (value === 'produced') return item.status === 'produced'
+          if (value === 'not-produced') return item.status !== 'produced'
+          return true
+        },
       },
+    }),
+    [],
+  )
+
+  const filteredIdeas = useFilteredList(ideas, filterConfig)
+
+  const handleGenerate = useCallback(
+    async (ideaId: string) => {
+      setGeneratingId(ideaId)
+      try {
+        await generateFromIdea.mutateAsync(ideaId)
+      } catch (error) {
+        console.error('Failed to generate:', error)
+      } finally {
+        setGeneratingId(null)
+      }
     },
-  })
+    [generateFromIdea],
+  )
 
-  const statusOptions: AutocompleteOption[] = [
-    { value: 'draft', label: 'Draft' },
-    { value: 'approved', label: 'Approved' },
-    { value: 'queued', label: 'Queued' },
-    { value: 'produced', label: 'Produced' },
-    { value: 'rejected', label: 'Rejected' },
-  ]
+  const handleGenerateProduct = useCallback(
+    async (ideaId: string, productId: string) => {
+      setGeneratingProductIds((prev) => [...prev, productId])
+      try {
+        const idea = ideas.find((i) => i.ideaId === ideaId)
+        const platform = idea?.targetPlatform as
+          | 'blog'
+          | 'youtube'
+          | 'tiktok'
+          | 'instagram'
+          | 'twitter'
+          | undefined
+        await generateContentPosts({
+          productIds: productId,
+          platform,
+        })
+      } catch (error) {
+        console.error('Failed to generate for product:', error)
+      } finally {
+        setGeneratingProductIds((prev) => prev.filter((id) => id !== productId))
+      }
+    },
+    [ideas],
+  )
 
-  const ideaTypeOptions: AutocompleteOption[] = [
-    { value: 'review', label: 'Review' },
-    { value: 'comparison', label: 'Comparison' },
-    { value: 'roundup', label: 'Roundup' },
-    { value: 'tutorial', label: 'Tutorial' },
-    { value: 'deal', label: 'Deal' },
-    { value: 'trending', label: 'Trending' },
-  ]
+  const handleRowClick = useCallback((idea: ContentIdeaEntity) => {
+    setSelectedIdea(idea)
+    setIsDrawerOpen(true)
+  }, [])
 
-  const platformOptions: AutocompleteOption[] = [
-    { value: 'facebook', label: 'Facebook' },
-    { value: 'tiktok', label: 'TikTok' },
-    { value: 'instagram', label: 'Instagram' },
-    { value: 'youtube', label: 'YouTube' },
-    { value: 'blog', label: 'Blog' },
-  ]
+  const handleRowDoubleClick = useCallback(
+    (idea: ContentIdeaEntity) => {
+      navigate({ to: '/dash/content/$ideaId', params: { ideaId: idea.ideaId } })
+    },
+    [navigate],
+  )
 
-  const categoryOptions: AutocompleteOption[] = [
-    { value: 'Điện tử', label: 'Điện tử' },
-    { value: 'Phụ kiện', label: 'Phụ kiện' },
-    { value: 'Gia dụng', label: 'Gia dụng' },
-    { value: 'Thời trang', label: 'Thời trang' },
-    { value: 'Làm đẹp', label: 'Làm đẹp' },
-    { value: 'Thể thao', label: 'Thể thao' },
-    { value: 'uncategorized', label: 'Khác' },
-  ]
+  const handleQuickOpen = useCallback(
+    (idea: ContentIdeaEntity) => {
+      navigate({ to: '/dash/content/$ideaId', params: { ideaId: idea.ideaId } })
+    },
+    [navigate],
+  )
 
-  const productCountOptions: AutocompleteOption[] = [
-    { value: 'none', label: 'No products' },
-    { value: 'single', label: '1 product' },
-    { value: 'multiple', label: '2+ products' },
-  ]
+  const handleQuickViewPosts = useCallback(
+    (ideaId: string) => {
+      navigate({ to: '/dash/posts', search: { ideaId } })
+    },
+    [navigate],
+  )
 
-  const outputStatusOptions: AutocompleteOption[] = [
-    { value: 'produced', label: 'Produced' },
-    { value: 'not-produced', label: 'Not produced' },
-  ]
+  const handleQuickApprove = useCallback(
+    (idea: ContentIdeaEntity) => {
+      updateContentIdea.mutate({
+        ideaId: idea.ideaId,
+        data: { status: 'approved' },
+      })
+    },
+    [updateContentIdea],
+  )
 
-  const handleGenerate = async (ideaId: string) => {
-    try {
-      await generateFromIdea.mutateAsync(ideaId)
-    } catch (error) {
-      console.error('Failed to generate:', error)
-    }
-  }
+  const handleCreateSeed = useCallback(() => {
+    navigate({ to: '/dash/content/new' })
+  }, [navigate])
 
-  const handleCancelRow = (ideaId: string) => {
-    const rowPath = `rows.${ideaId}` as const
-    resetField(rowPath)
-    clearErrors(rowPath)
-  }
+  const handleClearFilters = useCallback(() => {
+    filteredIdeas.clearFilters()
+  }, [])
 
-  const saveEdit = async (ideaId: string) => {
-    const isValid = await trigger([
-      `rows.${ideaId}.hook` as const,
-      `rows.${ideaId}.angle` as const,
-    ])
-    if (!isValid) return
+  const getRowClassName = useCallback((idea: ContentIdeaEntity) => {
+    const produced = idea.status === 'produced'
+    if (produced) return '[&>*:not(:last-child)]:opacity-40'
+    return undefined
+  }, [])
 
-    const idea = ideas.find((i) => i.ideaId === ideaId)
-    if (!idea) return
+  const columns = useMemo(
+    () =>
+      getSeedsColumns({
+        onGenerate: handleGenerate,
+        onGenerateProduct: handleGenerateProduct,
+        isGenerating: generatingId,
+        generatingProductIds,
+        onOpen: handleQuickOpen,
+        onApprove: handleQuickApprove,
+        onViewPosts: handleQuickViewPosts,
+        onEdit: (ideaId: string) => {
+          navigate({ to: '/dash/content/$ideaId/edit', params: { ideaId } })
+        },
+        onOpenFull: (ideaId: string) => {
+          navigate({ to: '/dash/content/$ideaId', params: { ideaId } })
+        },
+        onDelete: (ideaId: string) => console.log('Delete:', ideaId),
+        productsMap,
+        generationSummaries,
+      }),
+    [
+      handleGenerate,
+      handleGenerateProduct,
+      generatingId,
+      generatingProductIds,
+      handleQuickOpen,
+      handleQuickApprove,
+      handleQuickViewPosts,
+      navigate,
+      productsMap,
+      generationSummaries,
+    ],
+  )
 
-    const rowPath = `rows.${ideaId}` as const
-    const row = getValues(rowPath)
-
-    const data = {
-      ideaType: row.ideaType,
-      hook: row.hook,
-      angle: row.angle,
-      targetPlatform: row.targetPlatform,
-      category: row.category,
-      priority: row.priority,
-      ideaProducts: row.ideaProducts,
-    }
-
-    const payload = {
-      ...data,
-      ideaProducts: data.ideaProducts ?? [],
-    }
-
-    if (idea.status !== 'draft') {
-      ;(payload as any).status = 'draft'
-    }
-
-    await updateIdea.mutateAsync({ ideaId, data: payload })
-    resetField(rowPath, { defaultValue: data })
-    clearErrors(rowPath)
-  }
-
-  const approve = (idea: ContentIdeaEntity) => {
-    updateIdea.mutate({ ideaId: idea.ideaId, data: { status: 'approved' } })
-  }
-
-  const isRowDirty = (rowId: string) => {
-    return dirtyFields.rows?.[rowId] ? true : false
-  }
-
-  const angels = useMemo(() => {
-    return Array.from(new Set(ideas.map((idea) => idea.angle)))
-      .filter(Boolean)
-      .map((angle) => ({ value: angle, label: angle })) as AutocompleteOption[]
-  }, [ideas])
+  const tableState = useMemo(() => ({ sorting }), [sorting])
 
   const ideaTable = useReactTable({
     data: filteredIdeas.filteredItems,
-    columns: getColumns(
-      isRowDirty,
-      handleCancelRow,
-      saveEdit,
-      approve,
-      handleGenerate,
-      contentIdeaForm,
-      angels,
-    ),
-    state: { sorting },
+    columns,
+    state: tableState,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -240,12 +350,14 @@ export default function ContentSeedsPage({
         subtitle="Reusable content directions that can generate multiple posts from selected products"
         actions={
           <div className="flex items-center gap-2">
-            <Link to="/dash/content/new">
-              <Button size="sm" className="inline-flex items-center gap-1.5">
-                <Plus size={16} />
-                New seed
-              </Button>
-            </Link>
+            <Button
+              size="sm"
+              className="inline-flex items-center gap-1.5"
+              onClick={handleCreateSeed}
+            >
+              <Plus size={16} />
+              New seed
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -269,231 +381,260 @@ export default function ContentSeedsPage({
         }
       />
 
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative flex-1 min-w-[200px] max-w-sm">
-            <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-text"
-              strokeWidth={2}
-            />
-            <Input
-              placeholder="Search by hook / angle / category / product..."
-              value={filteredIdeas.searchTerm}
-              onChange={(e) => filteredIdeas.setSearchTerm(e.target.value)}
-              className="pl-9 h-9"
-            />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-text">Filters:</span>
-          </div>
-
-          <Autocomplete
-            options={statusOptions}
-            value={
-              statusOptions.find(
-                (s) => s.value === filteredIdeas.activeFilters.status,
-              ) || null
-            }
-            onChange={(option) =>
-              filteredIdeas.setActiveFilters({
-                ...filteredIdeas.activeFilters,
-                status: option?.value,
-              })
-            }
-            placeholder="Status"
-            className="w-40"
-          />
-
-          <Autocomplete
-            options={ideaTypeOptions}
-            value={
-              ideaTypeOptions.find(
-                (t) => t.value === filteredIdeas.activeFilters.ideaType,
-              ) || null
-            }
-            onChange={(option) =>
-              filteredIdeas.setActiveFilters({
-                ...filteredIdeas.activeFilters,
-                ideaType: option?.value,
-              })
-            }
-            placeholder="Idea type"
-            className="w-40"
-          />
-
-          <Autocomplete
-            options={platformOptions}
-            value={
-              platformOptions.find(
-                (p) => p.value === filteredIdeas.activeFilters.targetPlatform,
-              ) || null
-            }
-            onChange={(option) =>
-              filteredIdeas.setActiveFilters({
-                ...filteredIdeas.activeFilters,
-                targetPlatform: option?.value,
-              })
-            }
-            placeholder="Platform"
-            className="w-40"
-          />
-
-          <Autocomplete
-            options={categoryOptions}
-            value={
-              categoryOptions.find(
-                (c) => c.value === filteredIdeas.activeFilters.category,
-              ) || null
-            }
-            onChange={(option) =>
-              filteredIdeas.setActiveFilters({
-                ...filteredIdeas.activeFilters,
-                category: option?.value,
-              })
-            }
-            placeholder="Category"
-            className="w-40"
-          />
-
-          <Autocomplete
-            options={productCountOptions}
-            value={
-              productCountOptions.find(
-                (p) => p.value === filteredIdeas.activeFilters.productCount,
-              ) || null
-            }
-            onChange={(option) =>
-              filteredIdeas.setActiveFilters({
-                ...filteredIdeas.activeFilters,
-                productCount: option?.value,
-              })
-            }
-            placeholder="Product count"
-            className="w-40"
-          />
-
-          <Autocomplete
-            options={outputStatusOptions}
-            value={
-              outputStatusOptions.find(
-                (o) => o.value === filteredIdeas.activeFilters.outputStatus,
-              ) || null
-            }
-            onChange={(option) =>
-              filteredIdeas.setActiveFilters({
-                ...filteredIdeas.activeFilters,
-                outputStatus: option?.value,
-              })
-            }
-            placeholder="Output status"
-            className="w-40"
-          />
-
-          {filteredIdeas.hasActiveFilters && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={filteredIdeas.clearFilters}
-              className="text-xs"
-            >
-              Clear filters
+      {ideas.length === 0 ? (
+        <EmptyState
+          variant="page"
+          {...emptyStatePresets.contentSeeds}
+          primaryAction={
+            <Button onClick={handleCreateSeed}>
+              <Plus size={16} className="mr-1.5" />
+              Create seed
             </Button>
-          )}
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center border rounded-md p-1">
-              <Button
-                variant={viewMode === 'table' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('table')}
-                className={cn(
-                  'h-8 px-2',
-                  viewMode === 'table'
-                    ? 'bg-accent-orange text-accent-on'
-                    : 'text-muted-text',
-                )}
-              >
-                <TableIcon size={16} />
-              </Button>
-              <Button
-                variant={viewMode === 'board' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('board')}
-                className={cn(
-                  'h-8 px-2',
-                  viewMode === 'board'
-                    ? 'bg-accent-orange text-accent-on'
-                    : 'text-muted-text',
-                )}
-              >
-                <LayoutGrid size={16} />
-              </Button>
+          }
+        />
+      ) : (
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 min-w-[200px] max-w-sm">
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-text"
+                strokeWidth={2}
+              />
+              <Input
+                placeholder="Search by hook / angle / category / product..."
+                value={filteredIdeas.searchTerm}
+                onChange={(e) => filteredIdeas.setSearchTerm(e.target.value)}
+                className="pl-9 h-9"
+              />
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-text">Filters:</span>
+            </div>
+
+            <Autocomplete
+              options={STATUS_OPTIONS}
+              value={
+                STATUS_OPTIONS.find(
+                  (s) => s.value === filteredIdeas.activeFilters.status,
+                ) || null
+              }
+              onChange={(option) =>
+                filteredIdeas.setActiveFilters({
+                  ...filteredIdeas.activeFilters,
+                  status: option?.value,
+                })
+              }
+              placeholder="Status"
+              className="w-40"
+            />
+
+            <Autocomplete
+              options={IDEA_TYPE_OPTIONS}
+              value={
+                IDEA_TYPE_OPTIONS.find(
+                  (t) => t.value === filteredIdeas.activeFilters.ideaType,
+                ) || null
+              }
+              onChange={(option) =>
+                filteredIdeas.setActiveFilters({
+                  ...filteredIdeas.activeFilters,
+                  ideaType: option?.value,
+                })
+              }
+              placeholder="Idea type"
+              className="w-40"
+            />
+
+            <Autocomplete
+              options={PLATFORM_OPTIONS}
+              value={
+                PLATFORM_OPTIONS.find(
+                  (p) => p.value === filteredIdeas.activeFilters.targetPlatform,
+                ) || null
+              }
+              onChange={(option) =>
+                filteredIdeas.setActiveFilters({
+                  ...filteredIdeas.activeFilters,
+                  targetPlatform: option?.value,
+                })
+              }
+              placeholder="Platform"
+              className="w-40"
+            />
+
+            <Autocomplete
+              options={CATEGORY_OPTIONS}
+              value={
+                CATEGORY_OPTIONS.find(
+                  (c) => c.value === filteredIdeas.activeFilters.category,
+                ) || null
+              }
+              onChange={(option) =>
+                filteredIdeas.setActiveFilters({
+                  ...filteredIdeas.activeFilters,
+                  category: option?.value,
+                })
+              }
+              placeholder="Category"
+              className="w-40"
+            />
+
+            <Autocomplete
+              options={PRODUCT_COUNT_OPTIONS}
+              value={
+                PRODUCT_COUNT_OPTIONS.find(
+                  (p) => p.value === filteredIdeas.activeFilters.productCount,
+                ) || null
+              }
+              onChange={(option) =>
+                filteredIdeas.setActiveFilters({
+                  ...filteredIdeas.activeFilters,
+                  productCount: option?.value,
+                })
+              }
+              placeholder="Product count"
+              className="w-40"
+            />
+
+            <Autocomplete
+              options={OUTPUT_STATUS_OPTIONS}
+              value={
+                OUTPUT_STATUS_OPTIONS.find(
+                  (o) => o.value === filteredIdeas.activeFilters.outputStatus,
+                ) || null
+              }
+              onChange={(option) =>
+                filteredIdeas.setActiveFilters({
+                  ...filteredIdeas.activeFilters,
+                  outputStatus: option?.value,
+                })
+              }
+              placeholder="Output status"
+              className="w-40"
+            />
+
+            {filteredIdeas.hasActiveFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleClearFilters}
+                className="text-xs"
+              >
+                Clear filters
+              </Button>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center border rounded-md p-1">
                 <Button
-                  variant="ghost"
+                  variant={viewMode === 'table' ? 'default' : 'ghost'}
                   size="sm"
-                  className="inline-flex items-center gap-1.5 h-9"
+                  onClick={() => setViewMode('table')}
+                  className={cn(
+                    'h-8 px-2',
+                    viewMode === 'table'
+                      ? 'bg-accent-orange text-accent-on'
+                      : 'text-muted-text',
+                  )}
                 >
-                  <Filter size={14} />
-                  Sort:{' '}
-                  {SORT_OPTIONS.find((o) => o.value === sortOption)?.label}
+                  <TableIcon size={16} />
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                {SORT_OPTIONS.map((option) => (
-                  <DropdownMenuItem
-                    key={option.value}
-                    onClick={() => setSortOption(option.value)}
-                    className={cn(
-                      sortOption === option.value &&
-                        'bg-accent-blue/10 text-accent-blue',
-                    )}
+                <Button
+                  variant={viewMode === 'board' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('board')}
+                  className={cn(
+                    'h-8 px-2',
+                    viewMode === 'board'
+                      ? 'bg-accent-orange text-accent-on'
+                      : 'text-muted-text',
+                  )}
+                >
+                  <LayoutGrid size={16} />
+                </Button>
+              </div>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="inline-flex items-center gap-1.5 h-9"
                   >
-                    {option.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                    <Filter size={14} />
+                    Sort:{' '}
+                    {SORT_OPTIONS.find((o) => o.value === sortOption)?.label}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  {SORT_OPTIONS.map((option) => (
+                    <DropdownMenuItem
+                      key={option.value}
+                      onClick={() => setSortOption(option.value)}
+                      className={cn(
+                        sortOption === option.value &&
+                          'bg-accent-blue/10 text-accent-blue',
+                      )}
+                    >
+                      {option.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            <div className="text-sm text-muted-text">
+              {filteredIdeas.filteredItems.length} of {ideas.length} seeds
+            </div>
           </div>
 
-          <div className="text-sm text-muted-text">
-            {filteredIdeas.filteredItems.length} of {ideas.length} seeds
-          </div>
+          {viewMode === 'table' && (
+            <CommonTable
+              table={ideaTable}
+              minWidth={1200}
+              compact
+              onRowClick={handleRowClick}
+              onRowDoubleClick={handleRowDoubleClick}
+              getRowClassName={getRowClassName}
+            />
+          )}
+
+          {viewMode === 'board' && (
+            <div className="p-8 text-center text-muted-text border border-dashed rounded-lg">
+              <LayoutGrid size={48} className="mx-auto mb-4 opacity-50" />
+              <p>Board view coming soon...</p>
+            </div>
+          )}
         </div>
+      )}
 
-        {viewMode === 'table' && (
-          <FormProvider {...contentIdeaForm}>
-            <form onSubmit={handleSubmit(() => undefined)}>
-              <CommonTable
-                table={ideaTable}
-                minWidth={900}
-                compact
-                isRowDirty={isRowDirty}
-                getRowClassName={(idea) => {
-                  const produced = idea.status === 'produced'
-                  const dirty = isRowDirty(idea.ideaId)
-                  if (produced && !dirty)
-                    return '[&>*:not(:last-child)]:opacity-40'
-                  return undefined
-                }}
-              />
-            </form>
-          </FormProvider>
-        )}
+      <SeedDetailDrawer
+        idea={selectedIdea}
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        onGenerate={handleGenerate}
+        onGenerateProduct={handleGenerateProduct}
+        isGenerating={generatingId}
+        generatingProductIds={generatingProductIds}
+        productsMap={productsMap}
+        generationSummary={
+          selectedIdea
+            ? generationSummaries[selectedIdea.ideaId]
+            : undefined
+        }
+        onViewPosts={handleQuickViewPosts}
+        onApprove={handleQuickApprove}
+      />
 
-        {viewMode === 'board' && (
-          <div className="p-8 text-center text-muted-text border border-dashed rounded-lg">
-            <LayoutGrid size={48} className="mx-auto mb-4 opacity-50" />
-            <p>Board view coming soon...</p>
-          </div>
-        )}
-      </div>
+      {isDrawerOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+          onClick={() => setIsDrawerOpen(false)}
+        />
+      )}
     </div>
   )
 }

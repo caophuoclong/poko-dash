@@ -6,27 +6,20 @@ import {
   ProductPopover,
 } from '@/components/table'
 import { Sparkles, Loader2, CheckCircle } from 'lucide-react'
-import { Controller  } from 'react-hook-form'
-import type {UseFormReturn} from 'react-hook-form';
+import { Controller } from 'react-hook-form'
+import type { UseFormReturn } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Link } from '@tanstack/react-router'
 
 import type { ColumnDef } from '@tanstack/react-table'
 import { PriorityDot } from '../components/PriorityDot'
-import {
-  Autocomplete
-  
-} from '@/components/ui/autocomplete'
-import type {AutocompleteOption} from '@/components/ui/autocomplete';
+import { Autocomplete } from '@/components/ui/autocomplete'
+import type { AutocompleteOption } from '@/components/ui/autocomplete'
 import { useEffect, useState } from 'react'
-import { cn, formatDate  } from '#/shared/utils'
+import { cn, formatDate } from '#/shared/utils'
 import type { ContentIdeaTableForm } from '../components/ContentPostPage'
-import {
-  IdeaType,
-  TargetPlatform
-  
-} from '../schemas/content.schema'
-import type {ContentIdeaEntity} from '../schemas/content.schema';
+import { IdeaType, TargetPlatform } from '../schemas/content.schema'
+import type { ContentIdeaEntity } from '../schemas/content.schema'
 
 const PLATFORM_OPTIONS: {
   value: TargetPlatform
@@ -274,8 +267,7 @@ export const getColumns: (
             control={control}
             name={`rows.${idea.ideaId}.angle` as const}
             render={({ field }) => {
-              const val =
-                ((field.value) ?? idea.angle) || ''
+              const val = (field.value ?? idea.angle) || ''
               const angel = angle || []
               const values = val.split(',').map((v) => v.trim())
               return (

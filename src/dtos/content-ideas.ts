@@ -77,6 +77,37 @@ export interface PostContentIdeasErrorResponse {
   details?: unknown
 }
 
+export interface GetContentIdeasByIdeaIdResponse {
+  ideaId: string
+  /** Type of content idea */
+  ideaType: string
+  category: string
+  /** Target platform */
+  targetPlatform: string
+  /** Main title/hook */
+  hook: string
+  /** Content angle */
+  angle?: string
+  /** Reference URLs */
+  sourceRefs: Array<string>
+  priority: number
+  /** Idea status */
+  status: string
+  owner?: string
+  createdAt: string
+  updatedAt: string
+  /** Associated product UUIDs */
+  ideaProducts?: Array<string>
+  /** IDs of posts generated from this idea */
+  postIds?: Array<string>
+}
+
+export interface GetContentIdeasByIdeaIdErrorResponse {
+  error: string
+  message: string
+  details?: unknown
+}
+
 export interface PatchContentIdeasByIdeaIdRequest {
   ideaType?: string
   category?: string
@@ -151,6 +182,10 @@ export namespace ContentIdeas {
     import('./content-ideas').PostContentIdeasResponse
   export type PostContentIdeasErrorResponse =
     import('./content-ideas').PostContentIdeasErrorResponse
+  export type GetContentIdeasByIdeaIdResponse =
+    import('./content-ideas').GetContentIdeasByIdeaIdResponse
+  export type GetContentIdeasByIdeaIdErrorResponse =
+    import('./content-ideas').GetContentIdeasByIdeaIdErrorResponse
   export type PatchContentIdeasByIdeaIdRequest =
     import('./content-ideas').PatchContentIdeasByIdeaIdRequest
   export type PatchContentIdeasByIdeaIdResponse =

@@ -1,9 +1,5 @@
-import {
-  useQuery
-  
-  
-} from '@tanstack/react-query'
-import type {UseQueryOptions, QueryKey} from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query'
+import type { UseQueryOptions, QueryKey } from '@tanstack/react-query'
 
 export interface ApiQueryOptions<T> extends Omit<
   UseQueryOptions<T, Error, T, QueryKey>,

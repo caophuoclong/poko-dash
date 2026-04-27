@@ -9,6 +9,7 @@ interface CommonTableRowProps<TData> {
   compact: boolean
   isDirty: boolean
   onRowClick?: (data: TData) => void
+  onRowDoubleClick?: (data: TData) => void
   rowClassName?: string
 }
 
@@ -18,11 +19,13 @@ export function CommonTableRow<TData>({
   compact,
   isDirty,
   onRowClick,
+  onRowDoubleClick,
   rowClassName,
 }: CommonTableRowProps<TData>) {
   return (
     <tr
       onClick={() => onRowClick?.(row.original)}
+      onDoubleClick={() => onRowDoubleClick?.(row.original)}
       className={cn(
         'border-b border-frost/30 transition-colors group',
         onRowClick && 'cursor-pointer',

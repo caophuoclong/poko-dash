@@ -4,12 +4,8 @@ import { useNavigate } from '@tanstack/react-router'
 import PostsToolbar from './posts-toolbar'
 import PostsFilterBar from './posts-filter-bar'
 import { CommonTable } from '@/components/table'
-import {
-  useReactTable,
-  getCoreRowModel
-  
-} from '@tanstack/react-table'
-import type {ColumnDef} from '@tanstack/react-table';
+import { useReactTable, getCoreRowModel } from '@tanstack/react-table'
+import type { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import { PageHeader } from '@/components/ui/page-header'
 import { EmptyState } from '@/components/ui/empty-state'

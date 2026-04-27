@@ -13,11 +13,8 @@ import ProductReferencePanel from './product-reference-panel'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { LoadingState } from '@/components/ui/loading-state'
 import { EmptyState } from '@/components/ui/empty-state'
-import {
-  ContentPostEditSchema
-  
-} from '#/features/posts/schemas/content-post.schema'
-import type {ContentPostEditFormData} from '#/features/posts/schemas/content-post.schema';
+import { ContentPostEditSchema } from '#/features/posts/schemas/content-post.schema'
+import type { ContentPostEditFormData } from '#/features/posts/schemas/content-post.schema'
 
 interface PostEditPageProps {
   postId: string

@@ -4,14 +4,12 @@ import { useProducts, useAllAffiliateLinks } from '../hooks/use-products'
 import {
   useReactTable,
   getCoreRowModel,
-  getSortedRowModel
-  
-  
+  getSortedRowModel,
 } from '@tanstack/react-table'
-import type {ColumnDef, SortingState} from '@tanstack/react-table';
+import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import { CommonTable } from '@/components/table'
 import type { Product } from '../types/product'
-import { cn, formatPriceNum, parsePrice, parsePriceRange  } from '#/shared/utils'
+import { cn, formatPriceNum, parsePrice, parsePriceRange } from '#/shared/utils'
 
 import { Badge } from '@/components/ui/badge'
 import { PageHeader } from '@/components/ui/page-header'

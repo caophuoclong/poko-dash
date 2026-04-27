@@ -14,6 +14,7 @@ export interface CommonTableProps<TData> {
   loadingMessage?: string
   minWidth?: number
   onRowClick?: (data: TData) => void
+  onRowDoubleClick?: (data: TData) => void
   isRowDirty?: (rowId: string) => boolean
   getRowClassName?: (data: TData) => string | undefined
   footerRow?: ReactNode

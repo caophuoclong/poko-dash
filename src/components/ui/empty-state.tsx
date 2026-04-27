@@ -7,6 +7,8 @@ import {
   Puzzle,
   SearchX,
   Sparkles,
+  Link as LinkIcon,
+  FileText as FileTextIcon,
 } from 'lucide-react'
 
 import { cn } from '#/shared/utils'
@@ -250,6 +252,30 @@ const emptyStatePresets = {
     title: 'No content ideas yet',
     description:
       'Generate ideas from your products, or import topics from your niche.',
+  },
+
+  /** Content seeds page — no seeds created */
+  contentSeeds: {
+    icon: <Sparkles />,
+    title: 'No content seeds yet',
+    description:
+      'Create a reusable content direction, then link products to generate multiple post drafts.',
+  },
+
+  /** Content seed detail — no products linked */
+  noLinkedProducts: {
+    icon: <LinkIcon />,
+    title: 'No products linked',
+    description:
+      'Add one or more products so this seed can generate post drafts.',
+  },
+
+  /** Content seed detail — no posts generated */
+  noGeneratedPosts: {
+    icon: <FileTextIcon />,
+    title: 'No posts generated yet',
+    description:
+      'This seed is ready. Choose a generation mode to create your first drafts.',
   },
 
   /** Schedule page — nothing queued */
