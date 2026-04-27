@@ -123,6 +123,13 @@ export type ContentPostParsed = z.infer<typeof ContentPostSchema>
 
 // ── Form schemas ──────────────────────────────────────────────────
 
+const PlatformTargetConfigSchema = z.object({
+  platform: z.string(),
+  targetId: z.string(),
+  targetName: z.string(),
+  enabled: z.boolean(),
+})
+
 const ContentPostBaseSchema = z.object({
   ideaId: z.uuid('ideaId phải là UUID hợp lệ').optional(),
   primaryProductId: z.uuid('primaryProductId phải là UUID hợp lệ'),
@@ -139,11 +146,11 @@ const ContentPostBaseSchema = z.object({
   hashtags: z.array(z.string()).optional(),
   status: z.string(),
   approvalStatus: z.string().optional(),
-  // Scheduling fields kept as form-only fields (not sent to content-posts API)
   scheduledAt: z.string().optional(),
   publishMode: PublishModeEnum.optional(),
   generationSource: z.string().optional(),
   generationModel: z.string().optional(),
+  platformTargets: z.array(PlatformTargetConfigSchema).optional(),
 })
 
 export const ContentPostCreateSchema = ContentPostBaseSchema.extend({

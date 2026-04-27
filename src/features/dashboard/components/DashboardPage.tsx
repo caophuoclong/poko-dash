@@ -20,6 +20,7 @@ export default function DashboardPage() {
 
   const { data, isLoading, isError, refetch, isRefetching } =
     useDashboardOverview(selectedRange)
+  console.log('🚀 ~ DashboardPage ~ data:', data)
 
   const handleRefresh = () => {
     refetch()

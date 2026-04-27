@@ -5,6 +5,10 @@
       "type": "local",
       "command": ["uvx", "code-review-graph", "serve"],
       "enabled": true
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"]
     }
   }
 }

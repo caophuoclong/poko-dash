@@ -3,6 +3,7 @@ import { useForm, FormProvider } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
 import MainContent from './post-edit-page/MainContent'
 import CreatePreferenceContent from './post-edit-page/CreatePreferenceContent'
+import PlatformTargetConfigPanel from './platform-target-config-panel'
 import { statusOptions } from './post-edit-page/constants'
 import { useCreateContentPost } from '@/features/posts/hooks/use-content-posts'
 import { useScheduledJobs } from '@/features/scheduler/hooks/use-scheduler'
@@ -10,6 +11,7 @@ import { transformScheduledJobsToEvents } from '@/features/scheduler/services/ca
 import { postCreationService } from '@/features/posts/services/post-creation.service'
 import { ContentPostCreateSchema } from '#/features/posts/schemas/content-post.schema'
 import type { ContentPostCreateFormData } from '#/features/posts/schemas/content-post.schema'
+import type { PlatformTargetConfig } from '../types/publication'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '#/components/ui/button'
 
@@ -34,6 +36,9 @@ export function PostCreatePage() {
   const createPost = useCreateContentPost()
   const [isSaving, setIsSaving] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [platformTargets, setPlatformTargets] = useState<PlatformTargetConfig[]>(
+    [],
+  )
 
   const methods = useForm<ContentPostCreateFormData>({
     resolver: zodResolver(ContentPostCreateSchema),
@@ -48,6 +53,7 @@ export function PostCreatePage() {
       supportingProductIds: [],
       publishMode: 'now',
       scheduledAt: '',
+      platformTargets: [],
     },
   })
 
@@ -61,10 +67,17 @@ export function PostCreatePage() {
     setHasUnsavedChanges(isDirty)
   }, [isDirty])
 
+  useEffect(() => {
+    setHasUnsavedChanges(isDirty || platformTargets.length > 0)
+  }, [isDirty, platformTargets])
+
   const handleSave = async (data: ContentPostCreateFormData) => {
     setIsSaving(true)
     try {
-      const payload = postCreationService.transformFormDataToPayload(data)
+      const payload = postCreationService.transformFormDataToPayload({
+        ...data,
+        platformTargets,
+      })
       await createPost.mutateAsync(payload)
       void navigate({ to: '/dash/posts', search: { ideaId: undefined } })
     } finally {
@@ -124,7 +137,14 @@ export function PostCreatePage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <MainContent control={methods.control} />
+            <div className="lg:col-span-2 space-y-6">
+              <MainContent control={methods.control} />
+              <PlatformTargetConfigPanel
+                control={methods.control}
+                targets={platformTargets}
+                onTargetsChange={setPlatformTargets}
+              />
+            </div>
 
             <CreatePreferenceContent
               control={methods.control}

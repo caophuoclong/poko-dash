@@ -1,77 +1,24 @@
-// Dashboard DTOs
-// These will be auto-generated from openapi.json eventually
-// For now, defining them manually
+// AUTO-GENERATED — DO NOT EDIT
+// Source: openapi.json  |  Tag: Dashboard
+// Run `node scripts/generate-dtos.mjs` to regenerate
 
-export type DashboardRange = '7d' | '30d' | '90d'
+export type GetDashboardOverviewResponse = Record<string, unknown>;
 
-export interface DashboardSummaryCard {
-  label: string
-  value: number
-  delta?: {
-    value: number
-    isPositive: boolean
-  }
-  helper?: string
+export interface PostDashboardAggregateTriggerRequest {
+  /** ISO date YYYY-MM-DD. Defaults to yesterday. */
+  date?: string;
 }
 
-export interface DashboardPipelineStatus {
-  label: string
-  count: number
-  tone?: 'neutral' | 'orange' | 'blue' | 'green' | 'yellow' | 'red'
-  action?: {
-    label: string
-    path: string
-  }
+export interface PostDashboardAggregateBackfillRequest {
+  /** Start date YYYY-MM-DD (inclusive) */
+  from: string;
+  /** End date YYYY-MM-DD (inclusive) */
+  to: string;
 }
 
-export interface DashboardTrendPoint {
-  date: string
-  value: number
-}
-
-export interface DashboardTrendSeries {
-  label: string
-  data: DashboardTrendPoint[]
-}
-
-export interface DashboardAttentionItem {
-  id: string
-  title: string
-  description: string
-  severity: 'warning' | 'error'
-  action: {
-    label: string
-    path: string
-  }
-}
-
-export interface DashboardScheduledItem {
-  id: string
-  scheduledAt: string
-  platform: string
-  title: string
-  status: 'pending' | 'queued' | 'failed'
-}
-
-export interface DashboardBreakdownItem {
-  label: string
-  value: number
-  percentage: number
-}
-
-export interface DashboardOverviewResponse {
-  summaryCards: DashboardSummaryCard[]
-  pipelineSnapshot: DashboardPipelineStatus[]
-  trendSeries: {
-    postsGenerated: DashboardTrendSeries
-    postsPublished: DashboardTrendSeries
-    seedsApproved: DashboardTrendSeries
-  }
-  attentionItems: DashboardAttentionItem[]
-  upcomingSchedule: DashboardScheduledItem[]
-  topBreakdowns: {
-    categories: DashboardBreakdownItem[]
-    platforms: DashboardBreakdownItem[]
-    topSeeds: DashboardBreakdownItem[]
-  }
+// ─── Namespace re-export ────────────────────────────────────────────────────
+export namespace Dashboard {
+  export type GetDashboardOverviewResponse = import("./dashboard").GetDashboardOverviewResponse;
+  export type PostDashboardAggregateTriggerRequest = import("./dashboard").PostDashboardAggregateTriggerRequest;
+  export type PostDashboardAggregateBackfillRequest = import("./dashboard").PostDashboardAggregateBackfillRequest;
 }

@@ -31,6 +31,13 @@ export const PRODUCT_STATUS: Record<string, StatusMeta> = {
   failed: { label: 'Thất bại', tone: 'red' },
 }
 
+export const PUBLISH_STATUS: Record<string, StatusMeta> = {
+  draft: { label: 'Nháp', tone: 'neutral' },
+  scheduled: { label: 'Đã lên lịch', tone: 'blue' },
+  published: { label: 'Đã đăng', tone: 'green' },
+  failed: { label: 'Thất bại', tone: 'red' },
+}
+
 export const EXECUTION_STATUS: Record<string, StatusMeta> = {
   pending: { label: 'Đang chờ', tone: 'neutral' },
   running: { label: 'Đang chạy', tone: 'blue' },

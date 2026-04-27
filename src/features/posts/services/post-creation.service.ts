@@ -1,29 +1,32 @@
 import type { ContentPostCreateFormData } from '../schemas/content-post.schema'
+import type { PlatformTargetConfig } from '../types/publication'
 import { createContentPost } from '../api/content-post-api'
 import type { PostContentPostsRequest } from '#/dtos'
 
+interface CreatePayloadInput extends ContentPostCreateFormData {
+  platformTargets?: PlatformTargetConfig[]
+}
+
+interface CreatePayloadOutput extends PostContentPostsRequest {
+  platformTargets?: PlatformTargetConfig[]
+}
+
 export class PostCreationService {
   async createPost(
-    data: ContentPostCreateFormData,
+    data: CreatePayloadInput,
   ): Promise<ReturnType<typeof createContentPost>> {
     const payload = this.transformFormDataToPayload(data)
     return createContentPost(payload)
   }
 
   transformFormDataToPayload(
-    data: ContentPostCreateFormData,
-  ): PostContentPostsRequest {
+    data: CreatePayloadInput,
+  ): CreatePayloadOutput {
+    const { platformTargets, ...rest } = data
     return {
-      ideaId: data.ideaId,
-      primaryProductId: data.primaryProductId ?? '',
-      supportingProductIds: data.supportingProductIds,
-      title: data.title,
-      body: data.body,
-      hashtags: data.hashtags,
-      status: data.status,
-      platform: data.platform,
-      contentType: data.contentType,
-      // scheduledAt removed — scheduling is handled via the Scheduler API after post creation
+      ...rest,
+      primaryProductId: rest.primaryProductId,
+      platformTargets,
     }
   }
 }

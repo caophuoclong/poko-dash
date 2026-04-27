@@ -8,6 +8,7 @@ import {
 import PageHeader from './post-edit-page/PageHeader'
 import MainContent from './post-edit-page/MainContent'
 import PreferenceContent from './post-edit-page/PreferenceContent'
+import PlatformTargetConfigPanel from './platform-target-config-panel'
 import { postEditService } from '@/features/posts/services/post-edit.service'
 import ProductReferencePanel from './product-reference-panel'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,6 +16,7 @@ import { LoadingState } from '@/components/ui/loading-state'
 import { EmptyState } from '@/components/ui/empty-state'
 import { ContentPostEditSchema } from '#/features/posts/schemas/content-post.schema'
 import type { ContentPostEditFormData } from '#/features/posts/schemas/content-post.schema'
+import type { PlatformTargetConfig } from '../types/publication'
 
 interface PostEditPageProps {
   postId: string
@@ -26,6 +28,9 @@ export function PostEditPage({ postId }: PostEditPageProps) {
   const updatePost = useUpdateContentPost()
   const [isSaving, setIsSaving] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [platformTargets, setPlatformTargets] = useState<PlatformTargetConfig[]>(
+    [],
+  )
 
   const methods = useForm<ContentPostEditFormData>({
     resolver: zodResolver(ContentPostEditSchema),
@@ -54,8 +59,8 @@ export function PostEditPage({ postId }: PostEditPageProps) {
     }
   }, [post?.hashtags])
   useEffect(() => {
-    setHasUnsavedChanges(isDirty)
-  }, [isDirty])
+    setHasUnsavedChanges(isDirty || platformTargets.length > 0)
+  }, [isDirty, platformTargets])
 
   const handleSave = async (data: ContentPostEditFormData) => {
     if (!post || !postId) return
@@ -112,12 +117,19 @@ export function PostEditPage({ postId }: PostEditPageProps) {
           />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <MainContent
-              control={methods.control}
-              initialHashtags={initialHashTags}
-              setDefaultHashtags={(ht) => setInitialHashTags(ht)}
-            />
-            <div className="flex flex-col justify-between">
+            <div className="lg:col-span-2 space-y-6">
+              <MainContent
+                control={methods.control}
+                initialHashtags={initialHashTags}
+                setDefaultHashtags={(ht) => setInitialHashTags(ht)}
+              />
+              <PlatformTargetConfigPanel
+                control={methods.control}
+                targets={platformTargets}
+                onTargetsChange={setPlatformTargets}
+              />
+            </div>
+            <div className="flex flex-col justify-between gap-6">
               <PreferenceContent
                 control={methods.control}
                 post={post}

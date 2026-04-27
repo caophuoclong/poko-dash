@@ -3,4 +3,5 @@
 // Run `node scripts/generate-dtos.mjs` to regenerate
 
 // ─── Namespace re-export ────────────────────────────────────────────────────
-export namespace Untagged {}
+export namespace Untagged {
+}

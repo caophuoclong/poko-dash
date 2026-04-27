@@ -55,11 +55,7 @@ export function SeedProductsWorkspace({
   canGenerate = false,
   isApproved = false,
 }: SeedProductsWorkspaceProps) {
-  const availableProducts = allProducts.filter(
-    (p) => !linkedProducts.some((lp) => lp.productId === p.productId),
-  )
-
-  const productOptions: AutocompleteOption[] = availableProducts.map((p) => ({
+  const productOptions: AutocompleteOption[] = allProducts.map((p) => ({
     value: p.productId,
     label: p.canonicalTitle,
   }))
@@ -144,6 +140,34 @@ export function SeedProductsWorkspace({
       )}
 
       <div className="bg-surface-2 border border-frost rounded-xl overflow-hidden">
+        {productOptions.length > 0 && (
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-dashed border-frost">
+            <Plus size={16} className="text-muted-text shrink-0" />
+            <Controller
+              control={control}
+              name="ideaProducts"
+              render={({ field }) => (
+                <Autocomplete
+                  options={productOptions}
+                  value={field.value ?? []}
+                  onChange={field.onChange}
+                  placeholder={
+                    linkedProducts.length === 0
+                      ? 'Select products to link...'
+                      : 'Add more products...'
+                  }
+                  multiple
+                  emitValue="raw"
+                  sortSelectedFirst
+                  truncateChipLabel
+                  limitTags={1}
+                  className="flex-1"
+                />
+              )}
+            />
+          </div>
+        )}
+
         {linkedProducts.length === 0 ? (
           <div className="p-8">
             <EmptyState
@@ -151,26 +175,6 @@ export function SeedProductsWorkspace({
               {...emptyStatePresets.noLinkedProducts}
               className="py-6"
             />
-            {productOptions.length > 0 && (
-              <div className="mt-4">
-                <Controller
-                  control={control}
-                  name="ideaProducts"
-                  render={({ field }) => (
-                    <Autocomplete
-                      options={productOptions}
-                      value={field.value ?? []}
-                      onChange={field.onChange}
-                      placeholder="Select products to link..."
-                      multiple
-                      emitValue="raw"
-                      sortSelectedFirst
-                      truncateChipLabel
-                    />
-                  )}
-                />
-              </div>
-            )}
           </div>
         ) : (
           <div className="divide-y divide-frost">
@@ -284,29 +288,6 @@ export function SeedProductsWorkspace({
           </div>
         )}
       </div>
-
-      {linkedProducts.length > 0 && productOptions.length > 0 && (
-        <div className="flex items-center justify-center gap-3 p-4 bg-surface-2/50 rounded-lg border border-dashed border-frost">
-          <Plus size={16} className="text-muted-text" />
-          <Controller
-            control={control}
-            name="ideaProducts"
-            render={({ field }) => (
-              <Autocomplete
-                options={productOptions}
-                value={field.value ?? []}
-                onChange={field.onChange}
-                placeholder="Add more products..."
-                multiple
-                emitValue="raw"
-                sortSelectedFirst
-                truncateChipLabel
-                className="flex-1 max-w-md"
-              />
-            )}
-          />
-        </div>
-      )}
     </div>
   )
 }
