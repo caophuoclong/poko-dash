@@ -1,18 +1,18 @@
-import { Controller } from "react-hook-form";
-import type { Control } from "react-hook-form";
+import { Controller } from 'react-hook-form'
+import type { Control } from 'react-hook-form'
 
 interface SelectOption {
-  value: string;
-  label: string;
+  value: string
+  label: string
 }
 
 interface SelectFieldProps<
   T extends Record<string, any> = Record<string, any>,
 > {
-  control: Control<T>;
-  name: keyof T;
-  label: string;
-  options: SelectOption[];
+  control: Control<T>
+  name: keyof T
+  label: string
+  options: SelectOption[]
 }
 
 export default function SelectField<
@@ -27,7 +27,7 @@ export default function SelectField<
         {label}
       </label>
       <Controller
-        name={name as any}
+        name={name}
         control={control}
         render={({ field }) => (
           <select
@@ -44,5 +44,5 @@ export default function SelectField<
         )}
       />
     </div>
-  );
+  )
 }

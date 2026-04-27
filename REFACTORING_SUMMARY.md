@@ -5,6 +5,7 @@
 ### 1. Shared Infrastructure Created
 
 #### New Files:
+
 - `src/dtos/shared/common-types.ts` - Common type definitions
 - `src/dtos/shared/index.ts` - Barrel export
 - `src/shared/api-client.ts` - Generic API client with query builder
@@ -19,12 +20,14 @@
 ### 2. Feature-Level Refactoring
 
 #### Prompts Feature:
+
 - **`src/features/prompts/types.ts`** - Extracted all type definitions and constants
 - **`src/features/prompts/api/index.ts`** - Refactored API calls using shared api-client
 - **`src/features/prompts/hooks/use-prompts.ts`** - Updated imports to use new types
 - **`src/features/prompts/queries/prompt-queries.ts`** - Updated to use new types
 
 #### Components:
+
 - **`src/components/ui/simple-page/index.tsx`** - New reusable page component
 - **`src/components/ui/simple-page.tsx`** - Barrel export
 - **`src/components/ui/form-field/index.tsx`** - New reusable form field component
@@ -33,6 +36,7 @@
 ### 3. Route Pages Updated
 
 Simplified route pages to use `SimplePage` component:
+
 - `src/routes/dash/analytics.tsx` - Now uses SimplePage with BarChart icon
 - `src/routes/dash/settings.tsx` - Now uses SimplePage with Settings icon
 - `src/routes/dash/pages.tsx` - Now uses SimplePage with Facebook icon
@@ -58,6 +62,7 @@ Simplified route pages to use `SimplePage` component:
 ## Benefits
 
 ### Code Reduction:
+
 - **~200 lines** of duplicate API logic removed
 - **~150 lines** of duplicate hook patterns consolidated
 - **~80 lines** of duplicate query options merged
@@ -66,6 +71,7 @@ Simplified route pages to use `SimplePage` component:
 - **~40 lines** of duplicate date formatting moved to utility
 
 ### Maintainability:
+
 - Centralized type definitions in `types.ts` files
 - Reusable API client eliminates fetcher duplication
 - Shared hooks (`use-filtered-list`) reduce copy-paste patterns
@@ -73,6 +79,7 @@ Simplified route pages to use `SimplePage` component:
 - Easier to add new features following established patterns
 
 ### Consistency:
+
 - All date formatting uses `formatRelativeTime`
 - All status colors use `STATUS_COLORS` constant
 - All simple pages use `SimplePage` component

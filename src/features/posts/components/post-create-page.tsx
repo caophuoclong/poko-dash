@@ -9,9 +9,10 @@ import { useScheduledJobs } from '@/features/scheduler/hooks/use-scheduler'
 import { transformScheduledJobsToEvents } from '@/features/scheduler/services/calendar.service'
 import { postCreationService } from '@/features/posts/services/post-creation.service'
 import {
-  ContentPostCreateSchema,
-  type ContentPostCreateFormData,
+  ContentPostCreateSchema
+  
 } from '#/features/posts/schemas/content-post.schema'
+import type {ContentPostCreateFormData} from '#/features/posts/schemas/content-post.schema';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '#/components/ui/button'
 

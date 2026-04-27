@@ -1,7 +1,8 @@
 import {
-  Autocomplete,
-  type AutocompleteOption,
+  Autocomplete
+  
 } from '@/components/ui/autocomplete'
+import type {AutocompleteOption} from '@/components/ui/autocomplete';
 
 interface AffiliateReferencePanelProps {
   affiliateLinks?: string

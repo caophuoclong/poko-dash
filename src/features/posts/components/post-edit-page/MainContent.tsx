@@ -1,4 +1,5 @@
-import { Controller, type Control } from 'react-hook-form'
+import { Controller  } from 'react-hook-form'
+import type {Control} from 'react-hook-form';
 import FormField from './FormField'
 
 import type {
@@ -6,9 +7,10 @@ import type {
   ContentPostEditFormData,
 } from '#/features/posts/schemas/content-post.schema'
 import {
-  Autocomplete,
-  type AutocompleteOption,
+  Autocomplete
+  
 } from '#/components/ui/autocomplete'
+import type {AutocompleteOption} from '#/components/ui/autocomplete';
 
 interface MainContentProps {
   control: Control<ContentPostEditFormData | ContentPostCreateFormData>

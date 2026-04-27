@@ -24,9 +24,10 @@ import {
   ContentSchema,
   IdeaType,
   IdeaStatus,
-  TargetPlatform,
-  type ContentSchemaFormData,
+  TargetPlatform
+  
 } from '../schemas/content.schema'
+import type {ContentSchemaFormData} from '../schemas/content.schema';
 import { Link } from '@tanstack/react-router'
 
 const IDEA_TYPE_OPTIONS = [

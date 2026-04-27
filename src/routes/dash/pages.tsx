@@ -7,5 +7,11 @@ export const Route = createFileRoute('/dash/pages')({
 })
 
 function PagesPage() {
-  return <SimplePage title="Facebook Pages" subtitle="Quản lý các trang Facebook đã kết nối" icon={Facebook} />
+  return (
+    <SimplePage
+      title="Facebook Pages"
+      subtitle="Quản lý các trang Facebook đã kết nối"
+      icon={Facebook}
+    />
+  )
 }

@@ -19,9 +19,10 @@ import {
   ContentSchema,
   IdeaType,
   IdeaStatus,
-  TargetPlatform,
-  type ContentSchemaFormData,
+  TargetPlatform
+  
 } from '../schemas/content.schema'
+import type {ContentSchemaFormData} from '../schemas/content.schema';
 
 const IDEA_TYPE_OPTIONS = [
   { value: IdeaType.Review, label: 'Review' },

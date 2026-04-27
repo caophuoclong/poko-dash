@@ -19,7 +19,7 @@ function ScheduledPostsPageInner() {
 
   const scheduledPosts = useMemo(
     () =>
-      (allPosts as GetContentPostsResponse).filter(
+      (allPosts).filter(
         (p) => p.status === 'queued' || p.status === 'approved',
       ),
     [allPosts],

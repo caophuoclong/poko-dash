@@ -1,8 +1,9 @@
 import {
-  useQuery,
-  type UseQueryOptions,
-  type QueryKey,
+  useQuery
+  
+  
 } from '@tanstack/react-query'
+import type {UseQueryOptions, QueryKey} from '@tanstack/react-query';
 
 export interface ApiQueryOptions<T> extends Omit<
   UseQueryOptions<T, Error, T, QueryKey>,
@@ -11,7 +12,6 @@ export interface ApiQueryOptions<T> extends Omit<
   fallback?: T
   silentError?: boolean
 }
-
 
 export function useApiQuery<T>(
   queryKey: QueryKey,

@@ -1,19 +1,19 @@
-import { Check } from "lucide-react";
-import { Button } from "../ui/button";
+import { Check } from 'lucide-react'
+import { Button } from '../ui/button'
 
 interface RowEditActionsProps {
-  onCancel: () => void;
-  onSave: () => void;
-  saveLabel?: string;
-  cancelLabel?: string;
-  saveDisabled?: boolean;
+  onCancel: () => void
+  onSave: () => void
+  saveLabel?: string
+  cancelLabel?: string
+  saveDisabled?: boolean
 }
 
 export function RowEditActions({
   onCancel,
   onSave,
-  saveLabel = "Save",
-  cancelLabel = "Cancel",
+  saveLabel = 'Save',
+  cancelLabel = 'Cancel',
   saveDisabled = false,
 }: RowEditActionsProps) {
   return (
@@ -30,12 +30,12 @@ export function RowEditActions({
         onClick={onSave}
         disabled={saveDisabled}
         size="sm"
-        
+
         // className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-accent-blue text-near-white hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100"
       >
         <Check size={11} />
         {saveLabel}
       </Button>
     </div>
-  );
+  )
 }

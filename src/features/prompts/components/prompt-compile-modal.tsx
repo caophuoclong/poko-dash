@@ -1,25 +1,25 @@
-import * as React from "react";
-import { Copy, Check, Loader2 } from "lucide-react";
+import * as React from 'react'
+import { Copy, Check, Loader2 } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "#/components/ui/dialog";
-import { Button } from "#/components/ui/button";
-import { Input } from "#/components/ui/input";
-import { useCompilePrompt, useRecordPromptUsage } from "../hooks/use-prompts";
-import type { Prompt } from '../types';
+} from '#/components/ui/dialog'
+import { Button } from '#/components/ui/button'
+import { Input } from '#/components/ui/input'
+import { useCompilePrompt, useRecordPromptUsage } from '../hooks/use-prompts'
+import type { Prompt } from '../types'
 
 function decodeTemplate(raw: string): string {
-  return raw.replace(/\\n/g, "\n").replace(/\\t/g, "\t");
+  return raw.replace(/\\n/g, '\n').replace(/\\t/g, '\t')
 }
 
 interface PromptCompileModalProps {
-  prompt: Prompt | null;
-  open: boolean;
-  onClose: () => void;
+  prompt: Prompt | null
+  open: boolean
+  onClose: () => void
 }
 
 export default function PromptCompileModal({
@@ -27,33 +27,37 @@ export default function PromptCompileModal({
   open,
   onClose,
 }: PromptCompileModalProps) {
-  const [variables, setVariables] = React.useState<Record<string, string>>({});
-  const [compiled, setCompiled] = React.useState("");
-  const [copied, setCopied] = React.useState(false);
-  const compilePrompt = useCompilePrompt();
-  const recordUsage = useRecordPromptUsage();
-  const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [variables, setVariables] = React.useState<Record<string, string>>({})
+  const [compiled, setCompiled] = React.useState('')
+  const [copied, setCopied] = React.useState(false)
+  const compilePrompt = useCompilePrompt()
+  const recordUsage = useRecordPromptUsage()
+  const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
   React.useEffect(() => {
-    if (!prompt) return;
-    const initial: Record<string, string> = {};
-    (prompt.variables ?? []).forEach((v) => { initial[v] = ""; });
-    setVariables(initial);
-    setCompiled("");
-  }, [prompt]);
+    if (!prompt) return
+    const initial: Record<string, string> = {}
+    ;(prompt.variables ?? []).forEach((v) => {
+      initial[v] = ''
+    })
+    setVariables(initial)
+    setCompiled('')
+  }, [prompt])
 
   React.useEffect(() => {
-    if (!prompt) return;
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (!prompt) return
+    if (debounceRef.current) clearTimeout(debounceRef.current)
 
-    const allFilled = (prompt.variables ?? []).every((v) => variables[v]?.trim());
+    const allFilled = (prompt.variables ?? []).every((v) =>
+      variables[v]?.trim(),
+    )
     if (!allFilled) {
-      let preview = decodeTemplate(prompt.template);
+      let preview = decodeTemplate(prompt.template)
       Object.entries(variables).forEach(([k, val]) => {
-        if (val) preview = preview.replaceAll(`{{${k}}}`, val);
-      });
-      setCompiled(preview);
-      return;
+        if (val) preview = preview.replaceAll(`{{${k}}}`, val)
+      })
+      setCompiled(preview)
+      return
     }
 
     debounceRef.current = setTimeout(async () => {
@@ -61,39 +65,39 @@ export default function PromptCompileModal({
         const res = await compilePrompt.mutateAsync({
           promptId: prompt.promptId,
           data: { variables },
-        });
-        setCompiled(res.compiled);
+        })
+        setCompiled(res.compiled)
       } catch {
-        let preview = decodeTemplate(prompt.template);
+        let preview = decodeTemplate(prompt.template)
         Object.entries(variables).forEach(([k, val]) => {
-          preview = preview.replaceAll(`{{${k}}}`, val);
-        });
-        setCompiled(preview);
+          preview = preview.replaceAll(`{{${k}}}`, val)
+        })
+        setCompiled(preview)
       }
-    }, 400);
+    }, 400)
 
     return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [variables, prompt]);
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [variables, prompt])
 
   async function handleUse() {
-    if (!prompt) return;
-    await recordUsage.mutateAsync(prompt.promptId);
-    await handleCopy();
-    onClose();
+    if (!prompt) return
+    await recordUsage.mutateAsync(prompt.promptId)
+    await handleCopy()
+    onClose()
   }
 
   async function handleCopy() {
-    if (!compiled) return;
-    await navigator.clipboard.writeText(compiled);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (!compiled) return
+    await navigator.clipboard.writeText(compiled)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
-  if (!prompt) return null;
+  if (!prompt) return null
 
-  const vars = prompt.variables ?? [];
+  const vars = prompt.variables ?? []
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
@@ -123,9 +127,12 @@ export default function PromptCompileModal({
                       </label>
                       <Input
                         placeholder={`Enter ${v}…`}
-                        value={variables[v] ?? ""}
+                        value={variables[v] ?? ''}
                         onChange={(e) =>
-                          setVariables((prev) => ({ ...prev, [v]: e.target.value }))
+                          setVariables((prev) => ({
+                            ...prev,
+                            [v]: e.target.value,
+                          }))
                         }
                         className="flex-1 bg-surface-2 border-frost text-near-white placeholder:text-muted-text text-sm"
                       />
@@ -150,9 +157,13 @@ export default function PromptCompileModal({
                 className="text-muted-text hover:text-near-white gap-1"
               >
                 {copied ? (
-                  <><Check className="size-3 text-accent-green" /> Copied</>
+                  <>
+                    <Check className="size-3 text-accent-green" /> Copied
+                  </>
                 ) : (
-                  <><Copy className="size-3" /> Copy</>
+                  <>
+                    <Copy className="size-3" /> Copy
+                  </>
                 )}
               </Button>
             </div>
@@ -174,7 +185,11 @@ export default function PromptCompileModal({
         </div>
 
         <DialogFooter className="shrink-0">
-          <Button variant="outline" onClick={onClose} className="border-frost text-muted-text">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="border-frost text-muted-text"
+          >
             Cancel
           </Button>
           <Button
@@ -183,13 +198,15 @@ export default function PromptCompileModal({
             disabled={recordUsage.isPending}
           >
             {recordUsage.isPending ? (
-              <><Loader2 className="size-4 animate-spin" /> Recording…</>
+              <>
+                <Loader2 className="size-4 animate-spin" /> Recording…
+              </>
             ) : (
-              "Use & Record Usage"
+              'Use & Record Usage'
             )}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

@@ -52,9 +52,12 @@ export function useSearchPrompts(query: string) {
 }
 
 export function useCreatePrompt() {
-  return useApiMutation((data: CreatePromptRequest) => promptApi.createPrompt(data), {
-    invalidateKeys: [['prompts']],
-  })
+  return useApiMutation(
+    (data: CreatePromptRequest) => promptApi.createPrompt(data),
+    {
+      invalidateKeys: [['prompts']],
+    },
+  )
 }
 
 export function useUpdatePrompt() {
@@ -66,28 +69,44 @@ export function useUpdatePrompt() {
 }
 
 export function useDeletePrompt() {
-  return useApiMutation((promptId: string) => promptApi.deletePrompt(promptId), {
-    invalidateKeys: [['prompts']],
-  })
+  return useApiMutation(
+    (promptId: string) => promptApi.deletePrompt(promptId),
+    {
+      invalidateKeys: [['prompts']],
+    },
+  )
 }
 
 export function useCompilePrompt() {
   return useApiMutation(
-    ({ promptId, data }: { promptId: string; data: { variables: Record<string, unknown> } }) =>
-      promptApi.compilePrompt(promptId, data),
+    ({
+      promptId,
+      data,
+    }: {
+      promptId: string
+      data: { variables: Record<string, unknown> }
+    }) => promptApi.compilePrompt(promptId, data),
   )
 }
 
 export function useRecordPromptUsage() {
-  return useApiMutation((promptId: string) => promptApi.recordPromptUsage(promptId), {
-    invalidateKeys: [['prompts']],
-  })
+  return useApiMutation(
+    (promptId: string) => promptApi.recordPromptUsage(promptId),
+    {
+      invalidateKeys: [['prompts']],
+    },
+  )
 }
 
 export function useRefinePrompt() {
   return useApiMutation(
-    ({ promptId, data }: { promptId: string; data: { changes: Partial<CreatePromptRequest> } }) =>
-      promptApi.refinePrompt(promptId, data),
+    ({
+      promptId,
+      data,
+    }: {
+      promptId: string
+      data: { changes: Partial<CreatePromptRequest> }
+    }) => promptApi.refinePrompt(promptId, data),
     { invalidateKeys: [['prompts']] },
   )
 }

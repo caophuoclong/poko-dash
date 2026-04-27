@@ -14,6 +14,9 @@ export function formatRelativeTime(dateString: string): string {
   return date.toLocaleDateString('vi-VN')
 }
 
-export function formatDate(dateString: string, locale: string = 'vi-VN'): string {
+export function formatDate(
+  dateString: string,
+  locale: string = 'vi-VN',
+): string {
   return new Date(dateString).toLocaleDateString(locale)
 }

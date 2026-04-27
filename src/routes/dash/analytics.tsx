@@ -7,5 +7,11 @@ export const Route = createFileRoute('/dash/analytics')({
 })
 
 function AnalyticsPage() {
-  return <SimplePage title="Thống kê" subtitle="Xem báo cáo và phân tích dữ liệu" icon={BarChart} />
+  return (
+    <SimplePage
+      title="Thống kê"
+      subtitle="Xem báo cáo và phân tích dữ liệu"
+      icon={BarChart}
+    />
+  )
 }

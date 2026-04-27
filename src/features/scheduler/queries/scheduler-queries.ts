@@ -1,6 +1,9 @@
 import { queryOptions } from '@tanstack/react-query'
 import { fetchScheduledJobs, fetchScheduledJob } from '../api/scheduler-api'
-import type { ScheduledJob, ListScheduledJobsParams } from '../types/scheduler.dto'
+import type {
+  ScheduledJob,
+  ListScheduledJobsParams,
+} from '../types/scheduler.dto'
 
 export const scheduledJobsQueryOptions = (params?: ListScheduledJobsParams) =>
   queryOptions<ScheduledJob[]>({

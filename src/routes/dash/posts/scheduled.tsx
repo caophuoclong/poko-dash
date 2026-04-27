@@ -7,5 +7,11 @@ export const Route = createFileRoute('/dash/posts/scheduled')({
 })
 
 function ScheduledPostsPage() {
-  return <SimplePage title="Bài viết đã lên lịch" subtitle="Xem và quản lý các bài viết đã lên lịch" icon={Calendar} />
+  return (
+    <SimplePage
+      title="Bài viết đã lên lịch"
+      subtitle="Xem và quản lý các bài viết đã lên lịch"
+      icon={Calendar}
+    />
+  )
 }

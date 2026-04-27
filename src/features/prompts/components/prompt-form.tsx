@@ -14,7 +14,12 @@ import type {
 } from '../types'
 import { cn } from '#/shared/utils'
 
-import { PROMPT_TYPES, PROMPT_CATEGORIES, PROMPT_STATUSES, PROMPT_ROLES } from '../types'
+import {
+  PROMPT_TYPES,
+  PROMPT_CATEGORIES,
+  PROMPT_STATUSES,
+  PROMPT_ROLES,
+} from '../types'
 
 function extractVariables(template: string): string[] {
   const matches = template.match(/\{\{(\w+)\}\}/g) ?? []

@@ -1,16 +1,16 @@
-import type { Row } from "@tanstack/react-table";
-import type { PinnedOffsetMap, CommonTableProps } from "./types";
-import { CommonTableRow } from "./common-table-row";
-import type { ReactNode } from "react";
+import type { Row } from '@tanstack/react-table'
+import type { PinnedOffsetMap, CommonTableProps } from './types'
+import { CommonTableRow } from './common-table-row'
+import type { ReactNode } from 'react'
 
 interface CommonTableBodyProps<TData> {
-  rows: Row<TData>[];
-  pinnedOffsets: PinnedOffsetMap;
-  compact: boolean;
-  isRowDirty?: CommonTableProps<TData>["isRowDirty"];
-  onRowClick?: CommonTableProps<TData>["onRowClick"];
-  getRowClassName?: CommonTableProps<TData>["getRowClassName"];
-  footerRow?: ReactNode;
+  rows: Row<TData>[]
+  pinnedOffsets: PinnedOffsetMap
+  compact: boolean
+  isRowDirty?: CommonTableProps<TData>['isRowDirty']
+  onRowClick?: CommonTableProps<TData>['onRowClick']
+  getRowClassName?: CommonTableProps<TData>['getRowClassName']
+  footerRow?: ReactNode
 }
 
 export function CommonTableBody<TData>({
@@ -25,8 +25,8 @@ export function CommonTableBody<TData>({
   return (
     <tbody>
       {rows.map((row) => {
-        const dirty = isRowDirty?.(row.id) ?? false;
-        const customClass = getRowClassName?.(row.original);
+        const dirty = isRowDirty?.(row.id) ?? false
+        const customClass = getRowClassName?.(row.original)
 
         return (
           <CommonTableRow
@@ -38,9 +38,9 @@ export function CommonTableBody<TData>({
             onRowClick={onRowClick}
             rowClassName={customClass}
           />
-        );
+        )
       })}
       {footerRow}
     </tbody>
-  );
+  )
 }

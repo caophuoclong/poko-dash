@@ -1,6 +1,15 @@
 // layer: types
-export type PromptType = 'content_generation' | 'analysis' | 'refinement' | 'custom'
-export type PromptCategory = 'social_media' | 'blog' | 'video' | 'email' | 'general'
+export type PromptType =
+  | 'content_generation'
+  | 'analysis'
+  | 'refinement'
+  | 'custom'
+export type PromptCategory =
+  | 'social_media'
+  | 'blog'
+  | 'video'
+  | 'email'
+  | 'general'
 export type PromptStatus = 'active' | 'draft' | 'archived'
 export type PromptRole = 'system' | 'user'
 
@@ -76,9 +85,17 @@ export const PROMPT_STATUSES: { value: PromptStatus; label: string }[] = [
   { value: 'archived', label: 'Archived' },
 ]
 
-export const PROMPT_ROLES: { value: PromptRole; label: string; description: string }[] = [
+export const PROMPT_ROLES: {
+  value: PromptRole
+  label: string
+  description: string
+}[] = [
   { value: 'user', label: 'User', description: 'Task / instruction prompt' },
-  { value: 'system', label: 'System', description: 'Behavior / context prompt' },
+  {
+    value: 'system',
+    label: 'System',
+    description: 'Behavior / context prompt',
+  },
 ]
 
 export const TYPE_LABELS: Record<string, string> = {

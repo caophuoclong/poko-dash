@@ -49,4 +49,3 @@ export interface ListScheduledJobsParams {
 
 export type CreateScheduledJobRequest = PostSchedulerJobsRequest
 export type PatchScheduledJobRequest = PatchSchedulerJobsByJobIdRequest
-

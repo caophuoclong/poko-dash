@@ -11,11 +11,9 @@ import {
 } from '../api/content-idea-api'
 
 export function useContentIdeas() {
-  return useApiQuery(
-    ['content-ideas'],
-    () => fetchContentIdeas(),
-    { fallback: [] as unknown as GetContentIdeasResponse },
-  )
+  return useApiQuery(['content-ideas'], () => fetchContentIdeas(), {
+    fallback: [] as unknown as GetContentIdeasResponse,
+  })
 }
 
 export function useContentIdea(ideaId: string | undefined) {

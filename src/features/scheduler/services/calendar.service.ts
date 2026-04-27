@@ -1,4 +1,8 @@
-import type { CalendarDay, CalendarEvent, CalendarMonth } from '../types/calendar-event'
+import type {
+  CalendarDay,
+  CalendarEvent,
+  CalendarMonth,
+} from '../types/calendar-event'
 import type { ScheduledJob } from '../types/scheduler.dto'
 
 export function getDateKey(date: Date): string {
@@ -82,12 +86,20 @@ export function generateCalendarMonth(
   }
 }
 
-export function getMonthLabel(year: number, month: number, locale = 'vi-VN'): string {
+export function getMonthLabel(
+  year: number,
+  month: number,
+  locale = 'vi-VN',
+): string {
   const date = new Date(year, month, 1)
   return date.toLocaleDateString(locale, { month: 'long', year: 'numeric' })
 }
 
-export function navigateMonth(year: number, month: number, direction: 'prev' | 'next'): { year: number; month: number } {
+export function navigateMonth(
+  year: number,
+  month: number,
+  direction: 'prev' | 'next',
+): { year: number; month: number } {
   if (direction === 'next') {
     if (month === 11) {
       return { year: year + 1, month: 0 }
@@ -133,7 +145,7 @@ export function transformScheduledJobsToEvents(
     title: job.postId,
     scheduledAt: job.scheduledAt,
     status: job.status as CalendarEvent['status'],
-    priority: 'medium' as CalendarEvent['priority'],
+    priority: 'medium',
     platform: job.platform as CalendarEvent['platform'],
     page: job.platform,
   }))

@@ -6,9 +6,10 @@ import PostsFilterBar from './posts-filter-bar'
 import { CommonTable } from '@/components/table'
 import {
   useReactTable,
-  getCoreRowModel,
-  type ColumnDef,
+  getCoreRowModel
+  
 } from '@tanstack/react-table'
+import type {ColumnDef} from '@tanstack/react-table';
 import { Button } from '@/components/ui/button'
 import { PageHeader } from '@/components/ui/page-header'
 import { EmptyState } from '@/components/ui/empty-state'

@@ -7,5 +7,11 @@ export const Route = createFileRoute('/dash/settings')({
 })
 
 function SettingsPage() {
-  return <SimplePage title="Cài đặt" subtitle="Quản lý cấu hình hệ thống" icon={Settings} />
+  return (
+    <SimplePage
+      title="Cài đặt"
+      subtitle="Quản lý cấu hình hệ thống"
+      icon={Settings}
+    />
+  )
 }

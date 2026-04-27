@@ -1,4 +1,7 @@
-export function parseDelimitedList(raw?: string, delimiter: string = ';'): string[] {
+export function parseDelimitedList(
+  raw?: string,
+  delimiter: string = ';',
+): string[] {
   if (!raw || !raw.trim()) return []
   return raw
     .split(delimiter)

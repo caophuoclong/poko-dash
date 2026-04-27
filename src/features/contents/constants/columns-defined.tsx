@@ -6,25 +6,28 @@ import {
   ProductPopover,
 } from '@/components/table'
 import { Sparkles, Loader2, CheckCircle } from 'lucide-react'
-import { Controller, type UseFormReturn } from 'react-hook-form'
+import { Controller  } from 'react-hook-form'
+import type {UseFormReturn} from 'react-hook-form';
 import { Button } from '@/components/ui/button'
 import { Link } from '@tanstack/react-router'
 
 import type { ColumnDef } from '@tanstack/react-table'
 import { PriorityDot } from '../components/PriorityDot'
 import {
-  Autocomplete,
-  type AutocompleteOption,
+  Autocomplete
+  
 } from '@/components/ui/autocomplete'
+import type {AutocompleteOption} from '@/components/ui/autocomplete';
 import { useEffect, useState } from 'react'
-import { cn } from '#/shared/utils'
-import { formatDate } from '#/shared/utils'
+import { cn, formatDate  } from '#/shared/utils'
 import type { ContentIdeaTableForm } from '../components/ContentPostPage'
 import {
   IdeaType,
-  TargetPlatform,
-  type ContentIdeaEntity,
+  TargetPlatform
+  
 } from '../schemas/content.schema'
+import type {ContentIdeaEntity} from '../schemas/content.schema';
+
 const PLATFORM_OPTIONS: {
   value: TargetPlatform
   label: string
@@ -192,7 +195,7 @@ export const getColumns: (
                 value={field.value || idea.ideaType}
                 options={TYPE_OPTIONS}
                 renderTrigger={(cur) => {
-                  const opt = TYPE_MAP[cur.value as IdeaType]
+                  const opt = TYPE_MAP[cur.value]
                   return opt ? (
                     <span
                       className={cn(
@@ -272,7 +275,7 @@ export const getColumns: (
             name={`rows.${idea.ideaId}.angle` as const}
             render={({ field }) => {
               const val =
-                ((field.value as string | undefined) ?? idea.angle) || ''
+                ((field.value) ?? idea.angle) || ''
               const angel = angle || []
               const values = val.split(',').map((v) => v.trim())
               return (
@@ -337,7 +340,7 @@ export const getColumns: (
                 value={field.value || idea.targetPlatform}
                 options={PLATFORM_OPTIONS}
                 renderTrigger={(cur) => {
-                  const p = PLATFORM_MAP[cur.value as TargetPlatform]
+                  const p = PLATFORM_MAP[cur.value]
                   return p ? (
                     <span className="inline-flex items-center gap-1.5 text-xs text-muted-text">
                       <span className="w-5 h-5 rounded bg-surface-2 flex items-center justify-center text-[9px] font-bold text-near-white">

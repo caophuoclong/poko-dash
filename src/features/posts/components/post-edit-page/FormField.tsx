@@ -34,7 +34,7 @@ export default function FormField<
         {label}
       </label>
       <Controller
-        name={name as any}
+        name={name}
         control={control}
         render={({ field }) => {
           if (type === 'textarea') {

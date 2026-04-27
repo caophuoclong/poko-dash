@@ -10,12 +10,7 @@ import PromptTrending from './prompt-trending'
 import PromptVersionsModal from './prompt-versions-modal'
 import PromptRateModal from './prompt-rate-modal'
 import PromptRefineModal from './prompt-refine-modal'
-import type {
-  Prompt,
-  PromptType,
-  PromptCategory,
-  PromptRole,
-} from '../types'
+import type { Prompt, PromptType, PromptCategory, PromptRole } from '../types'
 import { cn } from '#/shared/utils'
 
 type Tab = 'library' | 'trending' | 'my-prompts'

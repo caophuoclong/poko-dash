@@ -1,4 +1,9 @@
-import { useMutation, useQueryClient, type QueryKey } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQueryClient
+  
+} from '@tanstack/react-query'
+import type {QueryKey} from '@tanstack/react-query';
 
 export interface ApiMutationOptions<TData, TVariables> {
   invalidateKeys?: QueryKey[]

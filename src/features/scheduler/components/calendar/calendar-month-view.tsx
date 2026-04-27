@@ -78,7 +78,7 @@ export default function CalendarMonthView({
     }
   }, [controlled, currentDate.year, currentDate.month])
 
-  const events = controlled ? externalEvents! : fetchedEvents
+  const events = controlled ? externalEvents : fetchedEvents
 
   const calendarMonth = React.useMemo(
     () => generateCalendarMonth(currentDate.year, currentDate.month, events),

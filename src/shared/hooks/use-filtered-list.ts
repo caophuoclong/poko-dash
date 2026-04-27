@@ -9,7 +9,9 @@ export function useFilteredList<TItem>(
   },
 ) {
   const [searchTerm, setSearchTerm] = useState('')
-  const [activeFilters, setActiveFilters] = useState<Record<string, unknown>>({})
+  const [activeFilters, setActiveFilters] = useState<Record<string, unknown>>(
+    {},
+  )
 
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
@@ -36,6 +38,8 @@ export function useFilteredList<TItem>(
     activeFilters,
     setActiveFilters,
     clearFilters,
-    hasActiveFilters: Object.values(activeFilters).some((v) => v !== undefined && v !== ''),
+    hasActiveFilters: Object.values(activeFilters).some(
+      (v) => v !== undefined && v !== '',
+    ),
   }
 }

@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { Loader2Icon, PlusIcon } from "lucide-react";
+import * as React from 'react'
+import { Loader2Icon, PlusIcon } from 'lucide-react'
 
 import {
   Combobox,
@@ -14,161 +14,164 @@ import {
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
-} from "@/components/ui/combobox";
+} from '@/components/ui/combobox'
 
-const CREATE_SENTINEL = "__autocomplete_create__";
+const CREATE_SENTINEL = '__autocomplete_create__'
 
-type MaybePromise<T> = T | Promise<T>;
+type MaybePromise<T> = T | Promise<T>
 
 export type AutocompleteOption<TValue = string> = {
-  label: string;
-  value: TValue;
-  disabled?: boolean;
-};
+  label: string
+  value: TValue
+  disabled?: boolean
+}
 
-type AutocompleteValueInput<TValue> = AutocompleteOption<TValue> | TValue;
+type AutocompleteValueInput<TValue> = AutocompleteOption<TValue> | TValue
 
-type AutocompleteGetData<TRaw> = (query: string) => MaybePromise<TRaw[]>;
+type AutocompleteGetData<TRaw> = (query: string) => MaybePromise<TRaw[]>
 type AutocompleteGetOptions<TRaw, TValue> = (
   data: TRaw[],
   query: string,
-) => AutocompleteOption<TValue>[];
+) => AutocompleteOption<TValue>[]
 
 type BaseAutocompleteProps<TRaw, TValue> = {
-  options?: Array<AutocompleteOption<TValue> | TValue>;
-  getData?: AutocompleteGetData<TRaw>;
-  getOptions?: AutocompleteGetOptions<TRaw, TValue>;
+  options?: Array<AutocompleteOption<TValue> | TValue>
+  getData?: AutocompleteGetData<TRaw>
+  getOptions?: AutocompleteGetOptions<TRaw, TValue>
   filterOptions?: (
     options: AutocompleteOption<TValue>[],
     query: string,
-  ) => AutocompleteOption<TValue>[];
-  allowCreate?: boolean;
-  createLabel?: (input: string) => string;
+  ) => AutocompleteOption<TValue>[]
+  allowCreate?: boolean
+  createLabel?: (input: string) => string
   createOption?: (
     input: string,
-  ) => MaybePromise<AutocompleteOption<TValue> | null | undefined>;
-  onCreateOption?: (option: AutocompleteOption<TValue>) => void;
-  placeholder?: string;
-  emptyText?: string;
-  loadingText?: string;
-  disabled?: boolean;
-  className?: string;
-  contentClassName?: string;
-  limitTags?: number;
-  sortSelectedFirst?: boolean;
-  truncateChipLabel?: boolean;
-  emitValue?: "auto" | "raw" | "option";
-};
+  ) => MaybePromise<AutocompleteOption<TValue> | null | undefined>
+  onCreateOption?: (option: AutocompleteOption<TValue>) => void
+  placeholder?: string
+  emptyText?: string
+  loadingText?: string
+  disabled?: boolean
+  className?: string
+  contentClassName?: string
+  limitTags?: number
+  sortSelectedFirst?: boolean
+  truncateChipLabel?: boolean
+  emitValue?: 'auto' | 'raw' | 'option'
+}
 
 type SingleAutocompleteRawProps<TRaw, TValue> = BaseAutocompleteProps<
   TRaw,
   TValue
 > & {
-  multiple?: false;
-  value?: TValue | null;
-  defaultValue?: TValue | null;
-  onChange?: (value: TValue | null) => void;
-};
+  multiple?: false
+  value?: TValue | null
+  defaultValue?: TValue | null
+  onChange?: (value: TValue | null) => void
+}
 
 type SingleAutocompleteOptionProps<TRaw, TValue> = BaseAutocompleteProps<
   TRaw,
   TValue
 > & {
-  multiple?: false;
-  value?: AutocompleteOption<TValue> | null;
-  defaultValue?: AutocompleteOption<TValue> | null;
-  onChange?: (value: AutocompleteOption<TValue> | null) => void;
-};
+  multiple?: false
+  value?: AutocompleteOption<TValue> | null
+  defaultValue?: AutocompleteOption<TValue> | null
+  onChange?: (value: AutocompleteOption<TValue> | null) => void
+}
 
 type MultiAutocompleteRawProps<TRaw, TValue> = BaseAutocompleteProps<
   TRaw,
   TValue
 > & {
-  multiple: true;
-  value?: TValue[];
-  defaultValue?: TValue[];
-  onChange?: (value: TValue[]) => void;
-};
+  multiple: true
+  value?: TValue[]
+  defaultValue?: TValue[]
+  onChange?: (value: TValue[]) => void
+}
 
 type MultiAutocompleteOptionProps<TRaw, TValue> = BaseAutocompleteProps<
   TRaw,
   TValue
 > & {
-  multiple: true;
-  value?: AutocompleteOption<TValue>[];
-  defaultValue?: AutocompleteOption<TValue>[];
-  onChange?: (value: AutocompleteOption<TValue>[]) => void;
-};
+  multiple: true
+  value?: AutocompleteOption<TValue>[]
+  defaultValue?: AutocompleteOption<TValue>[]
+  onChange?: (value: AutocompleteOption<TValue>[]) => void
+}
 
 type SingleAutocompleteLooseProps<TRaw, TValue> = BaseAutocompleteProps<
   TRaw,
   TValue
 > & {
-  multiple?: false;
-  value?: AutocompleteValueInput<TValue> | null;
-  defaultValue?: AutocompleteValueInput<TValue> | null;
-  onChange?: (value: AutocompleteValueInput<TValue> | null) => void;
-};
+  multiple?: false
+  value?: AutocompleteValueInput<TValue> | null
+  defaultValue?: AutocompleteValueInput<TValue> | null
+  onChange?: (value: AutocompleteValueInput<TValue> | null) => void
+}
 
 type MultiAutocompleteLooseProps<TRaw, TValue> = BaseAutocompleteProps<
   TRaw,
   TValue
 > & {
-  multiple: true;
-  value?: AutocompleteValueInput<TValue>[];
-  defaultValue?: AutocompleteValueInput<TValue>[];
-  onChange?: (value: AutocompleteValueInput<TValue>[]) => void;
-};
+  multiple: true
+  value?: AutocompleteValueInput<TValue>[]
+  defaultValue?: AutocompleteValueInput<TValue>[]
+  onChange?: (value: AutocompleteValueInput<TValue>[]) => void
+}
 
-export type AutocompleteProps<TRaw = AutocompleteOption<string>, TValue = string> =
+export type AutocompleteProps<
+  TRaw = AutocompleteOption<string>,
+  TValue = string,
+> =
   | SingleAutocompleteRawProps<TRaw, TValue>
   | SingleAutocompleteOptionProps<TRaw, TValue>
   | MultiAutocompleteRawProps<TRaw, TValue>
   | MultiAutocompleteOptionProps<TRaw, TValue>
   | SingleAutocompleteLooseProps<TRaw, TValue>
-  | MultiAutocompleteLooseProps<TRaw, TValue>;
+  | MultiAutocompleteLooseProps<TRaw, TValue>
 
 type InternalOption<TValue> = AutocompleteOption<TValue> & {
   __meta?: {
-    kind: "create";
-    input: string;
-  };
-};
+    kind: 'create'
+    input: string
+  }
+}
 
 function isPromiseLike<T>(value: unknown): value is Promise<T> {
   return (
-    typeof value === "object" &&
+    typeof value === 'object' &&
     value !== null &&
-    "then" in value &&
-    typeof (value as { then?: unknown }).then === "function"
-  );
+    'then' in value &&
+    typeof (value as { then?: unknown }).then === 'function'
+  )
 }
 
 function normalizeOption<TValue>(item: AutocompleteOption<TValue> | TValue) {
   if (
-    typeof item === "object" &&
+    typeof item === 'object' &&
     item !== null &&
-    "label" in item &&
-    "value" in item
+    'label' in item &&
+    'value' in item
   ) {
-    return item as AutocompleteOption<TValue>;
+    return item
   }
 
   return {
     label: String(item),
-    value: item as TValue,
-  };
+    value: item,
+  }
 }
 
 function isOptionObject<TValue>(
   item: AutocompleteValueInput<TValue> | null | undefined,
 ): item is AutocompleteOption<TValue> {
   return (
-    typeof item === "object" &&
+    typeof item === 'object' &&
     item !== null &&
-    "label" in item &&
-    "value" in item
-  );
+    'label' in item &&
+    'value' in item
+  )
 }
 
 function normalizeSelectionItem<TValue>(
@@ -176,54 +179,54 @@ function normalizeSelectionItem<TValue>(
   options: AutocompleteOption<TValue>[],
 ): AutocompleteOption<TValue> {
   if (
-    typeof item === "object" &&
+    typeof item === 'object' &&
     item !== null &&
-    "label" in item &&
-    "value" in item
+    'label' in item &&
+    'value' in item
   ) {
-    return item as AutocompleteOption<TValue>;
+    return item
   }
 
-  const matched = options.find((option) => Object.is(option.value, item));
+  const matched = options.find((option) => Object.is(option.value, item))
   if (matched) {
-    return matched;
+    return matched
   }
 
   return {
     label: String(item),
-    value: item as TValue,
-  };
+    value: item,
+  }
 }
 
 function defaultFilter<TValue>(
   options: AutocompleteOption<TValue>[],
   query: string,
 ) {
-  const keyword = query.trim().toLowerCase();
+  const keyword = query.trim().toLowerCase()
   if (!keyword) {
-    return options;
+    return options
   }
 
   return options.filter((option) =>
     option.label.toLowerCase().includes(keyword),
-  );
+  )
 }
 
 function sameOptionValue<TValue>(
   a: AutocompleteOption<TValue>,
   b: AutocompleteOption<TValue>,
 ) {
-  return Object.is(a.value, b.value);
+  return Object.is(a.value, b.value)
 }
 
 function hasOptionLabel<TValue>(
   options: AutocompleteOption<TValue>[],
   label: string,
 ) {
-  const normalized = label.trim().toLowerCase();
+  const normalized = label.trim().toLowerCase()
   return options.some(
     (option) => option.label.trim().toLowerCase() === normalized,
-  );
+  )
 }
 
 function useControllableSelection<T>(
@@ -231,35 +234,35 @@ function useControllableSelection<T>(
   defaultValue: T,
   onChange?: (next: T) => void,
 ) {
-  const [internalValue, setInternalValue] = React.useState(defaultValue);
-  const isControlled = value !== undefined;
-  const current = isControlled ? (value as T) : internalValue;
+  const [internalValue, setInternalValue] = React.useState(defaultValue)
+  const isControlled = value !== undefined
+  const current = isControlled ? (value as T) : internalValue
 
   const setValue = React.useCallback(
     (next: T) => {
       if (!isControlled) {
-        setInternalValue(next);
+        setInternalValue(next)
       }
-      onChange?.(next);
+      onChange?.(next)
     },
     [isControlled, onChange],
-  );
+  )
 
-  return [current, setValue] as const;
+  return [current, setValue] as const
 }
 
 export function Autocomplete<TRaw, TValue>(
   props: SingleAutocompleteRawProps<TRaw, TValue>,
-): React.JSX.Element;
+): React.JSX.Element
 export function Autocomplete<TRaw, TValue>(
   props: SingleAutocompleteOptionProps<TRaw, TValue>,
-): React.JSX.Element;
+): React.JSX.Element
 export function Autocomplete<TRaw, TValue>(
   props: MultiAutocompleteRawProps<TRaw, TValue>,
-): React.JSX.Element;
+): React.JSX.Element
 export function Autocomplete<TRaw, TValue>(
   props: MultiAutocompleteOptionProps<TRaw, TValue>,
-): React.JSX.Element;
+): React.JSX.Element
 export function Autocomplete<
   TRaw = AutocompleteOption<string>,
   TValue = string,
@@ -506,7 +509,6 @@ export function Autocomplete<
     return [...selected, ...unselected]
   }, [fallbackOptions, loadedOptions, selection, sortSelectedFirst])
 
-
   const renderedOptions = React.useMemo(() => {
     if (!createCandidate) {
       return sortedOptions
@@ -617,8 +619,8 @@ export function Autocomplete<
   return (
     <Combobox<InternalOption<TValue>, boolean>
       multiple={multiple}
-      value={normalizedSelection as never}
-      onValueChange={handleSelectionChange as never}
+      value={normalizedSelection}
+      onValueChange={handleSelectionChange}
       inputValue={inputValue}
       onInputValueChange={setInputValue}
       open={isOpen}

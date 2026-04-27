@@ -4,9 +4,10 @@ import { useGenerateFromIdea } from '@/features/posts/hooks/use-content-posts'
 import {
   useReactTable,
   getCoreRowModel,
-  getSortedRowModel,
-  type SortingState,
+  getSortedRowModel
+  
 } from '@tanstack/react-table'
+import type {SortingState} from '@tanstack/react-table';
 import { CommonTable } from '@/components/table'
 
 import { FormProvider, useForm } from 'react-hook-form'

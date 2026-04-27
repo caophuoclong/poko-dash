@@ -1,6 +1,4 @@
-import type {
-  GetProductsResponse,
-} from '#/dtos/products'
+import type { GetProductsResponse } from '#/dtos/products'
 import type { GetAffiliateLinksResponse } from '#/dtos/affiliate-links'
 import type { ManualImportRequest } from '../types/manual-import'
 import {
@@ -13,11 +11,9 @@ import {
 import { useApiQuery, useApiMutation } from '#/shared/hooks'
 
 export function useProducts() {
-  return useApiQuery(
-    ['products'],
-    () => fetchProducts(),
-    { fallback: [] as unknown as GetProductsResponse },
-  )
+  return useApiQuery(['products'], () => fetchProducts(), {
+    fallback: [] as unknown as GetProductsResponse,
+  })
 }
 
 export function useProduct(productId: string) {
@@ -31,11 +27,9 @@ export function useProduct(productId: string) {
 }
 
 export function useAllAffiliateLinks() {
-  return useApiQuery(
-    ['affiliate-links'],
-    () => fetchAllAffiliateLinks(),
-    { fallback: [] as unknown as GetAffiliateLinksResponse },
-  )
+  return useApiQuery(['affiliate-links'], () => fetchAllAffiliateLinks(), {
+    fallback: [] as unknown as GetAffiliateLinksResponse,
+  })
 }
 
 export function useAffiliateLinks(productId: string) {
