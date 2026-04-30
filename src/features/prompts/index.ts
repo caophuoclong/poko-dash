@@ -1,6 +1,5 @@
 export * from './types'
 export * from './hooks/use-prompts'
-export * from './api/prompt-api'
 export { default as PromptGeneratorPage } from './components/prompt-generator-page'
 export { default as PromptCard } from './components/prompt-card'
 export { default as PromptForm } from './components/prompt-form'

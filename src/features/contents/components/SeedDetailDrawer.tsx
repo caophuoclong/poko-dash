@@ -20,17 +20,17 @@ import type { ContentIdeaEntity } from '../schemas/content.schema'
 import { IdeaType, TargetPlatform, IdeaStatus } from '../schemas/content.schema'
 import { useProducts } from '@/features/products/hooks/use-products'
 import type { Product } from '@/features/products/types/product'
-import type {
-  IdeaGenerationSummary,
-} from '../constants/seeds-columns'
-import type { GetContentPostsResponse } from '#/dtos/content-posts'
-import { generateContentPosts } from '@/features/posts/api/content-post-api'
+import type { IdeaGenerationSummary } from '../constants/seeds-columns'
 import {
   computeGenerationState,
   isProductGenerated,
   isProductGenerating,
   generateActionTooltip,
 } from '../utils/generation-state'
+import {
+  useGenerateContentPosts,
+  type ContentPostParsed,
+} from '#/features/posts'
 
 const PRODUCT_COLORS = [
   '#3b82f6',
@@ -73,7 +73,7 @@ export interface SeedDetailDrawerProps {
   generatingProductIds?: string[]
   productsMap?: Record<string, Product>
   generationSummary?: IdeaGenerationSummary
-  recentPosts?: GetContentPostsResponse
+  recentPosts?: ContentPostParsed[]
   onViewPosts?: (ideaId: string) => void
   onApprove?: (idea: ContentIdeaEntity) => void
 }
@@ -93,6 +93,7 @@ export function SeedDetailDrawer({
   onApprove,
 }: SeedDetailDrawerProps) {
   const { data: allProducts = [] } = useProducts()
+  const generateContentPosts = useGenerateContentPosts()
 
   const productIds = idea?.ideaProducts ?? []
 
@@ -136,7 +137,7 @@ export function SeedDetailDrawer({
         | 'instagram'
         | 'twitter'
         | undefined
-      generateContentPosts({ productIds: productId, platform })
+      // generateConte({ productIds: productId, platform })
       return
     }
     onGenerateProduct(idea.ideaId, productId)
@@ -644,7 +645,7 @@ function SeedOutputSection({
   postCount: number
   totalProducts: number
   generatedProducts: number
-  recentPosts?: GetContentPostsResponse
+  recentPosts?: ContentPostParsed[]
   onViewPosts?: (ideaId: string) => void
 }) {
   if (postCount === 0 && !recentPosts?.length) {

@@ -45,6 +45,7 @@ interface SeedHeaderProps {
   onApprove?: () => void
   onUnapprove?: () => void
   onGenerateAll?: () => void
+  onDelete?: () => void
   isGenerating?: boolean
 }
 
@@ -57,6 +58,7 @@ export function SeedHeader({
   onApprove,
   onUnapprove,
   onGenerateAll,
+  onDelete,
   isGenerating = false,
 }: SeedHeaderProps) {
   const status = idea.status
@@ -66,7 +68,7 @@ export function SeedHeader({
   const canGenerate = isApproved && (idea.ideaProducts?.length ?? 0) > 0
 
   return (
-    <div className="border-b border-frost bg-surface/50 px-6 py-4">
+    <div className="sticky top-0 z-10 border-b border-frost bg-surface -mx-4 -mt-4 px-6 py-4">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-4 flex-1 min-w-0">
           <button
@@ -176,7 +178,10 @@ export function SeedHeader({
             <DropdownMenuContent align="end">
               <DropdownMenuItem>Duplicate seed</DropdownMenuItem>
               <DropdownMenuItem>Export settings</DropdownMenuItem>
-              <DropdownMenuItem className="text-accent-red">
+              <DropdownMenuItem
+                onClick={onDelete}
+                className="text-accent-red"
+              >
                 Delete seed
               </DropdownMenuItem>
             </DropdownMenuContent>

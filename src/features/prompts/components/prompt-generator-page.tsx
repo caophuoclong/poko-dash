@@ -139,7 +139,7 @@ function PromptGeneratorInner() {
 
   return (
     <div className="max-w-full">
-      <div className="mb-6 flex items-start justify-between gap-4">
+      <div className="sticky top-0 z-10 bg-surface -mx-4 -mt-4 pt-4 px-4 mb-6 flex items-start justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold text-near-white tracking-tight mb-1">
             Prompt Generator

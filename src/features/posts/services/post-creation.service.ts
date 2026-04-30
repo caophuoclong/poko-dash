@@ -1,6 +1,6 @@
 import type { ContentPostCreateFormData } from '../schemas/content-post.schema'
 import type { PlatformTargetConfig } from '../types/publication'
-import { createContentPost } from '../api/content-post-api'
+import { contentPostsControllerCreate } from '#/api/client'
 import type { PostContentPostsRequest } from '#/dtos'
 
 interface CreatePayloadInput extends ContentPostCreateFormData {
@@ -14,9 +14,9 @@ interface CreatePayloadOutput extends PostContentPostsRequest {
 export class PostCreationService {
   async createPost(
     data: CreatePayloadInput,
-  ): Promise<ReturnType<typeof createContentPost>> {
+  ): Promise<Awaited<ReturnType<typeof contentPostsControllerCreate>>> {
     const payload = this.transformFormDataToPayload(data)
-    return createContentPost(payload)
+    return contentPostsControllerCreate(payload)
   }
 
   transformFormDataToPayload(

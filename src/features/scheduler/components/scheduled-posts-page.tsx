@@ -4,7 +4,6 @@ import { useMemo } from 'react'
 import { Link } from '@tanstack/react-router'
 import CalendarMonthView from './calendar/calendar-month-view'
 import { transformScheduledJobsToEvents } from '../services/calendar.service'
-import type { GetContentPostsResponse } from '#/dtos/content-posts'
 
 type PostSummary = GetContentPostsResponse[number]
 
@@ -41,7 +40,7 @@ function ScheduledPostsPageInner() {
 
   return (
     <div className="max-w-full">
-      <div className="mb-8">
+      <div className="sticky top-0 z-10 bg-surface -mx-4 -mt-4 pt-4 px-4 mb-8">
         <h1 className="font-display text-2xl font-bold text-near-white tracking-tight mb-1">
           Bài đã lên lịch
         </h1>

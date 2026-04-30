@@ -1,6 +1,5 @@
 export * from './types/manual-import'
 export * from './hooks/use-products'
-export * from './api/product-api'
 export { ProductList } from './components/product-list'
 export { default as ProductDetailPage } from './components/product-detail-page'
 export { default as AffiliateLinkCard } from './components/affiliate-link-card'

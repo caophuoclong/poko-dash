@@ -1,16 +1,35 @@
-import { fetchPublications, retryPublication } from '../api/publication-api'
-import { useApiQuery, useApiMutation } from '#/shared/hooks'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  usePostPublicationsControllerListForPost,
+  getPostPublicationsControllerListForPostQueryKey,
+} from '#/api/client'
 
 export function usePublications(postId: string) {
-  return useApiQuery(
-    ['publications', postId],
-    () => fetchPublications(postId),
-    { enabled: !!postId, fallback: [] },
-  )
+  return usePostPublicationsControllerListForPost(postId, {
+    query: {
+      enabled: !!postId,
+      select: (res: any) => res.data,
+      placeholderData: [] as any,
+    },
+  })
 }
 
 export function useRetryPublication() {
-  return useApiMutation(retryPublication, {
-    invalidateKeys: [['publications']],
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (publicationId: string) => {
+      const res = await fetch(`/api/publications/${publicationId}/retry`, {
+        method: 'POST',
+      })
+      if (!res.ok) {
+        throw new Error(`Retry publication failed: ${res.status}`)
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [getPostPublicationsControllerListForPostQueryKey('')[0]],
+      })
+    },
   })
 }

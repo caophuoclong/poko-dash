@@ -2,350 +2,251 @@
 // Source: openapi.json  |  Tag: Products
 // Run `node scripts/generate-dtos.mjs` to regenerate
 
-export type GetProductsResponse = Array<{
-  /** Unique product identifier */
-  productId: string;
-  /** Product title */
-  canonicalTitle: string;
-  /** Product brand */
-  brand?: string;
-  /** Primary category */
-  category: string;
-  /** Sub-category */
-  subCategory?: string;
-  /** Key specifications */
-  specsKeyFacts?: string;
-  /** Current price (decimal as string) */
-  priceCurrent?: string;
-  /** Sale price (decimal as string) */
-  priceSale?: string;
-  /** Currency code */
-  currency?: string;
-  /** Product rating 0.0-5.0 */
-  rating?: number;
-  /** Number of reviews */
-  reviewCount?: number;
-  /** Source URL */
-  sourceBestUrl: string;
-  /** Cover image URL */
-  imageCover?: string;
-  /** Semicolon-separated image URLs */
-  imageVariants?: string;
-  /** Video URL */
-  videoUrl?: string;
-  /** Semicolon-separated description image URLs */
-  descriptionImages?: string;
-  /** Internal notes */
-  notes?: string;
-  /** Product variants */
-  variants?: string;
-  /** Availability status */
-  availability?: string;
-  /** Seller name */
-  sellerName?: string;
-  /** Deal quality score */
-  dealScore: number;
-  /** Publish priority score */
-  publishScore: number;
-  /** Freshness expiry date */
-  freshUntil?: string;
-  /** Product status */
-  status: "active" | "processing" | "done" | "failed";
-  createdAt: string;
-  updatedAt: string;
-  affiliateProduct?: {
-    linkId: string;
-    productId: string;
-    merchant: string;
-    originalUrl: string;
-    affiliateUrl: string;
-    shortUrl?: string;
-    platform: string;
-    commissionRate?: number;
-    couponCode?: string;
-    deeplinkStatus: "valid" | "broken" | "pending" | "expired";
-    active: boolean;
-    createdAt: string;
-  };
-}>;
-
-export interface GetProductsErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
+export interface paths {
+    "/api/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List products (paginated)
+         * @description Returns a paginated list of products with search and sort support.
+         */
+        get: operations["ProductsController_listPaginated"];
+        put?: never;
+        /**
+         * Create a new product
+         * @description Add a new product to the catalog
+         */
+        post: operations["ProductsController_createDirect"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products/batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Batch lookup products by IDs
+         * @description Returns products matching the provided IDs.
+         */
+        post: operations["ProductsController_batch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List all products (non-paginated, legacy)
+         * @description Retrieve all products in the catalog with optional status filter.
+         */
+        get: operations["ProductsController_listAll"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/products/{productId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get product by ID
+         * @description Retrieve a single product by its UUID
+         */
+        get: operations["ProductsController_getById"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete product
+         * @description Delete a product from the catalog
+         */
+        delete: operations["ProductsController_delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Update product
+         * @description Update an existing product by ID
+         */
+        patch: operations["ProductsController_patch"];
+        trace?: never;
+    };
+}
+export type webhooks = Record<string, never>;
+export interface components {
+    schemas: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
+}
+export type $defs = Record<string, never>;
+export interface operations {
+    ProductsController_listPaginated: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated list of products */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductsController_createDirect: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Created product */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductsController_batch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Matched products and not-found IDs */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductsController_listAll: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of products */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductsController_getById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                productId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Product details */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Product not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductsController_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                productId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Product deleted successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ProductsController_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                productId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Updated product */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
 }
 
-export interface PostProductsRequest {
-  /** Product title */
-  canonicalTitle: string;
-  /** Product brand */
-  brand?: string;
-  /** Primary category */
-  category: string;
-  subCategory?: string;
-  specsKeyFacts?: string;
-  priceCurrent?: string;
-  priceSale?: string;
-  currency?: string;
-  rating?: number;
-  reviewCount?: number;
-  sourceBestUrl: string;
-  imageCover?: string;
-  imageVariants?: string;
-  videoUrl?: string;
-  descriptionImages?: string;
-  notes?: string;
-  variants?: string;
-  availability?: string;
-  sellerName?: string;
-  dealScore: number;
-  publishScore: number;
-  freshUntil?: string;
-  status: "active" | "processing" | "done" | "failed";
-}
 
-export interface PostProductsResponse {
-  /** Unique product identifier */
-  productId: string;
-  /** Product title */
-  canonicalTitle: string;
-  /** Product brand */
-  brand?: string;
-  /** Primary category */
-  category: string;
-  /** Sub-category */
-  subCategory?: string;
-  /** Key specifications */
-  specsKeyFacts?: string;
-  /** Current price (decimal as string) */
-  priceCurrent?: string;
-  /** Sale price (decimal as string) */
-  priceSale?: string;
-  /** Currency code */
-  currency?: string;
-  /** Product rating 0.0-5.0 */
-  rating?: number;
-  /** Number of reviews */
-  reviewCount?: number;
-  /** Source URL */
-  sourceBestUrl: string;
-  /** Cover image URL */
-  imageCover?: string;
-  /** Semicolon-separated image URLs */
-  imageVariants?: string;
-  /** Video URL */
-  videoUrl?: string;
-  /** Semicolon-separated description image URLs */
-  descriptionImages?: string;
-  /** Internal notes */
-  notes?: string;
-  /** Product variants */
-  variants?: string;
-  /** Availability status */
-  availability?: string;
-  /** Seller name */
-  sellerName?: string;
-  /** Deal quality score */
-  dealScore: number;
-  /** Publish priority score */
-  publishScore: number;
-  /** Freshness expiry date */
-  freshUntil?: string;
-  /** Product status */
-  status: "active" | "processing" | "done" | "failed";
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PostProductsErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export interface GetProductsByProductIdResponse {
-  /** Unique product identifier */
-  productId: string;
-  /** Product title */
-  canonicalTitle: string;
-  /** Product brand */
-  brand?: string;
-  /** Primary category */
-  category: string;
-  /** Sub-category */
-  subCategory?: string;
-  /** Key specifications */
-  specsKeyFacts?: string;
-  /** Current price (decimal as string) */
-  priceCurrent?: string;
-  /** Sale price (decimal as string) */
-  priceSale?: string;
-  /** Currency code */
-  currency?: string;
-  /** Product rating 0.0-5.0 */
-  rating?: number;
-  /** Number of reviews */
-  reviewCount?: number;
-  /** Source URL */
-  sourceBestUrl: string;
-  /** Cover image URL */
-  imageCover?: string;
-  /** Semicolon-separated image URLs */
-  imageVariants?: string;
-  /** Video URL */
-  videoUrl?: string;
-  /** Semicolon-separated description image URLs */
-  descriptionImages?: string;
-  /** Internal notes */
-  notes?: string;
-  /** Product variants */
-  variants?: string;
-  /** Availability status */
-  availability?: string;
-  /** Seller name */
-  sellerName?: string;
-  /** Deal quality score */
-  dealScore: number;
-  /** Publish priority score */
-  publishScore: number;
-  /** Freshness expiry date */
-  freshUntil?: string;
-  /** Product status */
-  status: "active" | "processing" | "done" | "failed";
-  createdAt: string;
-  updatedAt: string;
-  affiliateProduct?: {
-    linkId: string;
-    productId: string;
-    merchant: string;
-    originalUrl: string;
-    affiliateUrl: string;
-    shortUrl?: string;
-    platform: string;
-    commissionRate?: number;
-    couponCode?: string;
-    deeplinkStatus: "valid" | "broken" | "pending" | "expired";
-    active: boolean;
-    createdAt: string;
-  };
-}
-
-export interface GetProductsByProductIdErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export interface PatchProductsByProductIdRequest {
-  /** Product title */
-  canonicalTitle?: string;
-  /** Product brand */
-  brand?: string;
-  /** Primary category */
-  category?: string;
-  subCategory?: string;
-  specsKeyFacts?: string;
-  priceCurrent?: string;
-  priceSale?: string;
-  currency?: string;
-  rating?: number;
-  reviewCount?: number;
-  sourceBestUrl?: string;
-  imageCover?: string;
-  imageVariants?: string;
-  videoUrl?: string;
-  descriptionImages?: string;
-  notes?: string;
-  variants?: string;
-  availability?: string;
-  sellerName?: string;
-  dealScore?: number;
-  publishScore?: number;
-  freshUntil?: string;
-  status?: "active" | "processing" | "done" | "failed";
-}
-
-export interface PatchProductsByProductIdResponse {
-  /** Unique product identifier */
-  productId: string;
-  /** Product title */
-  canonicalTitle: string;
-  /** Product brand */
-  brand?: string;
-  /** Primary category */
-  category: string;
-  /** Sub-category */
-  subCategory?: string;
-  /** Key specifications */
-  specsKeyFacts?: string;
-  /** Current price (decimal as string) */
-  priceCurrent?: string;
-  /** Sale price (decimal as string) */
-  priceSale?: string;
-  /** Currency code */
-  currency?: string;
-  /** Product rating 0.0-5.0 */
-  rating?: number;
-  /** Number of reviews */
-  reviewCount?: number;
-  /** Source URL */
-  sourceBestUrl: string;
-  /** Cover image URL */
-  imageCover?: string;
-  /** Semicolon-separated image URLs */
-  imageVariants?: string;
-  /** Video URL */
-  videoUrl?: string;
-  /** Semicolon-separated description image URLs */
-  descriptionImages?: string;
-  /** Internal notes */
-  notes?: string;
-  /** Product variants */
-  variants?: string;
-  /** Availability status */
-  availability?: string;
-  /** Seller name */
-  sellerName?: string;
-  /** Deal quality score */
-  dealScore: number;
-  /** Publish priority score */
-  publishScore: number;
-  /** Freshness expiry date */
-  freshUntil?: string;
-  /** Product status */
-  status: "active" | "processing" | "done" | "failed";
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PatchProductsByProductIdErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export interface DeleteProductsByProductIdResponse {
-  message: string;
-}
-
-export interface DeleteProductsByProductIdErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-// ─── Namespace re-export ────────────────────────────────────────────────────
-export namespace Products {
-  export type GetProductsResponse = import("./products").GetProductsResponse;
-  export type GetProductsErrorResponse = import("./products").GetProductsErrorResponse;
-  export type PostProductsRequest = import("./products").PostProductsRequest;
-  export type PostProductsResponse = import("./products").PostProductsResponse;
-  export type PostProductsErrorResponse = import("./products").PostProductsErrorResponse;
-  export type GetProductsByProductIdResponse = import("./products").GetProductsByProductIdResponse;
-  export type GetProductsByProductIdErrorResponse = import("./products").GetProductsByProductIdErrorResponse;
-  export type PatchProductsByProductIdRequest = import("./products").PatchProductsByProductIdRequest;
-  export type PatchProductsByProductIdResponse = import("./products").PatchProductsByProductIdResponse;
-  export type PatchProductsByProductIdErrorResponse = import("./products").PatchProductsByProductIdErrorResponse;
-  export type DeleteProductsByProductIdResponse = import("./products").DeleteProductsByProductIdResponse;
-  export type DeleteProductsByProductIdErrorResponse = import("./products").DeleteProductsByProductIdErrorResponse;
-}
+// ─── Convenience type aliases ──────────────────────────────────────────────

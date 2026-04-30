@@ -45,6 +45,7 @@ interface SeedWorkspacePageProps {
   onUpdate: (data: ContentSchemaFormData) => Promise<void>
   onApprove?: () => void
   onUnapprove?: () => void
+  onDelete?: () => void
   onGenerateAll?: () => Promise<void>
   onGenerateProduct?: (productId: string) => Promise<void>
   onViewPost?: (postId: string) => void
@@ -60,6 +61,7 @@ export function SeedWorkspacePage({
   onUpdate,
   onApprove,
   onUnapprove,
+  onDelete,
   onGenerateAll,
   onGenerateProduct,
   onViewPost,
@@ -192,6 +194,7 @@ export function SeedWorkspacePage({
         onBack={() => navigate({ to: '/dash/content' })}
         onApprove={handleApprove}
         onUnapprove={handleUnapprove}
+        onDelete={onDelete}
         onGenerateAll={handleGenerateAll}
         isGenerating={isGenerating}
       />

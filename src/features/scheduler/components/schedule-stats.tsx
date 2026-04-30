@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { fetchScheduledJobs } from '../api/scheduler-api'
+import { schedulerControllerList } from '#/api/client'
 import type { ScheduledJob } from '../types/scheduler.dto'
 
 function getWeekRange(): { from: string; to: string } {
@@ -21,8 +21,8 @@ export default function ScheduleStats() {
 
   React.useEffect(() => {
     const { from, to } = getWeekRange()
-    fetchScheduledJobs({ from, to })
-      .then(setJobs)
+    schedulerControllerList()
+      .then((res) => setJobs((res.data as ScheduledJob[]) || []))
       .catch(() => setJobs([]))
       .finally(() => setLoading(false))
   }, [])

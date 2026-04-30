@@ -9,7 +9,7 @@ interface SimplePageProps {
 
 export function SimplePage({ title, subtitle, icon: Icon }: SimplePageProps) {
   return (
-    <div className="p-6">
+    <div className="sticky top-0 z-10 bg-surface -mx-4 -mt-4 p-6">
       <h1 className="text-2xl font-bold text-near-white flex items-center gap-3">
         {Icon && <Icon className="size-6" />}
         {title}

@@ -1,7 +1,6 @@
 export * from './types/calendar-event'
 export * from './types/scheduler.dto'
 export * from './hooks/use-scheduler'
-export * from './api/scheduler-api'
 export * from './services/calendar.service'
 export { default as ScheduledPostsPage } from './components/scheduled-posts-page'
 export { default as ScheduleStats } from './components/schedule-stats'

@@ -1,4 +1,3 @@
-import type { PostContentIdeasRequest } from '#/dtos'
 import { z } from 'zod'
 
 export enum IdeaType {
@@ -40,9 +39,9 @@ export const ContentSchema = z.object({
   sourceRefs: z.array(z.string()).optional(),
   priority: z.number().min(1).max(10),
   status: z.enum(IdeaStatus),
-  owner: z.string().optional(),
+  owner: z.string().optional().nullable(),
   ideaProducts: z.array(z.string()).optional(),
-}) satisfies z.ZodType<PostContentIdeasRequest>
+})
 export const ContentSchemaEntity = ContentSchema.extend({
   ideaId: z.string(),
   createdAt: z.string(),

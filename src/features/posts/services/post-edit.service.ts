@@ -1,9 +1,9 @@
-import { updateContentPost } from '../api/content-post-api'
 import {
-  fetchScheduledJobForPost,
-  createScheduledJob,
-  updateScheduledJob,
-} from '@/features/scheduler/api/scheduler-api'
+  contentPostsControllerPatch,
+  schedulerControllerList,
+  schedulerControllerCreate,
+  schedulerControllerPatch,
+} from '#/api/client'
 import type { ContentPostEditFormData } from '../schemas/content-post.schema'
 import type {
   GetContentPostsByPostIdResponse,
@@ -12,24 +12,27 @@ import type {
 
 export class PostEditService {
   async updatePost(postId: string, data: ContentPostEditFormData) {
-    // 1. Save post fields (no scheduling fields)
-    const post = await updateContentPost(
+    const post = await contentPostsControllerPatch(
       postId,
       this.transformFormDataToPayload(data),
     )
 
-    // 2. Handle scheduling separately
     if (data.publishMode === 'schedule' && data.scheduledAt) {
       const scheduledAt = new Date(data.scheduledAt).toISOString()
-      const existingJob = await fetchScheduledJobForPost(postId)
+      const existingJobsRes = await schedulerControllerList()
+      const existingJob = ((existingJobsRes.data as unknown) as any[])?.find(
+        (j: any) => j.postId === postId,
+      )
       if (existingJob) {
-        await updateScheduledJob(existingJob.jobId, { scheduledAt })
+        await schedulerControllerPatch(existingJob.jobId, {
+          scheduledAt,
+        } as any)
       } else {
-        await createScheduledJob({
+        await schedulerControllerCreate({
           postId,
           platform: data.platform,
           scheduledAt,
-        })
+        } as any)
       }
     }
 
@@ -48,7 +51,6 @@ export class PostEditService {
       contentType: data.contentType,
       primaryProductId: data.primaryProductId,
       supportingProductIds: data.supportingProductIds,
-      // No scheduledAt — scheduling is handled by scheduler API
     }
   }
 
@@ -69,7 +71,6 @@ export class PostEditService {
       primaryProductId: post.primaryProductId,
       supportingProductIds:
         post.supportingProducts?.map((p) => p.productId) ?? [],
-      // scheduledAt comes from ScheduledJob, not post — caller fetches separately
       scheduledAt: '',
       publishMode: 'now',
     }

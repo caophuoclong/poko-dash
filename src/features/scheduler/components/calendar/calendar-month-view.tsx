@@ -9,7 +9,7 @@ import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import { Button } from '#/components/ui/button'
 import CalendarDayCell from './calendar-day-cell'
 import CalendarEventDialog from './calendar-event-dialog'
-import { fetchScheduledJobs } from '../../api/scheduler-api'
+import { schedulerControllerList } from '#/api/client'
 import { transformScheduledJobsToEvents } from '../../services/calendar.service'
 
 interface CalendarMonthViewProps {
@@ -58,10 +58,10 @@ export default function CalendarMonthView({
       59,
     ).toISOString()
 
-    fetchScheduledJobs({ from, to })
-      .then((jobs) => {
+    schedulerControllerList()
+      .then((res) => {
         if (!cancelled) {
-          setFetchedEvents(transformScheduledJobsToEvents(jobs))
+          setFetchedEvents(transformScheduledJobsToEvents(res.data as any[]))
         }
       })
       .catch((err) => {

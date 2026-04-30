@@ -14,7 +14,7 @@
     "format": "prettier --check .",
     "check": "prettier --write . && eslint --fix",
     "deploy": "npm run build && wrangler deploy",
-    "generate:dtos": "node scripts/generate-dtos.mjs"
+    "generate:dtos": "orval --config orval.config.js"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -71,6 +71,8 @@
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^6.0.1",
     "jsdom": "^28.1.0",
+    "openapi-typescript": "^7.13.0",
+    "orval": "^8.9.0",
     "prettier": "^3.8.1",
     "typescript": "^5.7.2",
     "vite": "^8.0.0",

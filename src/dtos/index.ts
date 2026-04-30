@@ -1,19 +1,12 @@
 // AUTO-GENERATED — DO NOT EDIT
 // Run `node scripts/generate-dtos.mjs` to regenerate
 
-export * from "./untagged";
-export * from "./configuration";
-export * from "./products";
-export * from "./affiliate-links";
-export * from "./content-ideas";
-export * from "./content-posts";
-export * from "./post-publications";
-export * from "./content-queue";
-export * from "./scheduler";
-export * from "./prompts";
-export * from "./workflow";
-export * from "./workflow-execution";
-export * from "./workflow-credential";
-export * from "./workflow-webhook";
-export * from "./workflow-node-type";
-export * from "./dashboard";
+export type * as Health from "./health";
+export type * as AffiliateLinks from "./affiliate-links";
+export type * as ContentIdeas from "./content-ideas";
+export type * as ContentPosts from "./content-posts";
+export type * as PostPublications from "./post-publications";
+export type * as Dashboard from "./dashboard";
+export type * as Products from "./products";
+export type * as Prompts from "./prompts";
+export type * as Scheduler from "./scheduler";

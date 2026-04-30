@@ -4,6 +4,7 @@ import {
   contentIdeasQueryOptions,
 } from '#/features/posts/queries/content-post-queries'
 import PostListPage from '#/features/posts/components/PostList'
+import { ContentPostSummarySchema } from '#/features/posts'
 
 export const Route = createFileRoute('/dash/posts/')({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -18,7 +19,13 @@ export const Route = createFileRoute('/dash/posts/')({
 })
 
 function PostsPage() {
-  const [posts] = Route.useLoaderData()
+  const [data] = Route.useLoaderData()
+  
   const { ideaId } = Route.useSearch()
-  return <PostListPage posts={posts} ideaId={ideaId} />
+  return (
+    <PostListPage
+      posts={ContentPostSummarySchema.array().parse(data.data.data)}
+      ideaId={ideaId}
+    />
+  )
 }

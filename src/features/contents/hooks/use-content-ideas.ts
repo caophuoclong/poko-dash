@@ -1,46 +1,115 @@
-import type {
-  GetContentIdeasResponse,
-  PatchContentIdeasByIdeaIdRequest,
-} from '#/dtos/content-ideas'
-import { useApiMutation, useApiQuery } from '#/shared/hooks'
+import { useQueryClient } from '@tanstack/react-query'
+import type { UseMutationResult } from '@tanstack/react-query'
 import {
-  fetchContentIdeas,
-  fetchContentIdea,
-  createContentIdea,
-  updateContentIdea,
-} from '../api/content-idea-api'
+  useContentIdeasControllerListPaginated,
+  getContentIdeasControllerListPaginatedQueryKey,
+  useContentIdeasControllerCreate,
+  useContentIdeasControllerFindById,
+  useContentIdeasControllerUpdate,
+  useContentIdeasControllerGenerateIdeas,
+  useContentIdeasControllerDelete,
+} from '#/api/client'
 
 export function useContentIdeas() {
-  return useApiQuery(['content-ideas'], () => fetchContentIdeas(), {
-    fallback: [] as unknown as GetContentIdeasResponse,
+  return useContentIdeasControllerListPaginated(undefined, {
+    query: {
+      select: (res) => {
+        console.log('🚀 ~ useContentIdeas ~ res:', res)
+
+        return res.data
+      },
+      placeholderData: [] as any,
+    },
   })
 }
 
 export function useContentIdea(ideaId: string | undefined) {
-  return useApiQuery(
-    ['content-ideas', ideaId ?? ''],
-    () => fetchContentIdea(ideaId!),
-    { enabled: !!ideaId },
-  )
-}
-
-export function useCreateContentIdea() {
-  return useApiMutation(createContentIdea, {
-    invalidateKeys: [['content-ideas']],
+  return useContentIdeasControllerFindById(ideaId ?? '', {
+    query: {
+      enabled: !!ideaId,
+      select: (res: any) => res.data,
+    },
   })
 }
 
-export function useUpdateContentIdea() {
-  return useApiMutation(
-    ({
-      ideaId,
-      data,
-    }: {
-      ideaId: string
-      data: PatchContentIdeasByIdeaIdRequest
-    }) => updateContentIdea(ideaId, data),
-    {
-      invalidateKeys: [['content-ideas']],
+export function useCreateContentIdea() {
+  const queryClient = useQueryClient()
+  const m = useContentIdeasControllerCreate({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getContentIdeasControllerListPaginatedQueryKey(),
+        })
+      },
     },
-  )
+  })
+  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
+  return {
+    ...rest,
+    mutate: (variables: any, options?: any) =>
+      origMutate({ data: variables } as any, options),
+    mutateAsync: (variables: any, options?: any) =>
+      origMutateAsync({ data: variables } as any, options),
+  } as UseMutationResult<any, any, any>
+}
+
+export function useUpdateContentIdea() {
+  const queryClient = useQueryClient()
+  const m = useContentIdeasControllerUpdate({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getContentIdeasControllerListPaginatedQueryKey(),
+        })
+      },
+    },
+  })
+  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
+  return {
+    ...rest,
+    mutate: (variables: any, options?: any) =>
+      origMutate(
+        { ideaId: variables.ideaId, data: variables.data } as any,
+        options,
+      ),
+    mutateAsync: (variables: any, options?: any) =>
+      origMutateAsync(
+        { ideaId: variables.ideaId, data: variables.data } as any,
+        options,
+      ),
+  } as UseMutationResult<any, any, any>
+}
+
+export function useGenerateContentIdeas() {
+  const queryClient = useQueryClient()
+  const m = useContentIdeasControllerGenerateIdeas({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getContentIdeasControllerListPaginatedQueryKey(),
+        })
+      },
+    },
+  })
+  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
+  return {
+    ...rest,
+    mutate: (variables: any, options?: any) =>
+      origMutate({ data: variables } as any, options),
+    mutateAsync: (variables: any, options?: any) =>
+      origMutateAsync({ data: variables } as any, options),
+  } as UseMutationResult<any, any, any>
+}
+
+export function useDeleteContentIdea() {
+  const queryClient = useQueryClient()
+  return useContentIdeasControllerDelete({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getContentIdeasControllerListPaginatedQueryKey(),
+        })
+      },
+    },
+  })
 }

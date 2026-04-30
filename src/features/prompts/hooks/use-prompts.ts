@@ -1,120 +1,186 @@
-// layer: logic
-import { useApiQuery, useApiMutation } from '#/shared/hooks'
-import type { CreatePromptRequest, UpdatePromptRequest } from '../types'
-import * as promptApi from '../api/prompt-api'
+import { useQueryClient } from '@tanstack/react-query'
+import type { UseMutationResult } from '@tanstack/react-query'
+import {
+  usePromptsControllerList,
+  getPromptsControllerListQueryKey,
+  usePromptsControllerCreate,
+  usePromptsControllerFindById,
+  usePromptsControllerUpdate,
+  usePromptsControllerDelete,
+  usePromptsControllerCompile,
+  usePromptsControllerRecordUsage,
+  usePromptsControllerRefine,
+  usePromptsControllerRatePrompt,
+  usePromptsControllerSearch,
+  usePromptsControllerMostUsed,
+  usePromptsControllerHighestRated,
+  usePromptsControllerGetVersionHistory,
+} from '#/api/client'
 
 export function usePrompts(params?: { status?: string }) {
-  return useApiQuery(
-    ['prompts', params],
-    () => promptApi.fetchPrompts(params),
-    { fallback: [] },
-  )
+  return usePromptsControllerList({
+    query: {
+      select: (res: any) => res.data,
+      placeholderData: [] as any,
+    },
+  })
 }
 
 export function usePrompt(promptId: string) {
-  return useApiQuery(
-    ['prompts', promptId],
-    () => promptApi.fetchPromptById(promptId),
-    { enabled: !!promptId, silentError: false },
-  )
+  return usePromptsControllerFindById(promptId, {
+    query: {
+      enabled: !!promptId,
+      select: (res: any) => res.data,
+    },
+  })
 }
 
 export function useMostUsedPrompts(limit = 10) {
-  return useApiQuery(
-    ['prompts', 'trending', 'most-used', limit],
-    () => promptApi.fetchMostUsedPrompts(limit),
-    { fallback: [] },
-  )
+  return usePromptsControllerMostUsed({
+    query: {
+      select: (res: any) => res.data,
+      placeholderData: [] as any,
+    },
+  })
 }
 
 export function useHighestRatedPrompts(limit = 10) {
-  return useApiQuery(
-    ['prompts', 'trending', 'highest-rated', limit],
-    () => promptApi.fetchHighestRatedPrompts(limit),
-    { fallback: [] },
-  )
+  return usePromptsControllerHighestRated({
+    query: {
+      select: (res: any) => res.data,
+      placeholderData: [] as any,
+    },
+  })
 }
 
 export function usePromptVersions(promptId: string) {
-  return useApiQuery(
-    ['prompts', promptId, 'versions'],
-    () => promptApi.fetchPromptVersions(promptId),
-    { enabled: !!promptId, fallback: { versions: [] } },
-  )
+  return usePromptsControllerGetVersionHistory(promptId, {
+    query: {
+      enabled: !!promptId,
+      select: (res: any) => res.data,
+      placeholderData: { versions: [] } as any,
+    },
+  })
 }
 
 export function useSearchPrompts(query: string) {
-  return useApiQuery(
-    ['prompts', 'search', query],
-    () => promptApi.searchPrompts(query),
-    { enabled: query.length > 1, fallback: [] },
-  )
+  return usePromptsControllerSearch({
+    query: {
+      enabled: query.length > 1,
+      select: (res: any) => res.data,
+      placeholderData: [] as any,
+    },
+  })
+}
+
+function wrapMutation<T extends { mutate: any; mutateAsync: any }>(
+  m: T,
+  wrapper: (variables: any) => any,
+): UseMutationResult<any, any, any> {
+  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m as any
+  return {
+    ...rest,
+    mutate: (variables: any, options?: any) => origMutate(wrapper(variables), options),
+    mutateAsync: (variables: any, options?: any) => origMutateAsync(wrapper(variables), options),
+  } as UseMutationResult<any, any, any>
 }
 
 export function useCreatePrompt() {
-  return useApiMutation(
-    (data: CreatePromptRequest) => promptApi.createPrompt(data),
-    {
-      invalidateKeys: [['prompts']],
-    },
+  const queryClient = useQueryClient()
+  return wrapMutation(
+    usePromptsControllerCreate({
+      mutation: {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: getPromptsControllerListQueryKey(),
+          })
+        },
+      },
+    }),
+    (data: any) => ({ data }),
   )
 }
 
 export function useUpdatePrompt() {
-  return useApiMutation(
-    ({ promptId, data }: { promptId: string; data: UpdatePromptRequest }) =>
-      promptApi.updatePrompt(promptId, data),
-    { invalidateKeys: [['prompts']] },
+  const queryClient = useQueryClient()
+  return wrapMutation(
+    usePromptsControllerUpdate({
+      mutation: {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: getPromptsControllerListQueryKey(),
+          })
+        },
+      },
+    }),
+    (v: any) => ({ promptId: v.promptId, data: v.data }),
   )
 }
 
 export function useDeletePrompt() {
-  return useApiMutation(
-    (promptId: string) => promptApi.deletePrompt(promptId),
-    {
-      invalidateKeys: [['prompts']],
-    },
+  const queryClient = useQueryClient()
+  return wrapMutation(
+    usePromptsControllerDelete({
+      mutation: {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: getPromptsControllerListQueryKey(),
+          })
+        },
+      },
+    }),
+    (promptId: any) => ({ promptId }),
   )
 }
 
 export function useCompilePrompt() {
-  return useApiMutation(
-    ({
-      promptId,
-      data,
-    }: {
-      promptId: string
-      data: { variables: Record<string, unknown> }
-    }) => promptApi.compilePrompt(promptId, data),
-  )
+  return usePromptsControllerCompile()
 }
 
 export function useRecordPromptUsage() {
-  return useApiMutation(
-    (promptId: string) => promptApi.recordPromptUsage(promptId),
-    {
-      invalidateKeys: [['prompts']],
-    },
+  const queryClient = useQueryClient()
+  return wrapMutation(
+    usePromptsControllerRecordUsage({
+      mutation: {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: getPromptsControllerListQueryKey(),
+          })
+        },
+      },
+    }),
+    (promptId: any) => ({ promptId }),
   )
 }
 
 export function useRefinePrompt() {
-  return useApiMutation(
-    ({
-      promptId,
-      data,
-    }: {
-      promptId: string
-      data: { changes: Partial<CreatePromptRequest> }
-    }) => promptApi.refinePrompt(promptId, data),
-    { invalidateKeys: [['prompts']] },
+  const queryClient = useQueryClient()
+  return wrapMutation(
+    usePromptsControllerRefine({
+      mutation: {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: getPromptsControllerListQueryKey(),
+          })
+        },
+      },
+    }),
+    (v: any) => ({ promptId: v.promptId, data: v.data }),
   )
 }
 
 export function useRatePrompt() {
-  return useApiMutation(
-    ({ promptId, data }: { promptId: string; data: { rating: number } }) =>
-      promptApi.ratePrompt(promptId, data),
-    { invalidateKeys: [['prompts']] },
+  const queryClient = useQueryClient()
+  return wrapMutation(
+    usePromptsControllerRatePrompt({
+      mutation: {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: getPromptsControllerListQueryKey(),
+          })
+        },
+      },
+    }),
+    (v: any) => ({ promptId: v.promptId, data: v.data }),
   )
 }

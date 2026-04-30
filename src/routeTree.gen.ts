@@ -18,8 +18,10 @@ import { Route as DashPromptsRouteImport } from './routes/dash/prompts'
 import { Route as DashPagesRouteImport } from './routes/dash/pages'
 import { Route as DashContentRouteImport } from './routes/dash/content'
 import { Route as DashAnalyticsRouteImport } from './routes/dash/analytics'
+import { Route as ApiSplatRouteImport } from './routes/api.$'
 import { Route as DashProductsIndexRouteImport } from './routes/dash/products/index'
 import { Route as DashPostsIndexRouteImport } from './routes/dash/posts/index'
+import { Route as DashIntegrationsIndexRouteImport } from './routes/dash/integrations/index'
 import { Route as DashContentIndexRouteImport } from './routes/dash/content/index'
 import { Route as DashProductsManualImportRouteImport } from './routes/dash/products/manual-import'
 import { Route as DashProductsProductIdRouteImport } from './routes/dash/products/$productId'
@@ -76,6 +78,11 @@ const DashAnalyticsRoute = DashAnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => DashRoute,
 } as any)
+const ApiSplatRoute = ApiSplatRouteImport.update({
+  id: '/api/$',
+  path: '/api/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashProductsIndexRoute = DashProductsIndexRouteImport.update({
   id: '/products/',
   path: '/products/',
@@ -84,6 +91,11 @@ const DashProductsIndexRoute = DashProductsIndexRouteImport.update({
 const DashPostsIndexRoute = DashPostsIndexRouteImport.update({
   id: '/posts/',
   path: '/posts/',
+  getParentRoute: () => DashRoute,
+} as any)
+const DashIntegrationsIndexRoute = DashIntegrationsIndexRouteImport.update({
+  id: '/integrations/',
+  path: '/integrations/',
   getParentRoute: () => DashRoute,
 } as any)
 const DashContentIndexRoute = DashContentIndexRouteImport.update({
@@ -141,6 +153,7 @@ const DashContentIdeaIdEditRoute = DashContentIdeaIdEditRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dash': typeof DashRouteWithChildren
+  '/api/$': typeof ApiSplatRoute
   '/dash/analytics': typeof DashAnalyticsRoute
   '/dash/content': typeof DashContentRouteWithChildren
   '/dash/pages': typeof DashPagesRoute
@@ -155,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/dash/products/$productId': typeof DashProductsProductIdRoute
   '/dash/products/manual-import': typeof DashProductsManualImportRoute
   '/dash/content/': typeof DashContentIndexRoute
+  '/dash/integrations/': typeof DashIntegrationsIndexRoute
   '/dash/posts/': typeof DashPostsIndexRoute
   '/dash/products/': typeof DashProductsIndexRoute
   '/dash/content/$ideaId/edit': typeof DashContentIdeaIdEditRoute
@@ -163,6 +177,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/$': typeof ApiSplatRoute
   '/dash/analytics': typeof DashAnalyticsRoute
   '/dash/pages': typeof DashPagesRoute
   '/dash/prompts': typeof DashPromptsRoute
@@ -176,6 +191,7 @@ export interface FileRoutesByTo {
   '/dash/products/$productId': typeof DashProductsProductIdRoute
   '/dash/products/manual-import': typeof DashProductsManualImportRoute
   '/dash/content': typeof DashContentIndexRoute
+  '/dash/integrations': typeof DashIntegrationsIndexRoute
   '/dash/posts': typeof DashPostsIndexRoute
   '/dash/products': typeof DashProductsIndexRoute
   '/dash/content/$ideaId/edit': typeof DashContentIdeaIdEditRoute
@@ -186,6 +202,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dash': typeof DashRouteWithChildren
+  '/api/$': typeof ApiSplatRoute
   '/dash/analytics': typeof DashAnalyticsRoute
   '/dash/content': typeof DashContentRouteWithChildren
   '/dash/pages': typeof DashPagesRoute
@@ -200,6 +217,7 @@ export interface FileRoutesById {
   '/dash/products/$productId': typeof DashProductsProductIdRoute
   '/dash/products/manual-import': typeof DashProductsManualImportRoute
   '/dash/content/': typeof DashContentIndexRoute
+  '/dash/integrations/': typeof DashIntegrationsIndexRoute
   '/dash/posts/': typeof DashPostsIndexRoute
   '/dash/products/': typeof DashProductsIndexRoute
   '/dash/content/$ideaId/edit': typeof DashContentIdeaIdEditRoute
@@ -211,6 +229,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dash'
+    | '/api/$'
     | '/dash/analytics'
     | '/dash/content'
     | '/dash/pages'
@@ -225,6 +244,7 @@ export interface FileRouteTypes {
     | '/dash/products/$productId'
     | '/dash/products/manual-import'
     | '/dash/content/'
+    | '/dash/integrations/'
     | '/dash/posts/'
     | '/dash/products/'
     | '/dash/content/$ideaId/edit'
@@ -233,6 +253,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/api/$'
     | '/dash/analytics'
     | '/dash/pages'
     | '/dash/prompts'
@@ -246,6 +267,7 @@ export interface FileRouteTypes {
     | '/dash/products/$productId'
     | '/dash/products/manual-import'
     | '/dash/content'
+    | '/dash/integrations'
     | '/dash/posts'
     | '/dash/products'
     | '/dash/content/$ideaId/edit'
@@ -255,6 +277,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/dash'
+    | '/api/$'
     | '/dash/analytics'
     | '/dash/content'
     | '/dash/pages'
@@ -269,6 +292,7 @@ export interface FileRouteTypes {
     | '/dash/products/$productId'
     | '/dash/products/manual-import'
     | '/dash/content/'
+    | '/dash/integrations/'
     | '/dash/posts/'
     | '/dash/products/'
     | '/dash/content/$ideaId/edit'
@@ -279,6 +303,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashRoute: typeof DashRouteWithChildren
+  ApiSplatRoute: typeof ApiSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -346,6 +371,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashAnalyticsRouteImport
       parentRoute: typeof DashRoute
     }
+    '/api/$': {
+      id: '/api/$'
+      path: '/api/$'
+      fullPath: '/api/$'
+      preLoaderRoute: typeof ApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dash/products/': {
       id: '/dash/products/'
       path: '/products'
@@ -358,6 +390,13 @@ declare module '@tanstack/react-router' {
       path: '/posts'
       fullPath: '/dash/posts/'
       preLoaderRoute: typeof DashPostsIndexRouteImport
+      parentRoute: typeof DashRoute
+    }
+    '/dash/integrations/': {
+      id: '/dash/integrations/'
+      path: '/integrations'
+      fullPath: '/dash/integrations/'
+      preLoaderRoute: typeof DashIntegrationsIndexRouteImport
       parentRoute: typeof DashRoute
     }
     '/dash/content/': {
@@ -472,6 +511,7 @@ interface DashRouteChildren {
   DashPostsScheduledRoute: typeof DashPostsScheduledRoute
   DashProductsProductIdRoute: typeof DashProductsProductIdRoute
   DashProductsManualImportRoute: typeof DashProductsManualImportRoute
+  DashIntegrationsIndexRoute: typeof DashIntegrationsIndexRoute
   DashPostsIndexRoute: typeof DashPostsIndexRoute
   DashProductsIndexRoute: typeof DashProductsIndexRoute
   DashPostsPostIdEditRoute: typeof DashPostsPostIdEditRoute
@@ -490,6 +530,7 @@ const DashRouteChildren: DashRouteChildren = {
   DashPostsScheduledRoute: DashPostsScheduledRoute,
   DashProductsProductIdRoute: DashProductsProductIdRoute,
   DashProductsManualImportRoute: DashProductsManualImportRoute,
+  DashIntegrationsIndexRoute: DashIntegrationsIndexRoute,
   DashPostsIndexRoute: DashPostsIndexRoute,
   DashProductsIndexRoute: DashProductsIndexRoute,
   DashPostsPostIdEditRoute: DashPostsPostIdEditRoute,
@@ -501,6 +542,7 @@ const DashRouteWithChildren = DashRoute._addFileChildren(DashRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashRoute: DashRouteWithChildren,
+  ApiSplatRoute: ApiSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

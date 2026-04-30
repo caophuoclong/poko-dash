@@ -1,21 +1,16 @@
-import { queryOptions } from '@tanstack/react-query'
-import { fetchScheduledJobs, fetchScheduledJob } from '../api/scheduler-api'
-import type {
-  ScheduledJob,
-  ListScheduledJobsParams,
-} from '../types/scheduler.dto'
+import {
+  getSchedulerControllerListQueryOptions,
+  getSchedulerControllerFindByIdQueryOptions,
+} from '#/api/client'
 
-export const scheduledJobsQueryOptions = (params?: ListScheduledJobsParams) =>
-  queryOptions<ScheduledJob[]>({
-    queryKey: ['scheduled-jobs', params ?? {}],
-    queryFn: () => fetchScheduledJobs(params),
-    staleTime: 30_000,
-  })
+export const scheduledJobsQueryOptions = (params?: any) => ({
+  ...getSchedulerControllerListQueryOptions(),
+  staleTime: 30_000,
+  select: (res: any) => res.data,
+})
 
-export const scheduledJobQueryOptions = (jobId: string) =>
-  queryOptions<ScheduledJob>({
-    queryKey: ['scheduled-jobs', jobId],
-    queryFn: () => fetchScheduledJob(jobId),
-    enabled: !!jobId,
-    staleTime: 30_000,
-  })
+export const scheduledJobQueryOptions = (jobId: string) => ({
+  ...getSchedulerControllerFindByIdQueryOptions(jobId),
+  staleTime: 30_000,
+  select: (res: any) => res.data,
+})

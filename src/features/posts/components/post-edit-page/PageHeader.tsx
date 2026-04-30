@@ -16,7 +16,7 @@ export default function PageHeader({
   isSaving,
 }: PageHeaderProps) {
   return (
-    <div className="flex items-center justify-between mb-6">
+    <div className="sticky top-0 z-10 bg-surface -mx-4 -mt-4 pt-4 px-4 flex items-center justify-between mb-6">
       <Link
         to="/dash/posts/$postId"
         params={{ postId }}

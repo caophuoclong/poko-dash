@@ -40,7 +40,7 @@ import { useProducts } from '@/features/products/hooks/use-products'
 import { SeedDetailDrawer } from './SeedDetailDrawer'
 import type { AutocompleteOption } from '@/components/ui/autocomplete'
 import type { Product } from '@/features/products/types/product'
-import { generateContentPosts } from '@/features/posts/api/content-post-api'
+import { contentPostsControllerGenerateFromProducts } from '#/api/client'
 
 type SortOption = 'updated' | 'priority' | 'posts' | 'review'
 
@@ -117,8 +117,10 @@ export default function ContentSeedsPage({
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [generatingProductIds, setGeneratingProductIds] = useState<string[]>([])
 
-  const { data: allProducts = [] } = useProducts()
-  const { data: allPosts = [] } = useContentPosts()
+  const { data: dataProducts } = useProducts()
+  const { data } = useContentPosts()
+  const allPosts = data?.data ?? []
+  const allProducts = dataProducts ?? []
 
   const productsMap = useMemo<Record<string, Product>>(
     () =>
@@ -234,10 +236,10 @@ export default function ContentSeedsPage({
           | 'instagram'
           | 'twitter'
           | undefined
-        await generateContentPosts({
+        await contentPostsControllerGenerateFromProducts({
           productIds: productId,
           platform,
-        })
+        } as any)
       } catch (error) {
         console.error('Failed to generate for product:', error)
       } finally {

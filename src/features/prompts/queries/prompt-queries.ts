@@ -1,23 +1,20 @@
-// layer: logic
-import { queryOptions } from '@tanstack/react-query'
-import { fetchPrompts, fetchPromptById } from '../api/prompt-api'
-import type { Prompt } from '../types'
+import {
+  getPromptsControllerListQueryOptions,
+  getPromptsControllerFindByIdQueryOptions,
+} from '#/api/client'
 
 export const promptsQueryOptions = (params?: {
   page?: number
   limit?: number
   status?: string
-}) =>
-  queryOptions<Prompt[]>({
-    queryKey: ['prompts', params ?? {}],
-    queryFn: () => fetchPrompts(params),
-    staleTime: 30_000,
-  })
+}) => ({
+  ...getPromptsControllerListQueryOptions(),
+  staleTime: 30_000,
+  select: (res: any) => res.data,
+})
 
-export const promptQueryOptions = (promptId: string) =>
-  queryOptions<Prompt>({
-    queryKey: ['prompts', promptId],
-    queryFn: () => fetchPromptById(promptId),
-    enabled: !!promptId,
-    staleTime: 30_000,
-  })
+export const promptQueryOptions = (promptId: string) => ({
+  ...getPromptsControllerFindByIdQueryOptions(promptId),
+  staleTime: 30_000,
+  select: (res: any) => res.data,
+})

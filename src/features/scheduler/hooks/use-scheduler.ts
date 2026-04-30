@@ -1,50 +1,92 @@
+import { useQueryClient } from '@tanstack/react-query'
+import type { UseMutationResult } from '@tanstack/react-query'
 import {
-  fetchScheduledJobs,
-  fetchScheduledJobForPost,
-  createScheduledJob,
-  updateScheduledJob,
-  cancelScheduledJob,
-} from '../api/scheduler-api'
+  useSchedulerControllerList,
+  getSchedulerControllerListQueryKey,
+  useSchedulerControllerCreate,
+  useSchedulerControllerFindById,
+  useSchedulerControllerPatch,
+  useSchedulerControllerCancel,
+} from '#/api/client'
 import type { ListScheduledJobsParams } from '../types/scheduler.dto'
-import { useApiQuery, useApiMutation } from '#/shared/hooks'
 
 export function useScheduledJobs(params?: ListScheduledJobsParams) {
-  return useApiQuery(
-    ['scheduled-jobs', params ?? {}],
-    () => fetchScheduledJobs(params),
-    { fallback: [] },
-  )
+  return useSchedulerControllerList({
+    query: {
+      select: (res: any) => res.data,
+      placeholderData: [] as any,
+    },
+  })
 }
 
 export function useScheduledJobForPost(postId: string) {
-  return useApiQuery(
-    ['scheduled-job', postId],
-    () => fetchScheduledJobForPost(postId),
-    { enabled: !!postId, fallback: null },
-  )
+  return useSchedulerControllerList({
+    query: {
+      enabled: !!postId,
+      select: (res: any) => {
+        const data = res.data as any[]
+        return data?.[0] ?? null
+      },
+      placeholderData: null,
+    },
+  })
 }
 
 export function useCreateScheduledJob() {
-  return useApiMutation(createScheduledJob, {
-    invalidateKeys: [['scheduled-job']],
+  const queryClient = useQueryClient()
+  const m = useSchedulerControllerCreate({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getSchedulerControllerListQueryKey(),
+        })
+      },
+    },
   })
+  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
+  return {
+    ...rest,
+    mutate: (variables: any, options?: any) => origMutate({ data: variables } as any, options),
+    mutateAsync: (variables: any, options?: any) => origMutateAsync({ data: variables } as any, options),
+  } as UseMutationResult<any, any, any>
 }
 
 export function useUpdateScheduledJob() {
-  return useApiMutation(
-    ({
-      jobId,
-      data,
-    }: {
-      jobId: string
-      data: Parameters<typeof updateScheduledJob>[1]
-    }) => updateScheduledJob(jobId, data),
-    { invalidateKeys: [['scheduled-job']] },
-  )
+  const queryClient = useQueryClient()
+  const m = useSchedulerControllerPatch({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getSchedulerControllerListQueryKey(),
+        })
+      },
+    },
+  })
+  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
+  return {
+    ...rest,
+    mutate: (variables: any, options?: any) =>
+      origMutate({ jobId: variables.jobId, data: variables.data } as any, options),
+    mutateAsync: (variables: any, options?: any) =>
+      origMutateAsync({ jobId: variables.jobId, data: variables.data } as any, options),
+  } as UseMutationResult<any, any, any>
 }
 
 export function useCancelScheduledJob() {
-  return useApiMutation(cancelScheduledJob, {
-    invalidateKeys: [['scheduled-job']],
+  const queryClient = useQueryClient()
+  const m = useSchedulerControllerCancel({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getSchedulerControllerListQueryKey(),
+        })
+      },
+    },
   })
+  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
+  return {
+    ...rest,
+    mutate: (variables: any, options?: any) => origMutate({ jobId: variables } as any, options),
+    mutateAsync: (variables: any, options?: any) => origMutateAsync({ jobId: variables } as any, options),
+  } as UseMutationResult<any, any, any>
 }

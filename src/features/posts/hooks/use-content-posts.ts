@@ -1,75 +1,145 @@
-import type {
-  GetContentPostsResponse,
-  PatchContentPostsByPostIdRequest,
-} from '#/dtos/content-posts'
+import { useQueryClient } from '@tanstack/react-query'
+import type { UseMutationResult } from '@tanstack/react-query'
 import {
-  fetchContentPosts,
-  fetchContentPost,
-  generateContentPosts,
-  generateFromIdea,
-  createContentPost,
-  updateContentPost,
-  deleteContentPost,
-} from '../api/content-post-api'
-import { useApiQuery, useApiMutation } from '#/shared/hooks'
+  useContentPostsControllerList,
+  getContentPostsControllerListQueryKey,
+  useContentPostsControllerCreate,
+  useContentPostsControllerFindById,
+  useContentPostsControllerPatch,
+  useContentPostsControllerDelete,
+  useContentPostsControllerGenerateFromProducts,
+  useContentPostsControllerGenerateFromIdea,
+} from '#/api/client'
 
 export function useContentPosts(options?: { ideaId?: string }) {
-  return useApiQuery(
-    ['content-posts', options?.ideaId ?? 'all'],
-    () =>
-      fetchContentPosts(
-        options?.ideaId ? { ideaId: options.ideaId } : undefined,
-      ),
-    { fallback: [] as GetContentPostsResponse },
-  )
+  return useContentPostsControllerList({
+    query: {
+      select: (res) => res.data,
+      placeholderData: [] as any,
+    },
+  })
 }
 
 export function useContentPost(postId: string) {
-  return useApiQuery(
-    ['content-posts', postId],
-    () => fetchContentPost(postId, true),
+  return useContentPostsControllerFindById(
+    postId,
+    { include: 'products' },
     {
-      enabled: !!postId,
-      silentError: false,
+      query: {
+        enabled: !!postId,
+        select: (res: any) => res.data,
+      },
     },
   )
 }
 
 export function useGenerateFromIdea() {
-  return useApiMutation(generateFromIdea, {
-    invalidateKeys: [['content-posts'], ['content-ideas']],
+  const queryClient = useQueryClient()
+  const m = useContentPostsControllerGenerateFromIdea({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getContentPostsControllerListQueryKey(),
+        })
+      },
+    },
   })
+  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
+  return {
+    ...rest,
+    mutate: (variables: any, options?: any) =>
+      origMutate({ ideaId: variables } as any, options),
+    mutateAsync: (variables: any, options?: any) =>
+      origMutateAsync({ ideaId: variables } as any, options),
+  } as UseMutationResult<any, any, any>
 }
 
 export function useGenerateContentPosts() {
-  return useApiMutation(generateContentPosts, {
-    invalidateKeys: [['content-posts']],
+  const queryClient = useQueryClient()
+  const m = useContentPostsControllerGenerateFromProducts({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getContentPostsControllerListQueryKey(),
+        })
+      },
+    },
   })
+  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
+  return {
+    ...rest,
+    mutate: (variables: any, options?: any) =>
+      origMutate({ data: variables } as any, options),
+    mutateAsync: (variables: any, options?: any) =>
+      origMutateAsync({ data: variables } as any, options),
+  } as UseMutationResult<any, any, any>
 }
 
 export function useCreateContentPost() {
-  return useApiMutation(createContentPost, {
-    invalidateKeys: [['content-posts']],
+  const queryClient = useQueryClient()
+  const m = useContentPostsControllerCreate({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getContentPostsControllerListQueryKey(),
+        })
+      },
+    },
   })
+  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
+  return {
+    ...rest,
+    mutate: (variables: any, options?: any) =>
+      origMutate({ data: variables } as any, options),
+    mutateAsync: (variables: any, options?: any) =>
+      origMutateAsync({ data: variables } as any, options),
+  } as UseMutationResult<any, any, any>
 }
 
 export function useUpdateContentPost() {
-  return useApiMutation(
-    ({
-      postId,
-      data,
-    }: {
-      postId: string
-      data: PatchContentPostsByPostIdRequest
-    }) => updateContentPost(postId, data),
-    {
-      invalidateKeys: [['content-posts']],
+  const queryClient = useQueryClient()
+  const m = useContentPostsControllerPatch({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getContentPostsControllerListQueryKey(),
+        })
+      },
     },
-  )
+  })
+  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
+  return {
+    ...rest,
+    mutate: (variables: any, options?: any) =>
+      origMutate(
+        { postId: variables.postId, data: variables.data } as any,
+        options,
+      ),
+    mutateAsync: (variables: any, options?: any) =>
+      origMutateAsync(
+        { postId: variables.postId, data: variables.data } as any,
+        options,
+      ),
+  } as UseMutationResult<any, any, any>
 }
 
 export function useDeleteContentPost() {
-  return useApiMutation(deleteContentPost, {
-    invalidateKeys: [['content-posts']],
+  const queryClient = useQueryClient()
+  const m = useContentPostsControllerDelete({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getContentPostsControllerListQueryKey(),
+        })
+      },
+    },
   })
+  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
+  return {
+    ...rest,
+    mutate: (variables: any, options?: any) =>
+      origMutate({ postId: variables } as any, options),
+    mutateAsync: (variables: any, options?: any) =>
+      origMutateAsync({ postId: variables } as any, options),
+  } as UseMutationResult<any, any, any>
 }

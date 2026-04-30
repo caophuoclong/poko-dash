@@ -12,15 +12,15 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { formatRelativeTime } from '@/shared/utils/date'
 import { StatusCell } from './post-list/StatusCell'
 import { statusOptions } from './post-edit-page/constants'
-import type { GetContentPostsResponse } from '#/dtos/content-posts'
 import { useContentIdeas } from '#/features/contents/hooks/use-content-ideas'
+import type { ContentPostParsed } from '../schemas/content-post.schema'
 
 const NO_IDEA_SENTINEL = '__none__'
 
-type PostSummary = GetContentPostsResponse[number]
+type PostSummary = any[number]
 
 interface Props {
-  posts: GetContentPostsResponse
+  posts: ContentPostParsed[]
   ideaId?: string
 }
 export default function PostList(props: Props) {
@@ -30,7 +30,8 @@ export default function PostList(props: Props) {
   const [selectedStatus, setSelectedStatus] = useState<string>()
   const selectedIdea = ideaId
   const navigate = useNavigate()
-  const { data: ideas = [] } = useContentIdeas()
+  const { data } = useContentIdeas()
+  const ideas = data?.data ?? []
 
   const setSelectedIdea = (value: string | undefined) => {
     void navigate({

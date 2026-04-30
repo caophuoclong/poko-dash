@@ -1,53 +1,123 @@
-import type { GetProductsResponse } from '#/dtos/products'
-import type { GetAffiliateLinksResponse } from '#/dtos/affiliate-links'
-import type { ManualImportRequest } from '../types/manual-import'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import type { UseMutationResult } from '@tanstack/react-query'
 import {
-  fetchProducts,
-  fetchProductById,
-  fetchAllAffiliateLinks,
-  fetchAffiliateLinksByProduct,
-  manualImportProduct,
-} from '../api/product-api'
-import { useApiQuery, useApiMutation } from '#/shared/hooks'
+  getProductsControllerListAllQueryOptions,
+  getProductsControllerGetByIdQueryOptions,
+  useAffiliateLinksControllerList,
+  useAffiliateLinksControllerCreate,
+  useAffiliateLinksControllerPatch,
+  getAffiliateLinksControllerListQueryKey,
+  getProductsControllerListAllQueryKey,
+} from '#/api/client'
+import type {
+  ManualImportRequest,
+  ManualImportResponse,
+} from '../types/manual-import'
 
 export function useProducts() {
-  return useApiQuery(['products'], () => fetchProducts(), {
-    fallback: [] as unknown as GetProductsResponse,
+  const queryOptions = getProductsControllerListAllQueryOptions()
+  return useQuery({
+    ...queryOptions,
+    placeholderData: [] as any,
+    select: (res) => res.data,
   })
 }
 
 export function useProduct(productId: string) {
-  return useApiQuery(
-    ['products', productId],
-    () => fetchProductById(productId),
-    {
-      enabled: !!productId,
-    },
-  )
+  const queryOptions = getProductsControllerGetByIdQueryOptions(productId, {
+    query: { enabled: !!productId },
+  })
+  return useQuery({
+    ...queryOptions,
+    select: (res: any) => res.data,
+  })
 }
 
 export function useAllAffiliateLinks() {
-  return useApiQuery(['affiliate-links'], () => fetchAllAffiliateLinks(), {
-    fallback: [] as unknown as GetAffiliateLinksResponse,
+  return useAffiliateLinksControllerList({
+    query: {
+      select: (res: any) => res.data,
+      placeholderData: [] as any,
+    },
   })
 }
 
 export function useAffiliateLinks(productId: string) {
-  return useApiQuery(
-    ['affiliate-links', productId],
-    () => fetchAffiliateLinksByProduct(productId),
-    {
+  return useAffiliateLinksControllerList({
+    query: {
       enabled: !!productId,
-      fallback: [] as unknown as GetAffiliateLinksResponse,
+      select: (res: any) => res.data,
+      placeholderData: [] as any,
     },
-  )
+  })
+}
+
+export function useCreateAffiliateLink() {
+  const queryClient = useQueryClient()
+  const m = useAffiliateLinksControllerCreate({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getAffiliateLinksControllerListQueryKey(),
+        })
+      },
+    },
+  })
+  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
+  return {
+    ...rest,
+    mutate: (variables: any, options?: any) =>
+      origMutate({ data: variables } as any, options),
+    mutateAsync: (variables: any, options?: any) =>
+      origMutateAsync({ data: variables } as any, options),
+  } as UseMutationResult<any, any, any>
+}
+
+export function useUpdateAffiliateLink() {
+  const queryClient = useQueryClient()
+  const m = useAffiliateLinksControllerPatch({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: getAffiliateLinksControllerListQueryKey(),
+        })
+      },
+    },
+  })
+  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
+  return {
+    ...rest,
+    mutate: (variables: any, options?: any) =>
+      origMutate(
+        { linkId: variables.linkId, data: variables.data } as any,
+        options,
+      ),
+    mutateAsync: (variables: any, options?: any) =>
+      origMutateAsync(
+        { linkId: variables.linkId, data: variables.data } as any,
+        options,
+      ),
+  } as UseMutationResult<any, any, any>
 }
 
 export function useManualImport() {
-  return useApiMutation(
-    (data: ManualImportRequest) => manualImportProduct(data),
-    {
-      invalidateKeys: [['products']],
+  const queryClient = useQueryClient()
+  return useMutation<ManualImportResponse, Error, ManualImportRequest>({
+    mutationFn: async (data) => {
+      const res = await fetch('/api/manual-import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!res.ok) {
+        throw new Error(`Manual import failed: ${res.status}`)
+      }
+      return res.json()
     },
-  )
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getProductsControllerListAllQueryKey(),
+      })
+    },
+  })
 }

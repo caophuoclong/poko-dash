@@ -2,739 +2,596 @@
 // Source: openapi.json  |  Tag: Prompts
 // Run `node scripts/generate-dtos.mjs` to regenerate
 
-export type GetPromptsResponse = Array<{
-  /** Unique prompt identifier */
-  promptId: string;
-  /** Prompt name */
-  name: string;
-  /** Prompt description */
-  description?: string;
-  /** Type of prompt */
-  promptType: "content_generation" | "analysis" | "refinement" | "custom";
-  /** Prompt role: system (behavior/context) or user (task) */
-  role: "system" | "user";
-  /** Prompt category */
-  category: "social_media" | "blog" | "video" | "email" | "general";
-  /** The prompt template with {{variable}} placeholders */
-  template: string;
-  /** Array of variable names used in template */
-  variables?: Array<string>;
-  /** Tags for filtering/searching */
-  tags?: Array<string>;
-  /** Prompt status */
-  status: "active" | "archived" | "draft";
-  /** Version number */
-  version: number;
-  /** Parent prompt ID for version history */
-  parentPromptId?: string;
-  /** Number of times this prompt was used */
-  usageCount: number;
-  /** Average rating (0-5) */
-  avgRating?: number;
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}>;
-
-export interface GetPromptsErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
+export interface paths {
+    "/api/prompts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List all prompts (paginated) */
+        get: operations["PromptsController_list"];
+        put?: never;
+        /** Create a new prompt */
+        post: operations["PromptsController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prompts/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search prompts */
+        get: operations["PromptsController_search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prompts/trending/most-used": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get most used prompts */
+        get: operations["PromptsController_mostUsed"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prompts/trending/highest-rated": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get highest rated prompts */
+        get: operations["PromptsController_highestRated"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prompts/type/{type}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find prompts by type */
+        get: operations["PromptsController_findByType"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prompts/role/{role}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find prompts by role */
+        get: operations["PromptsController_findByRole"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prompts/category/{category}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Find prompts by category */
+        get: operations["PromptsController_findByCategory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prompts/by-tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Find prompts by tags */
+        post: operations["PromptsController_byTags"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prompts/{promptId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get prompt by ID */
+        get: operations["PromptsController_findById"];
+        put?: never;
+        post?: never;
+        /** Delete a prompt */
+        delete: operations["PromptsController_delete"];
+        options?: never;
+        head?: never;
+        /** Update a prompt */
+        patch: operations["PromptsController_update"];
+        trace?: never;
+    };
+    "/api/prompts/{promptId}/refine": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Refine a prompt (create new version) */
+        post: operations["PromptsController_refine"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prompts/{promptId}/rate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Rate a prompt */
+        post: operations["PromptsController_ratePrompt"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prompts/{promptId}/usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record prompt usage */
+        post: operations["PromptsController_recordUsage"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prompts/{promptId}/compile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Compile a prompt (fill in variables) */
+        post: operations["PromptsController_compile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/prompts/{promptId}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get prompt version history */
+        get: operations["PromptsController_getVersionHistory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+}
+export type webhooks = Record<string, never>;
+export interface components {
+    schemas: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
+}
+export type $defs = Record<string, never>;
+export interface operations {
+    PromptsController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of prompts */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Created prompt */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_search: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Matching prompts */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_mostUsed: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Most used prompts */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_highestRated: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Highest rated prompts */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_findByType: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                type: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Prompts by type */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_findByRole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                role: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Prompts by role */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_findByCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                category: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Prompts by category */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_byTags: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Prompts matching all tags */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_findById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promptId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Prompt found */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promptId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Prompt deleted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promptId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Updated prompt */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_refine: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promptId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Refined prompt */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_ratePrompt: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promptId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Rated prompt */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_recordUsage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promptId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Usage recorded */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_compile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promptId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Compiled prompt text */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromptsController_getVersionHistory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                promptId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Version history */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
 }
 
-export interface PostPromptsRequest {
-  /** Prompt name */
-  name: string;
-  /** Prompt description */
-  description?: string;
-  /** Type of prompt */
-  promptType: "content_generation" | "analysis" | "refinement" | "custom";
-  /** Prompt role: system (behavior/context) or user (task) */
-  role: "system" | "user";
-  /** Prompt category */
-  category: "social_media" | "blog" | "video" | "email" | "general";
-  /** The prompt template with {{variable}} placeholders */
-  template: string;
-  /** Array of variable names used in template */
-  variables?: Array<string>;
-  /** Tags for filtering/searching */
-  tags?: Array<string>;
-  /** Prompt status */
-  status?: "active" | "archived" | "draft";
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-}
 
-export interface PostPromptsResponse {
-  /** Unique prompt identifier */
-  promptId: string;
-  /** Prompt name */
-  name: string;
-  /** Prompt description */
-  description?: string;
-  /** Type of prompt */
-  promptType: "content_generation" | "analysis" | "refinement" | "custom";
-  /** Prompt role: system (behavior/context) or user (task) */
-  role: "system" | "user";
-  /** Prompt category */
-  category: "social_media" | "blog" | "video" | "email" | "general";
-  /** The prompt template with {{variable}} placeholders */
-  template: string;
-  /** Array of variable names used in template */
-  variables?: Array<string>;
-  /** Tags for filtering/searching */
-  tags?: Array<string>;
-  /** Prompt status */
-  status: "active" | "archived" | "draft";
-  /** Version number */
-  version: number;
-  /** Parent prompt ID for version history */
-  parentPromptId?: string;
-  /** Number of times this prompt was used */
-  usageCount: number;
-  /** Average rating (0-5) */
-  avgRating?: number;
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PostPromptsErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export interface GetPromptsByPromptIdResponse {
-  /** Unique prompt identifier */
-  promptId: string;
-  /** Prompt name */
-  name: string;
-  /** Prompt description */
-  description?: string;
-  /** Type of prompt */
-  promptType: "content_generation" | "analysis" | "refinement" | "custom";
-  /** Prompt role: system (behavior/context) or user (task) */
-  role: "system" | "user";
-  /** Prompt category */
-  category: "social_media" | "blog" | "video" | "email" | "general";
-  /** The prompt template with {{variable}} placeholders */
-  template: string;
-  /** Array of variable names used in template */
-  variables?: Array<string>;
-  /** Tags for filtering/searching */
-  tags?: Array<string>;
-  /** Prompt status */
-  status: "active" | "archived" | "draft";
-  /** Version number */
-  version: number;
-  /** Parent prompt ID for version history */
-  parentPromptId?: string;
-  /** Number of times this prompt was used */
-  usageCount: number;
-  /** Average rating (0-5) */
-  avgRating?: number;
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface GetPromptsByPromptIdErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export interface PatchPromptsByPromptIdRequest {
-  /** Prompt name */
-  name?: string;
-  /** Prompt description */
-  description?: string;
-  /** Type of prompt */
-  promptType?: "content_generation" | "analysis" | "refinement" | "custom";
-  /** Prompt role: system (behavior/context) or user (task) */
-  role?: "system" | "user";
-  /** Prompt category */
-  category?: "social_media" | "blog" | "video" | "email" | "general";
-  /** The prompt template with {{variable}} placeholders */
-  template?: string;
-  /** Array of variable names used in template */
-  variables?: Array<string>;
-  /** Tags for filtering/searching */
-  tags?: Array<string>;
-  /** Prompt status */
-  status?: "active" | "archived" | "draft";
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-}
-
-export interface PatchPromptsByPromptIdResponse {
-  /** Unique prompt identifier */
-  promptId: string;
-  /** Prompt name */
-  name: string;
-  /** Prompt description */
-  description?: string;
-  /** Type of prompt */
-  promptType: "content_generation" | "analysis" | "refinement" | "custom";
-  /** Prompt role: system (behavior/context) or user (task) */
-  role: "system" | "user";
-  /** Prompt category */
-  category: "social_media" | "blog" | "video" | "email" | "general";
-  /** The prompt template with {{variable}} placeholders */
-  template: string;
-  /** Array of variable names used in template */
-  variables?: Array<string>;
-  /** Tags for filtering/searching */
-  tags?: Array<string>;
-  /** Prompt status */
-  status: "active" | "archived" | "draft";
-  /** Version number */
-  version: number;
-  /** Parent prompt ID for version history */
-  parentPromptId?: string;
-  /** Number of times this prompt was used */
-  usageCount: number;
-  /** Average rating (0-5) */
-  avgRating?: number;
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PatchPromptsByPromptIdErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export interface DeletePromptsByPromptIdResponse {
-  message: string;
-}
-
-export interface DeletePromptsByPromptIdErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export interface PostPromptsByPromptIdRefineRequest {
-  changes: {
-    /** Prompt name */
-    name?: string;
-    /** Prompt description */
-    description?: string;
-    /** Type of prompt */
-    promptType?: "content_generation" | "analysis" | "refinement" | "custom";
-    /** Prompt role: system (behavior/context) or user (task) */
-    role?: "system" | "user";
-    /** Prompt category */
-    category?: "social_media" | "blog" | "video" | "email" | "general";
-    /** The prompt template with {{variable}} placeholders */
-    template?: string;
-    /** Array of variable names used in template */
-    variables?: Array<string>;
-    /** Tags for filtering/searching */
-    tags?: Array<string>;
-    /** Prompt status */
-    status?: "active" | "archived" | "draft";
-    /** Additional metadata */
-    metadata?: Record<string, unknown>;
-  };
-}
-
-export interface PostPromptsByPromptIdRefineResponse {
-  /** Unique prompt identifier */
-  promptId: string;
-  /** Prompt name */
-  name: string;
-  /** Prompt description */
-  description?: string;
-  /** Type of prompt */
-  promptType: "content_generation" | "analysis" | "refinement" | "custom";
-  /** Prompt role: system (behavior/context) or user (task) */
-  role: "system" | "user";
-  /** Prompt category */
-  category: "social_media" | "blog" | "video" | "email" | "general";
-  /** The prompt template with {{variable}} placeholders */
-  template: string;
-  /** Array of variable names used in template */
-  variables?: Array<string>;
-  /** Tags for filtering/searching */
-  tags?: Array<string>;
-  /** Prompt status */
-  status: "active" | "archived" | "draft";
-  /** Version number */
-  version: number;
-  /** Parent prompt ID for version history */
-  parentPromptId?: string;
-  /** Number of times this prompt was used */
-  usageCount: number;
-  /** Average rating (0-5) */
-  avgRating?: number;
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PostPromptsByPromptIdRefineErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export interface PostPromptsByPromptIdRateRequest {
-  /** Rating (0-5 stars) */
-  rating: number;
-}
-
-export interface PostPromptsByPromptIdRateResponse {
-  /** Unique prompt identifier */
-  promptId: string;
-  /** Prompt name */
-  name: string;
-  /** Prompt description */
-  description?: string;
-  /** Type of prompt */
-  promptType: "content_generation" | "analysis" | "refinement" | "custom";
-  /** Prompt role: system (behavior/context) or user (task) */
-  role: "system" | "user";
-  /** Prompt category */
-  category: "social_media" | "blog" | "video" | "email" | "general";
-  /** The prompt template with {{variable}} placeholders */
-  template: string;
-  /** Array of variable names used in template */
-  variables?: Array<string>;
-  /** Tags for filtering/searching */
-  tags?: Array<string>;
-  /** Prompt status */
-  status: "active" | "archived" | "draft";
-  /** Version number */
-  version: number;
-  /** Parent prompt ID for version history */
-  parentPromptId?: string;
-  /** Number of times this prompt was used */
-  usageCount: number;
-  /** Average rating (0-5) */
-  avgRating?: number;
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PostPromptsByPromptIdRateErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export interface PostPromptsByPromptIdUsageResponse {
-  message: string;
-}
-
-export interface PostPromptsByPromptIdUsageErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export interface PostPromptsByPromptIdCompileRequest {
-  /** Variable values to fill in template */
-  variables: Record<string, unknown>;
-}
-
-export interface PostPromptsByPromptIdCompileResponse {
-  /** The compiled prompt with variables filled in */
-  compiled: string;
-}
-
-export interface PostPromptsByPromptIdCompileErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export interface GetPromptsByPromptIdVersionsResponse {
-  /** All versions of the prompt */
-  versions: Array<{
-    /** Unique prompt identifier */
-    promptId: string;
-    /** Prompt name */
-    name: string;
-    /** Prompt description */
-    description?: string;
-    /** Type of prompt */
-    promptType: "content_generation" | "analysis" | "refinement" | "custom";
-    /** Prompt role: system (behavior/context) or user (task) */
-    role: "system" | "user";
-    /** Prompt category */
-    category: "social_media" | "blog" | "video" | "email" | "general";
-    /** The prompt template with {{variable}} placeholders */
-    template: string;
-    /** Array of variable names used in template */
-    variables?: Array<string>;
-    /** Tags for filtering/searching */
-    tags?: Array<string>;
-    /** Prompt status */
-    status: "active" | "archived" | "draft";
-    /** Version number */
-    version: number;
-    /** Parent prompt ID for version history */
-    parentPromptId?: string;
-    /** Number of times this prompt was used */
-    usageCount: number;
-    /** Average rating (0-5) */
-    avgRating?: number;
-    /** Additional metadata */
-    metadata?: Record<string, unknown>;
-    createdAt: string;
-    updatedAt: string;
-  }>;
-}
-
-export interface GetPromptsByPromptIdVersionsErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export type GetPromptsSearchResponse = Array<{
-  /** Unique prompt identifier */
-  promptId: string;
-  /** Prompt name */
-  name: string;
-  /** Prompt description */
-  description?: string;
-  /** Type of prompt */
-  promptType: "content_generation" | "analysis" | "refinement" | "custom";
-  /** Prompt role: system (behavior/context) or user (task) */
-  role: "system" | "user";
-  /** Prompt category */
-  category: "social_media" | "blog" | "video" | "email" | "general";
-  /** The prompt template with {{variable}} placeholders */
-  template: string;
-  /** Array of variable names used in template */
-  variables?: Array<string>;
-  /** Tags for filtering/searching */
-  tags?: Array<string>;
-  /** Prompt status */
-  status: "active" | "archived" | "draft";
-  /** Version number */
-  version: number;
-  /** Parent prompt ID for version history */
-  parentPromptId?: string;
-  /** Number of times this prompt was used */
-  usageCount: number;
-  /** Average rating (0-5) */
-  avgRating?: number;
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}>;
-
-export interface GetPromptsSearchErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export type GetPromptsTrendingMostUsedResponse = Array<{
-  /** Unique prompt identifier */
-  promptId: string;
-  /** Prompt name */
-  name: string;
-  /** Prompt description */
-  description?: string;
-  /** Type of prompt */
-  promptType: "content_generation" | "analysis" | "refinement" | "custom";
-  /** Prompt role: system (behavior/context) or user (task) */
-  role: "system" | "user";
-  /** Prompt category */
-  category: "social_media" | "blog" | "video" | "email" | "general";
-  /** The prompt template with {{variable}} placeholders */
-  template: string;
-  /** Array of variable names used in template */
-  variables?: Array<string>;
-  /** Tags for filtering/searching */
-  tags?: Array<string>;
-  /** Prompt status */
-  status: "active" | "archived" | "draft";
-  /** Version number */
-  version: number;
-  /** Parent prompt ID for version history */
-  parentPromptId?: string;
-  /** Number of times this prompt was used */
-  usageCount: number;
-  /** Average rating (0-5) */
-  avgRating?: number;
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}>;
-
-export interface GetPromptsTrendingMostUsedErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export type GetPromptsTrendingHighestRatedResponse = Array<{
-  /** Unique prompt identifier */
-  promptId: string;
-  /** Prompt name */
-  name: string;
-  /** Prompt description */
-  description?: string;
-  /** Type of prompt */
-  promptType: "content_generation" | "analysis" | "refinement" | "custom";
-  /** Prompt role: system (behavior/context) or user (task) */
-  role: "system" | "user";
-  /** Prompt category */
-  category: "social_media" | "blog" | "video" | "email" | "general";
-  /** The prompt template with {{variable}} placeholders */
-  template: string;
-  /** Array of variable names used in template */
-  variables?: Array<string>;
-  /** Tags for filtering/searching */
-  tags?: Array<string>;
-  /** Prompt status */
-  status: "active" | "archived" | "draft";
-  /** Version number */
-  version: number;
-  /** Parent prompt ID for version history */
-  parentPromptId?: string;
-  /** Number of times this prompt was used */
-  usageCount: number;
-  /** Average rating (0-5) */
-  avgRating?: number;
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}>;
-
-export interface GetPromptsTrendingHighestRatedErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export type GetPromptsTypeByTypeResponse = Array<{
-  /** Unique prompt identifier */
-  promptId: string;
-  /** Prompt name */
-  name: string;
-  /** Prompt description */
-  description?: string;
-  /** Type of prompt */
-  promptType: "content_generation" | "analysis" | "refinement" | "custom";
-  /** Prompt role: system (behavior/context) or user (task) */
-  role: "system" | "user";
-  /** Prompt category */
-  category: "social_media" | "blog" | "video" | "email" | "general";
-  /** The prompt template with {{variable}} placeholders */
-  template: string;
-  /** Array of variable names used in template */
-  variables?: Array<string>;
-  /** Tags for filtering/searching */
-  tags?: Array<string>;
-  /** Prompt status */
-  status: "active" | "archived" | "draft";
-  /** Version number */
-  version: number;
-  /** Parent prompt ID for version history */
-  parentPromptId?: string;
-  /** Number of times this prompt was used */
-  usageCount: number;
-  /** Average rating (0-5) */
-  avgRating?: number;
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}>;
-
-export interface GetPromptsTypeByTypeErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export type GetPromptsRoleByRoleResponse = Array<{
-  /** Unique prompt identifier */
-  promptId: string;
-  /** Prompt name */
-  name: string;
-  /** Prompt description */
-  description?: string;
-  /** Type of prompt */
-  promptType: "content_generation" | "analysis" | "refinement" | "custom";
-  /** Prompt role: system (behavior/context) or user (task) */
-  role: "system" | "user";
-  /** Prompt category */
-  category: "social_media" | "blog" | "video" | "email" | "general";
-  /** The prompt template with {{variable}} placeholders */
-  template: string;
-  /** Array of variable names used in template */
-  variables?: Array<string>;
-  /** Tags for filtering/searching */
-  tags?: Array<string>;
-  /** Prompt status */
-  status: "active" | "archived" | "draft";
-  /** Version number */
-  version: number;
-  /** Parent prompt ID for version history */
-  parentPromptId?: string;
-  /** Number of times this prompt was used */
-  usageCount: number;
-  /** Average rating (0-5) */
-  avgRating?: number;
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}>;
-
-export interface GetPromptsRoleByRoleErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export type GetPromptsCategoryByCategoryResponse = Array<{
-  /** Unique prompt identifier */
-  promptId: string;
-  /** Prompt name */
-  name: string;
-  /** Prompt description */
-  description?: string;
-  /** Type of prompt */
-  promptType: "content_generation" | "analysis" | "refinement" | "custom";
-  /** Prompt role: system (behavior/context) or user (task) */
-  role: "system" | "user";
-  /** Prompt category */
-  category: "social_media" | "blog" | "video" | "email" | "general";
-  /** The prompt template with {{variable}} placeholders */
-  template: string;
-  /** Array of variable names used in template */
-  variables?: Array<string>;
-  /** Tags for filtering/searching */
-  tags?: Array<string>;
-  /** Prompt status */
-  status: "active" | "archived" | "draft";
-  /** Version number */
-  version: number;
-  /** Parent prompt ID for version history */
-  parentPromptId?: string;
-  /** Number of times this prompt was used */
-  usageCount: number;
-  /** Average rating (0-5) */
-  avgRating?: number;
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}>;
-
-export interface GetPromptsCategoryByCategoryErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-export interface PostPromptsByTagsRequest {
-  tags: Array<string>;
-}
-
-export type PostPromptsByTagsResponse = Array<{
-  /** Unique prompt identifier */
-  promptId: string;
-  /** Prompt name */
-  name: string;
-  /** Prompt description */
-  description?: string;
-  /** Type of prompt */
-  promptType: "content_generation" | "analysis" | "refinement" | "custom";
-  /** Prompt role: system (behavior/context) or user (task) */
-  role: "system" | "user";
-  /** Prompt category */
-  category: "social_media" | "blog" | "video" | "email" | "general";
-  /** The prompt template with {{variable}} placeholders */
-  template: string;
-  /** Array of variable names used in template */
-  variables?: Array<string>;
-  /** Tags for filtering/searching */
-  tags?: Array<string>;
-  /** Prompt status */
-  status: "active" | "archived" | "draft";
-  /** Version number */
-  version: number;
-  /** Parent prompt ID for version history */
-  parentPromptId?: string;
-  /** Number of times this prompt was used */
-  usageCount: number;
-  /** Average rating (0-5) */
-  avgRating?: number;
-  /** Additional metadata */
-  metadata?: Record<string, unknown>;
-  createdAt: string;
-  updatedAt: string;
-}>;
-
-export interface PostPromptsByTagsErrorResponse {
-  error: string;
-  message: string;
-  details?: unknown;
-}
-
-// ─── Namespace re-export ────────────────────────────────────────────────────
-export namespace Prompts {
-  export type GetPromptsResponse = import("./prompts").GetPromptsResponse;
-  export type GetPromptsErrorResponse = import("./prompts").GetPromptsErrorResponse;
-  export type PostPromptsRequest = import("./prompts").PostPromptsRequest;
-  export type PostPromptsResponse = import("./prompts").PostPromptsResponse;
-  export type PostPromptsErrorResponse = import("./prompts").PostPromptsErrorResponse;
-  export type GetPromptsByPromptIdResponse = import("./prompts").GetPromptsByPromptIdResponse;
-  export type GetPromptsByPromptIdErrorResponse = import("./prompts").GetPromptsByPromptIdErrorResponse;
-  export type PatchPromptsByPromptIdRequest = import("./prompts").PatchPromptsByPromptIdRequest;
-  export type PatchPromptsByPromptIdResponse = import("./prompts").PatchPromptsByPromptIdResponse;
-  export type PatchPromptsByPromptIdErrorResponse = import("./prompts").PatchPromptsByPromptIdErrorResponse;
-  export type DeletePromptsByPromptIdResponse = import("./prompts").DeletePromptsByPromptIdResponse;
-  export type DeletePromptsByPromptIdErrorResponse = import("./prompts").DeletePromptsByPromptIdErrorResponse;
-  export type PostPromptsByPromptIdRefineRequest = import("./prompts").PostPromptsByPromptIdRefineRequest;
-  export type PostPromptsByPromptIdRefineResponse = import("./prompts").PostPromptsByPromptIdRefineResponse;
-  export type PostPromptsByPromptIdRefineErrorResponse = import("./prompts").PostPromptsByPromptIdRefineErrorResponse;
-  export type PostPromptsByPromptIdRateRequest = import("./prompts").PostPromptsByPromptIdRateRequest;
-  export type PostPromptsByPromptIdRateResponse = import("./prompts").PostPromptsByPromptIdRateResponse;
-  export type PostPromptsByPromptIdRateErrorResponse = import("./prompts").PostPromptsByPromptIdRateErrorResponse;
-  export type PostPromptsByPromptIdUsageResponse = import("./prompts").PostPromptsByPromptIdUsageResponse;
-  export type PostPromptsByPromptIdUsageErrorResponse = import("./prompts").PostPromptsByPromptIdUsageErrorResponse;
-  export type PostPromptsByPromptIdCompileRequest = import("./prompts").PostPromptsByPromptIdCompileRequest;
-  export type PostPromptsByPromptIdCompileResponse = import("./prompts").PostPromptsByPromptIdCompileResponse;
-  export type PostPromptsByPromptIdCompileErrorResponse = import("./prompts").PostPromptsByPromptIdCompileErrorResponse;
-  export type GetPromptsByPromptIdVersionsResponse = import("./prompts").GetPromptsByPromptIdVersionsResponse;
-  export type GetPromptsByPromptIdVersionsErrorResponse = import("./prompts").GetPromptsByPromptIdVersionsErrorResponse;
-  export type GetPromptsSearchResponse = import("./prompts").GetPromptsSearchResponse;
-  export type GetPromptsSearchErrorResponse = import("./prompts").GetPromptsSearchErrorResponse;
-  export type GetPromptsTrendingMostUsedResponse = import("./prompts").GetPromptsTrendingMostUsedResponse;
-  export type GetPromptsTrendingMostUsedErrorResponse = import("./prompts").GetPromptsTrendingMostUsedErrorResponse;
-  export type GetPromptsTrendingHighestRatedResponse = import("./prompts").GetPromptsTrendingHighestRatedResponse;
-  export type GetPromptsTrendingHighestRatedErrorResponse = import("./prompts").GetPromptsTrendingHighestRatedErrorResponse;
-  export type GetPromptsTypeByTypeResponse = import("./prompts").GetPromptsTypeByTypeResponse;
-  export type GetPromptsTypeByTypeErrorResponse = import("./prompts").GetPromptsTypeByTypeErrorResponse;
-  export type GetPromptsRoleByRoleResponse = import("./prompts").GetPromptsRoleByRoleResponse;
-  export type GetPromptsRoleByRoleErrorResponse = import("./prompts").GetPromptsRoleByRoleErrorResponse;
-  export type GetPromptsCategoryByCategoryResponse = import("./prompts").GetPromptsCategoryByCategoryResponse;
-  export type GetPromptsCategoryByCategoryErrorResponse = import("./prompts").GetPromptsCategoryByCategoryErrorResponse;
-  export type PostPromptsByTagsRequest = import("./prompts").PostPromptsByTagsRequest;
-  export type PostPromptsByTagsResponse = import("./prompts").PostPromptsByTagsResponse;
-  export type PostPromptsByTagsErrorResponse = import("./prompts").PostPromptsByTagsErrorResponse;
-}
+// ─── Convenience type aliases ──────────────────────────────────────────────

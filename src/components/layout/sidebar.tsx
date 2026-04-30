@@ -12,10 +12,10 @@ import {
   ChevronDown,
   Menu,
   X,
-  Layers,
   Package,
   PenLine,
   Wand2,
+  Link2,
 } from 'lucide-react'
 import ThemeToggle from '#/components/layout/theme-toggle'
 import { cn } from '#/shared/utils'
@@ -87,10 +87,10 @@ const NAV_ITEMS: NavItem[] = [
     icon: <BarChart3 size={18} />,
   },
   {
-    id: 'pages',
-    label: 'Facebook Pages',
-    to: '/dash/pages',
-    icon: <Layers size={18} />,
+    id: 'integrations',
+    label: 'Integrations',
+    to: '/dash/integrations',
+    icon: <Link2 size={18} />,
   },
   {
     id: 'settings',

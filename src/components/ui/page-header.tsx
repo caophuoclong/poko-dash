@@ -27,7 +27,7 @@ function PageHeader({
   return (
     <div
       data-slot="page-header"
-      className={cn('mb-6 space-y-3', className)}
+      className={cn('sticky top-0 z-10 bg-surface -mx-4 -mt-4 pt-4 px-4 mb-6 space-y-3', className)}
       {...props}
     >
       {backHref ? (

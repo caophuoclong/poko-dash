@@ -2,7 +2,7 @@ import { useProducts } from '#/features/products/hooks/use-products'
 import { useGenerateFromIdea } from '#/features/posts/hooks/use-content-posts'
 import { useNavigate } from '@tanstack/react-router'
 import { SeedWorkspacePage } from './SeedWorkspacePage'
-import { useUpdateContentIdea } from '../../hooks/use-content-ideas'
+import { useUpdateContentIdea, useDeleteContentIdea } from '../../hooks/use-content-ideas'
 import type { ContentIdeaEntity } from '../../schemas/content.schema'
 
 interface SeedWorkspacePageWrapperProps {
@@ -14,6 +14,7 @@ export function SeedWorkspacePageWrapper({
 }: SeedWorkspacePageWrapperProps) {
   const ideaId = idea.ideaId
   const updateIdea = useUpdateContentIdea()
+  const deleteIdea = useDeleteContentIdea()
   const { data: products = [] } = useProducts()
   const generateFromIdea = useGenerateFromIdea()
   const navigate = useNavigate()
@@ -50,6 +51,11 @@ export function SeedWorkspacePageWrapper({
     await updateIdea.mutateAsync({ ideaId, data: { status: 'draft' } })
   }
 
+  const handleDelete = async () => {
+    await deleteIdea.mutateAsync({ ideaId })
+    navigate({ to: '/dash/content' })
+  }
+
   const handleGenerateAll = async () => {
     // Generate posts for all linked products
     const productIds = idea.ideaProducts ?? []
@@ -82,6 +88,7 @@ export function SeedWorkspacePageWrapper({
       onUpdate={handleUpdate}
       onApprove={handleApprove}
       onUnapprove={handleUnapprove}
+      onDelete={handleDelete}
       onGenerateAll={handleGenerateAll}
       onGenerateProduct={handleGenerateProduct}
       onViewPost={handleViewPost}
