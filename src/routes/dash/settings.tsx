@@ -1,17 +1,19 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { SimplePage } from '#/components/ui/simple-page'
-import { Settings } from 'lucide-react'
+import { usePageHeader } from '#/components/ui/page-header-context'
 
 export const Route = createFileRoute('/dash/settings')({
   component: SettingsPage,
 })
 
 function SettingsPage() {
+  usePageHeader({
+    title: 'Cài đặt',
+    subtitle: 'Quản lý cấu hình hệ thống',
+  })
+
   return (
-    <SimplePage
-      title="Cài đặt"
-      subtitle="Quản lý cấu hình hệ thống"
-      icon={Settings}
-    />
+    <div className="p-6 text-center text-muted-text">
+      Settings coming soon...
+    </div>
   )
 }

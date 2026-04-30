@@ -385,7 +385,7 @@ export function getSeedsColumns({
         const genState = computeGenerationState(idea, summary)
 
         return (
-          <div className="flex items-center gap-0.5 group/actions">
+          <div className="flex items-center gap-0.5 group/actions" onClick={(e) => e.stopPropagation()}>
             {genState.canGenerateAll && (
               <Tooltip>
                 <TooltipTrigger asChild>

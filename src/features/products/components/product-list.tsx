@@ -12,7 +12,7 @@ import type { Product } from '../types/product'
 import { cn, formatPriceNum, parsePrice, parsePriceRange } from '#/shared/utils'
 
 import { Badge } from '@/components/ui/badge'
-import { PageHeader } from '@/components/ui/page-header'
+import { usePageHeader } from '@/components/ui/page-header-context'
 import { getStatusMeta, PRODUCT_STATUS } from '#/shared/constants'
 
 interface ProductRow extends Product {
@@ -167,10 +167,10 @@ export function ProductList() {
     getSortedRowModel: getSortedRowModel(),
   })
 
+  usePageHeader({ title: 'Sản phẩm', subtitle: `${rows.length} sản phẩm` })
+
   return (
     <div>
-      <PageHeader title="Sản phẩm" subtitle={`${rows.length} sản phẩm`} />
-
       <CommonTable
         table={table}
         isLoading={isLoading}

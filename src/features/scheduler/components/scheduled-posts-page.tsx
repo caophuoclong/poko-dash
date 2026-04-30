@@ -4,11 +4,13 @@ import { useMemo } from 'react'
 import { Link } from '@tanstack/react-router'
 import CalendarMonthView from './calendar/calendar-month-view'
 import { transformScheduledJobsToEvents } from '../services/calendar.service'
+import { usePageHeader } from '#/components/ui/page-header-context'
+import type { ContentPostParsed } from '#/features/posts'
 
-type PostSummary = GetContentPostsResponse[number]
 
 function ScheduledPostsPageInner() {
-  const { data: allPosts = [], isLoading } = useContentPosts()
+  const { data, isLoading } = useContentPosts()
+  const allPosts = data?.data ?? []
   const { data: scheduledJobs = [] } = useScheduledJobs()
 
   const calendarEvents = useMemo(
@@ -23,7 +25,7 @@ function ScheduledPostsPageInner() {
   )
 
   const postsByDate = useMemo(() => {
-    const map: Record<string, PostSummary[]> = {}
+    const map: Record<string, ContentPostParsed[]> = {}
     for (const post of scheduledPosts) {
       const key = post.updatedAt.slice(0, 10)
       if (!map[key]) map[key] = []
@@ -34,20 +36,17 @@ function ScheduledPostsPageInner() {
       .map(([date, posts]) => ({ date, posts }))
   }, [scheduledPosts])
 
+  usePageHeader({
+    title: 'Bài đã lên lịch',
+    subtitle: `${scheduledPosts.length} bài viết đang chờ đăng`,
+  })
+
   if (isLoading) {
     return <div className="p-12 text-center text-muted-text">Đang tải...</div>
   }
 
   return (
     <div className="max-w-full">
-      <div className="sticky top-0 z-10 bg-surface -mx-4 -mt-4 pt-4 px-4 mb-8">
-        <h1 className="font-display text-2xl font-bold text-near-white tracking-tight mb-1">
-          Bài đã lên lịch
-        </h1>
-        <p className="text-sm text-muted-text">
-          {scheduledPosts.length} bài viết đang chờ đăng
-        </p>
-      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
         <div className="bg-surface border border-frost rounded-xl px-4 py-3">

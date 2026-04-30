@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
-import { PageHeader } from '#/components/ui/page-header'
+import { usePageHeader } from '#/components/ui/page-header-context'
 import {
   SectionCard,
   SectionCardHeader,
@@ -98,27 +98,28 @@ export function ContentIdeaCreatePage() {
     }
   }
 
+  usePageHeader({
+    backHref: '/dash/content',
+    backLabel: 'Quay lại',
+    title: 'Tạo ý tưởng mới',
+    actions: (
+      <div className="flex items-center gap-3">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => void navigate({ to: '/dash/content' })}
+        >
+          Hủy
+        </Button>
+        <Button type="submit" form="content-idea-create-form" disabled={isSaving || !isDirty}>
+          {isSaving ? 'Đang tạo...' : 'Tạo ý tưởng'}
+        </Button>
+      </div>
+    ),
+  })
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <PageHeader
-        backHref="/dash/content"
-        backLabel="Quay lại"
-        title="Tạo ý tưởng mới"
-        actions={
-          <div className="flex items-center gap-3">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => void navigate({ to: '/dash/content' })}
-            >
-              Hủy
-            </Button>
-            <Button type="submit" disabled={isSaving || !isDirty}>
-              {isSaving ? 'Đang tạo...' : 'Tạo ý tưởng'}
-            </Button>
-          </div>
-        }
-      />
+    <form id="content-idea-create-form" onSubmit={handleSubmit(onSubmit)}>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main content */}

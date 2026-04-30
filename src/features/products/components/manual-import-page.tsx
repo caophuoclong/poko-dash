@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { PageHeader } from '#/components/ui/page-header'
+import { usePageHeader } from '#/components/ui/page-header-context'
 import {
   SectionCard,
   SectionCardHeader,
@@ -215,28 +215,27 @@ function ManualImportInner() {
     }, 50)
   }, [parseJson, submit])
 
+  usePageHeader({
+    title: 'Manual Import',
+    subtitle: 'Import sản phẩm Shopee vào hệ thống qua 2 bước.',
+    eyebrow: 'Sản phẩm',
+    backHref: '/dash/products',
+    backLabel: 'Sản phẩm',
+    actions: affiliateUrl || jsonText ? (
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={reset}
+        className="gap-1.5 text-muted-text"
+      >
+        <RotateCcw size={13} />
+        Reset
+      </Button>
+    ) : undefined,
+  })
+
   return (
     <div className="max-w-2xl">
-      <PageHeader
-        title="Manual Import"
-        subtitle="Import sản phẩm Shopee vào hệ thống qua 2 bước."
-        eyebrow="Sản phẩm"
-        backHref="/dash/products"
-        backLabel="Sản phẩm"
-        actions={
-          affiliateUrl || jsonText ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={reset}
-              className="gap-1.5 text-muted-text"
-            >
-              <RotateCcw size={13} />
-              Reset
-            </Button>
-          ) : undefined
-        }
-      />
 
       <div className="mb-5">
         <StepList step={step} />

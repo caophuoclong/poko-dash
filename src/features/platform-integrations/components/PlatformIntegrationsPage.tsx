@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
-import { PageHeader } from '#/components/ui/page-header'
+import { usePageHeader } from '#/components/ui/page-header-context'
 import { SectionCard, SectionCardHeader, SectionCardBody } from '#/components/ui/section-card'
 import { EmptyState, emptyStatePresets } from '#/components/ui/empty-state'
 import {
@@ -217,13 +217,14 @@ export function PlatformIntegrationsPage({
     [oauthProvider],
   )
 
+  usePageHeader({
+    title: 'Platform Integrations',
+    subtitle: 'Manage publish targets connected to Poko.',
+  })
+
   if (phase === 'callback-exchanging') {
     return (
       <div className="space-y-6">
-        <PageHeader
-          title="Platform Integrations"
-          subtitle="Manage publish targets connected to Poko."
-        />
         <SectionCard padded>
           <OAuthCallbackHandler
             phase="exchanging"
@@ -240,10 +241,6 @@ export function PlatformIntegrationsPage({
   if (phase === 'callback-error' && oauthError) {
     return (
       <div className="space-y-6">
-        <PageHeader
-          title="Platform Integrations"
-          subtitle="Manage publish targets connected to Poko."
-        />
         <SectionCard padded>
           <OAuthCallbackHandler
             phase="error"
@@ -262,10 +259,6 @@ export function PlatformIntegrationsPage({
   if (!isLoading && !hasIntegrations && phase === 'idle') {
     return (
       <div className="space-y-6">
-        <PageHeader
-          title="Platform Integrations"
-          subtitle="Manage publish targets connected to Poko."
-        />
         <SectionCard padded>
           <SectionCardHeader
             title="Connect a Platform"
@@ -291,11 +284,6 @@ export function PlatformIntegrationsPage({
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Platform Integrations"
-        subtitle="Manage publish targets connected to Poko."
-      />
-
       <SectionCard padded>
         <SectionCardHeader
           title="Connect a Platform"

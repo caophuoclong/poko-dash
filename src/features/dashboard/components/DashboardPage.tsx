@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { DashboardRange } from '#/dtos/dashboard'
 import { useDashboardOverview } from '../hooks/use-dashboard'
-import { DashboardHeader } from './DashboardHeader'
+import { usePageHeader } from '@/components/ui/page-header-context'
 import { SummaryCardGrid } from './SummaryCardGrid'
 import { PipelineSnapshot } from './PipelineSnapshot'
 import { TrendChartsSection } from './TrendChartsSection'
@@ -12,7 +12,14 @@ import { DashboardSkeleton } from './DashboardSkeleton'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from '@tanstack/react-router'
-import { Plus } from 'lucide-react'
+import { Plus, RefreshCw } from 'lucide-react'
+import { cn } from '#/shared/utils'
+
+const RANGE_OPTIONS: { value: DashboardRange; label: string }[] = [
+  { value: '7d', label: '7 days' },
+  { value: '30d', label: '30 days' },
+  { value: '90d', label: '90 days' },
+]
 
 export default function DashboardPage() {
   const [selectedRange, setSelectedRange] = useState<DashboardRange>('7d')
@@ -26,15 +33,48 @@ export default function DashboardPage() {
     refetch()
   }
 
+  usePageHeader({
+    title: 'Dashboard',
+    subtitle: 'Content pipeline overview and operational metrics',
+    actions: (
+      <div className="flex items-center gap-2">
+        <div className="inline-flex items-center rounded-lg border border-frost bg-surface p-0.5">
+          {RANGE_OPTIONS.map((option) => (
+            <Button
+              key={option.value}
+              variant="ghost"
+              size="sm"
+              onClick={() => setSelectedRange(option.value)}
+              className={cn(
+                'h-7 px-3 text-xs font-medium',
+                selectedRange === option.value
+                  ? 'bg-accent-orange text-accent-on'
+                  : 'text-muted-text hover:text-near-white',
+              )}
+            >
+              {option.label}
+            </Button>
+          ))}
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleRefresh}
+          disabled={isRefetching}
+          className="h-8 px-2"
+        >
+          <RefreshCw
+            size={16}
+            className={cn(isRefetching && 'animate-spin')}
+          />
+        </Button>
+      </div>
+    ),
+  })
+
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <DashboardHeader
-          selectedRange={selectedRange}
-          onRangeChange={setSelectedRange}
-          onRefresh={handleRefresh}
-          isRefreshing={isRefetching}
-        />
         <DashboardSkeleton />
       </div>
     )
@@ -43,12 +83,6 @@ export default function DashboardPage() {
   if (isError || !data) {
     return (
       <div className="space-y-6">
-        <DashboardHeader
-          selectedRange={selectedRange}
-          onRangeChange={setSelectedRange}
-          onRefresh={handleRefresh}
-          isRefreshing={isRefetching}
-        />
         <EmptyState
           variant="page"
           icon="alert"
@@ -70,12 +104,6 @@ export default function DashboardPage() {
   if (isEmpty) {
     return (
       <div className="space-y-6">
-        <DashboardHeader
-          selectedRange={selectedRange}
-          onRangeChange={setSelectedRange}
-          onRefresh={handleRefresh}
-          isRefreshing={isRefetching}
-        />
         <EmptyState
           variant="page"
           icon="rocket"
@@ -102,13 +130,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <DashboardHeader
-        selectedRange={selectedRange}
-        onRangeChange={setSelectedRange}
-        onRefresh={handleRefresh}
-        isRefreshing={isRefetching}
-      />
-
       {/* Summary cards */}
       <SummaryCardGrid cards={data.summaryCards} />
 

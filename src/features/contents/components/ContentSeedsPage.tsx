@@ -8,7 +8,7 @@ import {
   MoreHorizontal,
   Filter,
 } from 'lucide-react'
-import { PageHeader } from '@/components/ui/page-header'
+import { usePageHeader } from '@/components/ui/page-header-context'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -35,7 +35,7 @@ import {
   useGenerateFromIdea,
   useContentPosts,
 } from '@/features/posts/hooks/use-content-posts'
-import { useUpdateContentIdea } from '../hooks/use-content-ideas'
+import { useUpdateContentIdea, useDeleteContentIdea } from '../hooks/use-content-ideas'
 import { useProducts } from '@/features/products/hooks/use-products'
 import { SeedDetailDrawer } from './SeedDetailDrawer'
 import type { AutocompleteOption } from '@/components/ui/autocomplete'
@@ -107,6 +107,7 @@ export default function ContentSeedsPage({
   const navigate = useNavigate()
   const generateFromIdea = useGenerateFromIdea()
   const updateContentIdea = useUpdateContentIdea()
+  const deleteContentIdea = useDeleteContentIdea()
   const [viewMode, setViewMode] = useState<ViewMode>('table')
   const [sorting, setSorting] = useState<SortingState>([])
   const [sortOption, setSortOption] = useState<SortOption>('updated')
@@ -293,6 +294,18 @@ export default function ContentSeedsPage({
     filteredIdeas.clearFilters()
   }, [])
 
+  const handleDelete = useCallback(
+    async (ideaId: string) => {
+      if (!confirm('Are you sure you want to delete this seed?')) return
+      try {
+        await deleteContentIdea.mutateAsync({ ideaId })
+      } catch (error) {
+        console.error('Failed to delete seed:', error)
+      }
+    },
+    [deleteContentIdea],
+  )
+
   const getRowClassName = useCallback((idea: ContentIdeaEntity) => {
     const produced = idea.status === 'produced'
     if (produced) return '[&>*:not(:last-child)]:opacity-40'
@@ -315,7 +328,7 @@ export default function ContentSeedsPage({
         onOpenFull: (ideaId: string) => {
           navigate({ to: '/dash/content/$ideaId', params: { ideaId } })
         },
-        onDelete: (ideaId: string) => console.log('Delete:', ideaId),
+        onDelete: handleDelete,
         productsMap,
         generationSummaries,
       }),
@@ -327,6 +340,7 @@ export default function ContentSeedsPage({
       handleQuickOpen,
       handleQuickApprove,
       handleQuickViewPosts,
+      handleDelete,
       navigate,
       productsMap,
       generationSummaries,
@@ -345,43 +359,45 @@ export default function ContentSeedsPage({
     getRowId: (row) => row.ideaId,
   })
 
-  return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Content Seeds"
-        subtitle="Reusable content directions that can generate multiple posts from selected products"
-        actions={
-          <div className="flex items-center gap-2">
+  usePageHeader({
+    title: 'Content Seeds',
+    subtitle:
+      'Reusable content directions that can generate multiple posts from selected products',
+    actions: (
+      <div className="flex items-center gap-2">
+        <Button
+          size="sm"
+          className="inline-flex items-center gap-1.5"
+          onClick={handleCreateSeed}
+        >
+          <Plus size={16} />
+          New seed
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button
+              variant="ghost"
               size="sm"
               className="inline-flex items-center gap-1.5"
-              onClick={handleCreateSeed}
             >
-              <Plus size={16} />
-              New seed
+              <MoreHorizontal size={16} />
             </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="inline-flex items-center gap-1.5"
-                >
-                  <MoreHorizontal size={16} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>
-                  <span>Import ideas</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>Bulk actions</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        }
-      />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem>
+              <span>Import ideas</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <span>Bulk actions</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    ),
+  })
+
+  return (
+    <div className="space-y-6">
 
       {ideas.length === 0 ? (
         <EmptyState

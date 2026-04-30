@@ -7,7 +7,7 @@ import { CommonTable } from '@/components/table'
 import { useReactTable, getCoreRowModel } from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
-import { PageHeader } from '@/components/ui/page-header'
+import { usePageHeader } from '@/components/ui/page-header-context'
 import { EmptyState } from '@/components/ui/empty-state'
 import { formatRelativeTime } from '@/shared/utils/date'
 import { StatusCell } from './post-list/StatusCell'
@@ -238,30 +238,28 @@ export default function PostList(props: Props) {
     getCoreRowModel: getCoreRowModel(),
   })
 
+  usePageHeader({
+    title:
+      selectedIdea && selectedIdea !== NO_IDEA_SENTINEL && selectedIdeaData
+        ? `Bài viết từ ý tưởng: ${selectedIdeaData.hook}`
+        : selectedIdea === NO_IDEA_SENTINEL
+          ? 'Bài viết không có ý tưởng'
+          : 'Bài viết',
+    subtitle: selectedIdea
+      ? `Hiển thị ${filteredPosts.length} bài viết`
+      : 'Quản lý toàn bộ bài viết của bạn',
+    actions: (
+      <Button
+        color="orange"
+        onClick={() => navigate({ to: '/dash/posts/new' })}
+      >
+        Tạo bài viết
+      </Button>
+    ),
+  })
+
   return (
     <div className="max-w-full">
-      <PageHeader
-        title={
-          selectedIdea && selectedIdea !== NO_IDEA_SENTINEL && selectedIdeaData
-            ? `Bài viết từ ý tưởng: ${selectedIdeaData.hook}`
-            : selectedIdea === NO_IDEA_SENTINEL
-              ? 'Bài viết không có ý tưởng'
-              : 'Bài viết'
-        }
-        subtitle={
-          selectedIdea
-            ? `Hiển thị ${filteredPosts.length} bài viết`
-            : 'Quản lý toàn bộ bài viết của bạn'
-        }
-        actions={
-          <Button
-            color="orange"
-            onClick={() => navigate({ to: '/dash/posts/new' })}
-          >
-            Tạo bài viết
-          </Button>
-        }
-      />
 
       <PostsToolbar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
 

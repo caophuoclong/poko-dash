@@ -10,11 +10,14 @@ import {
   useContentPostsControllerGenerateFromProducts,
   useContentPostsControllerGenerateFromIdea,
 } from '#/api/client'
+import { ContentPostSchema } from '../schemas/content-post.schema'
 
 export function useContentPosts(options?: { ideaId?: string }) {
   return useContentPostsControllerList({
     query: {
-      select: (res) => res.data,
+      select: (res) => ({
+        data: ContentPostSchema.array().parse(res.data.data),
+      }),
       placeholderData: [] as any,
     },
   })

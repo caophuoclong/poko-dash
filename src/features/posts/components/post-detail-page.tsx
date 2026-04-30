@@ -1,6 +1,6 @@
 import { Button } from '#/components/ui/button'
 import { Badge } from '#/components/ui/badge'
-import { PageHeader } from '@/components/ui/page-header'
+import { usePageHeader } from '@/components/ui/page-header-context'
 import { LoadingState } from '@/components/ui/loading-state'
 import { EmptyState } from '@/components/ui/empty-state'
 import PostMetadataSidebar from './post-metadata-sidebar'
@@ -59,27 +59,28 @@ function PostDetailPageInner({ postId }: PostDetailPageProps) {
     },
   ]
 
+  usePageHeader({
+    backHref: '/dash/posts',
+    backLabel: 'Quay lại',
+    title: post.title,
+    actions: (
+      <div className="flex items-center gap-3">
+        {publications.length > 0 && (
+          <Badge tone={compositeMeta.tone}>{compositeMeta.label}</Badge>
+        )}
+        <Badge tone={tone}>{label}</Badge>
+        <Link
+          to="/dash/posts/$postId/edit"
+          params={{ postId: post.postId }}
+        >
+          <Button size="sm">Sửa bài viết</Button>
+        </Link>
+      </div>
+    ),
+  })
+
   return (
     <div className="max-w-full">
-      <PageHeader
-        backHref="/dash/posts"
-        backLabel="Quay lại"
-        title={post.title}
-        actions={
-          <div className="flex items-center gap-3">
-            {publications.length > 0 && (
-              <Badge tone={compositeMeta.tone}>{compositeMeta.label}</Badge>
-            )}
-            <Badge tone={tone}>{label}</Badge>
-            <Link
-              to="/dash/posts/$postId/edit"
-              params={{ postId: post.postId }}
-            >
-              <Button size="sm">Sửa bài viết</Button>
-            </Link>
-          </div>
-        }
-      />
 
       <div className="mb-6 border-b border-frost">
         <nav className="flex gap-1">

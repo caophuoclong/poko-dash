@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { PageHeader } from '#/components/ui/page-header'
+import { usePageHeader } from '#/components/ui/page-header-context'
 import {
   SectionCard,
   SectionCardHeader,
@@ -136,6 +136,33 @@ function ContentIdeaDetailPageInner({ ideaId }: ContentIdeaDetailPageProps) {
   const statusLabel =
     STATUS_OPTIONS.find((s) => s.value === idea.status)?.label ?? idea.status
   const statusTone = STATUS_TONE[idea.status as IdeaStatus] ?? 'neutral'
+
+  usePageHeader({
+    backHref: '/dash/content',
+    backLabel: 'Quay lại',
+    title: idea.hook,
+    subtitle: `Tạo lúc ${new Date(idea.createdAt).toLocaleDateString('vi-VN')}`,
+    actions: (
+      <div className="flex items-center gap-3">
+        <Badge tone={statusTone}>{statusLabel}</Badge>
+        {isDirty && (
+          <span className="text-xs text-accent-orange">• Chưa lưu</span>
+        )}
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => reset()}
+          disabled={!isDirty || isSaving}
+        >
+          Hủy
+        </Button>
+        <Button type="submit" form="content-idea-detail-form" disabled={isSaving || !isDirty}>
+          {isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
+        </Button>
+      </div>
+    ),
+  })
+
   console.log(
     'Rendering ContentIdeaDetailPage for ideaId:',
     ideaId,
@@ -143,32 +170,7 @@ function ContentIdeaDetailPageInner({ ideaId }: ContentIdeaDetailPageProps) {
     idea,
   )
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <PageHeader
-        backHref="/dash/content"
-        backLabel="Quay lại"
-        title={idea.hook}
-        subtitle={`Tạo lúc ${new Date(idea.createdAt).toLocaleDateString('vi-VN')}`}
-        actions={
-          <div className="flex items-center gap-3">
-            <Badge tone={statusTone}>{statusLabel}</Badge>
-            {isDirty && (
-              <span className="text-xs text-accent-orange">• Chưa lưu</span>
-            )}
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => reset()}
-              disabled={!isDirty || isSaving}
-            >
-              Hủy
-            </Button>
-            <Button type="submit" disabled={isSaving || !isDirty}>
-              {isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
-            </Button>
-          </div>
-        }
-      />
+    <form id="content-idea-detail-form" onSubmit={handleSubmit(onSubmit)}>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main content */}
