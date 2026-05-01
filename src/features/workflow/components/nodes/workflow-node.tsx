@@ -15,6 +15,9 @@ import {
   GitBranch,
   Timer,
   Bell,
+  Loader2,
+  CheckCircle2,
+  XCircle,
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '#/shared/utils'
@@ -25,6 +28,8 @@ import {
 } from '../../node-registry'
 import '../../node-catalog'
 import type { WorkflowNodeData } from '../../types'
+import { useExecutionStore } from '../../stores/execution-store'
+import type { NodeExecutionStatus } from '../../utils/execution-engine'
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Play, Clock, ListPlus, Globe, Layers, Filter,
@@ -39,12 +44,50 @@ const statusConfig: Record<string, { dot: string; ring: string; label: string }>
   paused: { dot: 'bg-muted-text', ring: 'ring-muted-text/20', label: 'Paused' },
 }
 
-function WorkflowNode({ data, selected }: NodeProps) {
+const executionStatusStyles: Record<
+  NodeExecutionStatus,
+  { border: string; bg: string; overlay?: string }
+> = {
+  idle: { border: '', bg: '' },
+  pending: {
+    border: 'border-accent-yellow/40',
+    bg: 'bg-accent-yellow/5',
+  },
+  running: {
+    border: 'border-accent-blue shadow-md shadow-accent-blue/10',
+    bg: 'bg-accent-blue/5',
+  },
+  success: {
+    border: 'border-accent-green/40',
+    bg: 'bg-accent-green/5',
+  },
+  error: {
+    border: 'border-accent-red/40',
+    bg: 'bg-accent-red/5',
+  },
+  skipped: {
+    border: 'border-muted-text/20',
+    bg: 'bg-muted-text/5',
+  },
+  'out-of-scope': {
+    border: 'border-frost/50',
+    bg: 'bg-void/60',
+    overlay: 'opacity-40',
+  },
+}
+
+function WorkflowNode({ data, selected, id }: NodeProps) {
   const nodeData = data as unknown as WorkflowNodeData
   const Icon = nodeData.icon ? ICON_MAP[nodeData.icon] : null
   const status = nodeData.status ? statusConfig[nodeData.status] : null
   const def = nodeData.nodeTypeId ? getNodeDefinition(String(nodeData.nodeTypeId)) : null
   const catConfig = def ? CATEGORY_CONFIG[def.category] : null
+
+  const executionStatus = useExecutionStore((s) =>
+    s.nodeStates[id]?.status ?? 'idle',
+  )
+
+  const execStyles = executionStatusStyles[executionStatus] ?? executionStatusStyles.idle
 
   const summaryItems = def && nodeData.config
     ? getNodeSummaryData(def.typeId, nodeData.config as Record<string, unknown>)
@@ -64,12 +107,38 @@ function WorkflowNode({ data, selected }: NodeProps) {
       <div
         className={cn(
           'bg-surface border rounded-xl px-3.5 py-3 shadow-sm min-w-[220px] max-w-[260px]',
-          'transition-all duration-150',
+          'transition-all duration-150 relative',
           selected
             ? 'border-accent-blue ring-1 ring-accent-blue/20 shadow-md shadow-accent-blue/5'
             : 'border-frost hover:border-frost-hover hover:shadow-sm',
+          execStyles.border,
+          execStyles.bg,
+          execStyles.overlay,
         )}
       >
+        {executionStatus === 'running' && (
+          <div className="absolute -top-1 -right-1">
+            <div className="relative">
+              <Loader2
+                size={16}
+                className="text-accent-blue animate-spin"
+              />
+            </div>
+          </div>
+        )}
+
+        {executionStatus === 'success' && (
+          <div className="absolute -top-1 -right-1">
+            <CheckCircle2 size={14} className="text-accent-green" />
+          </div>
+        )}
+
+        {executionStatus === 'error' && (
+          <div className="absolute -top-1 -right-1">
+            <XCircle size={14} className="text-accent-red" />
+          </div>
+        )}
+
         <div className="flex items-center gap-2.5">
           {Icon && (
             <div
@@ -89,7 +158,7 @@ function WorkflowNode({ data, selected }: NodeProps) {
               <span className="text-[12px] font-semibold text-near-white truncate leading-tight">
                 {nodeData.title}
               </span>
-              {status && (
+              {status && executionStatus === 'idle' && (
                 <span
                   className={cn(
                     'inline-flex items-center gap-0.5 px-1 py-px rounded-full text-[9px] font-medium leading-none shrink-0',

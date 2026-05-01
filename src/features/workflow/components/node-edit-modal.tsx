@@ -20,6 +20,8 @@ import {
   Eye,
   Table2,
   FileJson,
+  Play,
+  Route,
 } from 'lucide-react'
 import type { Node, Edge } from '@xyflow/react'
 import { Button } from '#/components/ui/button'
@@ -35,7 +37,6 @@ import {
 } from './variable-system'
 import '../node-catalog'
 import {
-  Play,
   Clock as ClockIcon,
   ListPlus,
   Globe,
@@ -68,6 +69,7 @@ interface NodeEditModalProps {
   onClose: () => void
   onNodeDataUpdate: (nodeId: string, patch: Partial<WorkflowNodeData>) => void
   onDeleteNode: (nodeId: string) => void
+  onExecute?: (mode: 'full' | 'to-node' | 'single-node') => void
 }
 
 type TabId = 'properties' | 'validation'
@@ -75,7 +77,7 @@ type ExplorerTab = 'schema' | 'table' | 'json'
 
 export function NodeEditModal({
   open, nodeId, data, position, nodes, edges,
-  onClose, onNodeDataUpdate, onDeleteNode,
+  onClose, onNodeDataUpdate, onDeleteNode, onExecute,
 }: NodeEditModalProps) {
   const def = getNodeDefinition(data.nodeTypeId ?? '')
   const [activeTab, setActiveTab] = useState<TabId>('properties')
@@ -196,6 +198,18 @@ export function NodeEditModal({
             {!errorCount && warningCount > 0 && <span className="px-2 py-0.5 rounded-full bg-accent-yellow/10 text-[11px] font-medium text-accent-yellow">{warningCount} warning</span>}
           </div>
           <div className="flex items-center gap-1.5">
+            {onExecute && (
+              <>
+                <Button size="xs" color="green-dim" onClick={() => onExecute('to-node')}>
+                  <Route size={12} />
+                  Run to Here
+                </Button>
+                <Button size="xs" color="blue-dim" onClick={() => onExecute('full')}>
+                  <Play size={12} />
+                  Run All
+                </Button>
+              </>
+            )}
             <Button size="xs" color="blue-dim" onClick={handleSave}>Done</Button>
             <Button variant="ghost" size="icon-xs" onClick={onClose} className="text-muted-text hover:text-near-white"><X size={15} /></Button>
           </div>

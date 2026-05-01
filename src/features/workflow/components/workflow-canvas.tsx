@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useMemo } from 'react'
 import {
   ReactFlow,
   Background,
@@ -20,6 +20,7 @@ import '@xyflow/react/dist/style.css'
 import WorkflowNode from './nodes/workflow-node'
 import type { WorkflowNodeData } from '../types'
 import { getNodeDefinition } from '../node-registry'
+import { useExecutionStore } from '../stores/execution-store'
 import '../node-catalog'
 
 const nodeTypes = {
@@ -59,6 +60,47 @@ export function WorkflowCanvas({
     Node<WorkflowNodeData>,
     Edge
   > | null>(null)
+
+  const edgeStates = useExecutionStore((s) => s.edgeStates)
+  const running = useExecutionStore((s) => s.running)
+
+  const styledEdges = useMemo(() => {
+    return edges.map((edge) => {
+      const state = edgeStates[edge.id]
+      if (!state) return edge
+
+      if (!state.active && running) {
+        return {
+          ...edge,
+          style: { stroke: 'var(--t-frost)', strokeWidth: 1, opacity: 0.25 },
+          animated: false,
+        }
+      }
+
+      switch (state.status) {
+        case 'active':
+          return {
+            ...edge,
+            style: { stroke: 'var(--t-accent-blue)', strokeWidth: 2 },
+            animated: true,
+          }
+        case 'completed':
+          return {
+            ...edge,
+            style: { stroke: 'var(--t-accent-green)', strokeWidth: 1.5 },
+            animated: false,
+          }
+        case 'error':
+          return {
+            ...edge,
+            style: { stroke: 'var(--t-accent-red)', strokeWidth: 1.5 },
+            animated: false,
+          }
+        default:
+          return edge
+      }
+    })
+  }, [edges, edgeStates, running])
 
   const getNodeColor = useCallback((node: Node<WorkflowNodeData>) => {
     const data = node.data as WorkflowNodeData
@@ -208,7 +250,7 @@ export function WorkflowCanvas({
     >
       <ReactFlow
         nodes={nodes}
-        edges={edges}
+        edges={styledEdges}
         onInit={(instance) => {
           reactFlowInstance.current = instance
           if (rfInstanceRef) rfInstanceRef.current = instance
