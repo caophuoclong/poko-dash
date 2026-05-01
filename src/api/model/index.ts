@@ -145,3 +145,8 @@ export * from './workflowNodeDtoConfig';
 export * from './workflowRunDto';
 export * from './workflowsControllerPauseParams';
 export * from './workflowSummaryDto';
+export * from './workflowVersionDetailDto';
+export * from './workflowVersionDetailDtoMessage';
+export * from './workflowVersionDetailDtoSnapshot';
+export * from './workflowVersionDto';
+export * from './workflowVersionDtoMessage';

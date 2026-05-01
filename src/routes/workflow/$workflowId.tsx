@@ -1,12 +1,23 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { Loader2, ArrowLeft } from 'lucide-react'
 import { WorkflowDetailPage } from '#/features/workflow/components/workflow-detail-page'
-import { mockWorkflowDetails } from '#/features/workflow/data/mock-workflows'
+import { useWorkflow } from '#/features/workflow/hooks/use-workflows'
+import { Button } from '#/components/ui/button'
 
 function WorkflowEditorRoute() {
   const { workflowId } = Route.useParams()
-  const workflow = mockWorkflowDetails[workflowId]
+  const navigate = useNavigate()
+  const { data: workflow, isLoading, isError } = useWorkflow(workflowId)
 
-  if (!workflow) {
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-void">
+        <Loader2 size={24} className="animate-spin text-muted-text" />
+      </div>
+    )
+  }
+
+  if (isError || !workflow) {
     return (
       <div className="h-screen flex items-center justify-center bg-void">
         <div className="text-center">
@@ -16,12 +27,14 @@ function WorkflowEditorRoute() {
           <p className="text-sm text-muted-text mb-4">
             The workflow &ldquo;{workflowId}&rdquo; does not exist.
           </p>
-          <a
-            href="/dash/workflows"
-            className="text-sm text-accent-blue hover:underline"
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate({ to: '/dash/workflows' })}
           >
+            <ArrowLeft size={14} />
             Back to workflows
-          </a>
+          </Button>
         </div>
       </div>
     )

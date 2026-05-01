@@ -1,15 +1,25 @@
-import { Link } from '@tanstack/react-router'
+import { useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import {
   GitBranch,
   Plus,
   Search,
   Play,
   Pause,
+  Trash2,
+  Loader2,
+  MoreHorizontal,
 } from 'lucide-react'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '#/components/ui/dropdown-menu'
 import { cn } from '#/shared/utils'
-import { mockWorkflows } from '../data/mock-workflows'
+import { useWorkflows, useCreateWorkflow, useDeleteWorkflow } from '../hooks/use-workflows'
 import type { WorkflowSummary } from '../types'
 
 const statusConfig: Record<
@@ -43,6 +53,38 @@ function formatDate(dateString: string): string {
 }
 
 export function WorkflowIndexPage() {
+  const navigate = useNavigate()
+  const [search, setSearch] = useState('')
+  const { data: workflows = [], isLoading, isError, refetch } = useWorkflows()
+  const createWorkflow = useCreateWorkflow()
+  const deleteWorkflow = useDeleteWorkflow()
+
+  const filtered = workflows.filter((wf) => {
+    if (!search) return true
+    const q = search.toLowerCase()
+    return (
+      wf.name.toLowerCase().includes(q) ||
+      wf.description.toLowerCase().includes(q)
+    )
+  })
+
+  const handleCreate = () => {
+    createWorkflow.mutate(undefined, {
+      onSuccess: (res: any) => {
+        const data = res?.data
+        if (data?.id) {
+          navigate({ to: '/workflow/$workflowId', params: { workflowId: data.id } })
+        }
+      },
+    })
+  }
+
+  const handleDelete = (id: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    deleteWorkflow.mutate(id)
+  }
+
   return (
     <div className="">
       <div className="flex items-center justify-between mb-6">
@@ -52,8 +94,16 @@ export function WorkflowIndexPage() {
             Manage your content automation pipelines
           </p>
         </div>
-        <Button size="sm">
-          <Plus size={15} />
+        <Button
+          size="sm"
+          onClick={handleCreate}
+          disabled={createWorkflow.isPending}
+        >
+          {createWorkflow.isPending ? (
+            <Loader2 size={15} className="animate-spin" />
+          ) : (
+            <Plus size={15} />
+          )}
           New Workflow
         </Button>
       </div>
@@ -66,97 +116,149 @@ export function WorkflowIndexPage() {
         <input
           type="text"
           placeholder="Search workflows..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
           className="w-full h-9 pl-9 pr-4 rounded-lg border border-frost bg-surface text-sm text-near-white placeholder:text-muted-text focus:outline-none focus:ring-2 focus:ring-accent-blue/20 focus:border-accent-blue/30 transition-colors"
         />
       </div>
 
-      <div className="space-y-2">
-        {mockWorkflows.map((wf) => {
-          const status = statusConfig[wf.status]
-          return (
-            <Link
-              key={wf.id}
-              to="/workflow/$workflowId"
-              params={{ workflowId: wf.id }}
-              className={cn(
-                'block bg-surface border border-frost rounded-xl px-5 py-4 transition-colors',
-                'hover:border-frost-hover hover:bg-surface-2',
-                'no-underline',
-              )}
-            >
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-4 min-w-0">
-                  <div className="w-9 h-9 rounded-lg bg-accent-blue-dim flex items-center justify-center shrink-0">
-                    <GitBranch size={17} className="text-accent-blue" />
-                  </div>
+      {isLoading && (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 size={24} className="animate-spin text-muted-text" />
+        </div>
+      )}
 
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-sm font-medium text-near-white truncate">
-                        {wf.name}
-                      </span>
-                      <Badge tone={status.tone} size="sm">
-                        {status.label}
-                      </Badge>
+      {isError && (
+        <div className="bg-surface border border-frost rounded-xl p-12 text-center">
+          <p className="text-sm text-accent-red mb-3">Failed to load workflows</p>
+          <Button size="sm" variant="ghost" onClick={() => refetch()}>
+            Retry
+          </Button>
+        </div>
+      )}
+
+      {!isLoading && !isError && (
+        <div className="space-y-2">
+          {filtered.map((wf) => {
+            const status = statusConfig[wf.status]
+            return (
+              <div
+                key={wf.id}
+                className={cn(
+                  'block bg-surface border border-frost rounded-xl px-5 py-4 transition-colors',
+                  'hover:border-frost-hover hover:bg-surface-2',
+                  'cursor-pointer',
+                )}
+                onClick={() =>
+                  navigate({
+                    to: '/workflow/$workflowId',
+                    params: { workflowId: wf.id },
+                  })
+                }
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4 min-w-0">
+                    <div className="w-9 h-9 rounded-lg bg-accent-blue-dim flex items-center justify-center shrink-0">
+                      <GitBranch size={17} className="text-accent-blue" />
                     </div>
-                    <p className="text-xs text-muted-text mt-0.5 truncate">
-                      {wf.description}
-                    </p>
-                  </div>
-                </div>
 
-                <div className="flex items-center gap-5 shrink-0">
-                  <div className="hidden sm:flex items-center gap-1 text-xs text-muted-text">
-                    <GitBranch size={13} />
-                    <span>{wf.nodeCount} nodes</span>
-                  </div>
-
-                  <div className="hidden md:flex flex-col items-end gap-0.5">
-                    <span className="text-xs text-muted-text">
-                      {wf.lastRunAt
-                        ? `Last run ${formatRelative(wf.lastRunAt)}`
-                        : 'Never run'}
-                    </span>
-                    <span className="text-[11px] text-muted-text/60">
-                      Created {formatDate(wf.createdAt)}
-                    </span>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-sm font-medium text-near-white truncate">
+                          {wf.name}
+                        </span>
+                        <Badge tone={status.tone} size="sm">
+                          {status.label}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-text mt-0.5 truncate">
+                        {wf.description}
+                      </p>
+                    </div>
                   </div>
 
-                  <div
-                    className="flex items-center gap-1"
-                    onClick={(e) => e.preventDefault()}
-                  >
-                    {wf.status === 'active' ? (
-                      <button
-                        className="w-7 h-7 flex items-center justify-center rounded-md text-muted-text hover:text-accent-yellow hover:bg-accent-yellow/10 transition-colors"
-                        title="Pause"
-                      >
-                        <Pause size={15} />
-                      </button>
-                    ) : wf.status === 'paused' ? (
-                      <button
-                        className="w-7 h-7 flex items-center justify-center rounded-md text-muted-text hover:text-accent-green hover:bg-accent-green-dim transition-colors"
-                        title="Resume"
-                      >
-                        <Play size={15} />
-                      </button>
-                    ) : null}
+                  <div className="flex items-center gap-5 shrink-0">
+                    <div className="hidden sm:flex items-center gap-1 text-xs text-muted-text">
+                      <GitBranch size={13} />
+                      <span>{wf.nodeCount} nodes</span>
+                    </div>
+
+                    <div className="hidden md:flex flex-col items-end gap-0.5">
+                      <span className="text-xs text-muted-text">
+                        {wf.lastRunAt
+                          ? `Last run ${formatRelative(wf.lastRunAt)}`
+                          : 'Never run'}
+                      </span>
+                      <span className="text-[11px] text-muted-text/60">
+                        Created {formatDate(wf.createdAt)}
+                      </span>
+                    </div>
+
+                    <div
+                      className="flex items-center gap-1"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {wf.status === 'active' && (
+                        <button
+                          className="w-7 h-7 flex items-center justify-center rounded-md text-muted-text hover:text-accent-yellow hover:bg-accent-yellow/10 transition-colors"
+                          title="Pause"
+                        >
+                          <Pause size={15} />
+                        </button>
+                      )}
+                      {wf.status === 'paused' && (
+                        <button
+                          className="w-7 h-7 flex items-center justify-center rounded-md text-muted-text hover:text-accent-green hover:bg-accent-green-dim transition-colors"
+                          title="Resume"
+                        >
+                          <Play size={15} />
+                        </button>
+                      )}
+
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            className="w-7 h-7 flex items-center justify-center rounded-md text-muted-text hover:text-near-white hover:bg-surface-2 transition-colors"
+                            title="More"
+                          >
+                            <MoreHorizontal size={15} />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" side="bottom">
+                          <DropdownMenuItem
+                            className="text-accent-red"
+                            onClick={(e) => handleDelete(wf.id, e as any)}
+                          >
+                            <Trash2 size={14} />
+                            <span>Delete</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 </div>
               </div>
-            </Link>
-          )
-        })}
-      </div>
+            )
+          })}
+        </div>
+      )}
 
-      {mockWorkflows.length === 0 && (
+      {!isLoading && !isError && filtered.length === 0 && workflows.length === 0 && (
         <div className="bg-surface border border-frost rounded-xl p-12 text-center">
           <GitBranch size={32} className="mx-auto text-muted-text mb-3" />
           <p className="text-sm text-muted-text">No workflows yet</p>
-          <Button size="sm" className="mt-4">
+          <Button size="sm" className="mt-4" onClick={handleCreate}>
             <Plus size={15} />
             Create your first workflow
           </Button>
+        </div>
+      )}
+
+      {!isLoading && !isError && filtered.length === 0 && workflows.length > 0 && (
+        <div className="bg-surface border border-frost rounded-xl p-12 text-center">
+          <p className="text-sm text-muted-text">
+            No workflows match your search.
+          </p>
         </div>
       )}
     </div>

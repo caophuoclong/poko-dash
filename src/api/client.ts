@@ -72,6 +72,8 @@ import type {
   UpdateStatusResponseDto,
   WorkflowDetailDto,
   WorkflowRunDto,
+  WorkflowVersionDetailDto,
+  WorkflowVersionDto,
   WorkflowsControllerPauseParams
 } from './model';
 
@@ -6767,6 +6769,329 @@ export function useWorkflowsControllerEvents<TData = Awaited<ReturnType<typeof w
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getWorkflowsControllerEventsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+/**
+ * @summary Create a manual version snapshot
+ */
+export type workflowsControllerCreateVersionResponse201 = {
+  data: WorkflowVersionDto
+  status: 201
+}
+
+export type workflowsControllerCreateVersionResponseSuccess = (workflowsControllerCreateVersionResponse201) & {
+  headers: Headers;
+};
+;
+
+export type workflowsControllerCreateVersionResponse = (workflowsControllerCreateVersionResponseSuccess)
+
+export const getWorkflowsControllerCreateVersionUrl = (id: string,) => {
+
+
+
+
+  return `/api/workflows/${id}/versions`
+}
+
+export const workflowsControllerCreateVersion = async (id: string, options?: RequestInit): Promise<workflowsControllerCreateVersionResponse> => {
+
+  return customFetch<workflowsControllerCreateVersionResponse>(getWorkflowsControllerCreateVersionUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getWorkflowsControllerCreateVersionMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerCreateVersion>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerCreateVersion>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['workflowsControllerCreateVersion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof workflowsControllerCreateVersion>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  workflowsControllerCreateVersion(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type WorkflowsControllerCreateVersionMutationResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerCreateVersion>>>
+
+    export type WorkflowsControllerCreateVersionMutationError = unknown
+
+    /**
+ * @summary Create a manual version snapshot
+ */
+export const useWorkflowsControllerCreateVersion = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerCreateVersion>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof workflowsControllerCreateVersion>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getWorkflowsControllerCreateVersionMutationOptions(options), queryClient);
+    }
+
+/**
+ * @summary List version history for a workflow
+ */
+export type workflowsControllerListVersionsResponse200 = {
+  data: WorkflowVersionDto[]
+  status: 200
+}
+
+export type workflowsControllerListVersionsResponseSuccess = (workflowsControllerListVersionsResponse200) & {
+  headers: Headers;
+};
+;
+
+export type workflowsControllerListVersionsResponse = (workflowsControllerListVersionsResponseSuccess)
+
+export const getWorkflowsControllerListVersionsUrl = (id: string,) => {
+
+
+
+
+  return `/api/workflows/${id}/versions`
+}
+
+export const workflowsControllerListVersions = async (id: string, options?: RequestInit): Promise<workflowsControllerListVersionsResponse> => {
+
+  return customFetch<workflowsControllerListVersionsResponse>(getWorkflowsControllerListVersionsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getWorkflowsControllerListVersionsQueryKey = (id: string,) => {
+    return [
+    `/api/workflows/${id}/versions`
+    ] as const;
+    }
+
+
+export const getWorkflowsControllerListVersionsQueryOptions = <TData = Awaited<ReturnType<typeof workflowsControllerListVersions>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerListVersions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getWorkflowsControllerListVersionsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof workflowsControllerListVersions>>> = ({ signal }) => workflowsControllerListVersions(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerListVersions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type WorkflowsControllerListVersionsQueryResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerListVersions>>>
+export type WorkflowsControllerListVersionsQueryError = unknown
+
+
+export function useWorkflowsControllerListVersions<TData = Awaited<ReturnType<typeof workflowsControllerListVersions>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerListVersions>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowsControllerListVersions>>,
+          TError,
+          Awaited<ReturnType<typeof workflowsControllerListVersions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowsControllerListVersions<TData = Awaited<ReturnType<typeof workflowsControllerListVersions>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerListVersions>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowsControllerListVersions>>,
+          TError,
+          Awaited<ReturnType<typeof workflowsControllerListVersions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowsControllerListVersions<TData = Awaited<ReturnType<typeof workflowsControllerListVersions>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerListVersions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List version history for a workflow
+ */
+
+export function useWorkflowsControllerListVersions<TData = Awaited<ReturnType<typeof workflowsControllerListVersions>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerListVersions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getWorkflowsControllerListVersionsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+/**
+ * @summary Load a specific version snapshot
+ */
+export type workflowsControllerGetVersionResponse200 = {
+  data: WorkflowVersionDetailDto
+  status: 200
+}
+
+export type workflowsControllerGetVersionResponse404 = {
+  data: void
+  status: 404
+}
+
+export type workflowsControllerGetVersionResponseSuccess = (workflowsControllerGetVersionResponse200) & {
+  headers: Headers;
+};
+export type workflowsControllerGetVersionResponseError = (workflowsControllerGetVersionResponse404) & {
+  headers: Headers;
+};
+
+export type workflowsControllerGetVersionResponse = (workflowsControllerGetVersionResponseSuccess | workflowsControllerGetVersionResponseError)
+
+export const getWorkflowsControllerGetVersionUrl = (id: string,
+    versionNumber: number,) => {
+
+
+
+
+  return `/api/workflows/${id}/versions/${versionNumber}`
+}
+
+export const workflowsControllerGetVersion = async (id: string,
+    versionNumber: number, options?: RequestInit): Promise<workflowsControllerGetVersionResponse> => {
+
+  return customFetch<workflowsControllerGetVersionResponse>(getWorkflowsControllerGetVersionUrl(id,versionNumber),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getWorkflowsControllerGetVersionQueryKey = (id: string,
+    versionNumber: number,) => {
+    return [
+    `/api/workflows/${id}/versions/${versionNumber}`
+    ] as const;
+    }
+
+
+export const getWorkflowsControllerGetVersionQueryOptions = <TData = Awaited<ReturnType<typeof workflowsControllerGetVersion>>, TError = void>(id: string,
+    versionNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerGetVersion>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getWorkflowsControllerGetVersionQueryKey(id,versionNumber);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof workflowsControllerGetVersion>>> = ({ signal }) => workflowsControllerGetVersion(id,versionNumber, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id && versionNumber), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerGetVersion>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type WorkflowsControllerGetVersionQueryResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerGetVersion>>>
+export type WorkflowsControllerGetVersionQueryError = void
+
+
+export function useWorkflowsControllerGetVersion<TData = Awaited<ReturnType<typeof workflowsControllerGetVersion>>, TError = void>(
+ id: string,
+    versionNumber: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerGetVersion>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowsControllerGetVersion>>,
+          TError,
+          Awaited<ReturnType<typeof workflowsControllerGetVersion>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowsControllerGetVersion<TData = Awaited<ReturnType<typeof workflowsControllerGetVersion>>, TError = void>(
+ id: string,
+    versionNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerGetVersion>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowsControllerGetVersion>>,
+          TError,
+          Awaited<ReturnType<typeof workflowsControllerGetVersion>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowsControllerGetVersion<TData = Awaited<ReturnType<typeof workflowsControllerGetVersion>>, TError = void>(
+ id: string,
+    versionNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerGetVersion>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Load a specific version snapshot
+ */
+
+export function useWorkflowsControllerGetVersion<TData = Awaited<ReturnType<typeof workflowsControllerGetVersion>>, TError = void>(
+ id: string,
+    versionNumber: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerGetVersion>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getWorkflowsControllerGetVersionQueryOptions(id,versionNumber,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

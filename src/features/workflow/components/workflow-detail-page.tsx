@@ -1,4 +1,5 @@
 import { useCallback, useRef, useEffect, useState } from 'react'
+import { useNavigate } from '@tanstack/react-router'
 import {
   Save,
   Undo2,
@@ -8,17 +9,26 @@ import {
   PanelLeftOpen,
   ArrowLeft,
   Plus,
+  Trash2,
+  Loader2,
 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
 import { Badge } from '#/components/ui/badge'
 import { TooltipProvider } from '#/components/ui/tooltip'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '#/components/ui/dropdown-menu'
 import { WorkflowCanvas } from './workflow-canvas'
 import { NodePalette } from './node-palette'
 import { NodeEditModal } from './node-edit-modal'
 import { ExecutionDock } from './execution-dock'
 import { ExecutionDrawer } from './execution-drawer'
 import { useWorkflowsControllerRun } from '#/api/client'
+import { useSaveWorkflowCanvas, useDeleteWorkflow } from '../hooks/use-workflows'
 import { useExecutionStore } from '../stores/execution-store'
 import { useExecutionSSE } from '../hooks/useExecutionSSE'
 import type { WorkflowDetail, WorkflowNodeData } from '../types'
@@ -30,6 +40,7 @@ interface WorkflowDetailPageProps {
 }
 
 export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
+  const navigate = useNavigate()
   const [paletteCollapsed, setPaletteCollapsed] = useState(false)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null)
@@ -54,6 +65,8 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
   const validateAndStart = useExecutionStore((s) => s.validateAndStart)
 
   const runMutation = useWorkflowsControllerRun()
+  const saveMutation = useSaveWorkflowCanvas()
+  const deleteMutation = useDeleteWorkflow()
 
   useExecutionSSE(executionId)
 
@@ -289,18 +302,48 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
 
             <div className="w-px h-5 bg-frost mx-1" />
 
-            <Button size="xs" color="green-dim">
-              <Save size={14} />
+            <Button
+              size="xs"
+              color="green-dim"
+              onClick={() =>
+                saveMutation.mutate({ id: workflow.id, nodes, edges })
+              }
+              disabled={saveMutation.isPending}
+            >
+              {saveMutation.isPending ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Save size={14} />
+              )}
               Save
             </Button>
 
-            <Button
-              variant="ghost"
-              size="icon-xs"
-              className="text-muted-text hover:text-near-white"
-            >
-              <MoreHorizontal size={14} />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  className="text-muted-text hover:text-near-white"
+                >
+                  <MoreHorizontal size={14} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" side="bottom">
+                <DropdownMenuItem
+                  className="text-accent-red"
+                  onClick={() => {
+                    deleteMutation.mutate(workflow.id, {
+                      onSuccess: () => {
+                        navigate({ to: '/dash/workflows' })
+                      },
+                    })
+                  }}
+                >
+                  <Trash2 size={14} />
+                  <span>Delete Workflow</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 
