@@ -3,39 +3,47 @@ import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
 import {
   type ExecutionMode,
-  type ExecutionState,
   type ExecutionLog,
-  type NodeExecutionStatus,
   type ValidationBlock,
   createInitialExecutionState,
   computeExecutionPath,
-  getEdgesForPath,
   validateExecutionPath,
   canExecuteSingleNode,
 } from '../utils/execution-engine'
 import { getNodeDefinition } from '../node-registry'
 
-interface ExecutionStore extends ExecutionState {
-  startExecution: (
+interface ExecutionStore {
+  executionId: string | null
+  mode: ExecutionMode
+  running: boolean
+  currentNodeId: string | null
+  logs: ExecutionLog[]
+  startedAt: number | null
+  completedAt: number | null
+  targetNodeId: string | null
+  executionPath: string[]
+  validationResult: ValidationBlock[] | null
+
+  validateAndStart: (
     mode: ExecutionMode,
     nodes: Node<WorkflowNodeData>[],
     edges: Edge[],
     targetNodeId?: string | null,
   ) => ValidationBlock[] | null
 
-  advanceToNode: (nodeId: string) => void
-  completeNode: (nodeId: string, error?: string) => void
-  stopExecution: () => void
-  resetExecution: () => void
+  setExecutionId: (id: string | null) => void
+  setRunning: (running: boolean) => void
   addLog: (log: Omit<ExecutionLog, 'timestamp'>) => void
-  getNodeStatus: (nodeId: string) => NodeExecutionStatus
-  getEdgeActive: (edgeId: string) => boolean
+  completeExecution: () => void
+  failExecution: (error: string) => void
+  resetExecution: () => void
 }
 
-export const useExecutionStore = create<ExecutionStore>((set, get) => ({
+export const useExecutionStore = create<ExecutionStore>((set) => ({
   ...createInitialExecutionState(),
+  executionId: null,
 
-  startExecution: (mode, nodes, edges, targetNodeId = null) => {
+  validateAndStart: (mode, nodes, edges, targetNodeId = null) => {
     if (mode === 'single-node' && targetNodeId) {
       const check = canExecuteSingleNode(targetNodeId, nodes, edges)
       if (!check.allowed) return null
@@ -50,7 +58,6 @@ export const useExecutionStore = create<ExecutionStore>((set, get) => ({
     )
     if (hasErrors) {
       set({
-        ...createInitialExecutionState(),
         mode,
         targetNodeId,
         validationResult: validationBlocks,
@@ -58,44 +65,27 @@ export const useExecutionStore = create<ExecutionStore>((set, get) => ({
       return validationBlocks
     }
 
-    const activeEdgeIds = getEdgesForPath(executionPath, edges)
-    const nodeMap = new Map(nodes.map((n) => [n.id, n]))
-
-    const nodeStates: ExecutionState['nodeStates'] = {}
-    const edgeStates: ExecutionState['edgeStates'] = {}
-
-    for (const node of nodes) {
-      const inPath = executionPath.includes(node.id)
-      nodeStates[node.id] = {
-        nodeId: node.id,
-        status: inPath ? 'pending' : 'out-of-scope',
-      }
-    }
-
-    for (const edge of edges) {
-      const isActive = activeEdgeIds.includes(edge.id)
-      edgeStates[edge.id] = {
-        edgeId: edge.id,
-        active: isActive,
-        status: isActive ? 'idle' : 'idle',
-      }
-    }
-
     const firstNodeId = executionPath[0]
+    const nodeMap = new Map(nodes.map((n) => [n.id, n]))
     const firstNode = nodeMap.get(firstNodeId)
     const firstDef = firstNode?.data?.nodeTypeId
       ? getNodeDefinition(firstNode.data.nodeTypeId as string)
       : null
 
+    const now = Date.now()
+
     set({
       mode,
       running: true,
       currentNodeId: firstNodeId,
-      nodeStates,
-      edgeStates,
+      startedAt: now,
+      completedAt: null,
+      targetNodeId,
+      executionPath,
+      validationResult: null,
       logs: [
         {
-          timestamp: Date.now(),
+          timestamp: now,
           nodeId: '',
           nodeTitle: '',
           level: 'info',
@@ -107,166 +97,17 @@ export const useExecutionStore = create<ExecutionStore>((set, get) => ({
                 : `Executing single node`,
         },
       ],
-      startedAt: Date.now(),
-      completedAt: null,
-      targetNodeId,
-      executionPath,
-      validationResult: null,
     })
 
     return null
   },
 
-  advanceToNode: (nodeId) => {
-    set((state) => ({
-      currentNodeId: nodeId,
-      nodeStates: {
-        ...state.nodeStates,
-        [nodeId]: {
-          ...state.nodeStates[nodeId],
-          nodeId,
-          status: 'running',
-          startedAt: Date.now(),
-        },
-      },
-    }))
+  setExecutionId: (id) => {
+    set({ executionId: id })
   },
 
-  completeNode: (nodeId, error) => {
-    const state = get()
-    const now = Date.now()
-    const prevNodeState = state.nodeStates[nodeId]
-    const duration = prevNodeState?.startedAt
-      ? now - prevNodeState.startedAt
-      : undefined
-
-    const newLogs = [...state.logs]
-    if (error) {
-      newLogs.push({
-        timestamp: now,
-        nodeId,
-        nodeTitle: '',
-        level: 'error',
-        message: error,
-        duration,
-      })
-    } else {
-      newLogs.push({
-        timestamp: now,
-        nodeId,
-        nodeTitle: '',
-        level: 'success',
-        message: 'Completed',
-        duration,
-      })
-    }
-
-    const newEdgeStates = { ...state.edgeStates }
-    for (const [eid, es] of Object.entries(newEdgeStates)) {
-      if (es.active) {
-        const isEdgeFromCurrent = Object.entries(es).length >= 0
-        void isEdgeFromCurrent
-      }
-      if (es.active) {
-        newEdgeStates[eid] = {
-          ...es,
-          status: error ? 'error' : 'completed',
-        }
-      }
-    }
-
-    const isLast =
-      state.executionPath[state.executionPath.length - 1] === nodeId
-
-    if (isLast || error) {
-      set({
-        running: false,
-        currentNodeId: null,
-        completedAt: now,
-        nodeStates: {
-          ...state.nodeStates,
-          [nodeId]: {
-            ...state.nodeStates[nodeId],
-            status: error ? 'error' : 'success',
-            error,
-            completedAt: now,
-            duration,
-          },
-        },
-        edgeStates: newEdgeStates,
-        logs: [
-          ...newLogs,
-          {
-            timestamp: now,
-            nodeId: '',
-            nodeTitle: '',
-            level: error ? 'error' : 'info',
-            message: error
-              ? 'Execution stopped due to error'
-              : 'Execution completed',
-          },
-        ],
-      })
-    } else {
-      const currentIndex = state.executionPath.indexOf(nodeId)
-      const nextNodeId = state.executionPath[currentIndex + 1] ?? null
-
-      set({
-        currentNodeId: nextNodeId,
-        nodeStates: {
-          ...state.nodeStates,
-          [nodeId]: {
-            ...state.nodeStates[nodeId],
-            status: error ? 'error' : 'success',
-            error,
-            completedAt: now,
-            duration,
-          },
-        },
-        edgeStates: newEdgeStates,
-        logs: newLogs,
-      })
-    }
-  },
-
-  stopExecution: () => {
-    const state = get()
-    const now = Date.now()
-    const currentNode = state.currentNodeId
-
-    set({
-      running: false,
-      completedAt: now,
-      currentNodeId: null,
-      nodeStates: Object.fromEntries(
-        Object.entries(state.nodeStates).map(([id, ns]) => [
-          id,
-          {
-            ...ns,
-            status:
-              ns.status === 'running'
-                ? 'error'
-                : ns.status === 'pending'
-                  ? 'skipped'
-                  : ns.status,
-          },
-        ]),
-      ),
-      logs: [
-        ...state.logs,
-        {
-          timestamp: now,
-          nodeId: currentNode ?? '',
-          nodeTitle: '',
-          level: 'warn',
-          message: 'Execution stopped by user',
-        },
-      ],
-    })
-  },
-
-  resetExecution: () => {
-    set(createInitialExecutionState())
+  setRunning: (running) => {
+    set({ running })
   },
 
   addLog: (log) => {
@@ -275,11 +116,48 @@ export const useExecutionStore = create<ExecutionStore>((set, get) => ({
     }))
   },
 
-  getNodeStatus: (nodeId) => {
-    return get().nodeStates[nodeId]?.status ?? 'idle'
+  completeExecution: () => {
+    const now = Date.now()
+    set((state) => ({
+      running: false,
+      completedAt: now,
+      currentNodeId: null,
+      logs: [
+        ...state.logs,
+        {
+          timestamp: now,
+          nodeId: '',
+          nodeTitle: '',
+          level: 'success',
+          message: 'Execution completed',
+        },
+      ],
+    }))
   },
 
-  getEdgeActive: (edgeId) => {
-    return get().edgeStates[edgeId]?.active ?? false
+  failExecution: (error) => {
+    const now = Date.now()
+    set((state) => ({
+      running: false,
+      completedAt: now,
+      currentNodeId: null,
+      logs: [
+        ...state.logs,
+        {
+          timestamp: now,
+          nodeId: '',
+          nodeTitle: '',
+          level: 'error',
+          message: error,
+        },
+      ],
+    }))
+  },
+
+  resetExecution: () => {
+    set({
+      ...createInitialExecutionState(),
+      executionId: null,
+    })
   },
 }))

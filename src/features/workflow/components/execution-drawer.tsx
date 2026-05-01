@@ -1,12 +1,22 @@
-import { useMemo, useRef, useEffect } from 'react'
+import { useMemo, useRef, useEffect, useState, useCallback } from 'react'
 import {
   CheckCircle2,
   XCircle,
   AlertTriangle,
   Info,
   ChevronDown,
+  Eye,
+  EyeOff,
+  X,
 } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
+import {
+  getExecutionControllerGetExecutionQueryKey,
+  getExecutionControllerGetNodeOutputQueryOptions,
+} from '#/api/client'
+import { useQuery } from '@tanstack/react-query'
 import { cn } from '#/shared/utils'
+import { Button } from '#/components/ui/button'
 import { useExecutionStore } from '../stores/execution-store'
 import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
@@ -48,18 +58,72 @@ function formatTimestamp(ts: number): string {
   })
 }
 
+interface NodeExecutionData {
+  nodeId: string
+  title?: string
+  status: 'pending' | 'running' | 'completed' | 'failed'
+  outputSummary?: Record<string, unknown>
+  error?: string
+  durationMs?: number
+}
+
+interface ExecutionCacheData {
+  id: string
+  workflowId?: string
+  status: 'running' | 'completed' | 'failed' | 'cancelled' | 'pending'
+  startedAt?: string
+  completedAt?: string
+  nodes?: NodeExecutionData[]
+}
+
 export function ExecutionDrawer({
   nodes,
   open,
   onClose,
 }: ExecutionDrawerProps) {
+  const queryClient = useQueryClient()
   const logs = useExecutionStore((s) => s.logs)
   const running = useExecutionStore((s) => s.running)
   const startedAt = useExecutionStore((s) => s.startedAt)
   const completedAt = useExecutionStore((s) => s.completedAt)
   const executionPath = useExecutionStore((s) => s.executionPath)
-  const nodeStates = useExecutionStore((s) => s.nodeStates)
+  const executionId = useExecutionStore((s) => s.executionId)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  const [expandedOutputs, setExpandedOutputs] = useState<Set<string>>(new Set())
+  const [expandedNodeId, setExpandedNodeId] = useState<string | null>(null)
+
+  const executionQueryKey = executionId
+    ? getExecutionControllerGetExecutionQueryKey(executionId)
+    : null
+
+  const executionData = executionQueryKey
+    ? (queryClient.getQueryData(executionQueryKey) as ExecutionCacheData | undefined)
+    : undefined
+
+  const nodeExecutions = executionData?.nodes ?? []
+
+  const nodeOutputQuery = useQuery({
+    ...(expandedNodeId && executionId
+      ? getExecutionControllerGetNodeOutputQueryOptions(
+          executionId,
+          expandedNodeId,
+          { query: { enabled: false } },
+        )
+      : {}),
+    queryKey: expandedNodeId
+      ? ['nodeOutput', executionId, expandedNodeId]
+      : ['_disabled'],
+    queryFn: () => null as unknown as void,
+  } as any)
+
+  const handleViewOutput = useCallback(
+    async (nodeId: string) => {
+      setExpandedNodeId(nodeId)
+      nodeOutputQuery.refetch()
+    },
+    [nodeOutputQuery],
+  )
 
   const nodeMap = useMemo(
     () => new Map(nodes.map((n) => [n.id, n])),
@@ -81,15 +145,25 @@ export function ExecutionDrawer({
   }, [startedAt, completedAt])
 
   const progressStats = useMemo(() => {
-    const states = Object.values(nodeStates)
-    return {
-      total: executionPath.length,
-      success: states.filter((s) => s.status === 'success').length,
-      error: states.filter((s) => s.status === 'error').length,
-      running: states.filter((s) => s.status === 'running').length,
-      pending: states.filter((s) => s.status === 'pending').length,
-    }
-  }, [nodeStates, executionPath])
+    const total = executionPath.length
+    const success = nodeExecutions.filter((n) => n.status === 'completed').length
+    const error = nodeExecutions.filter((n) => n.status === 'failed').length
+    const runningCount = nodeExecutions.filter((n) => n.status === 'running').length
+    const pending = total - success - error - runningCount
+    return { total, success, error, running: runningCount, pending }
+  }, [nodeExecutions, executionPath])
+
+  const toggleOutput = useCallback((nodeId: string) => {
+    setExpandedOutputs((prev) => {
+      const next = new Set(prev)
+      if (next.has(nodeId)) {
+        next.delete(nodeId)
+      } else {
+        next.add(nodeId)
+      }
+      return next
+    })
+  }, [])
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -107,7 +181,7 @@ export function ExecutionDrawer({
         'transition-all duration-200',
         'flex flex-col',
       )}
-      style={{ height: '280px' }}
+      style={{ height: '320px' }}
     >
       <div className="flex items-center justify-between px-4 py-2 border-b border-frost shrink-0">
         <div className="flex items-center gap-3">
@@ -157,6 +231,21 @@ export function ExecutionDrawer({
             </span>
           )}
 
+          {running && (
+            <Button
+              size="xs"
+              color="red"
+              onClick={() => {
+                const store = useExecutionStore.getState()
+                store.resetExecution()
+              }}
+              className="h-5 text-[10px]"
+            >
+              <X size={10} />
+              Cancel
+            </Button>
+          )}
+
           <button
             onClick={onClose}
             className="p-1 rounded text-muted-text hover:text-near-white hover:bg-surface-2 transition-colors"
@@ -166,43 +255,96 @@ export function ExecutionDrawer({
         </div>
       </div>
 
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto px-4 py-2 space-y-0.5"
-      >
-        {enrichedLogs.length === 0 && (
-          <div className="flex items-center justify-center h-full text-xs text-muted-text">
-            No execution logs yet. Click Run to start.
+      <div className="flex-1 flex min-h-0">
+        <div
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto px-4 py-2 space-y-0.5"
+        >
+          {enrichedLogs.length === 0 && (
+            <div className="flex items-center justify-center h-full text-xs text-muted-text">
+              No execution logs yet. Click Run to start.
+            </div>
+          )}
+          {enrichedLogs.map((log: ExecutionLog & { nodeTitle: string }, i) => {
+            const Icon = LOG_ICONS[log.level]
+            const nodeExec = log.nodeId
+              ? nodeExecutions.find((n) => n.nodeId === log.nodeId)
+              : undefined
+            const showOutputBtn =
+              nodeExec?.status === 'completed' && log.nodeId
+
+            return (
+              <div
+                key={i}
+                className="flex items-start gap-2 py-1 text-[11px] font-mono"
+              >
+                <span className="text-muted-text tabular-nums shrink-0 w-16">
+                  {formatTimestamp(log.timestamp)}
+                </span>
+                <Icon
+                  size={12}
+                  className={cn('shrink-0 mt-0.5', LOG_COLORS[log.level])}
+                />
+                {log.nodeId && (
+                  <span className="text-near-white font-medium shrink-0 max-w-[140px] truncate">
+                    {log.nodeTitle}
+                  </span>
+                )}
+                <span className="text-muted-text flex-1">{log.message}</span>
+                {log.duration != null && (
+                  <span className="text-muted-text tabular-nums shrink-0">
+                    {formatDuration(log.duration)}
+                  </span>
+                )}
+                {showOutputBtn && (
+                  <button
+                    onClick={() => {
+                      const isExpanded = expandedOutputs.has(log.nodeId)
+                      if (!isExpanded) {
+                        handleViewOutput(log.nodeId)
+                      }
+                      toggleOutput(log.nodeId)
+                    }}
+                    className="shrink-0 flex items-center gap-1 text-[10px] text-accent-blue hover:text-accent-blue/80 transition-colors"
+                  >
+                    {expandedOutputs.has(log.nodeId) ? (
+                      <EyeOff size={10} />
+                    ) : (
+                      <Eye size={10} />
+                    )}
+                    Output
+                  </button>
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {expandedNodeId && expandedOutputs.size > 0 && (
+          <div className="w-[320px] shrink-0 border-l border-frost overflow-y-auto p-3">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-[11px] font-semibold text-near-white">
+                Node Outputs
+              </h4>
+            </div>
+            {Array.from(expandedOutputs).map((nodeId) => {
+              const outputData =
+                expandedNodeId === nodeId ? nodeOutputQuery.data : null
+              return (
+                <div key={nodeId} className="mb-2 last:mb-0">
+                  <div className="text-[10px] text-muted-text mb-1">{nodeId}</div>
+                  <pre className="bg-surface-2 rounded p-2 text-[10px] font-mono text-near-white overflow-x-auto max-h-[250px] overflow-y-auto">
+                    {nodeOutputQuery.isLoading
+                      ? 'Loading...'
+                      : outputData
+                        ? JSON.stringify(outputData, null, 2)
+                        : 'No output data'}
+                  </pre>
+                </div>
+              )
+            })}
           </div>
         )}
-        {enrichedLogs.map((log: ExecutionLog & { nodeTitle: string }, i) => {
-          const Icon = LOG_ICONS[log.level]
-          return (
-            <div
-              key={i}
-              className="flex items-start gap-2 py-1 text-[11px] font-mono"
-            >
-              <span className="text-muted-text tabular-nums shrink-0 w-16">
-                {formatTimestamp(log.timestamp)}
-              </span>
-              <Icon
-                size={12}
-                className={cn('shrink-0 mt-0.5', LOG_COLORS[log.level])}
-              />
-              {log.nodeId && (
-                <span className="text-near-white font-medium shrink-0 max-w-[140px] truncate">
-                  {log.nodeTitle}
-                </span>
-              )}
-              <span className="text-muted-text flex-1">{log.message}</span>
-              {log.duration != null && (
-                <span className="text-muted-text tabular-nums shrink-0">
-                  {formatDuration(log.duration)}
-                </span>
-              )}
-            </div>
-          )
-        })}
       </div>
     </div>
   )

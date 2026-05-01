@@ -18,8 +18,9 @@ import { NodePalette } from './node-palette'
 import { NodeEditModal } from './node-edit-modal'
 import { ExecutionDock } from './execution-dock'
 import { ExecutionDrawer } from './execution-drawer'
+import { useWorkflowsControllerRun } from '#/api/client'
 import { useExecutionStore } from '../stores/execution-store'
-import { useWorkflowExecutor } from '../stores/workflow-executor'
+import { useExecutionSSE } from '../hooks/useExecutionSSE'
 import type { WorkflowDetail, WorkflowNodeData } from '../types'
 import type { Node, Edge, ReactFlowInstance } from '@xyflow/react'
 import type { WorkflowNodeDefinition } from '../node-types'
@@ -46,9 +47,64 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
     Edge
   > | null>(null)
 
-  const startExecution = useExecutionStore((s) => s.startExecution)
+  const executionId = useExecutionStore((s) => s.executionId)
   const resetExecution = useExecutionStore((s) => s.resetExecution)
-  const { simulateExecution } = useWorkflowExecutor(nodes, edges)
+  const setExecutionId = useExecutionStore((s) => s.setExecutionId)
+  const failExecution = useExecutionStore((s) => s.failExecution)
+  const validateAndStart = useExecutionStore((s) => s.validateAndStart)
+
+  const runMutation = useWorkflowsControllerRun()
+
+  useExecutionSSE(executionId)
+
+  const handleExecute = useCallback(
+    (mode: 'full' | 'to-node' | 'single-node') => {
+      const validationErrors = validateAndStart(
+        mode,
+        nodes,
+        edges,
+        mode !== 'full' ? selectedNodeId : null,
+      )
+
+      if (validationErrors && validationErrors.length > 0) {
+        setDrawerOpen(true)
+        return
+      }
+
+      setDrawerOpen(true)
+
+      runMutation.mutate(
+        { id: workflow.id },
+        {
+          onSuccess: (response) => {
+            const runData = response.data
+            if (runData?.id) {
+              setExecutionId(runData.id)
+            } else {
+              failExecution('No execution ID received from server')
+            }
+          },
+          onError: (error) => {
+            failExecution(
+              error instanceof Error
+                ? error.message
+                : 'Failed to start execution',
+            )
+          },
+        },
+      )
+    },
+    [
+      validateAndStart,
+      nodes,
+      edges,
+      selectedNodeId,
+      runMutation,
+      workflow.id,
+      setExecutionId,
+      failExecution,
+    ],
+  )
 
   const handleAddNode = useCallback(
     (def: WorkflowNodeDefinition) => {
@@ -130,26 +186,6 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
     [],
   )
 
-  const handleStartExecution = useCallback(
-    (mode: 'full' | 'to-node' | 'single-node') => {
-      const validationErrors = startExecution(
-        mode,
-        nodes,
-        edges,
-        mode !== 'full' ? selectedNodeId : null,
-      )
-
-      if (validationErrors && validationErrors.length > 0) {
-        setDrawerOpen(true)
-        return
-      }
-
-      setDrawerOpen(true)
-      void simulateExecution()
-    },
-    [startExecution, nodes, edges, selectedNodeId, simulateExecution],
-  )
-
   const editingNode = editingNodeId
     ? nodes.find((n) => n.id === editingNodeId)
     : null
@@ -169,7 +205,7 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
             onClose={handleCloseModal}
             onNodeDataUpdate={handleNodeDataUpdate}
             onDeleteNode={handleDeleteNode}
-            onExecute={handleStartExecution}
+            onExecute={handleExecute}
           />
         )}
 
@@ -304,7 +340,7 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
               edges={edges}
               onToggleDrawer={() => setDrawerOpen((v) => !v)}
               drawerOpen={drawerOpen}
-              onStart={handleStartExecution}
+              workflowId={workflow.id}
             />
           </div>
         </div>

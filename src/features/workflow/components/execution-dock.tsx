@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from '#/components/ui/dropdown-menu'
 import { cn } from '#/shared/utils'
+import { useWorkflowsControllerRun } from '#/api/client'
 import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
 import { useExecutionStore } from '../stores/execution-store'
@@ -33,7 +34,7 @@ interface ExecutionDockProps {
   edges: Edge[]
   onToggleDrawer: () => void
   drawerOpen: boolean
-  onStart: (mode: ExecutionMode) => void
+  workflowId: string
 }
 
 export function ExecutionDock({
@@ -42,13 +43,19 @@ export function ExecutionDock({
   edges,
   onToggleDrawer,
   drawerOpen,
-  onStart,
+  workflowId,
 }: ExecutionDockProps) {
   const running = useExecutionStore((s) => s.running)
-  const stopExecution = useExecutionStore((s) => s.stopExecution)
   const executionPath = useExecutionStore((s) => s.executionPath)
+  const executionId = useExecutionStore((s) => s.executionId)
   const currentNodeId = useExecutionStore((s) => s.currentNodeId)
   const validationResult = useExecutionStore((s) => s.validationResult)
+  const validateAndStart = useExecutionStore((s) => s.validateAndStart)
+  const resetExecution = useExecutionStore((s) => s.resetExecution)
+  const setExecutionId = useExecutionStore((s) => s.setExecutionId)
+  const failExecution = useExecutionStore((s) => s.failExecution)
+
+  const runMutation = useWorkflowsControllerRun()
 
   const selectedNode = useMemo(
     () => nodes.find((n) => n.id === selectedNodeId),
@@ -75,6 +82,44 @@ export function ExecutionDock({
   const hasValidationErrors =
     validationResult && validationResult.length > 0
 
+  const handleStart = (mode: ExecutionMode) => {
+    const validationErrors = validateAndStart(
+      mode,
+      nodes,
+      edges,
+      mode !== 'full' ? selectedNodeId : null,
+    )
+
+    if (validationErrors && validationErrors.length > 0) {
+      return
+    }
+
+    runMutation.mutate(
+      { id: workflowId },
+      {
+        onSuccess: (response) => {
+          const runData = response.data
+          if (runData?.id) {
+            setExecutionId(runData.id)
+          } else {
+            failExecution('No execution ID received from server')
+          }
+        },
+        onError: (error) => {
+          failExecution(
+            error instanceof Error
+              ? error.message
+              : 'Failed to start execution',
+          )
+        },
+      },
+    )
+  }
+
+  const handleStop = () => {
+    resetExecution()
+  }
+
   return (
     <div
       className={cn(
@@ -96,16 +141,31 @@ export function ExecutionDock({
                 {progressInfo.completedCount}/{progressInfo.total}
               </span>
             )}
+            {executionId && (
+              <span className="text-[10px] text-muted-text truncate max-w-[100px]">
+                {executionId.slice(0, 8)}
+              </span>
+            )}
           </div>
 
-          <Button size="xs" color="red" onClick={stopExecution}>
+          <Button
+            size="xs"
+            color="red"
+            onClick={handleStop}
+            disabled={runMutation.isPending}
+          >
             <Square size={12} />
             Stop
           </Button>
         </>
       ) : (
         <>
-          <Button size="xs" color="blue" onClick={() => onStart('full')}>
+          <Button
+            size="xs"
+            color="blue"
+            onClick={() => handleStart('full')}
+            disabled={runMutation.isPending}
+          >
             <Play size={12} />
             Run Workflow
           </Button>
@@ -122,7 +182,7 @@ export function ExecutionDock({
                 side="top"
                 className="min-w-[220px]"
               >
-                <DropdownMenuItem onClick={() => onStart('to-node')}>
+                <DropdownMenuItem onClick={() => handleStart('to-node')}>
                   <Route size={14} />
                   <span className="flex-1">
                     Run to &ldquo;{selectedNodeTitle}&rdquo;
@@ -132,7 +192,7 @@ export function ExecutionDock({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DropdownMenuItem
-                      onClick={() => onStart('single-node')}
+                      onClick={() => handleStart('single-node')}
                       disabled={!singleNodeCheck.allowed}
                     >
                       <Play size={14} />

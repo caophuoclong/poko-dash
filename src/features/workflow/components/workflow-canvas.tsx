@@ -17,6 +17,8 @@ import {
   applyEdgeChanges,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
+import { useQueryClient } from '@tanstack/react-query'
+import { getExecutionControllerGetExecutionQueryKey } from '#/api/client'
 import WorkflowNode from './nodes/workflow-node'
 import type { WorkflowNodeData } from '../types'
 import { getNodeDefinition } from '../node-registry'
@@ -31,6 +33,31 @@ const defaultEdgeOptions = {
   type: 'smoothstep' as const,
   style: { stroke: 'var(--t-frost)', strokeWidth: 1 },
   animated: false,
+}
+
+interface NodeExecutionData {
+  nodeId: string
+  status: string
+}
+
+interface ExecutionCacheData {
+  id: string
+  nodes?: NodeExecutionData[]
+}
+
+function useExecutionEdgeStates() {
+  const queryClient = useQueryClient()
+  const executionId = useExecutionStore((s) => s.executionId)
+  const running = useExecutionStore((s) => s.running)
+
+  if (!running || !executionId) return null
+
+  const queryKey = getExecutionControllerGetExecutionQueryKey(executionId)
+  const data = queryClient.getQueryData(queryKey) as
+    | ExecutionCacheData
+    | undefined
+
+  return data?.nodes ?? null
 }
 
 interface WorkflowCanvasProps {
@@ -61,15 +88,28 @@ export function WorkflowCanvas({
     Edge
   > | null>(null)
 
-  const edgeStates = useExecutionStore((s) => s.edgeStates)
   const running = useExecutionStore((s) => s.running)
+  const executionPath = useExecutionStore((s) => s.executionPath)
+  const nodeExecutions = useExecutionEdgeStates()
+
+  const completedNodeIds = useMemo(() => {
+    if (!nodeExecutions) return new Set<string>()
+    return new Set(
+      nodeExecutions
+        .filter((n) => n.status === 'completed' || n.status === 'failed')
+        .map((n) => n.nodeId),
+    )
+  }, [nodeExecutions])
 
   const styledEdges = useMemo(() => {
-    return edges.map((edge) => {
-      const state = edgeStates[edge.id]
-      if (!state) return edge
+    if (!running) return edges
 
-      if (!state.active && running) {
+    const pathSet = new Set(executionPath)
+
+    return edges.map((edge) => {
+      const onPath = pathSet.has(edge.source) && pathSet.has(edge.target)
+
+      if (!onPath) {
         return {
           ...edge,
           style: { stroke: 'var(--t-frost)', strokeWidth: 1, opacity: 0.25 },
@@ -77,30 +117,28 @@ export function WorkflowCanvas({
         }
       }
 
-      switch (state.status) {
-        case 'active':
-          return {
-            ...edge,
-            style: { stroke: 'var(--t-accent-blue)', strokeWidth: 2 },
-            animated: true,
-          }
-        case 'completed':
-          return {
-            ...edge,
-            style: { stroke: 'var(--t-accent-green)', strokeWidth: 1.5 },
-            animated: false,
-          }
-        case 'error':
-          return {
-            ...edge,
-            style: { stroke: 'var(--t-accent-red)', strokeWidth: 1.5 },
-            animated: false,
-          }
-        default:
-          return edge
+      const sourceCompleted = completedNodeIds.has(edge.source)
+      const targetRunning = !completedNodeIds.has(edge.target) && onPath
+
+      if (sourceCompleted && targetRunning) {
+        return {
+          ...edge,
+          style: { stroke: 'var(--t-accent-blue)', strokeWidth: 2 },
+          animated: true,
+        }
       }
+
+      if (sourceCompleted && completedNodeIds.has(edge.target)) {
+        return {
+          ...edge,
+          style: { stroke: 'var(--t-accent-green)', strokeWidth: 1.5 },
+          animated: false,
+        }
+      }
+
+      return edge
     })
-  }, [edges, edgeStates, running])
+  }, [edges, running, executionPath, completedNodeIds])
 
   const getNodeColor = useCallback((node: Node<WorkflowNodeData>) => {
     const data = node.data as WorkflowNodeData
