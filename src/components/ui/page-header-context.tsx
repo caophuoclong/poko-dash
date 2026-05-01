@@ -2,9 +2,9 @@ import {
   createContext,
   useContext,
   useState,
-  useEffect,
   useLayoutEffect,
   useRef,
+  useMemo,
   type ReactNode,
 } from 'react'
 import { ChevronLeft } from 'lucide-react'
@@ -42,20 +42,28 @@ export function usePageHeader(config: PageHeaderConfig | null) {
     throw new Error('usePageHeader must be used within PageHeaderProvider')
 
   const { setConfig } = ctx
-  const prevKeyRef = useRef<string | null>(null)
+
+  const stableKey = useMemo(() => {
+    if (!config) return null
+    return [
+      String(config.title ?? ''),
+      String(config.subtitle ?? ''),
+      config.backHref ?? '',
+      String(config.eyebrow ?? ''),
+    ].join('|')
+  }, [config?.title, config?.subtitle, config?.backHref, config?.eyebrow])
+
+  const configRef = useRef(config)
+  configRef.current = config
 
   useLayoutEffect(() => {
-    const key = config
-      ? `${config.title ?? ''}|${config.subtitle ?? ''}|${config.backHref ?? ''}|${config.eyebrow ?? ''}`
-      : null
-    if (prevKeyRef.current !== key) {
-      prevKeyRef.current = key
-      setConfig(config)
-    }
-  }, [config, setConfig])
+    setConfig(configRef.current)
+  }, [stableKey, setConfig])
 
-  useEffect(() => {
-    return () => setConfig(null)
+  useLayoutEffect(() => {
+    return () => {
+      setConfig(null)
+    }
   }, [setConfig])
 }
 

@@ -16,6 +16,7 @@ import {
   PenLine,
   Wand2,
   Link2,
+  GitBranch,
 } from 'lucide-react'
 import ThemeToggle from '#/components/layout/theme-toggle'
 import { cn } from '#/shared/utils'
@@ -79,6 +80,12 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Lịch đăng',
     to: '/dash/schedule',
     icon: <Calendar size={18} />,
+  },
+  {
+    id: 'workflow',
+    label: 'Workflow',
+    to: '/dash/workflows',
+    icon: <GitBranch size={18} />,
   },
   {
     id: 'analytics',

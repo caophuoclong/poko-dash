@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as DashRouteImport } from './routes/dash'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashIndexRouteImport } from './routes/dash/index'
+import { Route as WorkflowWorkflowIdRouteImport } from './routes/workflow/$workflowId'
 import { Route as DashSettingsRouteImport } from './routes/dash/settings'
 import { Route as DashScheduleRouteImport } from './routes/dash/schedule'
 import { Route as DashPromptsRouteImport } from './routes/dash/prompts'
@@ -19,6 +20,7 @@ import { Route as DashPagesRouteImport } from './routes/dash/pages'
 import { Route as DashContentRouteImport } from './routes/dash/content'
 import { Route as DashAnalyticsRouteImport } from './routes/dash/analytics'
 import { Route as ApiSplatRouteImport } from './routes/api.$'
+import { Route as DashWorkflowsIndexRouteImport } from './routes/dash/workflows/index'
 import { Route as DashProductsIndexRouteImport } from './routes/dash/products/index'
 import { Route as DashPostsIndexRouteImport } from './routes/dash/posts/index'
 import { Route as DashIntegrationsIndexRouteImport } from './routes/dash/integrations/index'
@@ -47,6 +49,11 @@ const DashIndexRoute = DashIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => DashRoute,
+} as any)
+const WorkflowWorkflowIdRoute = WorkflowWorkflowIdRouteImport.update({
+  id: '/workflow/$workflowId',
+  path: '/workflow/$workflowId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DashSettingsRoute = DashSettingsRouteImport.update({
   id: '/settings',
@@ -82,6 +89,11 @@ const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
   path: '/api/$',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashWorkflowsIndexRoute = DashWorkflowsIndexRouteImport.update({
+  id: '/workflows/',
+  path: '/workflows/',
+  getParentRoute: () => DashRoute,
 } as any)
 const DashProductsIndexRoute = DashProductsIndexRouteImport.update({
   id: '/products/',
@@ -160,6 +172,7 @@ export interface FileRoutesByFullPath {
   '/dash/prompts': typeof DashPromptsRoute
   '/dash/schedule': typeof DashScheduleRoute
   '/dash/settings': typeof DashSettingsRoute
+  '/workflow/$workflowId': typeof WorkflowWorkflowIdRoute
   '/dash/': typeof DashIndexRoute
   '/dash/content/$ideaId': typeof DashContentIdeaIdRouteWithChildren
   '/dash/content/new': typeof DashContentNewRoute
@@ -171,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/dash/integrations/': typeof DashIntegrationsIndexRoute
   '/dash/posts/': typeof DashPostsIndexRoute
   '/dash/products/': typeof DashProductsIndexRoute
+  '/dash/workflows/': typeof DashWorkflowsIndexRoute
   '/dash/content/$ideaId/edit': typeof DashContentIdeaIdEditRoute
   '/dash/posts/$postId/edit': typeof DashPostsPostIdEditRoute
   '/dash/posts/$postId/': typeof DashPostsPostIdIndexRoute
@@ -183,6 +197,7 @@ export interface FileRoutesByTo {
   '/dash/prompts': typeof DashPromptsRoute
   '/dash/schedule': typeof DashScheduleRoute
   '/dash/settings': typeof DashSettingsRoute
+  '/workflow/$workflowId': typeof WorkflowWorkflowIdRoute
   '/dash': typeof DashIndexRoute
   '/dash/content/$ideaId': typeof DashContentIdeaIdRouteWithChildren
   '/dash/content/new': typeof DashContentNewRoute
@@ -194,6 +209,7 @@ export interface FileRoutesByTo {
   '/dash/integrations': typeof DashIntegrationsIndexRoute
   '/dash/posts': typeof DashPostsIndexRoute
   '/dash/products': typeof DashProductsIndexRoute
+  '/dash/workflows': typeof DashWorkflowsIndexRoute
   '/dash/content/$ideaId/edit': typeof DashContentIdeaIdEditRoute
   '/dash/posts/$postId/edit': typeof DashPostsPostIdEditRoute
   '/dash/posts/$postId': typeof DashPostsPostIdIndexRoute
@@ -209,6 +225,7 @@ export interface FileRoutesById {
   '/dash/prompts': typeof DashPromptsRoute
   '/dash/schedule': typeof DashScheduleRoute
   '/dash/settings': typeof DashSettingsRoute
+  '/workflow/$workflowId': typeof WorkflowWorkflowIdRoute
   '/dash/': typeof DashIndexRoute
   '/dash/content/$ideaId': typeof DashContentIdeaIdRouteWithChildren
   '/dash/content/new': typeof DashContentNewRoute
@@ -220,6 +237,7 @@ export interface FileRoutesById {
   '/dash/integrations/': typeof DashIntegrationsIndexRoute
   '/dash/posts/': typeof DashPostsIndexRoute
   '/dash/products/': typeof DashProductsIndexRoute
+  '/dash/workflows/': typeof DashWorkflowsIndexRoute
   '/dash/content/$ideaId/edit': typeof DashContentIdeaIdEditRoute
   '/dash/posts/$postId/edit': typeof DashPostsPostIdEditRoute
   '/dash/posts/$postId/': typeof DashPostsPostIdIndexRoute
@@ -236,6 +254,7 @@ export interface FileRouteTypes {
     | '/dash/prompts'
     | '/dash/schedule'
     | '/dash/settings'
+    | '/workflow/$workflowId'
     | '/dash/'
     | '/dash/content/$ideaId'
     | '/dash/content/new'
@@ -247,6 +266,7 @@ export interface FileRouteTypes {
     | '/dash/integrations/'
     | '/dash/posts/'
     | '/dash/products/'
+    | '/dash/workflows/'
     | '/dash/content/$ideaId/edit'
     | '/dash/posts/$postId/edit'
     | '/dash/posts/$postId/'
@@ -259,6 +279,7 @@ export interface FileRouteTypes {
     | '/dash/prompts'
     | '/dash/schedule'
     | '/dash/settings'
+    | '/workflow/$workflowId'
     | '/dash'
     | '/dash/content/$ideaId'
     | '/dash/content/new'
@@ -270,6 +291,7 @@ export interface FileRouteTypes {
     | '/dash/integrations'
     | '/dash/posts'
     | '/dash/products'
+    | '/dash/workflows'
     | '/dash/content/$ideaId/edit'
     | '/dash/posts/$postId/edit'
     | '/dash/posts/$postId'
@@ -284,6 +306,7 @@ export interface FileRouteTypes {
     | '/dash/prompts'
     | '/dash/schedule'
     | '/dash/settings'
+    | '/workflow/$workflowId'
     | '/dash/'
     | '/dash/content/$ideaId'
     | '/dash/content/new'
@@ -295,6 +318,7 @@ export interface FileRouteTypes {
     | '/dash/integrations/'
     | '/dash/posts/'
     | '/dash/products/'
+    | '/dash/workflows/'
     | '/dash/content/$ideaId/edit'
     | '/dash/posts/$postId/edit'
     | '/dash/posts/$postId/'
@@ -304,6 +328,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashRoute: typeof DashRouteWithChildren
   ApiSplatRoute: typeof ApiSplatRoute
+  WorkflowWorkflowIdRoute: typeof WorkflowWorkflowIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -328,6 +353,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dash/'
       preLoaderRoute: typeof DashIndexRouteImport
       parentRoute: typeof DashRoute
+    }
+    '/workflow/$workflowId': {
+      id: '/workflow/$workflowId'
+      path: '/workflow/$workflowId'
+      fullPath: '/workflow/$workflowId'
+      preLoaderRoute: typeof WorkflowWorkflowIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/dash/settings': {
       id: '/dash/settings'
@@ -377,6 +409,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/$'
       preLoaderRoute: typeof ApiSplatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dash/workflows/': {
+      id: '/dash/workflows/'
+      path: '/workflows'
+      fullPath: '/dash/workflows/'
+      preLoaderRoute: typeof DashWorkflowsIndexRouteImport
+      parentRoute: typeof DashRoute
     }
     '/dash/products/': {
       id: '/dash/products/'
@@ -514,6 +553,7 @@ interface DashRouteChildren {
   DashIntegrationsIndexRoute: typeof DashIntegrationsIndexRoute
   DashPostsIndexRoute: typeof DashPostsIndexRoute
   DashProductsIndexRoute: typeof DashProductsIndexRoute
+  DashWorkflowsIndexRoute: typeof DashWorkflowsIndexRoute
   DashPostsPostIdEditRoute: typeof DashPostsPostIdEditRoute
   DashPostsPostIdIndexRoute: typeof DashPostsPostIdIndexRoute
 }
@@ -533,6 +573,7 @@ const DashRouteChildren: DashRouteChildren = {
   DashIntegrationsIndexRoute: DashIntegrationsIndexRoute,
   DashPostsIndexRoute: DashPostsIndexRoute,
   DashProductsIndexRoute: DashProductsIndexRoute,
+  DashWorkflowsIndexRoute: DashWorkflowsIndexRoute,
   DashPostsPostIdEditRoute: DashPostsPostIdEditRoute,
   DashPostsPostIdIndexRoute: DashPostsPostIdIndexRoute,
 }
@@ -543,6 +584,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashRoute: DashRouteWithChildren,
   ApiSplatRoute: ApiSplatRoute,
+  WorkflowWorkflowIdRoute: WorkflowWorkflowIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
