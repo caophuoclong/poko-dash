@@ -1,223 +1,186 @@
-import {
-  GitBranch,
-  Zap,
-  Clock,
-  Target,
-  TrendingUp,
-  Trash2,
-  X,
-  Globe,
-  PenLine,
-  Users,
-  Link2,
-  Mail,
-  Sparkles,
-  Send,
-  type LucideIcon,
-} from 'lucide-react'
+import { Trash2, X, Info } from 'lucide-react'
 import { Button } from '#/components/ui/button'
 import type { WorkflowDetail, WorkflowNodeData } from '../types'
+import { getNodeDefinition } from '../node-registry'
+import { CATEGORY_CONFIG } from '../node-registry'
+import '../node-catalog'
+import { PropertyEditor } from './property-editors/property-editor'
+import type { ValidationError } from '../node-types'
+import {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  type ReactNode,
+} from 'react'
+import {
+  Play,
+  Clock as ClockIcon,
+  ListPlus,
+  Globe,
+  Layers,
+  Filter,
+  Link2,
+  Sparkles,
+  ListTodo,
+  Send,
+  BarChart3,
+  GitBranch as GitBranchIcon,
+  Timer,
+  Bell,
+  type LucideIcon as LI,
+} from 'lucide-react'
+import type { Node, Edge } from '@xyflow/react'
+
+const ICON_MAP: Record<string, LI> = {
+  Play,
+  Clock: ClockIcon,
+  ListPlus,
+  Globe,
+  Layers,
+  Filter,
+  LinkCheck: Link2,
+  Sparkles,
+  ListTodo,
+  Send,
+  BarChart3,
+  GitBranch: GitBranchIcon,
+  Timer,
+  Bell,
+}
 
 interface InspectorPanelProps {
   workflow: WorkflowDetail
+  nodes: Node<WorkflowNodeData>[]
+  edges: Edge[]
+  selectedNode: Node<WorkflowNodeData> | null
   selectedNodeId: string | null
   onNodeDeselect: () => void
+  onNodeDataUpdate: (nodeId: string, patch: Partial<WorkflowNodeData>) => void
 }
 
 export function InspectorPanel({
   workflow,
+  nodes,
+  edges,
+  selectedNode,
   selectedNodeId,
   onNodeDeselect,
+  onNodeDataUpdate,
 }: InspectorPanelProps) {
-  const selectedNode = selectedNodeId
-    ? workflow.nodes.find((n) => n.id === selectedNodeId)
-    : null
   const nodeData = selectedNode?.data as WorkflowNodeData | undefined
 
   if (selectedNode && nodeData) {
     return (
       <NodeEditor
+        key={selectedNodeId}
         nodeId={selectedNode.id}
         data={nodeData}
-        selectedNode={selectedNode}
+        position={selectedNode.position}
         onClose={onNodeDeselect}
+        onNodeDataUpdate={onNodeDataUpdate}
       />
     )
   }
 
-  return <WorkflowOverview workflow={workflow} />
-}
-
-function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-text">
-      {children}
-    </label>
-  )
-}
-
-function TextInput({
-  label,
-  defaultValue,
-  placeholder,
-}: {
-  label: string
-  defaultValue?: string
-  placeholder?: string
-}) {
-  return (
-    <div className="space-y-1.5">
-      <FieldLabel>{label}</FieldLabel>
-      <input
-        type="text"
-        defaultValue={defaultValue ?? ''}
-        placeholder={placeholder}
-        className="w-full h-8 px-2.5 rounded-lg border border-frost bg-void text-[13px] text-near-white placeholder:text-muted-text/50 focus:outline-none focus:ring-2 focus:ring-accent-blue/20 focus:border-accent-blue/30"
-      />
-    </div>
-  )
-}
-
-function NumberInput({
-  label,
-  defaultValue,
-  min,
-}: {
-  label: string
-  defaultValue?: number
-  min?: number
-}) {
-  return (
-    <div className="space-y-1.5">
-      <FieldLabel>{label}</FieldLabel>
-      <input
-        type="number"
-        defaultValue={defaultValue ?? ''}
-        min={min}
-        className="w-full h-8 px-2.5 rounded-lg border border-frost bg-void text-[13px] text-near-white placeholder:text-muted-text/50 focus:outline-none focus:ring-2 focus:ring-accent-blue/20 focus:border-accent-blue/30"
-      />
-    </div>
-  )
-}
-
-function SelectInput({
-  label,
-  defaultValue,
-  options,
-}: {
-  label: string
-  defaultValue?: string
-  options: { value: string; label: string }[]
-}) {
-  return (
-    <div className="space-y-1.5">
-      <FieldLabel>{label}</FieldLabel>
-      <select
-        defaultValue={defaultValue}
-        className="w-full h-8 px-2.5 rounded-lg border border-frost bg-void text-[13px] text-near-white focus:outline-none focus:ring-2 focus:ring-accent-blue/20 focus:border-accent-blue/30"
-      >
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  )
-}
-
-function TextareaInput({
-  label,
-  defaultValue,
-  placeholder,
-}: {
-  label: string
-  defaultValue?: string
-  placeholder?: string
-}) {
-  return (
-    <div className="space-y-1.5">
-      <FieldLabel>{label}</FieldLabel>
-      <textarea
-        defaultValue={defaultValue ?? ''}
-        placeholder={placeholder}
-        rows={3}
-        className="w-full px-2.5 py-1.5 rounded-lg border border-frost bg-void text-[13px] text-near-white placeholder:text-muted-text/50 focus:outline-none focus:ring-2 focus:ring-accent-blue/20 focus:border-accent-blue/30 resize-none"
-      />
-    </div>
-  )
-}
-
-function ConfigSection({
-  label,
-  icon: Icon,
-  children,
-}: {
-  label: string
-  icon: LucideIcon
-  children: React.ReactNode
-}) {
-  return (
-    <div className="space-y-3 pt-1">
-      <div className="flex items-center gap-1.5">
-        <Icon size={12} className="text-muted-text" />
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-text">
-          {label}
-        </span>
-      </div>
-      {children}
-    </div>
-  )
-}
-
-function CheckboxGroup({
-  label,
-  options,
-  defaults,
-}: {
-  label: string
-  options: { id: string; label: string }[]
-  defaults?: string[]
-}) {
-  return (
-    <div className="space-y-1.5">
-      <FieldLabel>{label}</FieldLabel>
-      <div className="space-y-1">
-        {options.map((o) => (
-          <label key={o.id} className="flex items-center gap-2 py-1 cursor-pointer">
-            <input
-              type="checkbox"
-              defaultChecked={defaults?.includes(o.id)}
-              className="rounded border-frost bg-void text-accent-blue focus:ring-accent-blue/20 h-3.5 w-3.5"
-            />
-            <span className="text-[12px] text-near-white">{o.label}</span>
-          </label>
-        ))}
-      </div>
-    </div>
+    <WorkflowOverview
+      workflow={workflow}
+      nodeCount={nodes.length}
+      edgeCount={edges.length}
+    />
   )
 }
 
 function NodeEditor({
   nodeId,
   data,
-  selectedNode,
+  position,
   onClose,
+  onNodeDataUpdate,
 }: {
   nodeId: string
   data: WorkflowNodeData
-  selectedNode: { position: { x: number; y: number } }
+  position: { x: number; y: number }
   onClose: () => void
+  onNodeDataUpdate: (nodeId: string, patch: Partial<WorkflowNodeData>) => void
 }) {
-  const icon = data.icon ?? ''
-  const config = (data.config ?? {}) as Record<string, unknown>
+  const def = getNodeDefinition(data.nodeTypeId ?? '')
+
+  const [localProps, setLocalProps] = useState<Record<string, unknown>>(() => ({
+    ...def?.defaultProps,
+    ...(data.config ?? {}),
+  }))
+
+  useEffect(() => {
+    setLocalProps({ ...def?.defaultProps, ...(data.config ?? {}) })
+  }, [data.config, def?.defaultProps])
+
+  const [title, setTitle] = useState(data.title)
+  const [subtitle, setSubtitle] = useState(data.subtitle ?? '')
+
+  useEffect(() => {
+    setTitle(data.title)
+    setSubtitle(data.subtitle ?? '')
+  }, [data.title, data.subtitle])
+
+  const errors: ValidationError[] = useMemo(() => {
+    if (!def) return []
+    return def.validate(localProps as never)
+  }, [def, localProps])
+
+  const errorCount = errors.filter((e) => e.severity === 'error').length
+  const warningCount = errors.filter((e) => e.severity === 'warning').length
+
+  const handlePropChange = useCallback(
+    (key: string, value: unknown) => {
+      setLocalProps((prev) => {
+        const next = { ...prev, [key]: value }
+        onNodeDataUpdate(nodeId, { config: next })
+        return next
+      })
+    },
+    [nodeId, onNodeDataUpdate],
+  )
+
+  const handleTitleBlur = useCallback(() => {
+    if (title.trim()) {
+      onNodeDataUpdate(nodeId, { title: title.trim() })
+    }
+  }, [nodeId, title, onNodeDataUpdate])
+
+  const handleSubtitleBlur = useCallback(() => {
+    onNodeDataUpdate(nodeId, { subtitle })
+  }, [nodeId, subtitle, onNodeDataUpdate])
+
+  const catConfig = def ? CATEGORY_CONFIG[def.category] : null
+  const Icon: LI | undefined = def ? ICON_MAP[def.icon] : undefined
 
   return (
-    <aside className="w-[300px] shrink-0 border-l border-frost bg-surface flex flex-col overflow-y-auto">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-frost">
-        <h2 className="text-[13px] font-semibold text-near-white">
-          Node Settings
-        </h2>
+    <aside className="w-[300px] shrink-0 border-l border-frost bg-surface flex flex-col overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-frost shrink-0">
+        <div className="flex items-center gap-2">
+          {Icon && (
+            <div
+              className={`w-6 h-6 rounded-md flex items-center justify-center ${catConfig?.bgColor ?? 'bg-surface-2'} ${catConfig?.color ?? 'text-muted-text'}`}
+            >
+              <Icon size={12} />
+            </div>
+          )}
+          <h2 className="text-[13px] font-semibold text-near-white">
+            {def?.title ?? 'Node Settings'}
+          </h2>
+          {errorCount > 0 && (
+            <span className="ml-auto px-1.5 py-0.5 rounded-full bg-accent-red/10 text-[10px] font-medium text-accent-red">
+              {errorCount} error{errorCount > 1 ? 's' : ''}
+            </span>
+          )}
+          {!errorCount && warningCount > 0 && (
+            <span className="ml-auto px-1.5 py-0.5 rounded-full bg-accent-yellow/10 text-[10px] font-medium text-accent-yellow">
+              {warningCount} warn
+            </span>
+          )}
+        </div>
         <button
           onClick={onClose}
           className="w-6 h-6 flex items-center justify-center rounded-md text-muted-text hover:text-near-white hover:bg-surface-2 transition-colors"
@@ -226,351 +189,201 @@ function NodeEditor({
         </button>
       </div>
 
-      <div className="p-4 space-y-4">
-        <TextInput label="Label" defaultValue={data.title} />
-        <TextInput label="Description" defaultValue={data.subtitle ?? ''} />
-
-        <SelectInput
-          label="Status"
-          defaultValue={data.status ?? 'active'}
-          options={[
-            { value: 'active', label: 'Active' },
-            { value: 'pending', label: 'Pending' },
-            { value: 'completed', label: 'Completed' },
-            { value: 'error', label: 'Error' },
-          ]}
-        />
-
-        <div className="border-t border-frost" />
-
-        {icon === 'Rss' && <ContentSourceConfig config={config} />}
-        {icon === 'Webhook' && <WebhookConfig config={config} />}
-        {icon === 'Sparkles' && <AIEnrichmentConfig config={config} />}
-        {icon === 'Calendar' && <SchedulerConfig config={config} />}
-        {icon === 'Replace' && <TransformConfig config={config} />}
-        {icon === 'ShieldCheck' && <ValidationConfig config={config} />}
-        {icon === 'UserCheck' && <ManualReviewConfig config={config} />}
-        {icon === 'Send' && <DistributionConfig config={config} />}
-        {icon === 'BarChart3' && <AnalyticsConfig config={config} />}
-        {icon === 'Mail' && <EmailConfig config={config} />}
-
-        <div className="border-t border-frost" />
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <SectionHeader>General</SectionHeader>
 
         <div className="space-y-1">
-          <div className="flex justify-between text-xs">
-            <span className="text-muted-text">ID</span>
-            <span className="text-near-white font-mono text-[11px]">{nodeId}</span>
-          </div>
-          <div className="flex justify-between text-xs">
-            <span className="text-muted-text">Position</span>
-            <span className="text-near-white text-[11px]">
-              ({selectedNode.position.x.toFixed(0)}, {selectedNode.position.y.toFixed(0)})
-            </span>
-          </div>
+          <FieldLabel required>Label</FieldLabel>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onBlur={handleTitleBlur}
+            className="w-full h-8 px-2.5 rounded-lg border border-frost bg-void text-[13px] text-near-white placeholder:text-muted-text/50 focus:outline-none focus:ring-2 focus:ring-accent-blue/20 focus:border-accent-blue/30"
+          />
         </div>
 
-        <Button variant="ghost" size="xs" className="w-full text-accent-red hover:bg-accent-red/10">
-          <Trash2 size={13} />
-          Delete Node
-        </Button>
+        <div className="space-y-1">
+          <FieldLabel>Description</FieldLabel>
+          <input
+            type="text"
+            value={subtitle}
+            onChange={(e) => setSubtitle(e.target.value)}
+            onBlur={handleSubtitleBlur}
+            placeholder="Optional node description"
+            className="w-full h-8 px-2.5 rounded-lg border border-frost bg-void text-[13px] text-near-white placeholder:text-muted-text/50 focus:outline-none focus:ring-2 focus:ring-accent-blue/20 focus:border-accent-blue/30"
+          />
+        </div>
+
+        {def ? (
+          <>
+            <div className="border-t border-frost" />
+
+            <SectionHeader>Configuration</SectionHeader>
+
+            {def.purpose && (
+              <div className="flex gap-2 p-2 rounded-lg bg-surface-2/50 border border-frost">
+                <Info size={13} className="text-muted-text shrink-0 mt-0.5" />
+                <p className="text-[11px] text-muted-text leading-relaxed">
+                  {def.purpose}
+                </p>
+              </div>
+            )}
+
+            {def.propertySchema.map((schema) => (
+              <PropertyEditor
+                key={schema.key}
+                schema={schema}
+                value={localProps[schema.key] ?? schema.defaultValue}
+                onChange={handlePropChange}
+                allProps={localProps}
+                errors={errors}
+              />
+            ))}
+
+            {def.inputs.length > 0 && (
+              <>
+                <div className="border-t border-frost" />
+                <SectionHeader>Ports</SectionHeader>
+                <PortsList label="Inputs" ports={def.inputs} />
+                <PortsList label="Outputs" ports={def.outputs} />
+              </>
+            )}
+          </>
+        ) : (
+          !def &&
+          data.nodeTypeId && (
+            <div className="flex gap-2 p-2 rounded-lg bg-accent-yellow/5 border border-accent-yellow/10">
+              <Info size={13} className="text-accent-yellow shrink-0 mt-0.5" />
+              <p className="text-[11px] text-accent-yellow leading-relaxed">
+                Node type <code className="font-mono">{data.nodeTypeId}</code>{' '}
+                is not registered. Properties cannot be edited.
+              </p>
+            </div>
+          )
+        )}
+
+        <div className="border-t border-frost" />
+
+        <SectionHeader>Details</SectionHeader>
+        <DetailRow label="Node ID" value={nodeId} mono />
+        <DetailRow label="Type" value={def?.typeId ?? 'unknown'} />
+        <DetailRow
+          label="Category"
+          value={
+            def ? (CATEGORY_CONFIG[def.category]?.label ?? def.category) : '—'
+          }
+        />
+        <DetailRow
+          label="Position"
+          value={`${position.x.toFixed(0)}, ${position.y.toFixed(0)}`}
+        />
+
+        <div className="pt-2">
+          <Button
+            variant="ghost"
+            size="xs"
+            className="w-full text-accent-red hover:bg-accent-red/10"
+          >
+            <Trash2 size={13} />
+            Delete Node
+          </Button>
+        </div>
       </div>
     </aside>
   )
 }
 
-function ContentSourceConfig({ config }: { config: Record<string, unknown> }) {
+function SectionHeader({ children }: { children: ReactNode }) {
   return (
-    <ConfigSection label="Source Config" icon={Globe}>
-      <TextInput
-        label="Source URL"
-        defaultValue={typeof config.url === 'string' ? config.url : ''}
-        placeholder="https://api.example.com/feed"
-      />
-      <NumberInput
-        label="Refresh Interval (s)"
-        defaultValue={typeof config.interval === 'number' ? config.interval : 300}
-        min={10}
-      />
-      <TextInput
-        label="Auth Header"
-        defaultValue={typeof config.authHeader === 'string' ? config.authHeader : ''}
-        placeholder="Bearer token"
-      />
-    </ConfigSection>
+    <h3 className="text-[10px] font-semibold uppercase tracking-wider text-muted-text pb-0.5">
+      {children}
+    </h3>
   )
 }
 
-function WebhookConfig({ config }: { config: Record<string, unknown> }) {
+function FieldLabel({
+  children,
+  required,
+}: {
+  children: ReactNode
+  required?: boolean
+}) {
   return (
-    <ConfigSection label="Webhook Config" icon={Link2}>
-      <TextInput
-        label="Path"
-        defaultValue={typeof config.path === 'string' ? config.path : '/webhook/incoming'}
-        placeholder="/webhook/incoming"
-      />
-      <TextInput
-        label="Secret"
-        defaultValue={typeof config.secret === 'string' ? config.secret : ''}
-        placeholder="whsec_..."
-      />
-      <TextInput
-        label="Event Filter"
-        defaultValue={typeof config.eventFilter === 'string' ? config.eventFilter : ''}
-        placeholder="content.created,content.updated"
-      />
-    </ConfigSection>
+    <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-text">
+      {children}
+      {required && <span className="text-accent-red ml-0.5">*</span>}
+    </label>
   )
 }
 
-function AIEnrichmentConfig({ config }: { config: Record<string, unknown> }) {
+function DetailRow({
+  label,
+  value,
+  mono,
+}: {
+  label: string
+  value: string
+  mono?: boolean
+}) {
   return (
-    <ConfigSection label="AI Enrichment" icon={Sparkles}>
-      <SelectInput
-        label="Model"
-        defaultValue={typeof config.model === 'string' ? config.model : 'gpt-4o'}
-        options={[
-          { value: 'gpt-4o', label: 'GPT-4o' },
-          { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
-          { value: 'claude-3.5', label: 'Claude 3.5 Sonnet' },
-          { value: 'gemini-1.5', label: 'Gemini 1.5 Pro' },
-        ]}
-      />
-      <TextareaInput
-        label="System Prompt"
-        defaultValue={typeof config.systemPrompt === 'string' ? config.systemPrompt : ''}
-        placeholder="Generate tags and summaries..."
-      />
-      <div className="grid grid-cols-2 gap-3">
-        <NumberInput
-          label="Max Tokens"
-          defaultValue={typeof config.maxTokens === 'number' ? config.maxTokens : 1024}
-          min={1}
-        />
-        <TextInput
-          label="Temperature"
-          defaultValue={typeof config.temperature === 'string' ? config.temperature : '0.7'}
-          placeholder="0.7"
-        />
+    <div className="flex justify-between text-xs py-0.5">
+      <span className="text-muted-text">{label}</span>
+      <span
+        className={`text-near-white ${mono ? 'font-mono text-[11px]' : 'text-[11px]'}`}
+      >
+        {value}
+      </span>
+    </div>
+  )
+}
+
+function PortsList({
+  label,
+  ports,
+}: {
+  label: string
+  ports: import('../node-types').PortDefinition[]
+}) {
+  return (
+    <div className="space-y-1">
+      <span className="text-[10px] font-medium text-muted-text">{label}</span>
+      <div className="flex flex-wrap gap-1">
+        {ports.map((port) => (
+          <span
+            key={port.id}
+            className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium ${
+              port.type === 'data'
+                ? 'bg-accent-blue/10 text-accent-blue'
+                : port.type === 'signal'
+                  ? 'bg-accent-orange/10 text-accent-orange'
+                  : 'bg-accent-red/10 text-accent-red'
+            }`}
+          >
+            {port.label}
+          </span>
+        ))}
       </div>
-    </ConfigSection>
+    </div>
   )
 }
 
-function SchedulerConfig({ config }: { config: Record<string, unknown> }) {
-  return (
-    <ConfigSection label="Schedule" icon={Clock}>
-      <SelectInput
-        label="Mode"
-        defaultValue={typeof config.mode === 'string' ? config.mode : 'cron'}
-        options={[
-          { value: 'interval', label: 'Interval' },
-          { value: 'cron', label: 'Cron Expression' },
-          { value: 'best-time', label: 'Best Time (AI)' },
-        ]}
-      />
-      <TextInput
-        label="Expression"
-        defaultValue={typeof config.expression === 'string' ? config.expression : '0 */6 * * *'}
-        placeholder="0 */6 * * *"
-      />
-      <SelectInput
-        label="Timezone"
-        defaultValue={typeof config.timezone === 'string' ? config.timezone : 'UTC'}
-        options={[
-          { value: 'UTC', label: 'UTC' },
-          { value: 'Asia/Ho_Chi_Minh', label: 'Asia/Ho Chi Minh' },
-          { value: 'America/New_York', label: 'America/New York' },
-          { value: 'Europe/London', label: 'Europe/London' },
-        ]}
-      />
-    </ConfigSection>
-  )
-}
-
-function TransformConfig({ config }: { config: Record<string, unknown> }) {
-  return (
-    <ConfigSection label="Transform Rules" icon={Target}>
-      <TextInput
-        label="Input Field"
-        defaultValue={typeof config.inputField === 'string' ? config.inputField : ''}
-        placeholder="source.title"
-      />
-      <TextInput
-        label="Output Field"
-        defaultValue={typeof config.outputField === 'string' ? config.outputField : ''}
-        placeholder="target.headline"
-      />
-      <SelectInput
-        label="Transform Type"
-        defaultValue={typeof config.transformType === 'string' ? config.transformType : 'map'}
-        options={[
-          { value: 'map', label: 'Direct Map' },
-          { value: 'template', label: 'Template' },
-          { value: 'ai', label: 'AI Transform' },
-        ]}
-      />
-    </ConfigSection>
-  )
-}
-
-function ValidationConfig({ config }: { config: Record<string, unknown> }) {
-  return (
-    <ConfigSection label="Validation Rules" icon={Target}>
-      <NumberInput
-        label="Min Content Score"
-        defaultValue={typeof config.minScore === 'number' ? config.minScore : 70}
-        min={0}
-      />
-      <NumberInput
-        label="Max Duplicates"
-        defaultValue={typeof config.maxDuplicates === 'number' ? config.maxDuplicates : 3}
-        min={0}
-      />
-      <SelectInput
-        label="On Failure"
-        defaultValue={typeof config.onFailure === 'string' ? config.onFailure : 'flag'}
-        options={[
-          { value: 'skip', label: 'Skip' },
-          { value: 'flag', label: 'Flag for Review' },
-          { value: 'reject', label: 'Reject' },
-        ]}
-      />
-    </ConfigSection>
-  )
-}
-
-function ManualReviewConfig({ config }: { config: Record<string, unknown> }) {
-  return (
-    <ConfigSection label="Review Settings" icon={Users}>
-      <TextInput
-        label="Reviewer Group"
-        defaultValue={typeof config.reviewerGroup === 'string' ? config.reviewerGroup : 'editors'}
-        placeholder="editors"
-      />
-      <NumberInput
-        label="Auto-Approve (hours)"
-        defaultValue={typeof config.autoApproveHours === 'number' ? config.autoApproveHours : 24}
-        min={0}
-      />
-      <CheckboxGroup
-        label="Notifications"
-        defaults={Array.isArray(config.notifications) ? (config.notifications as string[]) : ['email']}
-        options={[
-          { id: 'email', label: 'Email' },
-          { id: 'slack', label: 'Slack' },
-          { id: 'in-app', label: 'In-App' },
-        ]}
-      />
-    </ConfigSection>
-  )
-}
-
-function DistributionConfig({ config }: { config: Record<string, unknown> }) {
-  return (
-    <ConfigSection label="Distribution" icon={Send}>
-      <CheckboxGroup
-        label="Platforms"
-        defaults={
-          Array.isArray(config.platforms) ? (config.platforms as string[]) : ['facebook', 'twitter']
-        }
-        options={[
-          { id: 'facebook', label: 'Facebook' },
-          { id: 'twitter', label: 'Twitter / X' },
-          { id: 'linkedin', label: 'LinkedIn' },
-          { id: 'tiktok', label: 'TikTok' },
-          { id: 'instagram', label: 'Instagram' },
-        ]}
-      />
-      <NumberInput
-        label="Max Posts / Day"
-        defaultValue={typeof config.maxPerDay === 'number' ? config.maxPerDay : 12}
-        min={1}
-      />
-      <div className="grid grid-cols-2 gap-3">
-        <TextInput
-          label="Window Start"
-          defaultValue={typeof config.windowStart === 'string' ? config.windowStart : '08:00'}
-          placeholder="08:00"
-        />
-        <TextInput
-          label="Window End"
-          defaultValue={typeof config.windowEnd === 'string' ? config.windowEnd : '22:00'}
-          placeholder="22:00"
-        />
-      </div>
-    </ConfigSection>
-  )
-}
-
-function AnalyticsConfig({ config }: { config: Record<string, unknown> }) {
-  return (
-    <ConfigSection label="Analytics Config" icon={TrendingUp}>
-      <CheckboxGroup
-        label="Tracked Metrics"
-        defaults={
-          Array.isArray(config.metrics) ? (config.metrics as string[]) : ['impressions', 'engagement']
-        }
-        options={[
-          { id: 'impressions', label: 'Impressions' },
-          { id: 'engagement', label: 'Engagement Rate' },
-          { id: 'clicks', label: 'Link Clicks' },
-          { id: 'shares', label: 'Shares' },
-          { id: 'comments', label: 'Comments' },
-          { id: 'conversions', label: 'Conversions' },
-        ]}
-      />
-      <NumberInput
-        label="Sync Interval (min)"
-        defaultValue={typeof config.syncIntervalMinutes === 'number' ? config.syncIntervalMinutes : 15}
-        min={1}
-      />
-      <NumberInput
-        label="Retention (days)"
-        defaultValue={typeof config.retentionDays === 'number' ? config.retentionDays : 90}
-        min={1}
-      />
-    </ConfigSection>
-  )
-}
-
-function EmailConfig({ config }: { config: Record<string, unknown> }) {
-  return (
-    <ConfigSection label="Email Settings" icon={Mail}>
-      <TextInput
-        label="Recipients"
-        defaultValue={typeof config.recipients === 'string' ? config.recipients : ''}
-        placeholder="team@example.com, boss@example.com"
-      />
-      <TextInput
-        label="Subject"
-        defaultValue={typeof config.subject === 'string' ? config.subject : 'Weekly Content Report'}
-        placeholder="Weekly Content Report"
-      />
-      <TextareaInput
-        label="Body Template"
-        defaultValue={typeof config.bodyTemplate === 'string' ? config.bodyTemplate : ''}
-        placeholder="Hello {{name}}, here's your report..."
-      />
-    </ConfigSection>
-  )
-}
-
-function WorkflowOverview({ workflow }: { workflow: WorkflowDetail }) {
+function WorkflowOverview({
+  workflow,
+  nodeCount,
+  edgeCount,
+}: {
+  workflow: WorkflowDetail
+  nodeCount: number
+  edgeCount: number
+}) {
   const summaryBlocks = [
-    {
-      label: 'Total Nodes',
-      value: String(workflow.nodes.length),
-      icon: GitBranch,
-    },
+    { label: 'Total Nodes', value: String(nodeCount), icon: Info },
+    { label: 'Connections', value: String(edgeCount), icon: GitBranchIcon },
     {
       label: 'Status',
       value: workflow.status.charAt(0).toUpperCase() + workflow.status.slice(1),
-      icon: Zap,
-    },
-    {
-      label: 'Connections',
-      value: String(workflow.edges.length),
-      icon: Clock,
+      icon: Play,
     },
     {
       label: 'Last Updated',
@@ -578,7 +391,7 @@ function WorkflowOverview({ workflow }: { workflow: WorkflowDetail }) {
         month: 'short',
         day: 'numeric',
       }),
-      icon: Target,
+      icon: ClockIcon,
     },
   ]
 
@@ -600,7 +413,9 @@ function WorkflowOverview({ workflow }: { workflow: WorkflowDetail }) {
               <block.icon size={15} />
             </div>
             <div className="min-w-0">
-              <div className="text-[11px] text-muted-text leading-tight">{block.label}</div>
+              <div className="text-[11px] text-muted-text leading-tight">
+                {block.label}
+              </div>
               <div className="text-sm font-semibold text-near-white leading-tight">
                 {block.value}
               </div>
@@ -610,12 +425,9 @@ function WorkflowOverview({ workflow }: { workflow: WorkflowDetail }) {
       </div>
 
       <div className="px-4 py-3 border-t border-frost border-b">
-        <div className="flex items-center gap-2">
-          <PenLine size={14} className="text-muted-text" />
-          <span className="text-[12px] font-medium text-near-white">
-            Description
-          </span>
-        </div>
+        <span className="text-[12px] font-medium text-near-white">
+          Description
+        </span>
       </div>
 
       <div className="p-4">
@@ -626,7 +438,8 @@ function WorkflowOverview({ workflow }: { workflow: WorkflowDetail }) {
 
       <div className="px-4 py-3 border-t border-frost mt-auto">
         <div className="text-[11px] text-muted-text">
-          Created {new Date(workflow.createdAt).toLocaleDateString('en-US', {
+          Created{' '}
+          {new Date(workflow.createdAt).toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
             year: 'numeric',

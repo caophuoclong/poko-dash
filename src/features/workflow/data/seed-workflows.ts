@@ -1,0 +1,277 @@
+import type { Node, Edge } from '@xyflow/react'
+import type { WorkflowNodeData } from '../types'
+
+export const crawlToIdeasWorkflow: {
+  nodes: Node<WorkflowNodeData>[]
+  edges: Edge[]
+} = {
+  nodes: [
+    {
+      id: 'n1',
+      type: 'workflow-node',
+      position: { x: 400, y: 0 },
+      data: {
+        title: 'Every 6 Hours',
+        subtitle: 'Schedule trigger',
+        icon: 'Clock',
+        nodeTypeId: 'trigger.schedule',
+        status: 'active',
+        config: {
+          scheduleType: 'cron',
+          cronExpression: '0 */6 * * *',
+          timezone: 'Asia/Ho_Chi_Minh',
+          enabled: true,
+        },
+      },
+    },
+    {
+      id: 'n2',
+      type: 'workflow-node',
+      position: { x: 400, y: 160 },
+      data: {
+        title: 'Generate Fetch Queue',
+        subtitle: 'Build URL list from keywords',
+        icon: 'ListPlus',
+        nodeTypeId: 'crawl.generate_fetch_queue',
+        status: 'active',
+        config: {
+          sourceType: 'keyword',
+          keywordGroup: 'laptop-deals',
+          maxUrls: 100,
+          priority: 'normal',
+          deduplicateBy: ['url', 'domain'],
+        },
+      },
+    },
+    {
+      id: 'n3',
+      type: 'workflow-node',
+      position: { x: 400, y: 320 },
+      data: {
+        title: 'Crawl Pages',
+        subtitle: 'Static HTTP fetch with selectors',
+        icon: 'Globe',
+        nodeTypeId: 'crawl.crawl_page',
+        status: 'active',
+        config: {
+          fetchMode: 'static',
+          timeoutMs: 15000,
+          retries: 2,
+          rateLimitPerSecond: 2,
+          respectRobotsTxt: true,
+          waitForSelector: '',
+          extractSelectors: ['.product-title', '.price', '.description'],
+          userAgent: 'PokoDash/1.0',
+        },
+      },
+    },
+    {
+      id: 'n4',
+      type: 'workflow-node',
+      position: { x: 400, y: 480 },
+      data: {
+        title: 'Normalize Products',
+        subtitle: 'Clean & standardize',
+        icon: 'Layers',
+        nodeTypeId: 'product.normalize',
+        status: 'active',
+        config: {
+          normalizeCurrency: true,
+          defaultCurrency: 'VND',
+          extractBrand: true,
+          cleanHtml: true,
+          trimWhitespace: true,
+          fillMissingFromMeta: false,
+        },
+      },
+    },
+    {
+      id: 'n5',
+      type: 'workflow-node',
+      position: { x: 400, y: 640 },
+      data: {
+        title: 'Generate Content Ideas',
+        subtitle: 'AI-powered idea generation',
+        icon: 'Sparkles',
+        nodeTypeId: 'content.generate_ideas',
+        status: 'active',
+        config: {
+          ideaSource: 'products',
+          contentType: 'review',
+          aiModel: 'gpt-4o-mini',
+          promptTemplate: '',
+          maxIdeas: 10,
+          language: 'vi',
+          includeAffiliateContext: true,
+          toneStyle: 'casual',
+        },
+      },
+    },
+  ],
+  edges: [
+    { id: 'e1-2', source: 'n1', target: 'n2', type: 'smoothstep', animated: true, style: { stroke: 'var(--t-accent-blue)', strokeWidth: 1.5 } },
+    { id: 'e2-3', source: 'n2', target: 'n3', type: 'smoothstep', animated: true, style: { stroke: 'var(--t-accent-purple)', strokeWidth: 1.5 } },
+    { id: 'e3-4', source: 'n3', target: 'n4', type: 'smoothstep', animated: true, style: { stroke: 'var(--t-accent-blue)', strokeWidth: 1.5 } },
+    { id: 'e4-5', source: 'n4', target: 'n5', type: 'smoothstep', animated: true, style: { stroke: 'var(--t-accent-green)', strokeWidth: 1.5 } },
+  ],
+}
+
+export const approveQueuePublishWorkflow: {
+  nodes: Node<WorkflowNodeData>[]
+  edges: Edge[]
+} = {
+  nodes: [
+    {
+      id: 'p1',
+      type: 'workflow-node',
+      position: { x: 400, y: 0 },
+      data: {
+        title: 'Manual Run',
+        subtitle: 'Trigger from dashboard',
+        icon: 'Play',
+        nodeTypeId: 'trigger.manual',
+        status: 'active',
+        config: {
+          label: 'Approve & Publish',
+          requireConfirmation: true,
+          allowedRoles: ['admin', 'editor'],
+        },
+      },
+    },
+    {
+      id: 'p2',
+      type: 'workflow-node',
+      position: { x: 400, y: 160 },
+      data: {
+        title: 'Create Content Queue',
+        subtitle: 'Priority queue with review',
+        icon: 'ListTodo',
+        nodeTypeId: 'content.create_queue',
+        status: 'active',
+        config: {
+          queueStrategy: 'priority',
+          maxQueueSize: 50,
+          autoApprove: false,
+          requireReview: true,
+          reviewerGroup: 'editors',
+          deduplicateByTitle: true,
+          minQualityScore: 60,
+          tagFilteredQueues: [],
+        },
+      },
+    },
+    {
+      id: 'p3',
+      type: 'workflow-node',
+      position: { x: 200, y: 340 },
+      data: {
+        title: 'Validate Affiliate Links',
+        subtitle: 'Shopee link validation',
+        icon: 'LinkCheck',
+        nodeTypeId: 'affiliate.validate_link',
+        status: 'active',
+        config: {
+          network: 'shopee',
+          validateUrlFormat: true,
+          checkLinkAlive: true,
+          extractTrackingId: true,
+          replaceBrokenLinks: false,
+          fallbackUrl: '',
+        },
+      },
+    },
+    {
+      id: 'p4',
+      type: 'workflow-node',
+      position: { x: 600, y: 340 },
+      data: {
+        title: 'Filter Products',
+        subtitle: 'In-stock, with images',
+        icon: 'Filter',
+        nodeTypeId: 'product.filter',
+        status: 'active',
+        config: {
+          mode: 'include',
+          rules: [],
+          minPrice: null,
+          maxPrice: null,
+          requireImage: true,
+          requireInStock: true,
+          removeDuplicates: true,
+          duplicateKey: 'url',
+        },
+      },
+    },
+    {
+      id: 'p5',
+      type: 'workflow-node',
+      position: { x: 400, y: 520 },
+      data: {
+        title: 'Record Publish Result',
+        subtitle: 'Log & track engagement',
+        icon: 'Send',
+        nodeTypeId: 'publish.record_result',
+        status: 'active',
+        config: {
+          platform: 'all',
+          trackEngagement: true,
+          retryOnFailure: true,
+          maxRetries: 3,
+          logErrors: true,
+          notifyOnFailure: true,
+          failureChannel: 'slack',
+        },
+      },
+    },
+    {
+      id: 'p6',
+      type: 'workflow-node',
+      position: { x: 400, y: 680 },
+      data: {
+        title: 'Sync Performance',
+        subtitle: 'Aggregate daily metrics',
+        icon: 'BarChart3',
+        nodeTypeId: 'metric.sync_performance',
+        status: 'active',
+        config: {
+          platforms: ['facebook', 'twitter', 'shopee'],
+          metrics: ['impressions', 'clicks', 'conversions', 'revenue'],
+          syncInterval: 15,
+          lookbackDays: 7,
+          aggregateBy: 'day',
+          updateAffiliateStats: true,
+        },
+      },
+    },
+    {
+      id: 'p7',
+      type: 'workflow-node',
+      position: { x: 700, y: 680 },
+      data: {
+        title: 'Notify Team',
+        subtitle: 'Slack alert on completion',
+        icon: 'Bell',
+        nodeTypeId: 'utility.notification',
+        status: 'pending',
+        config: {
+          channel: 'slack',
+          recipients: ['#ops-channel'],
+          subject: 'Publish Complete: {{workflow.name}}',
+          bodyTemplate: '',
+          includeData: true,
+          triggerOn: 'always',
+          priority: 'normal',
+        },
+      },
+    },
+  ],
+  edges: [
+    { id: 'ep1-2', source: 'p1', target: 'p2', type: 'smoothstep', animated: true, style: { stroke: 'var(--t-accent-orange)', strokeWidth: 1.5 } },
+    { id: 'ep2-3', source: 'p2', target: 'p3', type: 'smoothstep', animated: false, style: { stroke: 'var(--t-accent-green)', strokeWidth: 1.5 } },
+    { id: 'ep2-4', source: 'p2', target: 'p4', type: 'smoothstep', animated: false, style: { stroke: 'var(--t-accent-blue)', strokeWidth: 1.5 } },
+    { id: 'ep3-5', source: 'p3', target: 'p5', type: 'smoothstep', animated: true, style: { stroke: 'var(--t-accent-green)', strokeWidth: 1.5 } },
+    { id: 'ep4-5', source: 'p4', target: 'p5', type: 'smoothstep', animated: true, style: { stroke: 'var(--t-accent-blue)', strokeWidth: 1.5 } },
+    { id: 'ep5-6', source: 'p5', target: 'p6', type: 'smoothstep', animated: false, style: { stroke: 'var(--t-accent-purple)', strokeWidth: 1.5 } },
+    { id: 'ep5-7', source: 'p5', target: 'p7', type: 'smoothstep', animated: false, style: { stroke: 'var(--t-accent-yellow)', strokeWidth: 1.5 } },
+  ],
+}

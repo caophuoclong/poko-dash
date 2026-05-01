@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useEffect, useState } from 'react'
 import {
   Save,
   Undo2,
@@ -15,7 +15,8 @@ import { Badge } from '#/components/ui/badge'
 import { WorkflowCanvas } from './workflow-canvas'
 import { InspectorPanel } from './inspector-panel'
 import { NodePalette } from './node-palette'
-import type { WorkflowDetail } from '../types'
+import type { WorkflowDetail, WorkflowNodeData } from '../types'
+import type { Node, Edge } from '@xyflow/react'
 
 interface WorkflowDetailPageProps {
   workflow: WorkflowDetail
@@ -25,9 +26,41 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
   const [paletteCollapsed, setPaletteCollapsed] = useState(false)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
 
+  const [nodes, setNodes] = useState<Node<WorkflowNodeData>[]>(
+    () => workflow.nodes as Node<WorkflowNodeData>[],
+  )
+  const [edges, setEdges] = useState<Edge[]>(() => workflow.edges)
+  const prevWorkflowId = useRef(workflow.id)
+
+  useEffect(() => {
+    if (prevWorkflowId.current !== workflow.id) {
+      setNodes(workflow.nodes as Node<WorkflowNodeData>[])
+      setEdges(workflow.edges)
+      setSelectedNodeId(null)
+      prevWorkflowId.current = workflow.id
+    }
+  }, [workflow])
+
   const handleNodeSelect = useCallback((nodeId: string | null) => {
     setSelectedNodeId(nodeId)
   }, [])
+
+  const handleNodeDataUpdate = useCallback(
+    (nodeId: string, patch: Partial<WorkflowNodeData>) => {
+      setNodes((prev) =>
+        prev.map((n) =>
+          n.id === nodeId
+            ? { ...n, data: { ...n.data, ...patch } as WorkflowNodeData }
+            : n,
+        ),
+      )
+    },
+    [],
+  )
+
+  const selectedNode = selectedNodeId
+    ? nodes.find((n) => n.id === selectedNodeId)
+    : null
 
   return (
     <div className="h-screen flex flex-col bg-void">
@@ -118,15 +151,24 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
 
         <div className="flex-1 flex min-w-0 relative">
           <WorkflowCanvas
-            workflow={workflow}
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={setNodes}
+            onEdgesChange={setEdges}
             onNodeSelect={handleNodeSelect}
+            onPaneClick={() => setSelectedNodeId(null)}
+            workflowId={workflow.id}
           />
         </div>
 
         <InspectorPanel
           workflow={workflow}
+          nodes={nodes}
+          edges={edges}
+          selectedNode={selectedNode ?? null}
           selectedNodeId={selectedNodeId}
           onNodeDeselect={() => setSelectedNodeId(null)}
+          onNodeDataUpdate={handleNodeDataUpdate}
         />
       </div>
     </div>

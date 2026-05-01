@@ -1,11 +1,9 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useRef } from 'react'
 import {
   ReactFlow,
   Background,
   Controls,
   MiniMap,
-  useNodesState,
-  useEdgesState,
   BackgroundVariant,
   SelectionMode,
   type Node,
@@ -15,11 +13,14 @@ import {
   type Connection,
   type OnSelectionChangeParams,
   type ReactFlowInstance,
+  applyNodeChanges,
+  applyEdgeChanges,
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import WorkflowNode from './nodes/workflow-node'
-import type { WorkflowDetail, WorkflowNodeData } from '../types'
-import { NODE_TYPE_CATALOG } from '../types'
+import type { WorkflowNodeData } from '../types'
+import { getNodeDefinition } from '../node-registry'
+import '../node-catalog'
 
 const nodeTypes = {
   'workflow-node': WorkflowNode,
@@ -32,47 +33,72 @@ const defaultEdgeOptions = {
 }
 
 interface WorkflowCanvasProps {
-  workflow: WorkflowDetail
+  nodes: Node<WorkflowNodeData>[]
+  edges: Edge[]
+  onNodesChange: (nodes: Node<WorkflowNodeData>[]) => void
+  onEdgesChange: (edges: Edge[]) => void
   onNodeSelect: (nodeId: string | null) => void
+  onPaneClick: () => void
+  workflowId: string
 }
 
-export function WorkflowCanvas({ workflow, onNodeSelect }: WorkflowCanvasProps) {
-  const wrapperRef = useRef<HTMLDivElement>(null)
-  const reactFlowInstance = useRef<ReactFlowInstance<Node<WorkflowNodeData>, Edge> | null>(null)
-  const [nodes, setNodes, onNodesChange] =
-    useNodesState<Node<WorkflowNodeData>>(workflow.nodes as Node<WorkflowNodeData>[])
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(workflow.edges)
-  const prevWorkflowRef = useRef(workflow.id)
-
-  useEffect(() => {
-    if (prevWorkflowRef.current !== workflow.id) {
-      setNodes(workflow.nodes as Node<WorkflowNodeData>[])
-      setEdges(workflow.edges)
-      prevWorkflowRef.current = workflow.id
-    }
-  }, [workflow, setNodes, setEdges])
+export function WorkflowCanvas({
+  nodes,
+  edges,
+  onNodesChange,
+  onEdgesChange,
+  onNodeSelect,
+  onPaneClick,
+  workflowId: _workflowId,
+}: WorkflowCanvasProps) {
+  const reactFlowInstance = useRef<ReactFlowInstance<
+    Node<WorkflowNodeData>,
+    Edge
+  > | null>(null)
 
   const getNodeColor = useCallback((node: Node<WorkflowNodeData>) => {
-    const icon = (node.data as WorkflowNodeData).icon
-    const category = NODE_TYPE_CATALOG.find((n) => n.icon === icon)?.category
-    switch (category) {
-      case 'trigger':
-        return 'var(--t-accent-orange)'
-      case 'action':
-        return 'var(--t-accent-blue)'
-      case 'condition':
-        return 'var(--t-accent-yellow)'
-      case 'output':
-        return 'var(--t-accent-green)'
-      default:
-        return 'var(--t-accent-blue)'
+    const data = node.data as WorkflowNodeData
+    if (data.nodeTypeId) {
+      const def = getNodeDefinition(data.nodeTypeId)
+      if (def) {
+        const catColors: Record<string, string> = {
+          trigger: 'var(--t-accent-orange)',
+          source: 'var(--t-accent-orange)',
+          crawl: 'var(--t-accent-purple)',
+          product: 'var(--t-accent-blue)',
+          affiliate: 'var(--t-accent-green)',
+          content: 'var(--t-accent-yellow)',
+          publish: 'var(--t-accent-green)',
+          metric: 'var(--t-accent-purple)',
+          logic: 'var(--t-accent-yellow)',
+          utility: 'var(--t-muted-text)',
+        }
+        return catColors[def.category] ?? 'var(--t-accent-blue)'
+      }
     }
+    return 'var(--t-accent-blue)'
   }, [])
+
+  const handleNodesChange: OnNodesChange<Node<WorkflowNodeData>> = useCallback(
+    (changes) => {
+      const updated = applyNodeChanges(changes, nodes)
+      onNodesChange(updated as Node<WorkflowNodeData>[])
+    },
+    [nodes, onNodesChange],
+  )
+
+  const handleEdgesChange: OnEdgesChange<Edge> = useCallback(
+    (changes) => {
+      const updated = applyEdgeChanges(changes, edges)
+      onEdgesChange(updated)
+    },
+    [edges, onEdgesChange],
+  )
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      setEdges((eds) => [
-        ...eds,
+      onEdgesChange([
+        ...edges,
         {
           ...connection,
           id: `e-${connection.source}-${connection.target}-${Date.now()}`,
@@ -81,21 +107,7 @@ export function WorkflowCanvas({ workflow, onNodeSelect }: WorkflowCanvasProps) 
         } as Edge,
       ])
     },
-    [setEdges],
-  )
-
-  const handleNodesChange: OnNodesChange<Node<WorkflowNodeData>> = useCallback(
-    (changes) => {
-      onNodesChange(changes)
-    },
-    [onNodesChange],
-  )
-
-  const handleEdgesChange: OnEdgesChange<Edge> = useCallback(
-    (changes) => {
-      onEdgesChange(changes)
-    },
-    [onEdgesChange],
+    [edges, onEdgesChange],
   )
 
   const handleSelectionChange = useCallback(
@@ -109,21 +121,19 @@ export function WorkflowCanvas({ workflow, onNodeSelect }: WorkflowCanvasProps) 
     [onNodeSelect],
   )
 
-  const handlePaneClick = useCallback(() => {
-    onNodeSelect(null)
-  }, [onNodeSelect])
-
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
       if (event.key === 'Delete' || event.key === 'Backspace') {
         const selectedNodes = nodes.filter((n) => n.selected)
         if (selectedNodes.length > 0) {
           event.preventDefault()
-          setNodes((nds) => nds.filter((n) => !n.selected))
-          setEdges((eds) =>
-            eds.filter(
+          onNodesChange(nodes.filter((n) => !n.selected))
+          onEdgesChange(
+            edges.filter(
               (e) =>
-                !selectedNodes.some((n) => n.id === e.source || n.id === e.target),
+                !selectedNodes.some(
+                  (n) => n.id === e.source || n.id === e.target,
+                ),
             ),
           )
           onNodeSelect(null)
@@ -131,11 +141,11 @@ export function WorkflowCanvas({ workflow, onNodeSelect }: WorkflowCanvasProps) 
         const selectedEdges = edges.filter((e) => e.selected)
         if (selectedEdges.length > 0) {
           event.preventDefault()
-          setEdges((eds) => eds.filter((e) => !e.selected))
+          onEdgesChange(edges.filter((e) => !e.selected))
         }
       }
     },
-    [nodes, edges, setNodes, setEdges, onNodeSelect],
+    [nodes, edges, onNodesChange, onEdgesChange, onNodeSelect],
   )
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -151,12 +161,10 @@ export function WorkflowCanvas({ workflow, onNodeSelect }: WorkflowCanvasProps) 
       if (!rawData) return
 
       try {
-        const parsed = JSON.parse(rawData) as { type: string; data: WorkflowNodeData }
-
-        const nodeDef = NODE_TYPE_CATALOG.find((n) => n.type === parsed.type)
-        const newData: WorkflowNodeData = nodeDef
-          ? { ...nodeDef.defaultData, title: nodeDef.label }
-          : parsed.data
+        const parsed = JSON.parse(rawData) as {
+          type: string
+          data: WorkflowNodeData
+        }
 
         if (!reactFlowInstance.current) return
         const position = reactFlowInstance.current.screenToFlowPosition({
@@ -168,20 +176,19 @@ export function WorkflowCanvas({ workflow, onNodeSelect }: WorkflowCanvasProps) 
           id: `node-${Date.now()}`,
           type: parsed.type,
           position,
-          data: newData,
+          data: parsed.data,
         }
 
-        setNodes((nds) => [...nds, newNode])
+        onNodesChange([...nodes, newNode])
       } catch {
         // Invalid drag data — ignore
       }
     },
-    [setNodes],
+    [nodes, onNodesChange],
   )
 
   return (
     <div
-      ref={wrapperRef}
       className="flex-1 relative"
       tabIndex={-1}
       onKeyDown={handleKeyDown}
@@ -191,12 +198,14 @@ export function WorkflowCanvas({ workflow, onNodeSelect }: WorkflowCanvasProps) 
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onInit={(instance) => { reactFlowInstance.current = instance }}
+        onInit={(instance) => {
+          reactFlowInstance.current = instance
+        }}
         onNodesChange={handleNodesChange}
         onEdgesChange={handleEdgesChange}
         onConnect={onConnect}
         onSelectionChange={handleSelectionChange}
-        onPaneClick={handlePaneClick}
+        onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
         fitView

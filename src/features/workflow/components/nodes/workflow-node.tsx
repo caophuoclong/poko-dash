@@ -1,29 +1,52 @@
 import { memo } from 'react'
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import {
-  Rss,
-  ShieldCheck,
+  Play,
+  Clock,
+  ListPlus,
+  Globe,
+  Layers,
+  Filter,
+  Link2,
   Sparkles,
-  UserCheck,
-  Calendar,
+  ListTodo,
   Send,
   BarChart3,
+  GitBranch,
+  Timer,
+  Bell,
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '#/shared/utils'
-import type { WorkflowNodeData } from '../../data/mock-workflow'
+import {
+  getNodeDefinition,
+  getNodeSummaryData,
+  CATEGORY_CONFIG,
+} from '../../node-registry'
+import '../../node-catalog'
+import type { WorkflowNodeData } from '../../types'
 
-const iconMap: Record<string, LucideIcon> = {
-  Rss,
-  ShieldCheck,
+const ICON_MAP: Record<string, LucideIcon> = {
+  Play,
+  Clock,
+  ListPlus,
+  Globe,
+  Layers,
+  Filter,
+  LinkCheck: Link2,
   Sparkles,
-  UserCheck,
-  Calendar,
+  ListTodo,
   Send,
   BarChart3,
+  GitBranch,
+  Timer,
+  Bell,
 }
 
-const statusConfig: Record<string, { dot: string; ring: string; label: string }> = {
+const statusConfig: Record<
+  string,
+  { dot: string; ring: string; label: string }
+> = {
   completed: {
     dot: 'bg-accent-green',
     ring: 'ring-accent-green/20',
@@ -44,12 +67,29 @@ const statusConfig: Record<string, { dot: string; ring: string; label: string }>
     ring: 'ring-accent-red/20',
     label: 'Error',
   },
+  paused: {
+    dot: 'bg-muted-text',
+    ring: 'ring-muted-text/20',
+    label: 'Paused',
+  },
 }
 
 function WorkflowNode({ data, selected }: NodeProps) {
   const nodeData = data as unknown as WorkflowNodeData
-  const Icon = nodeData.icon ? iconMap[nodeData.icon] : null
+  const Icon = nodeData.icon ? ICON_MAP[nodeData.icon] : null
   const status = nodeData.status ? statusConfig[nodeData.status] : null
+  const def = nodeData.nodeTypeId
+    ? getNodeDefinition(String(nodeData.nodeTypeId))
+    : null
+  const catConfig = def ? CATEGORY_CONFIG[def.category] : null
+
+  const summaryItems =
+    def && nodeData.config
+      ? getNodeSummaryData(
+          def.typeId,
+          nodeData.config as Record<string, unknown>,
+        )
+      : null
 
   return (
     <>
@@ -73,11 +113,22 @@ function WorkflowNode({ data, selected }: NodeProps) {
             <div
               className={cn(
                 'w-8 h-8 rounded-lg flex items-center justify-center shrink-0',
-                nodeData.status === 'completed' && 'bg-accent-green-dim text-accent-green',
-                nodeData.status === 'active' && 'bg-accent-blue-dim text-accent-blue',
-                nodeData.status === 'pending' && 'bg-accent-yellow/10 text-accent-yellow',
-                nodeData.status === 'error' && 'bg-accent-red/10 text-accent-red',
-                !nodeData.status && 'bg-surface-2 text-muted-text',
+                catConfig
+                  ? `${catConfig.bgColor} ${catConfig.color}`
+                  : nodeData.status === 'completed' &&
+                      'bg-accent-green-dim text-accent-green',
+                !catConfig &&
+                  nodeData.status === 'active' &&
+                  'bg-accent-blue-dim text-accent-blue',
+                !catConfig &&
+                  nodeData.status === 'pending' &&
+                  'bg-accent-yellow/10 text-accent-yellow',
+                !catConfig &&
+                  nodeData.status === 'error' &&
+                  'bg-accent-red/10 text-accent-red',
+                !catConfig &&
+                  !nodeData.status &&
+                  'bg-surface-2 text-muted-text',
               )}
             >
               <Icon size={15} />
@@ -99,9 +150,13 @@ function WorkflowNode({ data, selected }: NodeProps) {
                     nodeData.status === 'active' && 'text-accent-blue',
                     nodeData.status === 'pending' && 'text-accent-yellow',
                     nodeData.status === 'error' && 'text-accent-red',
+                    (nodeData.status as string) === 'paused' &&
+                      'text-muted-text',
                   )}
                 >
-                  <span className={cn('w-1.5 h-1.5 rounded-full', status.dot)} />
+                  <span
+                    className={cn('w-1.5 h-1.5 rounded-full', status.dot)}
+                  />
                   {status.label}
                 </span>
               )}
@@ -113,20 +168,37 @@ function WorkflowNode({ data, selected }: NodeProps) {
               </p>
             )}
 
-            {nodeData.metrics && nodeData.metrics.length > 0 && (
+            {summaryItems && summaryItems.length > 0 && (
               <div className="flex gap-3 mt-2 pt-2 border-t border-frost">
-                {nodeData.metrics.map((m, i) => (
-                  <div key={i} className="flex items-baseline gap-1">
+                {summaryItems.map((item: { label: string; value: string }) => (
+                  <div key={item.label} className="flex items-baseline gap-1">
                     <span className="text-[12px] font-semibold text-near-white leading-none">
-                      {m.value}
+                      {item.value}
                     </span>
                     <span className="text-[10px] text-muted-text leading-none">
-                      {m.label}
+                      {item.label}
                     </span>
                   </div>
                 ))}
               </div>
             )}
+
+            {!summaryItems &&
+              nodeData.metrics &&
+              nodeData.metrics.length > 0 && (
+                <div className="flex gap-3 mt-2 pt-2 border-t border-frost">
+                  {nodeData.metrics.map((m, i) => (
+                    <div key={i} className="flex items-baseline gap-1">
+                      <span className="text-[12px] font-semibold text-near-white leading-none">
+                        {m.value}
+                      </span>
+                      <span className="text-[10px] text-muted-text leading-none">
+                        {m.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
           </div>
         </div>
       </div>
