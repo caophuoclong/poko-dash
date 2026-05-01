@@ -38,8 +38,10 @@ interface WorkflowCanvasProps {
   onNodesChange: (nodes: Node<WorkflowNodeData>[]) => void
   onEdgesChange: (edges: Edge[]) => void
   onNodeSelect: (nodeId: string | null) => void
+  onNodeDoubleClick: (nodeId: string) => void
   onPaneClick: () => void
   workflowId: string
+  rfInstanceRef?: React.MutableRefObject<ReactFlowInstance<Node<WorkflowNodeData>, Edge> | null>
 }
 
 export function WorkflowCanvas({
@@ -48,8 +50,10 @@ export function WorkflowCanvas({
   onNodesChange,
   onEdgesChange,
   onNodeSelect,
+  onNodeDoubleClick,
   onPaneClick,
   workflowId: _workflowId,
+  rfInstanceRef,
 }: WorkflowCanvasProps) {
   const reactFlowInstance = useRef<ReactFlowInstance<
     Node<WorkflowNodeData>,
@@ -119,6 +123,13 @@ export function WorkflowCanvas({
       }
     },
     [onNodeSelect],
+  )
+
+  const handleNodeDoubleClick = useCallback(
+    (_event: React.MouseEvent, node: Node<WorkflowNodeData>) => {
+      onNodeDoubleClick(node.id)
+    },
+    [onNodeDoubleClick],
   )
 
   const handleKeyDown = useCallback(
@@ -200,11 +211,13 @@ export function WorkflowCanvas({
         edges={edges}
         onInit={(instance) => {
           reactFlowInstance.current = instance
+          if (rfInstanceRef) rfInstanceRef.current = instance
         }}
         onNodesChange={handleNodesChange}
         onEdgesChange={handleEdgesChange}
         onConnect={onConnect}
         onSelectionChange={handleSelectionChange}
+        onNodeDoubleClick={handleNodeDoubleClick}
         onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}
         defaultEdgeOptions={defaultEdgeOptions}

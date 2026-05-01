@@ -11,6 +11,7 @@ import { CreateContentQueueDef } from './node-definitions/content-create-queue'
 import { RecordPublishResultDef } from './node-definitions/publish-record-result'
 import { SyncPerformanceDef } from './node-definitions/metric-sync-performance'
 import { ConditionDef } from './node-definitions/logic-condition'
+import { LoopDef } from './node-definitions/logic-loop'
 import { DelayWaitUntilDef } from './node-definitions/logic-delay'
 import { NotificationDef } from './node-definitions/utility-notification'
 
@@ -31,6 +32,7 @@ const ALL = [
   RecordPublishResultDef,
   SyncPerformanceDef,
   ConditionDef,
+  LoopDef,
   DelayWaitUntilDef,
   NotificationDef,
 ] as unknown as AnyDef[]
@@ -50,6 +52,7 @@ export {
   RecordPublishResultDef,
   SyncPerformanceDef,
   ConditionDef,
+  LoopDef,
   DelayWaitUntilDef,
   NotificationDef,
   ALL as ALL_NODE_DEFINITIONS,
@@ -67,5 +70,6 @@ export type { CreateContentQueueProps } from './node-definitions/content-create-
 export type { RecordPublishResultProps } from './node-definitions/publish-record-result'
 export type { SyncPerformanceProps } from './node-definitions/metric-sync-performance'
 export type { ConditionProps } from './node-definitions/logic-condition'
+export type { LoopProps } from './node-definitions/logic-loop'
 export type { DelayWaitUntilProps } from './node-definitions/logic-delay'
 export type { NotificationProps } from './node-definitions/utility-notification'

@@ -8,15 +8,17 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ArrowLeft,
+  Plus,
 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
 import { Badge } from '#/components/ui/badge'
 import { WorkflowCanvas } from './workflow-canvas'
-import { InspectorPanel } from './inspector-panel'
 import { NodePalette } from './node-palette'
+import { NodeEditModal } from './node-edit-modal'
 import type { WorkflowDetail, WorkflowNodeData } from '../types'
-import type { Node, Edge } from '@xyflow/react'
+import type { Node, Edge, ReactFlowInstance } from '@xyflow/react'
+import type { WorkflowNodeDefinition } from '../node-types'
 
 interface WorkflowDetailPageProps {
   workflow: WorkflowDetail
@@ -25,24 +27,72 @@ interface WorkflowDetailPageProps {
 export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
   const [paletteCollapsed, setPaletteCollapsed] = useState(false)
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
+  const [editingNodeId, setEditingNodeId] = useState<string | null>(null)
+  const selectedNodeRef = useRef<string | null>(null)
+  void selectedNodeId
 
   const [nodes, setNodes] = useState<Node<WorkflowNodeData>[]>(
     () => workflow.nodes as Node<WorkflowNodeData>[],
   )
   const [edges, setEdges] = useState<Edge[]>(() => workflow.edges)
   const prevWorkflowId = useRef(workflow.id)
+  const rfInstance = useRef<ReactFlowInstance<
+    Node<WorkflowNodeData>,
+    Edge
+  > | null>(null)
+
+  const handleAddNode = useCallback(
+    (def: WorkflowNodeDefinition) => {
+      const inst = rfInstance.current
+      const center = inst
+        ? inst.screenToFlowPosition({
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2,
+          })
+        : { x: 300 + nodes.length * 20, y: 200 + nodes.length * 30 }
+
+      const newNode: Node<WorkflowNodeData> = {
+        id: `node-${Date.now()}`,
+        type: 'workflow-node',
+        position: center,
+        data: {
+          title: def.title,
+          subtitle: def.description,
+          icon: def.icon,
+          nodeTypeId: def.typeId,
+          status: 'pending',
+          config: { ...def.defaultProps },
+        },
+      }
+      setNodes((prev) => [...prev, newNode])
+    },
+    [nodes.length],
+  )
 
   useEffect(() => {
     if (prevWorkflowId.current !== workflow.id) {
       setNodes(workflow.nodes as Node<WorkflowNodeData>[])
       setEdges(workflow.edges)
       setSelectedNodeId(null)
+      setEditingNodeId(null)
       prevWorkflowId.current = workflow.id
     }
   }, [workflow])
 
   const handleNodeSelect = useCallback((nodeId: string | null) => {
     setSelectedNodeId(nodeId)
+    if (nodeId && nodeId === selectedNodeRef.current) {
+      setEditingNodeId(nodeId)
+    }
+    selectedNodeRef.current = nodeId
+  }, [])
+
+  const handleNodeDoubleClick = useCallback((nodeId: string) => {
+    setEditingNodeId(nodeId)
+  }, [])
+
+  const handleCloseModal = useCallback(() => {
+    setEditingNodeId(null)
   }, [])
 
   const handleNodeDataUpdate = useCallback(
@@ -58,12 +108,39 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
     [],
   )
 
-  const selectedNode = selectedNodeId
-    ? nodes.find((n) => n.id === selectedNodeId)
+  const handleDeleteNode = useCallback(
+    (nodeId: string) => {
+      setNodes((prev) => prev.filter((n) => n.id !== nodeId))
+      setEdges((prev) =>
+        prev.filter((e) => e.source !== nodeId && e.target !== nodeId),
+      )
+      setSelectedNodeId(null)
+      setEditingNodeId(null)
+    },
+    [],
+  )
+
+  const editingNode = editingNodeId
+    ? nodes.find((n) => n.id === editingNodeId)
     : null
 
   return (
     <div className="h-screen flex flex-col bg-void">
+      {editingNode && (
+        <NodeEditModal
+          key={editingNodeId}
+          open={true}
+          nodeId={editingNode.id}
+          data={editingNode.data as WorkflowNodeData}
+          position={editingNode.position}
+          nodes={nodes}
+          edges={edges}
+          onClose={handleCloseModal}
+          onNodeDataUpdate={handleNodeDataUpdate}
+          onDeleteNode={handleDeleteNode}
+        />
+      )}
+
       <header className="flex items-center gap-3 px-4 py-2.5 border-b border-frost bg-surface shrink-0">
         <Link
           to="/dash/workflows"
@@ -95,6 +172,17 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
 
         <div className="flex items-center gap-1.5">
           <Button
+            size="xs"
+            color="blue-dim"
+            onClick={() => setPaletteCollapsed(false)}
+          >
+            <Plus size={14} />
+            Add Node
+          </Button>
+
+          <div className="w-px h-5 bg-frost mx-1" />
+
+          <Button
             variant="ghost"
             size="icon-xs"
             title="Undo"
@@ -118,9 +206,17 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
             size="icon-xs"
             onClick={() => setPaletteCollapsed((v) => !v)}
             title={paletteCollapsed ? 'Show node palette' : 'Hide node palette'}
-            className={!paletteCollapsed ? 'text-accent-blue bg-accent-blue-dim' : 'text-muted-text hover:text-near-white'}
+            className={
+              !paletteCollapsed
+                ? 'text-accent-blue bg-accent-blue-dim'
+                : 'text-muted-text hover:text-near-white'
+            }
           >
-            {paletteCollapsed ? <PanelLeftOpen size={14} /> : <PanelLeftClose size={14} />}
+            {paletteCollapsed ? (
+              <PanelLeftOpen size={14} />
+            ) : (
+              <PanelLeftClose size={14} />
+            )}
           </Button>
 
           <div className="w-px h-5 bg-frost mx-1" />
@@ -137,7 +233,11 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
             </Button>
           )}
 
-          <Button variant="ghost" size="icon-xs" className="text-muted-text hover:text-near-white">
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            className="text-muted-text hover:text-near-white"
+          >
             <MoreHorizontal size={14} />
           </Button>
         </div>
@@ -147,6 +247,7 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
         <NodePalette
           collapsed={paletteCollapsed}
           onToggle={() => setPaletteCollapsed((v) => !v)}
+          onAddNode={handleAddNode}
         />
 
         <div className="flex-1 flex min-w-0 relative">
@@ -156,20 +257,15 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
             onNodesChange={setNodes}
             onEdgesChange={setEdges}
             onNodeSelect={handleNodeSelect}
-            onPaneClick={() => setSelectedNodeId(null)}
+            onNodeDoubleClick={handleNodeDoubleClick}
+            onPaneClick={() => {
+              setSelectedNodeId(null)
+              selectedNodeRef.current = null
+            }}
             workflowId={workflow.id}
+            rfInstanceRef={rfInstance}
           />
         </div>
-
-        <InspectorPanel
-          workflow={workflow}
-          nodes={nodes}
-          edges={edges}
-          selectedNode={selectedNode ?? null}
-          selectedNodeId={selectedNodeId}
-          onNodeDeselect={() => setSelectedNodeId(null)}
-          onNodeDataUpdate={handleNodeDataUpdate}
-        />
       </div>
     </div>
   )

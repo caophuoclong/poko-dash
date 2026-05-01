@@ -7,7 +7,7 @@ export interface ConditionProps {
     operator: 'equals' | 'not_equals' | 'contains' | 'gt' | 'lt' | 'gte' | 'lte' | 'empty' | 'not_empty'
     value: string
   }>
-  defaultBranch: 'pass' | 'fail'
+  defaultBranch: 'true' | 'false'
 }
 
 export const ConditionDef: WorkflowNodeDefinition<ConditionProps> = {
@@ -16,18 +16,18 @@ export const ConditionDef: WorkflowNodeDefinition<ConditionProps> = {
   title: 'Condition',
   description: 'Branch the workflow based on rules',
   icon: 'GitBranch',
-  purpose: 'Route data through different paths based on conditional logic',
+  purpose: 'Route data through different paths based on conditional logic. Always has exactly two outputs: True and False.',
   inputs: [
     { id: 'input', label: 'Input', type: 'data' },
   ],
   outputs: [
-    { id: 'pass', label: 'Pass', type: 'data' },
-    { id: 'fail', label: 'Fail', type: 'data' },
+    { id: 'true', label: 'True', type: 'data' },
+    { id: 'false', label: 'False', type: 'data' },
   ],
   defaultProps: {
     logic: 'all',
     rules: [],
-    defaultBranch: 'fail',
+    defaultBranch: 'false',
   },
   propertySchema: [
     {
@@ -53,10 +53,10 @@ export const ConditionDef: WorkflowNodeDefinition<ConditionProps> = {
       key: 'defaultBranch',
       label: 'Default Branch',
       type: 'select',
-      defaultValue: 'fail',
+      defaultValue: 'false',
       options: [
-        { value: 'pass', label: 'Pass (if no rules defined)' },
-        { value: 'fail', label: 'Fail (if no rules defined)' },
+        { value: 'true', label: 'True (if no rules defined)' },
+        { value: 'false', label: 'False (if no rules defined)' },
       ],
       helperText: 'Which branch to take when no rules are configured',
     },
