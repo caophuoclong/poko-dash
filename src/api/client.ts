@@ -43,6 +43,7 @@ import type {
   DeleteContentIdeaResponseDto,
   DeleteProductResponseDto,
   DeletePromptResponseDto,
+  ExecuteWorkflowDto,
   GenerateContentPostsDto,
   GenerateIdeasDto,
   GenerateIdeasResponseDto,
@@ -51,6 +52,7 @@ import type {
   PaginatedContentIdeasResponseDto,
   PaginatedContentPostsResponseDto,
   PaginatedProductsResponseDto,
+  PaginatedWorkflowsDto,
   PatchContentPostDto,
   PostPublicationDetailDto,
   PostPublicationSummaryDto,
@@ -60,13 +62,17 @@ import type {
   RecordPublishFailureDto,
   RecordPublishSuccessDto,
   RecordUsageResponseDto,
+  ScheduleWorkflowDto,
   ScheduledJobResponseDto,
   TriggerAggregationResponseDto,
   UpdateAffiliateLinkDto,
   UpdateContentIdeaDto,
   UpdateContentPostStatusDto,
   UpdateIdeaResponseDto,
-  UpdateStatusResponseDto
+  UpdateStatusResponseDto,
+  WorkflowDetailDto,
+  WorkflowRunDto,
+  WorkflowsControllerPauseParams
 } from './model';
 
 import { customFetch } from './custom-fetch';
@@ -5894,3 +5900,1726 @@ export const useSchedulerControllerCancel = <TError = unknown,
       > => {
       return useMutation(getSchedulerControllerCancelMutationOptions(options), queryClient);
     }
+
+/**
+ * @summary List all workflows (summary)
+ */
+export type workflowsControllerListResponse200 = {
+  data: PaginatedWorkflowsDto
+  status: 200
+}
+
+export type workflowsControllerListResponseSuccess = (workflowsControllerListResponse200) & {
+  headers: Headers;
+};
+;
+
+export type workflowsControllerListResponse = (workflowsControllerListResponseSuccess)
+
+export const getWorkflowsControllerListUrl = () => {
+
+
+
+
+  return `/api/workflows`
+}
+
+export const workflowsControllerList = async ( options?: RequestInit): Promise<workflowsControllerListResponse> => {
+
+  return customFetch<workflowsControllerListResponse>(getWorkflowsControllerListUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getWorkflowsControllerListQueryKey = () => {
+    return [
+    `/api/workflows`
+    ] as const;
+    }
+
+
+export const getWorkflowsControllerListQueryOptions = <TData = Awaited<ReturnType<typeof workflowsControllerList>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getWorkflowsControllerListQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof workflowsControllerList>>> = ({ signal }) => workflowsControllerList({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type WorkflowsControllerListQueryResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerList>>>
+export type WorkflowsControllerListQueryError = unknown
+
+
+export function useWorkflowsControllerList<TData = Awaited<ReturnType<typeof workflowsControllerList>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowsControllerList>>,
+          TError,
+          Awaited<ReturnType<typeof workflowsControllerList>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowsControllerList<TData = Awaited<ReturnType<typeof workflowsControllerList>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowsControllerList>>,
+          TError,
+          Awaited<ReturnType<typeof workflowsControllerList>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowsControllerList<TData = Awaited<ReturnType<typeof workflowsControllerList>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List all workflows (summary)
+ */
+
+export function useWorkflowsControllerList<TData = Awaited<ReturnType<typeof workflowsControllerList>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getWorkflowsControllerListQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+/**
+ * @summary Create new workflow (empty DAG)
+ */
+export type workflowsControllerCreateResponse201 = {
+  data: WorkflowDetailDto
+  status: 201
+}
+
+export type workflowsControllerCreateResponseSuccess = (workflowsControllerCreateResponse201) & {
+  headers: Headers;
+};
+;
+
+export type workflowsControllerCreateResponse = (workflowsControllerCreateResponseSuccess)
+
+export const getWorkflowsControllerCreateUrl = () => {
+
+
+
+
+  return `/api/workflows`
+}
+
+export const workflowsControllerCreate = async ( options?: RequestInit): Promise<workflowsControllerCreateResponse> => {
+
+  return customFetch<workflowsControllerCreateResponse>(getWorkflowsControllerCreateUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getWorkflowsControllerCreateMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerCreate>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerCreate>>, TError,void, TContext> => {
+
+const mutationKey = ['workflowsControllerCreate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof workflowsControllerCreate>>, void> = () => {
+
+
+          return  workflowsControllerCreate(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type WorkflowsControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerCreate>>>
+
+    export type WorkflowsControllerCreateMutationError = unknown
+
+    /**
+ * @summary Create new workflow (empty DAG)
+ */
+export const useWorkflowsControllerCreate = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerCreate>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof workflowsControllerCreate>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getWorkflowsControllerCreateMutationOptions(options), queryClient);
+    }
+
+/**
+ * @summary Get workflow detail with nodes + edges
+ */
+export type workflowsControllerFindOneResponse200 = {
+  data: WorkflowDetailDto
+  status: 200
+}
+
+export type workflowsControllerFindOneResponse404 = {
+  data: void
+  status: 404
+}
+
+export type workflowsControllerFindOneResponseSuccess = (workflowsControllerFindOneResponse200) & {
+  headers: Headers;
+};
+export type workflowsControllerFindOneResponseError = (workflowsControllerFindOneResponse404) & {
+  headers: Headers;
+};
+
+export type workflowsControllerFindOneResponse = (workflowsControllerFindOneResponseSuccess | workflowsControllerFindOneResponseError)
+
+export const getWorkflowsControllerFindOneUrl = (id: string,) => {
+
+
+
+
+  return `/api/workflows/${id}`
+}
+
+export const workflowsControllerFindOne = async (id: string, options?: RequestInit): Promise<workflowsControllerFindOneResponse> => {
+
+  return customFetch<workflowsControllerFindOneResponse>(getWorkflowsControllerFindOneUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getWorkflowsControllerFindOneQueryKey = (id: string,) => {
+    return [
+    `/api/workflows/${id}`
+    ] as const;
+    }
+
+
+export const getWorkflowsControllerFindOneQueryOptions = <TData = Awaited<ReturnType<typeof workflowsControllerFindOne>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerFindOne>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getWorkflowsControllerFindOneQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof workflowsControllerFindOne>>> = ({ signal }) => workflowsControllerFindOne(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerFindOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type WorkflowsControllerFindOneQueryResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerFindOne>>>
+export type WorkflowsControllerFindOneQueryError = void
+
+
+export function useWorkflowsControllerFindOne<TData = Awaited<ReturnType<typeof workflowsControllerFindOne>>, TError = void>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerFindOne>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowsControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof workflowsControllerFindOne>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowsControllerFindOne<TData = Awaited<ReturnType<typeof workflowsControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerFindOne>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowsControllerFindOne>>,
+          TError,
+          Awaited<ReturnType<typeof workflowsControllerFindOne>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowsControllerFindOne<TData = Awaited<ReturnType<typeof workflowsControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerFindOne>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get workflow detail with nodes + edges
+ */
+
+export function useWorkflowsControllerFindOne<TData = Awaited<ReturnType<typeof workflowsControllerFindOne>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerFindOne>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getWorkflowsControllerFindOneQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+/**
+ * @summary Save canvas (nodes, edges, configs)
+ */
+export type workflowsControllerSaveCanvasResponse200 = {
+  data: WorkflowDetailDto
+  status: 200
+}
+
+export type workflowsControllerSaveCanvasResponseSuccess = (workflowsControllerSaveCanvasResponse200) & {
+  headers: Headers;
+};
+;
+
+export type workflowsControllerSaveCanvasResponse = (workflowsControllerSaveCanvasResponseSuccess)
+
+export const getWorkflowsControllerSaveCanvasUrl = (id: string,) => {
+
+
+
+
+  return `/api/workflows/${id}`
+}
+
+export const workflowsControllerSaveCanvas = async (id: string, options?: RequestInit): Promise<workflowsControllerSaveCanvasResponse> => {
+
+  return customFetch<workflowsControllerSaveCanvasResponse>(getWorkflowsControllerSaveCanvasUrl(id),
+  {
+    ...options,
+    method: 'PUT'
+
+
+  }
+);}
+
+
+
+
+export const getWorkflowsControllerSaveCanvasMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['workflowsControllerSaveCanvas'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  workflowsControllerSaveCanvas(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type WorkflowsControllerSaveCanvasMutationResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>>
+
+    export type WorkflowsControllerSaveCanvasMutationError = unknown
+
+    /**
+ * @summary Save canvas (nodes, edges, configs)
+ */
+export const useWorkflowsControllerSaveCanvas = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getWorkflowsControllerSaveCanvasMutationOptions(options), queryClient);
+    }
+
+/**
+ * @summary Delete workflow with cascade
+ */
+export type workflowsControllerDeleteResponse204 = {
+  data: void
+  status: 204
+}
+
+export type workflowsControllerDeleteResponseSuccess = (workflowsControllerDeleteResponse204) & {
+  headers: Headers;
+};
+;
+
+export type workflowsControllerDeleteResponse = (workflowsControllerDeleteResponseSuccess)
+
+export const getWorkflowsControllerDeleteUrl = (id: string,) => {
+
+
+
+
+  return `/api/workflows/${id}`
+}
+
+export const workflowsControllerDelete = async (id: string, options?: RequestInit): Promise<workflowsControllerDeleteResponse> => {
+
+  return customFetch<workflowsControllerDeleteResponse>(getWorkflowsControllerDeleteUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getWorkflowsControllerDeleteMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerDelete>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerDelete>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['workflowsControllerDelete'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof workflowsControllerDelete>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  workflowsControllerDelete(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type WorkflowsControllerDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerDelete>>>
+
+    export type WorkflowsControllerDeleteMutationError = unknown
+
+    /**
+ * @summary Delete workflow with cascade
+ */
+export const useWorkflowsControllerDelete = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerDelete>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof workflowsControllerDelete>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getWorkflowsControllerDeleteMutationOptions(options), queryClient);
+    }
+
+/**
+ * @summary Trigger workflow execution
+ */
+export type workflowsControllerRunResponse202 = {
+  data: WorkflowRunDto
+  status: 202
+}
+
+export type workflowsControllerRunResponseSuccess = (workflowsControllerRunResponse202) & {
+  headers: Headers;
+};
+;
+
+export type workflowsControllerRunResponse = (workflowsControllerRunResponseSuccess)
+
+export const getWorkflowsControllerRunUrl = (id: string,) => {
+
+
+
+
+  return `/api/workflows/${id}/run`
+}
+
+export const workflowsControllerRun = async (id: string, options?: RequestInit): Promise<workflowsControllerRunResponse> => {
+
+  return customFetch<workflowsControllerRunResponse>(getWorkflowsControllerRunUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getWorkflowsControllerRunMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerRun>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerRun>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['workflowsControllerRun'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof workflowsControllerRun>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  workflowsControllerRun(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type WorkflowsControllerRunMutationResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerRun>>>
+
+    export type WorkflowsControllerRunMutationError = unknown
+
+    /**
+ * @summary Trigger workflow execution
+ */
+export const useWorkflowsControllerRun = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerRun>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof workflowsControllerRun>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+      return useMutation(getWorkflowsControllerRunMutationOptions(options), queryClient);
+    }
+
+/**
+ * @summary Pause active workflow run
+ */
+export type workflowsControllerPauseResponse200 = {
+  data: void
+  status: 200
+}
+
+export type workflowsControllerPauseResponseSuccess = (workflowsControllerPauseResponse200) & {
+  headers: Headers;
+};
+;
+
+export type workflowsControllerPauseResponse = (workflowsControllerPauseResponseSuccess)
+
+export const getWorkflowsControllerPauseUrl = (id: string,
+    params: WorkflowsControllerPauseParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/workflows/${id}/pause?${stringifiedParams}` : `/api/workflows/${id}/pause`
+}
+
+export const workflowsControllerPause = async (id: string,
+    params: WorkflowsControllerPauseParams, options?: RequestInit): Promise<workflowsControllerPauseResponse> => {
+
+  return customFetch<workflowsControllerPauseResponse>(getWorkflowsControllerPauseUrl(id,params),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getWorkflowsControllerPauseMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerPause>>, TError,{id: string;params: WorkflowsControllerPauseParams}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerPause>>, TError,{id: string;params: WorkflowsControllerPauseParams}, TContext> => {
+
+const mutationKey = ['workflowsControllerPause'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof workflowsControllerPause>>, {id: string;params: WorkflowsControllerPauseParams}> = (props) => {
+          const {id,params} = props ?? {};
+
+          return  workflowsControllerPause(id,params,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type WorkflowsControllerPauseMutationResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerPause>>>
+
+    export type WorkflowsControllerPauseMutationError = unknown
+
+    /**
+ * @summary Pause active workflow run
+ */
+export const useWorkflowsControllerPause = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerPause>>, TError,{id: string;params: WorkflowsControllerPauseParams}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof workflowsControllerPause>>,
+        TError,
+        {id: string;params: WorkflowsControllerPauseParams},
+        TContext
+      > => {
+      return useMutation(getWorkflowsControllerPauseMutationOptions(options), queryClient);
+    }
+
+/**
+ * @summary Get run history for a workflow
+ */
+export type workflowsControllerGetRunsResponse200 = {
+  data: WorkflowRunDto[]
+  status: 200
+}
+
+export type workflowsControllerGetRunsResponseSuccess = (workflowsControllerGetRunsResponse200) & {
+  headers: Headers;
+};
+;
+
+export type workflowsControllerGetRunsResponse = (workflowsControllerGetRunsResponseSuccess)
+
+export const getWorkflowsControllerGetRunsUrl = (id: string,) => {
+
+
+
+
+  return `/api/workflows/${id}/runs`
+}
+
+export const workflowsControllerGetRuns = async (id: string, options?: RequestInit): Promise<workflowsControllerGetRunsResponse> => {
+
+  return customFetch<workflowsControllerGetRunsResponse>(getWorkflowsControllerGetRunsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getWorkflowsControllerGetRunsQueryKey = (id: string,) => {
+    return [
+    `/api/workflows/${id}/runs`
+    ] as const;
+    }
+
+
+export const getWorkflowsControllerGetRunsQueryOptions = <TData = Awaited<ReturnType<typeof workflowsControllerGetRuns>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerGetRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getWorkflowsControllerGetRunsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof workflowsControllerGetRuns>>> = ({ signal }) => workflowsControllerGetRuns(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerGetRuns>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type WorkflowsControllerGetRunsQueryResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerGetRuns>>>
+export type WorkflowsControllerGetRunsQueryError = unknown
+
+
+export function useWorkflowsControllerGetRuns<TData = Awaited<ReturnType<typeof workflowsControllerGetRuns>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerGetRuns>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowsControllerGetRuns>>,
+          TError,
+          Awaited<ReturnType<typeof workflowsControllerGetRuns>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowsControllerGetRuns<TData = Awaited<ReturnType<typeof workflowsControllerGetRuns>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerGetRuns>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowsControllerGetRuns>>,
+          TError,
+          Awaited<ReturnType<typeof workflowsControllerGetRuns>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowsControllerGetRuns<TData = Awaited<ReturnType<typeof workflowsControllerGetRuns>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerGetRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get run history for a workflow
+ */
+
+export function useWorkflowsControllerGetRuns<TData = Awaited<ReturnType<typeof workflowsControllerGetRuns>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerGetRuns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getWorkflowsControllerGetRunsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+/**
+ * @summary Live node status/meta updates during run (SSE)
+ */
+export type workflowsControllerEventsResponse200 = {
+  data: void
+  status: 200
+}
+
+export type workflowsControllerEventsResponseSuccess = (workflowsControllerEventsResponse200) & {
+  headers: Headers;
+};
+;
+
+export type workflowsControllerEventsResponse = (workflowsControllerEventsResponseSuccess)
+
+export const getWorkflowsControllerEventsUrl = (id: string,) => {
+
+
+
+
+  return `/api/workflows/${id}/events`
+}
+
+export const workflowsControllerEvents = async (id: string, options?: RequestInit): Promise<workflowsControllerEventsResponse> => {
+
+  return customFetch<workflowsControllerEventsResponse>(getWorkflowsControllerEventsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getWorkflowsControllerEventsQueryKey = (id: string,) => {
+    return [
+    `/api/workflows/${id}/events`
+    ] as const;
+    }
+
+
+export const getWorkflowsControllerEventsQueryOptions = <TData = Awaited<ReturnType<typeof workflowsControllerEvents>>, TError = unknown>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerEvents>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getWorkflowsControllerEventsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof workflowsControllerEvents>>> = ({ signal }) => workflowsControllerEvents(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerEvents>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type WorkflowsControllerEventsQueryResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerEvents>>>
+export type WorkflowsControllerEventsQueryError = unknown
+
+
+export function useWorkflowsControllerEvents<TData = Awaited<ReturnType<typeof workflowsControllerEvents>>, TError = unknown>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerEvents>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowsControllerEvents>>,
+          TError,
+          Awaited<ReturnType<typeof workflowsControllerEvents>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowsControllerEvents<TData = Awaited<ReturnType<typeof workflowsControllerEvents>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerEvents>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowsControllerEvents>>,
+          TError,
+          Awaited<ReturnType<typeof workflowsControllerEvents>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowsControllerEvents<TData = Awaited<ReturnType<typeof workflowsControllerEvents>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerEvents>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Live node status/meta updates during run (SSE)
+ */
+
+export function useWorkflowsControllerEvents<TData = Awaited<ReturnType<typeof workflowsControllerEvents>>, TError = unknown>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerEvents>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getWorkflowsControllerEventsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export type executionControllerExecuteWorkflowResponse201 = {
+  data: void
+  status: 201
+}
+
+export type executionControllerExecuteWorkflowResponseSuccess = (executionControllerExecuteWorkflowResponse201) & {
+  headers: Headers;
+};
+;
+
+export type executionControllerExecuteWorkflowResponse = (executionControllerExecuteWorkflowResponseSuccess)
+
+export const getExecutionControllerExecuteWorkflowUrl = (workflowId: string,) => {
+
+
+
+
+  return `/api/workflows/${workflowId}/execute`
+}
+
+export const executionControllerExecuteWorkflow = async (workflowId: string,
+    executeWorkflowDto: ExecuteWorkflowDto, options?: RequestInit): Promise<executionControllerExecuteWorkflowResponse> => {
+
+  return customFetch<executionControllerExecuteWorkflowResponse>(getExecutionControllerExecuteWorkflowUrl(workflowId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      executeWorkflowDto,)
+  }
+);}
+
+
+
+
+export const getExecutionControllerExecuteWorkflowMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof executionControllerExecuteWorkflow>>, TError,{workflowId: string;data: ExecuteWorkflowDto}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof executionControllerExecuteWorkflow>>, TError,{workflowId: string;data: ExecuteWorkflowDto}, TContext> => {
+
+const mutationKey = ['executionControllerExecuteWorkflow'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof executionControllerExecuteWorkflow>>, {workflowId: string;data: ExecuteWorkflowDto}> = (props) => {
+          const {workflowId,data} = props ?? {};
+
+          return  executionControllerExecuteWorkflow(workflowId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ExecutionControllerExecuteWorkflowMutationResult = NonNullable<Awaited<ReturnType<typeof executionControllerExecuteWorkflow>>>
+    export type ExecutionControllerExecuteWorkflowMutationBody = ExecuteWorkflowDto
+    export type ExecutionControllerExecuteWorkflowMutationError = unknown
+
+    export const useExecutionControllerExecuteWorkflow = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof executionControllerExecuteWorkflow>>, TError,{workflowId: string;data: ExecuteWorkflowDto}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof executionControllerExecuteWorkflow>>,
+        TError,
+        {workflowId: string;data: ExecuteWorkflowDto},
+        TContext
+      > => {
+      return useMutation(getExecutionControllerExecuteWorkflowMutationOptions(options), queryClient);
+    }
+
+export type executionControllerGetExecutionResponse200 = {
+  data: void
+  status: 200
+}
+
+export type executionControllerGetExecutionResponseSuccess = (executionControllerGetExecutionResponse200) & {
+  headers: Headers;
+};
+;
+
+export type executionControllerGetExecutionResponse = (executionControllerGetExecutionResponseSuccess)
+
+export const getExecutionControllerGetExecutionUrl = (executionId: string,) => {
+
+
+
+
+  return `/api/executions/${executionId}`
+}
+
+export const executionControllerGetExecution = async (executionId: string, options?: RequestInit): Promise<executionControllerGetExecutionResponse> => {
+
+  return customFetch<executionControllerGetExecutionResponse>(getExecutionControllerGetExecutionUrl(executionId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getExecutionControllerGetExecutionQueryKey = (executionId: string,) => {
+    return [
+    `/api/executions/${executionId}`
+    ] as const;
+    }
+
+
+export const getExecutionControllerGetExecutionQueryOptions = <TData = Awaited<ReturnType<typeof executionControllerGetExecution>>, TError = unknown>(executionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executionControllerGetExecution>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getExecutionControllerGetExecutionQueryKey(executionId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof executionControllerGetExecution>>> = ({ signal }) => executionControllerGetExecution(executionId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(executionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof executionControllerGetExecution>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ExecutionControllerGetExecutionQueryResult = NonNullable<Awaited<ReturnType<typeof executionControllerGetExecution>>>
+export type ExecutionControllerGetExecutionQueryError = unknown
+
+
+export function useExecutionControllerGetExecution<TData = Awaited<ReturnType<typeof executionControllerGetExecution>>, TError = unknown>(
+ executionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof executionControllerGetExecution>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof executionControllerGetExecution>>,
+          TError,
+          Awaited<ReturnType<typeof executionControllerGetExecution>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useExecutionControllerGetExecution<TData = Awaited<ReturnType<typeof executionControllerGetExecution>>, TError = unknown>(
+ executionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executionControllerGetExecution>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof executionControllerGetExecution>>,
+          TError,
+          Awaited<ReturnType<typeof executionControllerGetExecution>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useExecutionControllerGetExecution<TData = Awaited<ReturnType<typeof executionControllerGetExecution>>, TError = unknown>(
+ executionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executionControllerGetExecution>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useExecutionControllerGetExecution<TData = Awaited<ReturnType<typeof executionControllerGetExecution>>, TError = unknown>(
+ executionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executionControllerGetExecution>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getExecutionControllerGetExecutionQueryOptions(executionId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export type executionControllerGetNodeOutputResponse200 = {
+  data: void
+  status: 200
+}
+
+export type executionControllerGetNodeOutputResponseSuccess = (executionControllerGetNodeOutputResponse200) & {
+  headers: Headers;
+};
+;
+
+export type executionControllerGetNodeOutputResponse = (executionControllerGetNodeOutputResponseSuccess)
+
+export const getExecutionControllerGetNodeOutputUrl = (executionId: string,
+    nodeId: string,) => {
+
+
+
+
+  return `/api/executions/${executionId}/nodes/${nodeId}/output`
+}
+
+export const executionControllerGetNodeOutput = async (executionId: string,
+    nodeId: string, options?: RequestInit): Promise<executionControllerGetNodeOutputResponse> => {
+
+  return customFetch<executionControllerGetNodeOutputResponse>(getExecutionControllerGetNodeOutputUrl(executionId,nodeId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getExecutionControllerGetNodeOutputQueryKey = (executionId: string,
+    nodeId: string,) => {
+    return [
+    `/api/executions/${executionId}/nodes/${nodeId}/output`
+    ] as const;
+    }
+
+
+export const getExecutionControllerGetNodeOutputQueryOptions = <TData = Awaited<ReturnType<typeof executionControllerGetNodeOutput>>, TError = unknown>(executionId: string,
+    nodeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executionControllerGetNodeOutput>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getExecutionControllerGetNodeOutputQueryKey(executionId,nodeId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof executionControllerGetNodeOutput>>> = ({ signal }) => executionControllerGetNodeOutput(executionId,nodeId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(executionId && nodeId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof executionControllerGetNodeOutput>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ExecutionControllerGetNodeOutputQueryResult = NonNullable<Awaited<ReturnType<typeof executionControllerGetNodeOutput>>>
+export type ExecutionControllerGetNodeOutputQueryError = unknown
+
+
+export function useExecutionControllerGetNodeOutput<TData = Awaited<ReturnType<typeof executionControllerGetNodeOutput>>, TError = unknown>(
+ executionId: string,
+    nodeId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof executionControllerGetNodeOutput>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof executionControllerGetNodeOutput>>,
+          TError,
+          Awaited<ReturnType<typeof executionControllerGetNodeOutput>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useExecutionControllerGetNodeOutput<TData = Awaited<ReturnType<typeof executionControllerGetNodeOutput>>, TError = unknown>(
+ executionId: string,
+    nodeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executionControllerGetNodeOutput>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof executionControllerGetNodeOutput>>,
+          TError,
+          Awaited<ReturnType<typeof executionControllerGetNodeOutput>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useExecutionControllerGetNodeOutput<TData = Awaited<ReturnType<typeof executionControllerGetNodeOutput>>, TError = unknown>(
+ executionId: string,
+    nodeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executionControllerGetNodeOutput>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useExecutionControllerGetNodeOutput<TData = Awaited<ReturnType<typeof executionControllerGetNodeOutput>>, TError = unknown>(
+ executionId: string,
+    nodeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executionControllerGetNodeOutput>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getExecutionControllerGetNodeOutputQueryOptions(executionId,nodeId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export type executionControllerListExecutionsResponse200 = {
+  data: void
+  status: 200
+}
+
+export type executionControllerListExecutionsResponseSuccess = (executionControllerListExecutionsResponse200) & {
+  headers: Headers;
+};
+;
+
+export type executionControllerListExecutionsResponse = (executionControllerListExecutionsResponseSuccess)
+
+export const getExecutionControllerListExecutionsUrl = (workflowId: string,) => {
+
+
+
+
+  return `/api/workflows/${workflowId}/executions`
+}
+
+export const executionControllerListExecutions = async (workflowId: string, options?: RequestInit): Promise<executionControllerListExecutionsResponse> => {
+
+  return customFetch<executionControllerListExecutionsResponse>(getExecutionControllerListExecutionsUrl(workflowId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getExecutionControllerListExecutionsQueryKey = (workflowId: string,) => {
+    return [
+    `/api/workflows/${workflowId}/executions`
+    ] as const;
+    }
+
+
+export const getExecutionControllerListExecutionsQueryOptions = <TData = Awaited<ReturnType<typeof executionControllerListExecutions>>, TError = unknown>(workflowId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executionControllerListExecutions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getExecutionControllerListExecutionsQueryKey(workflowId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof executionControllerListExecutions>>> = ({ signal }) => executionControllerListExecutions(workflowId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(workflowId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof executionControllerListExecutions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ExecutionControllerListExecutionsQueryResult = NonNullable<Awaited<ReturnType<typeof executionControllerListExecutions>>>
+export type ExecutionControllerListExecutionsQueryError = unknown
+
+
+export function useExecutionControllerListExecutions<TData = Awaited<ReturnType<typeof executionControllerListExecutions>>, TError = unknown>(
+ workflowId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof executionControllerListExecutions>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof executionControllerListExecutions>>,
+          TError,
+          Awaited<ReturnType<typeof executionControllerListExecutions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useExecutionControllerListExecutions<TData = Awaited<ReturnType<typeof executionControllerListExecutions>>, TError = unknown>(
+ workflowId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executionControllerListExecutions>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof executionControllerListExecutions>>,
+          TError,
+          Awaited<ReturnType<typeof executionControllerListExecutions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useExecutionControllerListExecutions<TData = Awaited<ReturnType<typeof executionControllerListExecutions>>, TError = unknown>(
+ workflowId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executionControllerListExecutions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useExecutionControllerListExecutions<TData = Awaited<ReturnType<typeof executionControllerListExecutions>>, TError = unknown>(
+ workflowId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof executionControllerListExecutions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getExecutionControllerListExecutionsQueryOptions(workflowId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export type executionControllerCancelExecutionResponse201 = {
+  data: void
+  status: 201
+}
+
+export type executionControllerCancelExecutionResponseSuccess = (executionControllerCancelExecutionResponse201) & {
+  headers: Headers;
+};
+;
+
+export type executionControllerCancelExecutionResponse = (executionControllerCancelExecutionResponseSuccess)
+
+export const getExecutionControllerCancelExecutionUrl = (executionId: string,) => {
+
+
+
+
+  return `/api/executions/${executionId}/cancel`
+}
+
+export const executionControllerCancelExecution = async (executionId: string, options?: RequestInit): Promise<executionControllerCancelExecutionResponse> => {
+
+  return customFetch<executionControllerCancelExecutionResponse>(getExecutionControllerCancelExecutionUrl(executionId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getExecutionControllerCancelExecutionMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof executionControllerCancelExecution>>, TError,{executionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof executionControllerCancelExecution>>, TError,{executionId: string}, TContext> => {
+
+const mutationKey = ['executionControllerCancelExecution'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof executionControllerCancelExecution>>, {executionId: string}> = (props) => {
+          const {executionId} = props ?? {};
+
+          return  executionControllerCancelExecution(executionId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ExecutionControllerCancelExecutionMutationResult = NonNullable<Awaited<ReturnType<typeof executionControllerCancelExecution>>>
+
+    export type ExecutionControllerCancelExecutionMutationError = unknown
+
+    export const useExecutionControllerCancelExecution = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof executionControllerCancelExecution>>, TError,{executionId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof executionControllerCancelExecution>>,
+        TError,
+        {executionId: string},
+        TContext
+      > => {
+      return useMutation(getExecutionControllerCancelExecutionMutationOptions(options), queryClient);
+    }
+
+export type sseControllerSseEventsResponse200 = {
+  data: void
+  status: 200
+}
+
+export type sseControllerSseEventsResponseSuccess = (sseControllerSseEventsResponse200) & {
+  headers: Headers;
+};
+;
+
+export type sseControllerSseEventsResponse = (sseControllerSseEventsResponseSuccess)
+
+export const getSseControllerSseEventsUrl = (executionId: string,) => {
+
+
+
+
+  return `/api/executions/${executionId}/events`
+}
+
+export const sseControllerSseEvents = async (executionId: string, options?: RequestInit): Promise<sseControllerSseEventsResponse> => {
+
+  return customFetch<sseControllerSseEventsResponse>(getSseControllerSseEventsUrl(executionId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getSseControllerSseEventsQueryKey = (executionId: string,) => {
+    return [
+    `/api/executions/${executionId}/events`
+    ] as const;
+    }
+
+
+export const getSseControllerSseEventsQueryOptions = <TData = Awaited<ReturnType<typeof sseControllerSseEvents>>, TError = unknown>(executionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sseControllerSseEvents>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getSseControllerSseEventsQueryKey(executionId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof sseControllerSseEvents>>> = ({ signal }) => sseControllerSseEvents(executionId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(executionId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof sseControllerSseEvents>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type SseControllerSseEventsQueryResult = NonNullable<Awaited<ReturnType<typeof sseControllerSseEvents>>>
+export type SseControllerSseEventsQueryError = unknown
+
+
+export function useSseControllerSseEvents<TData = Awaited<ReturnType<typeof sseControllerSseEvents>>, TError = unknown>(
+ executionId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof sseControllerSseEvents>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof sseControllerSseEvents>>,
+          TError,
+          Awaited<ReturnType<typeof sseControllerSseEvents>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSseControllerSseEvents<TData = Awaited<ReturnType<typeof sseControllerSseEvents>>, TError = unknown>(
+ executionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sseControllerSseEvents>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof sseControllerSseEvents>>,
+          TError,
+          Awaited<ReturnType<typeof sseControllerSseEvents>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useSseControllerSseEvents<TData = Awaited<ReturnType<typeof sseControllerSseEvents>>, TError = unknown>(
+ executionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sseControllerSseEvents>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useSseControllerSseEvents<TData = Awaited<ReturnType<typeof sseControllerSseEvents>>, TError = unknown>(
+ executionId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof sseControllerSseEvents>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getSseControllerSseEventsQueryOptions(executionId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export type scheduleControllerUpsertScheduleResponse201 = {
+  data: void
+  status: 201
+}
+
+export type scheduleControllerUpsertScheduleResponseSuccess = (scheduleControllerUpsertScheduleResponse201) & {
+  headers: Headers;
+};
+;
+
+export type scheduleControllerUpsertScheduleResponse = (scheduleControllerUpsertScheduleResponseSuccess)
+
+export const getScheduleControllerUpsertScheduleUrl = (workflowId: string,) => {
+
+
+
+
+  return `/api/workflows/${workflowId}/schedule`
+}
+
+export const scheduleControllerUpsertSchedule = async (workflowId: string,
+    scheduleWorkflowDto: ScheduleWorkflowDto, options?: RequestInit): Promise<scheduleControllerUpsertScheduleResponse> => {
+
+  return customFetch<scheduleControllerUpsertScheduleResponse>(getScheduleControllerUpsertScheduleUrl(workflowId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      scheduleWorkflowDto,)
+  }
+);}
+
+
+
+
+export const getScheduleControllerUpsertScheduleMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof scheduleControllerUpsertSchedule>>, TError,{workflowId: string;data: ScheduleWorkflowDto}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof scheduleControllerUpsertSchedule>>, TError,{workflowId: string;data: ScheduleWorkflowDto}, TContext> => {
+
+const mutationKey = ['scheduleControllerUpsertSchedule'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof scheduleControllerUpsertSchedule>>, {workflowId: string;data: ScheduleWorkflowDto}> = (props) => {
+          const {workflowId,data} = props ?? {};
+
+          return  scheduleControllerUpsertSchedule(workflowId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ScheduleControllerUpsertScheduleMutationResult = NonNullable<Awaited<ReturnType<typeof scheduleControllerUpsertSchedule>>>
+    export type ScheduleControllerUpsertScheduleMutationBody = ScheduleWorkflowDto
+    export type ScheduleControllerUpsertScheduleMutationError = unknown
+
+    export const useScheduleControllerUpsertSchedule = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof scheduleControllerUpsertSchedule>>, TError,{workflowId: string;data: ScheduleWorkflowDto}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof scheduleControllerUpsertSchedule>>,
+        TError,
+        {workflowId: string;data: ScheduleWorkflowDto},
+        TContext
+      > => {
+      return useMutation(getScheduleControllerUpsertScheduleMutationOptions(options), queryClient);
+    }
+
+export type scheduleControllerDeleteScheduleResponse200 = {
+  data: void
+  status: 200
+}
+
+export type scheduleControllerDeleteScheduleResponseSuccess = (scheduleControllerDeleteScheduleResponse200) & {
+  headers: Headers;
+};
+;
+
+export type scheduleControllerDeleteScheduleResponse = (scheduleControllerDeleteScheduleResponseSuccess)
+
+export const getScheduleControllerDeleteScheduleUrl = (workflowId: string,) => {
+
+
+
+
+  return `/api/workflows/${workflowId}/schedule`
+}
+
+export const scheduleControllerDeleteSchedule = async (workflowId: string, options?: RequestInit): Promise<scheduleControllerDeleteScheduleResponse> => {
+
+  return customFetch<scheduleControllerDeleteScheduleResponse>(getScheduleControllerDeleteScheduleUrl(workflowId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getScheduleControllerDeleteScheduleMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof scheduleControllerDeleteSchedule>>, TError,{workflowId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof scheduleControllerDeleteSchedule>>, TError,{workflowId: string}, TContext> => {
+
+const mutationKey = ['scheduleControllerDeleteSchedule'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof scheduleControllerDeleteSchedule>>, {workflowId: string}> = (props) => {
+          const {workflowId} = props ?? {};
+
+          return  scheduleControllerDeleteSchedule(workflowId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ScheduleControllerDeleteScheduleMutationResult = NonNullable<Awaited<ReturnType<typeof scheduleControllerDeleteSchedule>>>
+
+    export type ScheduleControllerDeleteScheduleMutationError = unknown
+
+    export const useScheduleControllerDeleteSchedule = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof scheduleControllerDeleteSchedule>>, TError,{workflowId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof scheduleControllerDeleteSchedule>>,
+        TError,
+        {workflowId: string},
+        TContext
+      > => {
+      return useMutation(getScheduleControllerDeleteScheduleMutationOptions(options), queryClient);
+    }
+
+export type scheduleControllerGetScheduleResponse200 = {
+  data: void
+  status: 200
+}
+
+export type scheduleControllerGetScheduleResponseSuccess = (scheduleControllerGetScheduleResponse200) & {
+  headers: Headers;
+};
+;
+
+export type scheduleControllerGetScheduleResponse = (scheduleControllerGetScheduleResponseSuccess)
+
+export const getScheduleControllerGetScheduleUrl = (workflowId: string,) => {
+
+
+
+
+  return `/api/workflows/${workflowId}/schedule`
+}
+
+export const scheduleControllerGetSchedule = async (workflowId: string, options?: RequestInit): Promise<scheduleControllerGetScheduleResponse> => {
+
+  return customFetch<scheduleControllerGetScheduleResponse>(getScheduleControllerGetScheduleUrl(workflowId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getScheduleControllerGetScheduleQueryKey = (workflowId: string,) => {
+    return [
+    `/api/workflows/${workflowId}/schedule`
+    ] as const;
+    }
+
+
+export const getScheduleControllerGetScheduleQueryOptions = <TData = Awaited<ReturnType<typeof scheduleControllerGetSchedule>>, TError = unknown>(workflowId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof scheduleControllerGetSchedule>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getScheduleControllerGetScheduleQueryKey(workflowId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof scheduleControllerGetSchedule>>> = ({ signal }) => scheduleControllerGetSchedule(workflowId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(workflowId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof scheduleControllerGetSchedule>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ScheduleControllerGetScheduleQueryResult = NonNullable<Awaited<ReturnType<typeof scheduleControllerGetSchedule>>>
+export type ScheduleControllerGetScheduleQueryError = unknown
+
+
+export function useScheduleControllerGetSchedule<TData = Awaited<ReturnType<typeof scheduleControllerGetSchedule>>, TError = unknown>(
+ workflowId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof scheduleControllerGetSchedule>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof scheduleControllerGetSchedule>>,
+          TError,
+          Awaited<ReturnType<typeof scheduleControllerGetSchedule>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useScheduleControllerGetSchedule<TData = Awaited<ReturnType<typeof scheduleControllerGetSchedule>>, TError = unknown>(
+ workflowId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof scheduleControllerGetSchedule>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof scheduleControllerGetSchedule>>,
+          TError,
+          Awaited<ReturnType<typeof scheduleControllerGetSchedule>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useScheduleControllerGetSchedule<TData = Awaited<ReturnType<typeof scheduleControllerGetSchedule>>, TError = unknown>(
+ workflowId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof scheduleControllerGetSchedule>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useScheduleControllerGetSchedule<TData = Awaited<ReturnType<typeof scheduleControllerGetSchedule>>, TError = unknown>(
+ workflowId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof scheduleControllerGetSchedule>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getScheduleControllerGetScheduleQueryOptions(workflowId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
