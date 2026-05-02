@@ -52,6 +52,7 @@ import type {
   GenerateIdeasResponseDto,
   HealthControllerCheck200,
   HealthControllerCheck503,
+  NodeDefinitionDto,
   PaginatedContentIdeasResponseDto,
   PaginatedContentPostsResponseDto,
   PaginatedProductsResponseDto,
@@ -74,6 +75,7 @@ import type {
   UpdateContentPostStatusDto,
   UpdateIdeaResponseDto,
   UpdateStatusResponseDto,
+  UpsertNodeDefinitionBodyDto,
   WorkflowDetailDto,
   WorkflowRunDto,
   WorkflowVersionDetailDto,
@@ -6839,6 +6841,641 @@ export const useWorkflowsControllerRestoreVersion = <TError = void,
         TContext
       > => {
       return useMutation(getWorkflowsControllerRestoreVersionMutationOptions(options), queryClient);
+    }
+
+/**
+ * Returns all node definitions ordered by category, then title. Includes both built-in (seeded) and user-defined nodes.
+ * @summary List all node definitions
+ */
+export type nodeDefinitionControllerListResponse200 = {
+  data: NodeDefinitionDto[]
+  status: 200
+}
+
+export type nodeDefinitionControllerListResponseSuccess = (nodeDefinitionControllerListResponse200) & {
+  headers: Headers;
+};
+;
+
+export type nodeDefinitionControllerListResponse = (nodeDefinitionControllerListResponseSuccess)
+
+export const getNodeDefinitionControllerListUrl = () => {
+
+
+
+
+  return `/api/workflow/node-definitions`
+}
+
+export const nodeDefinitionControllerList = async ( options?: RequestInit): Promise<nodeDefinitionControllerListResponse> => {
+
+  return customFetch<nodeDefinitionControllerListResponse>(getNodeDefinitionControllerListUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getNodeDefinitionControllerListQueryKey = () => {
+    return [
+    `/api/workflow/node-definitions`
+    ] as const;
+    }
+
+
+export const getNodeDefinitionControllerListQueryOptions = <TData = Awaited<ReturnType<typeof nodeDefinitionControllerList>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof nodeDefinitionControllerList>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getNodeDefinitionControllerListQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof nodeDefinitionControllerList>>> = ({ signal }) => nodeDefinitionControllerList({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof nodeDefinitionControllerList>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type NodeDefinitionControllerListQueryResult = NonNullable<Awaited<ReturnType<typeof nodeDefinitionControllerList>>>
+export type NodeDefinitionControllerListQueryError = unknown
+
+
+export function useNodeDefinitionControllerList<TData = Awaited<ReturnType<typeof nodeDefinitionControllerList>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof nodeDefinitionControllerList>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof nodeDefinitionControllerList>>,
+          TError,
+          Awaited<ReturnType<typeof nodeDefinitionControllerList>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useNodeDefinitionControllerList<TData = Awaited<ReturnType<typeof nodeDefinitionControllerList>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof nodeDefinitionControllerList>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof nodeDefinitionControllerList>>,
+          TError,
+          Awaited<ReturnType<typeof nodeDefinitionControllerList>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useNodeDefinitionControllerList<TData = Awaited<ReturnType<typeof nodeDefinitionControllerList>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof nodeDefinitionControllerList>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List all node definitions
+ */
+
+export function useNodeDefinitionControllerList<TData = Awaited<ReturnType<typeof nodeDefinitionControllerList>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof nodeDefinitionControllerList>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getNodeDefinitionControllerListQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+/**
+ * Upserts a node definition. The `builtIn` flag must be `false`. Attempting to overwrite a built-in node returns 409.
+ * @summary Create or update a user-defined node definition
+ */
+export type nodeDefinitionControllerUpsertResponse201 = {
+  data: NodeDefinitionDto
+  status: 201
+}
+
+export type nodeDefinitionControllerUpsertResponse403 = {
+  data: void
+  status: 403
+}
+
+export type nodeDefinitionControllerUpsertResponse409 = {
+  data: void
+  status: 409
+}
+
+export type nodeDefinitionControllerUpsertResponseSuccess = (nodeDefinitionControllerUpsertResponse201) & {
+  headers: Headers;
+};
+export type nodeDefinitionControllerUpsertResponseError = (nodeDefinitionControllerUpsertResponse403 | nodeDefinitionControllerUpsertResponse409) & {
+  headers: Headers;
+};
+
+export type nodeDefinitionControllerUpsertResponse = (nodeDefinitionControllerUpsertResponseSuccess | nodeDefinitionControllerUpsertResponseError)
+
+export const getNodeDefinitionControllerUpsertUrl = () => {
+
+
+
+
+  return `/api/workflow/node-definitions`
+}
+
+export const nodeDefinitionControllerUpsert = async (upsertNodeDefinitionBodyDto: UpsertNodeDefinitionBodyDto, options?: RequestInit): Promise<nodeDefinitionControllerUpsertResponse> => {
+
+  return customFetch<nodeDefinitionControllerUpsertResponse>(getNodeDefinitionControllerUpsertUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      upsertNodeDefinitionBodyDto,)
+  }
+);}
+
+
+
+
+export const getNodeDefinitionControllerUpsertMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof nodeDefinitionControllerUpsert>>, TError,{data: UpsertNodeDefinitionBodyDto}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof nodeDefinitionControllerUpsert>>, TError,{data: UpsertNodeDefinitionBodyDto}, TContext> => {
+
+const mutationKey = ['nodeDefinitionControllerUpsert'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof nodeDefinitionControllerUpsert>>, {data: UpsertNodeDefinitionBodyDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  nodeDefinitionControllerUpsert(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type NodeDefinitionControllerUpsertMutationResult = NonNullable<Awaited<ReturnType<typeof nodeDefinitionControllerUpsert>>>
+    export type NodeDefinitionControllerUpsertMutationBody = UpsertNodeDefinitionBodyDto
+    export type NodeDefinitionControllerUpsertMutationError = void
+
+    /**
+ * @summary Create or update a user-defined node definition
+ */
+export const useNodeDefinitionControllerUpsert = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof nodeDefinitionControllerUpsert>>, TError,{data: UpsertNodeDefinitionBodyDto}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof nodeDefinitionControllerUpsert>>,
+        TError,
+        {data: UpsertNodeDefinitionBodyDto},
+        TContext
+      > => {
+      return useMutation(getNodeDefinitionControllerUpsertMutationOptions(options), queryClient);
+    }
+
+/**
+ * Returns a single node definition by its unique type identifier. Returns 404 if not found.
+ * @summary Get a node definition by typeId
+ */
+export type nodeDefinitionControllerGetOneResponse200 = {
+  data: NodeDefinitionDto
+  status: 200
+}
+
+export type nodeDefinitionControllerGetOneResponse404 = {
+  data: void
+  status: 404
+}
+
+export type nodeDefinitionControllerGetOneResponseSuccess = (nodeDefinitionControllerGetOneResponse200) & {
+  headers: Headers;
+};
+export type nodeDefinitionControllerGetOneResponseError = (nodeDefinitionControllerGetOneResponse404) & {
+  headers: Headers;
+};
+
+export type nodeDefinitionControllerGetOneResponse = (nodeDefinitionControllerGetOneResponseSuccess | nodeDefinitionControllerGetOneResponseError)
+
+export const getNodeDefinitionControllerGetOneUrl = (typeId: string,) => {
+
+
+
+
+  return `/api/workflow/node-definitions/${typeId}`
+}
+
+export const nodeDefinitionControllerGetOne = async (typeId: string, options?: RequestInit): Promise<nodeDefinitionControllerGetOneResponse> => {
+
+  return customFetch<nodeDefinitionControllerGetOneResponse>(getNodeDefinitionControllerGetOneUrl(typeId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getNodeDefinitionControllerGetOneQueryKey = (typeId: string,) => {
+    return [
+    `/api/workflow/node-definitions/${typeId}`
+    ] as const;
+    }
+
+
+export const getNodeDefinitionControllerGetOneQueryOptions = <TData = Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>, TError = void>(typeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getNodeDefinitionControllerGetOneQueryKey(typeId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>> = ({ signal }) => nodeDefinitionControllerGetOne(typeId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(typeId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type NodeDefinitionControllerGetOneQueryResult = NonNullable<Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>>
+export type NodeDefinitionControllerGetOneQueryError = void
+
+
+export function useNodeDefinitionControllerGetOne<TData = Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>, TError = void>(
+ typeId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>,
+          TError,
+          Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useNodeDefinitionControllerGetOne<TData = Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>, TError = void>(
+ typeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>,
+          TError,
+          Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useNodeDefinitionControllerGetOne<TData = Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>, TError = void>(
+ typeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a node definition by typeId
+ */
+
+export function useNodeDefinitionControllerGetOne<TData = Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>, TError = void>(
+ typeId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof nodeDefinitionControllerGetOne>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getNodeDefinitionControllerGetOneQueryOptions(typeId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+/**
+ * Deletes a node definition. Built-in nodes (builtIn: true) cannot be deleted and will return 403.
+ * @summary Delete a user-defined node definition
+ */
+export type nodeDefinitionControllerDeleteResponse204 = {
+  data: void
+  status: 204
+}
+
+export type nodeDefinitionControllerDeleteResponse403 = {
+  data: void
+  status: 403
+}
+
+export type nodeDefinitionControllerDeleteResponse404 = {
+  data: void
+  status: 404
+}
+
+export type nodeDefinitionControllerDeleteResponseSuccess = (nodeDefinitionControllerDeleteResponse204) & {
+  headers: Headers;
+};
+export type nodeDefinitionControllerDeleteResponseError = (nodeDefinitionControllerDeleteResponse403 | nodeDefinitionControllerDeleteResponse404) & {
+  headers: Headers;
+};
+
+export type nodeDefinitionControllerDeleteResponse = (nodeDefinitionControllerDeleteResponseSuccess | nodeDefinitionControllerDeleteResponseError)
+
+export const getNodeDefinitionControllerDeleteUrl = (typeId: string,) => {
+
+
+
+
+  return `/api/workflow/node-definitions/${typeId}`
+}
+
+export const nodeDefinitionControllerDelete = async (typeId: string, options?: RequestInit): Promise<nodeDefinitionControllerDeleteResponse> => {
+
+  return customFetch<nodeDefinitionControllerDeleteResponse>(getNodeDefinitionControllerDeleteUrl(typeId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getNodeDefinitionControllerDeleteMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof nodeDefinitionControllerDelete>>, TError,{typeId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof nodeDefinitionControllerDelete>>, TError,{typeId: string}, TContext> => {
+
+const mutationKey = ['nodeDefinitionControllerDelete'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof nodeDefinitionControllerDelete>>, {typeId: string}> = (props) => {
+          const {typeId} = props ?? {};
+
+          return  nodeDefinitionControllerDelete(typeId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type NodeDefinitionControllerDeleteMutationResult = NonNullable<Awaited<ReturnType<typeof nodeDefinitionControllerDelete>>>
+
+    export type NodeDefinitionControllerDeleteMutationError = void
+
+    /**
+ * @summary Delete a user-defined node definition
+ */
+export const useNodeDefinitionControllerDelete = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof nodeDefinitionControllerDelete>>, TError,{typeId: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof nodeDefinitionControllerDelete>>,
+        TError,
+        {typeId: string},
+        TContext
+      > => {
+      return useMutation(getNodeDefinitionControllerDeleteMutationOptions(options), queryClient);
+    }
+
+/**
+ * @summary Export workflow as JSON file
+ */
+export type workflowImportExportControllerExportWorkflowResponse200 = {
+  data: void
+  status: 200
+}
+
+export type workflowImportExportControllerExportWorkflowResponse404 = {
+  data: void
+  status: 404
+}
+
+export type workflowImportExportControllerExportWorkflowResponseSuccess = (workflowImportExportControllerExportWorkflowResponse200) & {
+  headers: Headers;
+};
+export type workflowImportExportControllerExportWorkflowResponseError = (workflowImportExportControllerExportWorkflowResponse404) & {
+  headers: Headers;
+};
+
+export type workflowImportExportControllerExportWorkflowResponse = (workflowImportExportControllerExportWorkflowResponseSuccess | workflowImportExportControllerExportWorkflowResponseError)
+
+export const getWorkflowImportExportControllerExportWorkflowUrl = (id: string,) => {
+
+
+
+
+  return `/api/workflows/${id}/export`
+}
+
+export const workflowImportExportControllerExportWorkflow = async (id: string, options?: RequestInit): Promise<workflowImportExportControllerExportWorkflowResponse> => {
+
+  return customFetch<workflowImportExportControllerExportWorkflowResponse>(getWorkflowImportExportControllerExportWorkflowUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getWorkflowImportExportControllerExportWorkflowQueryKey = (id: string,) => {
+    return [
+    `/api/workflows/${id}/export`
+    ] as const;
+    }
+
+
+export const getWorkflowImportExportControllerExportWorkflowQueryOptions = <TData = Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getWorkflowImportExportControllerExportWorkflowQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>> = ({ signal }) => workflowImportExportControllerExportWorkflow(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type WorkflowImportExportControllerExportWorkflowQueryResult = NonNullable<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>>
+export type WorkflowImportExportControllerExportWorkflowQueryError = void
+
+
+export function useWorkflowImportExportControllerExportWorkflow<TData = Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError = void>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>,
+          TError,
+          Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowImportExportControllerExportWorkflow<TData = Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>,
+          TError,
+          Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowImportExportControllerExportWorkflow<TData = Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Export workflow as JSON file
+ */
+
+export function useWorkflowImportExportControllerExportWorkflow<TData = Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getWorkflowImportExportControllerExportWorkflowQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+/**
+ * @summary Import workflow from JSON file
+ */
+export type workflowImportExportControllerImportWorkflowResponse201 = {
+  data: void
+  status: 201
+}
+
+export type workflowImportExportControllerImportWorkflowResponse400 = {
+  data: void
+  status: 400
+}
+
+export type workflowImportExportControllerImportWorkflowResponseSuccess = (workflowImportExportControllerImportWorkflowResponse201) & {
+  headers: Headers;
+};
+export type workflowImportExportControllerImportWorkflowResponseError = (workflowImportExportControllerImportWorkflowResponse400) & {
+  headers: Headers;
+};
+
+export type workflowImportExportControllerImportWorkflowResponse = (workflowImportExportControllerImportWorkflowResponseSuccess | workflowImportExportControllerImportWorkflowResponseError)
+
+export const getWorkflowImportExportControllerImportWorkflowUrl = () => {
+
+
+
+
+  return `/api/workflows/import`
+}
+
+export const workflowImportExportControllerImportWorkflow = async ( options?: RequestInit): Promise<workflowImportExportControllerImportWorkflowResponse> => {
+
+  return customFetch<workflowImportExportControllerImportWorkflowResponse>(getWorkflowImportExportControllerImportWorkflowUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getWorkflowImportExportControllerImportWorkflowMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>, TError,void, TContext> => {
+
+const mutationKey = ['workflowImportExportControllerImportWorkflow'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>, void> = () => {
+
+
+          return  workflowImportExportControllerImportWorkflow(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type WorkflowImportExportControllerImportWorkflowMutationResult = NonNullable<Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>>
+
+    export type WorkflowImportExportControllerImportWorkflowMutationError = void
+
+    /**
+ * @summary Import workflow from JSON file
+ */
+export const useWorkflowImportExportControllerImportWorkflow = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getWorkflowImportExportControllerImportWorkflowMutationOptions(options), queryClient);
     }
 
 /**
