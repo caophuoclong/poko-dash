@@ -39,6 +39,7 @@ import type {
   CreateContentIdeaDto,
   CreateContentPostDto,
   CreatePublicationDto,
+  CreateWorkflowBodyDto,
   DashboardOverviewResponseDto,
   DeleteContentIdeaResponseDto,
   DeleteProductResponseDto,
@@ -62,6 +63,7 @@ import type {
   RecordPublishFailureDto,
   RecordPublishSuccessDto,
   RecordUsageResponseDto,
+  SaveWorkflowCanvasBodyDto,
   ScheduleWorkflowDto,
   ScheduledJobResponseDto,
   TriggerAggregationResponseDto,
@@ -74,6 +76,7 @@ import type {
   WorkflowRunDto,
   WorkflowVersionDetailDto,
   WorkflowVersionDto,
+  WorkflowsControllerListParams,
   WorkflowsControllerPauseParams
 } from './model';
 
@@ -5918,17 +5921,24 @@ export type workflowsControllerListResponseSuccess = (workflowsControllerListRes
 
 export type workflowsControllerListResponse = (workflowsControllerListResponseSuccess)
 
-export const getWorkflowsControllerListUrl = () => {
+export const getWorkflowsControllerListUrl = (params?: WorkflowsControllerListParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/workflows`
+  return stringifiedParams.length > 0 ? `/api/workflows?${stringifiedParams}` : `/api/workflows`
 }
 
-export const workflowsControllerList = async ( options?: RequestInit): Promise<workflowsControllerListResponse> => {
+export const workflowsControllerList = async (params?: WorkflowsControllerListParams, options?: RequestInit): Promise<workflowsControllerListResponse> => {
 
-  return customFetch<workflowsControllerListResponse>(getWorkflowsControllerListUrl(),
+  return customFetch<workflowsControllerListResponse>(getWorkflowsControllerListUrl(params),
   {
     ...options,
     method: 'GET'
@@ -5941,23 +5951,23 @@ export const workflowsControllerList = async ( options?: RequestInit): Promise<w
 
 
 
-export const getWorkflowsControllerListQueryKey = () => {
+export const getWorkflowsControllerListQueryKey = (params?: WorkflowsControllerListParams,) => {
     return [
-    `/api/workflows`
+    `/api/workflows`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getWorkflowsControllerListQueryOptions = <TData = Awaited<ReturnType<typeof workflowsControllerList>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getWorkflowsControllerListQueryOptions = <TData = Awaited<ReturnType<typeof workflowsControllerList>>, TError = unknown>(params?: WorkflowsControllerListParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getWorkflowsControllerListQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getWorkflowsControllerListQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof workflowsControllerList>>> = ({ signal }) => workflowsControllerList({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof workflowsControllerList>>> = ({ signal }) => workflowsControllerList(params, { signal, ...requestOptions });
 
 
 
@@ -5971,7 +5981,7 @@ export type WorkflowsControllerListQueryError = unknown
 
 
 export function useWorkflowsControllerList<TData = Awaited<ReturnType<typeof workflowsControllerList>>, TError = unknown>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData>> & Pick<
+ params: undefined |  WorkflowsControllerListParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof workflowsControllerList>>,
           TError,
@@ -5981,7 +5991,7 @@ export function useWorkflowsControllerList<TData = Awaited<ReturnType<typeof wor
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useWorkflowsControllerList<TData = Awaited<ReturnType<typeof workflowsControllerList>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData>> & Pick<
+ params?: WorkflowsControllerListParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof workflowsControllerList>>,
           TError,
@@ -5991,7 +6001,7 @@ export function useWorkflowsControllerList<TData = Awaited<ReturnType<typeof wor
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useWorkflowsControllerList<TData = Awaited<ReturnType<typeof workflowsControllerList>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ params?: WorkflowsControllerListParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -5999,11 +6009,11 @@ export function useWorkflowsControllerList<TData = Awaited<ReturnType<typeof wor
  */
 
 export function useWorkflowsControllerList<TData = Awaited<ReturnType<typeof workflowsControllerList>>, TError = unknown>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ params?: WorkflowsControllerListParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowsControllerList>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getWorkflowsControllerListQueryOptions(options)
+  const queryOptions = getWorkflowsControllerListQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -6039,14 +6049,15 @@ export const getWorkflowsControllerCreateUrl = () => {
   return `/api/workflows`
 }
 
-export const workflowsControllerCreate = async ( options?: RequestInit): Promise<workflowsControllerCreateResponse> => {
+export const workflowsControllerCreate = async (createWorkflowBodyDto: CreateWorkflowBodyDto, options?: RequestInit): Promise<workflowsControllerCreateResponse> => {
 
   return customFetch<workflowsControllerCreateResponse>(getWorkflowsControllerCreateUrl(),
   {
     ...options,
-    method: 'POST'
-
-
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      createWorkflowBodyDto,)
   }
 );}
 
@@ -6054,8 +6065,8 @@ export const workflowsControllerCreate = async ( options?: RequestInit): Promise
 
 
 export const getWorkflowsControllerCreateMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerCreate>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerCreate>>, TError,void, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerCreate>>, TError,{data: CreateWorkflowBodyDto}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerCreate>>, TError,{data: CreateWorkflowBodyDto}, TContext> => {
 
 const mutationKey = ['workflowsControllerCreate'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -6067,10 +6078,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof workflowsControllerCreate>>, void> = () => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof workflowsControllerCreate>>, {data: CreateWorkflowBodyDto}> = (props) => {
+          const {data} = props ?? {};
 
-
-          return  workflowsControllerCreate(requestOptions)
+          return  workflowsControllerCreate(data,requestOptions)
         }
 
 
@@ -6081,18 +6092,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type WorkflowsControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerCreate>>>
-
+    export type WorkflowsControllerCreateMutationBody = CreateWorkflowBodyDto
     export type WorkflowsControllerCreateMutationError = unknown
 
     /**
  * @summary Create new workflow (empty DAG)
  */
 export const useWorkflowsControllerCreate = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerCreate>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerCreate>>, TError,{data: CreateWorkflowBodyDto}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof workflowsControllerCreate>>,
         TError,
-        void,
+        {data: CreateWorkflowBodyDto},
         TContext
       > => {
       return useMutation(getWorkflowsControllerCreateMutationOptions(options), queryClient);
@@ -6219,7 +6230,7 @@ export function useWorkflowsControllerFindOne<TData = Awaited<ReturnType<typeof 
 
 
 /**
- * @summary Save canvas (nodes, edges, configs)
+ * @summary Save canvas (nodes, edges, configs, versionType)
  */
 export type workflowsControllerSaveCanvasResponse200 = {
   data: WorkflowDetailDto
@@ -6241,14 +6252,16 @@ export const getWorkflowsControllerSaveCanvasUrl = (id: string,) => {
   return `/api/workflows/${id}`
 }
 
-export const workflowsControllerSaveCanvas = async (id: string, options?: RequestInit): Promise<workflowsControllerSaveCanvasResponse> => {
+export const workflowsControllerSaveCanvas = async (id: string,
+    saveWorkflowCanvasBodyDto: SaveWorkflowCanvasBodyDto, options?: RequestInit): Promise<workflowsControllerSaveCanvasResponse> => {
 
   return customFetch<workflowsControllerSaveCanvasResponse>(getWorkflowsControllerSaveCanvasUrl(id),
   {
     ...options,
-    method: 'PUT'
-
-
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      saveWorkflowCanvasBodyDto,)
   }
 );}
 
@@ -6256,8 +6269,8 @@ export const workflowsControllerSaveCanvas = async (id: string, options?: Reques
 
 
 export const getWorkflowsControllerSaveCanvasMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>, TError,{id: string}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>, TError,{id: string;data: SaveWorkflowCanvasBodyDto}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>, TError,{id: string;data: SaveWorkflowCanvasBodyDto}, TContext> => {
 
 const mutationKey = ['workflowsControllerSaveCanvas'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -6269,10 +6282,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>, {id: string;data: SaveWorkflowCanvasBodyDto}> = (props) => {
+          const {id,data} = props ?? {};
 
-          return  workflowsControllerSaveCanvas(id,requestOptions)
+          return  workflowsControllerSaveCanvas(id,data,requestOptions)
         }
 
 
@@ -6283,18 +6296,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type WorkflowsControllerSaveCanvasMutationResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>>
-
+    export type WorkflowsControllerSaveCanvasMutationBody = SaveWorkflowCanvasBodyDto
     export type WorkflowsControllerSaveCanvasMutationError = unknown
 
     /**
- * @summary Save canvas (nodes, edges, configs)
+ * @summary Save canvas (nodes, edges, configs, versionType)
  */
 export const useWorkflowsControllerSaveCanvas = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>, TError,{id: string;data: SaveWorkflowCanvasBodyDto}, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof workflowsControllerSaveCanvas>>,
         TError,
-        {id: string},
+        {id: string;data: SaveWorkflowCanvasBodyDto},
         TContext
       > => {
       return useMutation(getWorkflowsControllerSaveCanvasMutationOptions(options), queryClient);
@@ -6782,88 +6795,6 @@ export function useWorkflowsControllerEvents<TData = Awaited<ReturnType<typeof w
 
 
 /**
- * @summary Create a manual version snapshot
- */
-export type workflowsControllerCreateVersionResponse201 = {
-  data: WorkflowVersionDto
-  status: 201
-}
-
-export type workflowsControllerCreateVersionResponseSuccess = (workflowsControllerCreateVersionResponse201) & {
-  headers: Headers;
-};
-;
-
-export type workflowsControllerCreateVersionResponse = (workflowsControllerCreateVersionResponseSuccess)
-
-export const getWorkflowsControllerCreateVersionUrl = (id: string,) => {
-
-
-
-
-  return `/api/workflows/${id}/versions`
-}
-
-export const workflowsControllerCreateVersion = async (id: string, options?: RequestInit): Promise<workflowsControllerCreateVersionResponse> => {
-
-  return customFetch<workflowsControllerCreateVersionResponse>(getWorkflowsControllerCreateVersionUrl(id),
-  {
-    ...options,
-    method: 'POST'
-
-
-  }
-);}
-
-
-
-
-export const getWorkflowsControllerCreateVersionMutationOptions = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerCreateVersion>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerCreateVersion>>, TError,{id: string}, TContext> => {
-
-const mutationKey = ['workflowsControllerCreateVersion'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof workflowsControllerCreateVersion>>, {id: string}> = (props) => {
-          const {id} = props ?? {};
-
-          return  workflowsControllerCreateVersion(id,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type WorkflowsControllerCreateVersionMutationResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerCreateVersion>>>
-
-    export type WorkflowsControllerCreateVersionMutationError = unknown
-
-    /**
- * @summary Create a manual version snapshot
- */
-export const useWorkflowsControllerCreateVersion = <TError = unknown,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerCreateVersion>>, TError,{id: string}, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof workflowsControllerCreateVersion>>,
-        TError,
-        {id: string},
-        TContext
-      > => {
-      return useMutation(getWorkflowsControllerCreateVersionMutationOptions(options), queryClient);
-    }
-
-/**
  * @summary List version history for a workflow
  */
 export type workflowsControllerListVersionsResponse200 = {
@@ -7103,6 +7034,97 @@ export function useWorkflowsControllerGetVersion<TData = Awaited<ReturnType<type
 
 
 
+
+/**
+ * @summary Restore workflow to a specific version
+ */
+export type workflowsControllerRestoreVersionResponse200 = {
+  data: WorkflowDetailDto
+  status: 200
+}
+
+export type workflowsControllerRestoreVersionResponse404 = {
+  data: void
+  status: 404
+}
+
+export type workflowsControllerRestoreVersionResponseSuccess = (workflowsControllerRestoreVersionResponse200) & {
+  headers: Headers;
+};
+export type workflowsControllerRestoreVersionResponseError = (workflowsControllerRestoreVersionResponse404) & {
+  headers: Headers;
+};
+
+export type workflowsControllerRestoreVersionResponse = (workflowsControllerRestoreVersionResponseSuccess | workflowsControllerRestoreVersionResponseError)
+
+export const getWorkflowsControllerRestoreVersionUrl = (id: string,
+    versionNumber: number,) => {
+
+
+
+
+  return `/api/workflows/${id}/versions/${versionNumber}`
+}
+
+export const workflowsControllerRestoreVersion = async (id: string,
+    versionNumber: number, options?: RequestInit): Promise<workflowsControllerRestoreVersionResponse> => {
+
+  return customFetch<workflowsControllerRestoreVersionResponse>(getWorkflowsControllerRestoreVersionUrl(id,versionNumber),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getWorkflowsControllerRestoreVersionMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerRestoreVersion>>, TError,{id: string;versionNumber: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerRestoreVersion>>, TError,{id: string;versionNumber: number}, TContext> => {
+
+const mutationKey = ['workflowsControllerRestoreVersion'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof workflowsControllerRestoreVersion>>, {id: string;versionNumber: number}> = (props) => {
+          const {id,versionNumber} = props ?? {};
+
+          return  workflowsControllerRestoreVersion(id,versionNumber,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type WorkflowsControllerRestoreVersionMutationResult = NonNullable<Awaited<ReturnType<typeof workflowsControllerRestoreVersion>>>
+
+    export type WorkflowsControllerRestoreVersionMutationError = void
+
+    /**
+ * @summary Restore workflow to a specific version
+ */
+export const useWorkflowsControllerRestoreVersion = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowsControllerRestoreVersion>>, TError,{id: string;versionNumber: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof workflowsControllerRestoreVersion>>,
+        TError,
+        {id: string;versionNumber: number},
+        TContext
+      > => {
+      return useMutation(getWorkflowsControllerRestoreVersionMutationOptions(options), queryClient);
+    }
 
 export type executionControllerExecuteWorkflowResponse201 = {
   data: void

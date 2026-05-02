@@ -3,10 +3,13 @@ import {
   useWorkflowsControllerList,
   useWorkflowsControllerFindOne,
   useWorkflowsControllerCreate,
+  useWorkflowsControllerListVersions,
   getWorkflowsControllerListQueryKey,
   getWorkflowsControllerFindOneQueryKey,
+  getWorkflowsControllerListVersionsQueryKey,
   workflowsControllerSaveCanvas,
   workflowsControllerDelete,
+  workflowsControllerCreateVersion,
 } from '#/api/client'
 import type { WorkflowSummaryDto } from '#/api/model/workflowSummaryDto'
 import type { WorkflowDetailDto } from '#/api/model/workflowDetailDto'
@@ -162,6 +165,44 @@ export function useDeleteWorkflow() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: getWorkflowsControllerListQueryKey(),
+      })
+    },
+  })
+}
+
+export function useWorkflowVersions(workflowId: string) {
+  return useWorkflowsControllerListVersions(workflowId, {
+    query: {
+      enabled: !!workflowId,
+      select: (res: any) => {
+        const data = res?.data ?? []
+        return (Array.isArray(data) ? data : []).map((v: any) => ({
+          id: v.id,
+          versionNumber: v.version_number,
+          message: v.message ?? '',
+          createdAt: v.created_at,
+        }))
+      },
+    },
+  })
+}
+
+export function useCreateWorkflowVersion() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (params: { id: string; message: string }) => {
+      const body = JSON.stringify({ message: params.message || undefined })
+      const res = await workflowsControllerCreateVersion(params.id, {
+        body,
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      return res
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: getWorkflowsControllerListVersionsQueryKey(variables.id),
       })
     },
   })
