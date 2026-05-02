@@ -27,8 +27,7 @@ import {
   CATEGORY_ORDER,
   useAllNodeDefinitions,
 } from '../node-registry'
-import '../node-catalog'
-import type { WorkflowNodeDefinition, WorkflowNodeCategory } from '../node-types'
+import type { NodeDefinition, WorkflowNodeCategory } from '../node-types'
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Play, Clock, ListPlus, Globe, Layers, Filter,
@@ -51,7 +50,7 @@ const CATEGORY_DESCRIPTIONS: Record<WorkflowNodeCategory, string> = {
 interface NodePaletteProps {
   collapsed: boolean
   onToggle: () => void
-  onAddNode?: (def: WorkflowNodeDefinition) => void
+  onAddNode?: (def: NodeDefinition) => void
 }
 
 type PaletteView = 'categories' | 'category-detail' | 'search-results'
@@ -63,7 +62,7 @@ export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps
   const allDefs = useAllNodeDefinitions()
 
   const grouped = useMemo(() => {
-    const g: Record<WorkflowNodeCategory, WorkflowNodeDefinition[]> = {} as Record<WorkflowNodeCategory, WorkflowNodeDefinition[]>
+    const g: Record<WorkflowNodeCategory, NodeDefinition[]> = {} as Record<WorkflowNodeCategory, NodeDefinition[]>
     for (const cat of CATEGORY_ORDER) {
       const nodes = allDefs.filter((d) => d.category === cat)
       g[cat] = nodes
@@ -110,7 +109,7 @@ export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps
   }, [view])
 
   const handleDragStart = useCallback(
-    (event: React.DragEvent, nodeDef: WorkflowNodeDefinition) => {
+    (event: React.DragEvent, nodeDef: NodeDefinition) => {
       event.dataTransfer.setData(
         'application/reactflow',
         JSON.stringify({
@@ -130,7 +129,7 @@ export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps
     [],
   )
 
-  const handleClickAdd = useCallback((def: WorkflowNodeDefinition) => {
+  const handleClickAdd = useCallback((def: NodeDefinition) => {
     onAddNode?.(def)
   }, [onAddNode])
 
@@ -238,7 +237,7 @@ function CategoriesView({
   grouped,
   onCategoryClick,
 }: {
-  grouped: Record<WorkflowNodeCategory, WorkflowNodeDefinition[]>
+  grouped: Record<WorkflowNodeCategory, NodeDefinition[]>
   onCategoryClick: (cat: WorkflowNodeCategory) => void
 }) {
   return (
@@ -291,9 +290,9 @@ function CategoryDetailView({
   onDragStart,
   onClickAdd,
 }: {
-  nodes: WorkflowNodeDefinition[]
-  onDragStart: (e: React.DragEvent, def: WorkflowNodeDefinition) => void
-  onClickAdd?: (def: WorkflowNodeDefinition) => void
+  nodes: NodeDefinition[]
+  onDragStart: (e: React.DragEvent, def: NodeDefinition) => void
+  onClickAdd?: (def: NodeDefinition) => void
 }) {
   if (nodes.length === 0) {
     return (
@@ -324,10 +323,10 @@ function SearchResultsView({
   onDragStart,
   onClickAdd,
 }: {
-  nodes: WorkflowNodeDefinition[]
+  nodes: NodeDefinition[]
   query: string
-  onDragStart: (e: React.DragEvent, def: WorkflowNodeDefinition) => void
-  onClickAdd?: (def: WorkflowNodeDefinition) => void
+  onDragStart: (e: React.DragEvent, def: NodeDefinition) => void
+  onClickAdd?: (def: NodeDefinition) => void
 }) {
   if (nodes.length === 0) {
     return (
@@ -358,10 +357,10 @@ function PaletteNodeItem({
   onDragStart,
   onClickAdd,
 }: {
-  item: WorkflowNodeDefinition
+  item: NodeDefinition
   collapsed: boolean
-  onDragStart: (e: React.DragEvent, def: WorkflowNodeDefinition) => void
-  onClickAdd?: (def: WorkflowNodeDefinition) => void
+  onDragStart: (e: React.DragEvent, def: NodeDefinition) => void
+  onClickAdd?: (def: NodeDefinition) => void
 }) {
   const Icon = ICON_MAP[item.icon]
   const catConfig = CATEGORY_CONFIG[item.category]

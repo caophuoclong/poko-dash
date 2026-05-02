@@ -35,7 +35,6 @@ import {
   groupVariables,
   type VariableRef,
 } from './variable-system'
-import '../node-catalog'
 import {
   Clock as ClockIcon,
   ListPlus,

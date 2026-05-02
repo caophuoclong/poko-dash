@@ -1,10 +1,19 @@
+/*
+ * Hardcoded registerNodeDefinitions() call sites removed:
+ * - src/features/workflow/node-catalog.ts:40 — registerNodeDefinitions(ALL)
+ *   (collected 15 hardcoded node definitions from node-definitions/*.ts)
+ *   Node definitions now come from loadNodeDefinitionsFromAPI() instead.
+ */
+
 import { create } from 'zustand'
 import { useShallow } from 'zustand/shallow'
 import type {
   CategoryConfig,
   WorkflowNodeCategory,
-  WorkflowNodeDefinition,
+  NodeDefinition,
+  NodeDefinitionRecord,
 } from './node-types'
+import { deriveValidator } from './node-registry.utils'
 
 export const CATEGORY_CONFIG: Record<WorkflowNodeCategory, CategoryConfig> = {
   trigger: {
@@ -15,10 +24,29 @@ export const CATEGORY_CONFIG: Record<WorkflowNodeCategory, CategoryConfig> = {
   },
   source: {
     label: 'Sources',
-    color: 'text-accent-orange',
-    bgColor: 'bg-accent-orange-dim',
-    borderColor: 'border-accent-orange/20',
+    color: 'text-accent-blue',
+    bgColor: 'bg-accent-blue-dim',
+    borderColor: 'border-accent-blue/20',
   },
+  content: {
+    label: 'Content',
+    color: 'text-accent-yellow',
+    bgColor: 'bg-accent-yellow/10',
+    borderColor: 'border-accent-yellow/20',
+  },
+  utility: {
+    label: 'Utility',
+    color: 'text-muted-text',
+    bgColor: 'bg-surface-2',
+    borderColor: 'border-frost',
+  },
+  logic: {
+    label: 'Logic',
+    color: 'text-accent-purple',
+    bgColor: 'bg-accent-purple/10',
+    borderColor: 'border-accent-purple/20',
+  },
+  // Legacy categories kept in type union but not shown in palette
   crawl: {
     label: 'Crawl & Ingestion',
     color: 'text-accent-purple',
@@ -37,12 +65,6 @@ export const CATEGORY_CONFIG: Record<WorkflowNodeCategory, CategoryConfig> = {
     bgColor: 'bg-accent-green-dim',
     borderColor: 'border-accent-green/20',
   },
-  content: {
-    label: 'Content',
-    color: 'text-accent-yellow',
-    bgColor: 'bg-accent-yellow/10',
-    borderColor: 'border-accent-yellow/20',
-  },
   publish: {
     label: 'Publish',
     color: 'text-accent-green',
@@ -55,40 +77,28 @@ export const CATEGORY_CONFIG: Record<WorkflowNodeCategory, CategoryConfig> = {
     bgColor: 'bg-accent-purple/10',
     borderColor: 'border-accent-purple/20',
   },
-  logic: {
-    label: 'Logic',
-    color: 'text-accent-yellow',
-    bgColor: 'bg-accent-yellow/10',
-    borderColor: 'border-accent-yellow/20',
-  },
-  utility: {
-    label: 'Utility',
-    color: 'text-muted-text',
-    bgColor: 'bg-surface-2',
-    borderColor: 'border-frost',
-  },
 }
 
 export const CATEGORY_ORDER: WorkflowNodeCategory[] = [
   'trigger',
-  'crawl',
-  'product',
-  'affiliate',
+  'source',
   'content',
-  'publish',
-  'metric',
-  'logic',
   'utility',
+  'logic',
 ]
 
-type NodeDef = WorkflowNodeDefinition<Record<string, unknown>>
+type NodeDef = NodeDefinition
 
 interface NodeRegistryState {
   definitions: Record<string, NodeDef>
+  status: 'idle' | 'loading' | 'ready' | 'error'
+  error: string | null
 }
 
 export const useNodeRegistryStore = create<NodeRegistryState>(() => ({
   definitions: {},
+  status: 'idle',
+  error: null,
 }))
 
 export function registerNodeDefinition(def: NodeDef): void {
@@ -187,3 +197,35 @@ function formatSummaryValue(value: unknown, format?: string): string {
   }
 }
 
+export async function loadNodeDefinitionsFromAPI(): Promise<void> {
+  useNodeRegistryStore.setState({ status: 'loading', error: null })
+
+  try {
+    const res = await fetch('/api/workflow/node-definitions')
+    if (!res.ok) throw new Error(`Failed to load node definitions: ${res.status}`)
+    const body = (await res.json()) as { data: NodeDefinitionRecord[] }
+    const records = body.data
+
+    const defs: NodeDefinition[] = records.map((record) => ({
+      ...record,
+      validate: deriveValidator(record.propertySchema),
+    }))
+
+    registerNodeDefinitions(defs)
+    useNodeRegistryStore.setState({ status: 'ready' })
+  } catch (err) {
+    useNodeRegistryStore.setState({
+      status: 'error',
+      error: err instanceof Error ? err.message : 'Unknown error',
+    })
+  }
+}
+
+export function useNodeRegistryStatus(): {
+  status: 'idle' | 'loading' | 'ready' | 'error'
+  error: string | null
+} {
+  return useNodeRegistryStore(
+    useShallow((s) => ({ status: s.status, error: s.error })),
+  )
+}

@@ -16,6 +16,8 @@ import {
   Info,
   AlertTriangle,
   RotateCcw,
+  Download,
+  Upload,
 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
@@ -45,9 +47,11 @@ import {
 import { useWorkflowEditorState } from '../hooks/use-workflow-editor-state'
 import { useExecutionStore } from '../stores/execution-store'
 import { useExecutionSSE } from '../hooks/useExecutionSSE'
+import { loadNodeDefinitionsFromAPI } from '../node-registry'
+import { exportWorkflow, importWorkflow } from '../workflow-transfer'
 import type { WorkflowDetail, WorkflowNodeData } from '../types'
 import type { Node, Edge, ReactFlowInstance } from '@xyflow/react'
-import type { WorkflowNodeDefinition } from '../node-types'
+import type { NodeDefinition } from '../node-types'
 
 interface WorkflowDetailPageProps {
   workflow: WorkflowDetail
@@ -67,6 +71,7 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
   const [autoSaveVisible, setAutoSaveVisible] = useState(false)
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const selectedNodeRef = useRef<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const editor = useWorkflowEditorState(
     workflow.nodes as Node<WorkflowNodeData>[],
@@ -272,7 +277,7 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
   ])
 
   const handleAddNode = useCallback(
-    (def: WorkflowNodeDefinition) => {
+    (def: NodeDefinition) => {
       const inst = rfInstance.current
       const center = inst
         ? inst.screenToFlowPosition({
@@ -301,6 +306,10 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
     },
     [editor],
   )
+
+  useEffect(() => {
+    loadNodeDefinitionsFromAPI()
+  }, [])
 
   useEffect(() => {
     if (prevWorkflowId.current !== workflow.id) {
@@ -360,6 +369,24 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
       setEditingNodeId(null)
     },
     [editor],
+  )
+
+  const handleImportChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0]
+      if (!file) return
+      importWorkflow(file)
+        .then((result) => {
+          navigate({
+            to: '/workflow/$workflowId',
+            params: { workflowId: result.id },
+          })
+        })
+        .catch((err) => {
+          console.error('Import failed:', err)
+        })
+    },
+    [navigate],
   )
 
   const editingNode = editingNodeId
@@ -464,6 +491,30 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
             >
               <Plus size={14} />
               Add Node
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              title="Import workflow"
+              onClick={() => fileInputRef.current?.click()}
+              className="text-muted-text hover:text-near-white"
+            >
+              <Upload size={14} />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              title="Export workflow"
+              onClick={() => {
+                exportWorkflow(workflow.id).catch((err) =>
+                  console.error('Export failed:', err),
+                )
+              }}
+              className="text-muted-text hover:text-near-white"
+            >
+              <Download size={14} />
             </Button>
 
             <div className="w-px h-5 bg-frost mx-1" />
@@ -728,6 +779,13 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
           />
         </div>
       </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json"
+        className="hidden"
+        onChange={handleImportChange}
+      />
     </TooltipProvider>
   )
 }

@@ -29,7 +29,6 @@ import {
   getNodeSummaryData,
   CATEGORY_CONFIG,
 } from '../../node-registry'
-import '../../node-catalog'
 import type { WorkflowNodeData } from '../../types'
 import { useExecutionStore } from '../../stores/execution-store'
 import type { NodeExecutionStatus } from '../../utils/execution-engine'

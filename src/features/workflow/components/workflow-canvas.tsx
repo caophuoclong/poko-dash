@@ -23,7 +23,6 @@ import WorkflowNode from './nodes/workflow-node'
 import type { WorkflowNodeData } from '../types'
 import { getNodeDefinition } from '../node-registry'
 import { useExecutionStore } from '../stores/execution-store'
-import '../node-catalog'
 
 const nodeTypes = {
   'workflow-node': WorkflowNode,
@@ -147,15 +146,15 @@ export function WorkflowCanvas({
       if (def) {
         const catColors: Record<string, string> = {
           trigger: 'var(--t-accent-orange)',
-          source: 'var(--t-accent-orange)',
+          source: 'var(--t-accent-blue)',
+          content: 'var(--t-accent-yellow)',
+          utility: 'var(--t-muted-text)',
+          logic: 'var(--t-accent-purple)',
           crawl: 'var(--t-accent-purple)',
           product: 'var(--t-accent-blue)',
           affiliate: 'var(--t-accent-green)',
-          content: 'var(--t-accent-yellow)',
           publish: 'var(--t-accent-green)',
           metric: 'var(--t-accent-purple)',
-          logic: 'var(--t-accent-yellow)',
-          utility: 'var(--t-muted-text)',
         }
         return catColors[def.category] ?? 'var(--t-accent-blue)'
       }

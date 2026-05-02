@@ -20,17 +20,23 @@ export {
   useNodeRegistryStore,
   useAllNodeDefinitions,
   useGroupedNodes,
+  useNodeRegistryStatus,
+  loadNodeDefinitionsFromAPI,
   CATEGORY_CONFIG,
   CATEGORY_ORDER,
 } from './node-registry'
 
+export { deriveValidator } from './node-registry.utils'
+export { exportWorkflow, importWorkflow } from './workflow-transfer'
+
 export type {
   WorkflowNodeCategory,
-  WorkflowNodeDefinition,
+  NodeDefinitionRecord,
+  NodeDefinition,
   PropertySchema,
   PropertyEditorType,
   ValidationError,
   PortDefinition,
-  SummaryField,
+  SummaryFieldConfig,
   CategoryConfig,
 } from './node-types'

@@ -24,6 +24,7 @@ export type PropertyEditorType =
   | 'rule-builder'
   | 'tag-input'
   | 'slider'
+  | 'url'
 
 export interface PropertyOption {
   value: string
@@ -45,8 +46,8 @@ export interface PropertySchema {
   max?: number
   step?: number
   dependsOn?: string
+  enum?: string[]
   visibleWhen?: (props: Record<string, unknown>) => boolean
-  validate?: (value: unknown) => string | null
 }
 
 export interface PortDefinition {
@@ -61,7 +62,7 @@ export interface ValidationError {
   severity: 'error' | 'warning'
 }
 
-export interface SummaryField {
+export interface SummaryFieldConfig {
   key: string
   label: string
   format?: 'text' | 'number' | 'percent' | 'list' | 'badge' | 'cron'
@@ -74,7 +75,7 @@ export interface CategoryConfig {
   borderColor: string
 }
 
-export interface WorkflowNodeDefinition<TProps = Record<string, unknown>> {
+export interface NodeDefinitionRecord {
   typeId: string
   category: WorkflowNodeCategory
   title: string
@@ -83,8 +84,13 @@ export interface WorkflowNodeDefinition<TProps = Record<string, unknown>> {
   purpose: string
   inputs: PortDefinition[]
   outputs: PortDefinition[]
-  defaultProps: TProps
+  defaultProps: Record<string, unknown>
   propertySchema: PropertySchema[]
-  validate: (props: TProps) => ValidationError[]
-  summaryFields: SummaryField[]
+  summaryFields: SummaryFieldConfig[]
+  builtIn: boolean
+  version: number
+}
+
+export interface NodeDefinition extends NodeDefinitionRecord {
+  validate: (props: Record<string, unknown>) => ValidationError[]
 }
