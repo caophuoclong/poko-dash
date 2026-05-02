@@ -21,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from '#/components/ui/dropdown-menu'
 import { cn } from '#/shared/utils'
-import { useWorkflowsControllerRun } from '#/api/client'
+import { useExecutionControllerExecuteWorkflow } from '#/api/client'
 import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
 import { useExecutionStore } from '../stores/execution-store'
@@ -35,7 +35,7 @@ interface ExecutionDockProps {
   onToggleDrawer: () => void
   drawerOpen: boolean
   workflowId: string
-  onStartSSE: () => void
+  onStartSSE: (executionId: string) => void
 }
 
 export function ExecutionDock({
@@ -56,7 +56,7 @@ export function ExecutionDock({
   const resetExecution = useExecutionStore((s) => s.resetExecution)
   const failExecution = useExecutionStore((s) => s.failExecution)
 
-  const runMutation = useWorkflowsControllerRun()
+  const runMutation = useExecutionControllerExecuteWorkflow()
 
   const selectedNode = useMemo(
     () => nodes.find((n) => n.id === selectedNodeId),
@@ -92,11 +92,22 @@ export function ExecutionDock({
       return
     }
 
-    onStartSSE()
-
     runMutation.mutate(
-      { id: workflowId },
       {
+        workflowId,
+        data: {
+          mode,
+          targetNodeId: mode !== 'full' ? (selectedNodeId ?? undefined) : undefined,
+          triggeredBy: 'manual' as const,
+        },
+      },
+      {
+        onSuccess: (response) => {
+          const executionId = response.data?.executionId
+          if (executionId) {
+            onStartSSE(executionId)
+          }
+        },
         onError: (error) => {
           failExecution(
             error instanceof Error

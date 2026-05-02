@@ -5,11 +5,8 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { WorkflowVersionDtoMessage } from './workflowVersionDtoMessage';
 
-export interface WorkflowVersionDto {
-  id: string;
-  version_number: number;
-  message?: WorkflowVersionDtoMessage;
-  created_at: string;
-}
+export type ExecutionControllerListExecutionsParams = {
+pageSize?: number;
+page?: number;
+};

@@ -6,13 +6,15 @@ import {
 import { useExecutionStore } from '../stores/execution-store'
 
 interface SseEventData {
-  runId: string
-  workflowId: string
-  nodeId: string
-  nodeTypeId: string
-  status: string
-  output?: { items?: unknown[]; count?: number; [key: string]: unknown }
-  timestamp: string
+  type: string
+  executionId: string
+  nodeId?: string
+  nodeTitle?: string
+  status?: string
+  outputSummary?: { count?: number; items?: unknown[]; [key: string]: unknown }
+  error?: string
+  durationMs?: number
+  nodeTypeId?: string
 }
 
 interface NodeExecutionData {
@@ -52,11 +54,12 @@ function getAuthToken(): string | null {
   }
 }
 
-export function useExecutionSSE(workflowId: string | null) {
+export function useExecutionSSE() {
   const queryClient = useQueryClient()
   const store = useExecutionStore()
   const [isConnected, setIsConnected] = useState(false)
   const esRef = useRef<EventSource | null>(null)
+  const executionIdRef = useRef<string | null>(null)
   const retryCountRef = useRef(0)
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const nodeStartTimesRef = useRef<Map<string, number>>(new Map())
@@ -76,13 +79,13 @@ export function useExecutionSSE(workflowId: string | null) {
   }, [])
 
   const addNodeToCache = useCallback(
-    (queryKey: readonly string[], runId: string, nodeId: string, status: 'running' | 'completed' | 'failed', outputSummary?: Record<string, unknown>) => {
+    (queryKey: readonly string[], executionId: string, nodeId: string, status: 'running' | 'completed' | 'failed', outputSummary?: Record<string, unknown>) => {
       const cached = queryClient.getQueryData(queryKey) as
         | ExecutionCacheData
         | undefined
 
       const current: ExecutionCacheData = cached ?? {
-        id: runId,
+        id: executionId,
         status: 'running',
         nodes: [],
       }
@@ -111,128 +114,190 @@ export function useExecutionSSE(workflowId: string | null) {
     [queryClient],
   )
 
-  const connect = useCallback(() => {
-    if (!workflowId) return
+  const setupEventListeners = useCallback(
+    (es: EventSource) => {
+      es.addEventListener('connected', () => {
+        setIsConnected(true)
+      })
 
-    closeEventSource()
+      es.addEventListener('execution.started', (event: MessageEvent) => {
+        try {
+          const data = JSON.parse(event.data) as SseEventData
+          store.setExecutionId(data.executionId)
+          store.addLog({
+            nodeId: '',
+            nodeTitle: '',
+            level: 'info',
+            message: `Execution started (${data.executionId.slice(0, 8)})`,
+          })
+        } catch {
+          // ignore
+        }
+      })
 
-    const token = getAuthToken()
-    const url = `/api/workflows/${workflowId}/events`
-    const urlWithToken = token ? `${url}?token=${encodeURIComponent(token)}` : url
+      es.addEventListener('node.started', (event: MessageEvent) => {
+        try {
+          const data = JSON.parse(event.data) as SseEventData
+          if (!data.nodeId) return
 
-    const es = new EventSource(urlWithToken)
-    esRef.current = es
+          nodeStartTimesRef.current.set(data.nodeId, Date.now())
 
-    es.onopen = () => {
-      setIsConnected(true)
-      retryCountRef.current = 0
-    }
+          const queryKey = getExecutionControllerGetExecutionQueryKey(data.executionId)
+          addNodeToCache(queryKey, data.executionId, data.nodeId, 'running')
 
-    es.addEventListener('connected', () => {
-      setIsConnected(true)
-    })
+          store.addLog({
+            nodeId: data.nodeId,
+            nodeTitle: data.nodeTitle ?? '',
+            level: 'info',
+            message: `Started${data.nodeTypeId ? ` (${data.nodeTypeId})` : ''}${data.nodeTitle ? ` — ${data.nodeTitle}` : ''}`,
+          })
+        } catch {
+          // ignore
+        }
+      })
 
-    es.addEventListener('run_started', (event: MessageEvent) => {
-      try {
-        const data = JSON.parse(event.data) as SseEventData
-        store.setExecutionId(data.runId)
-        store.addLog({
-          nodeId: '',
-          nodeTitle: '',
-          level: 'info',
-          message: `Execution started (${data.runId.slice(0, 8)})`,
-        })
-      } catch {
-        // ignore
+      es.addEventListener('node.completed', (event: MessageEvent) => {
+        try {
+          const data = JSON.parse(event.data) as SseEventData
+          if (!data.nodeId) return
+
+          const startTime = nodeStartTimesRef.current.get(data.nodeId)
+          const duration = startTime ? Date.now() - startTime : data.durationMs
+          nodeStartTimesRef.current.delete(data.nodeId)
+
+          const outputSummary = data.outputSummary
+            ? { count: data.outputSummary.count, items: data.outputSummary.items }
+            : undefined
+
+          const queryKey = getExecutionControllerGetExecutionQueryKey(data.executionId)
+          addNodeToCache(queryKey, data.executionId, data.nodeId, 'completed', outputSummary ?? undefined)
+
+          const outputMsg = data.outputSummary?.count != null
+            ? ` — ${data.outputSummary.count} item(s)`
+            : ''
+
+          store.addLog({
+            nodeId: data.nodeId,
+            nodeTitle: data.nodeTitle ?? '',
+            level: 'success',
+            message: `Completed${outputMsg}`,
+            duration,
+          })
+        } catch {
+          // ignore
+        }
+      })
+
+      es.addEventListener('node.failed', (event: MessageEvent) => {
+        try {
+          const data = JSON.parse(event.data) as SseEventData
+          if (!data.nodeId) return
+
+          const startTime = nodeStartTimesRef.current.get(data.nodeId)
+          const duration = startTime ? Date.now() - startTime : data.durationMs
+          nodeStartTimesRef.current.delete(data.nodeId)
+
+          const queryKey = getExecutionControllerGetExecutionQueryKey(data.executionId)
+          addNodeToCache(queryKey, data.executionId, data.nodeId, 'failed')
+
+          store.addLog({
+            nodeId: data.nodeId,
+            nodeTitle: data.nodeTitle ?? '',
+            level: 'error',
+            message: data.error ?? 'Node execution failed',
+            duration,
+          })
+        } catch {
+          // ignore
+        }
+      })
+
+      es.addEventListener('execution.completed', (event: MessageEvent) => {
+        try {
+          const data = JSON.parse(event.data) as SseEventData
+
+          const queryKey = getExecutionControllerGetExecutionQueryKey(data.executionId)
+          const cached = queryClient.getQueryData(queryKey) as
+            | ExecutionCacheData
+            | undefined
+          queryClient.setQueryData(queryKey, {
+            ...cached,
+            id: data.executionId,
+            status: 'completed' as const,
+          } as ExecutionCacheData)
+
+          store.completeExecution()
+          closeEventSource()
+        } catch {
+          // ignore
+        }
+      })
+
+      es.addEventListener('execution.failed', (event: MessageEvent) => {
+        try {
+          const data = JSON.parse(event.data) as SseEventData
+
+          const queryKey = getExecutionControllerGetExecutionQueryKey(data.executionId)
+          const cached = queryClient.getQueryData(queryKey) as
+            | ExecutionCacheData
+            | undefined
+          queryClient.setQueryData(queryKey, {
+            ...cached,
+            id: data.executionId,
+            status: 'failed' as const,
+          } as ExecutionCacheData)
+
+          store.failExecution(data.error ?? 'Execution failed')
+          closeEventSource()
+        } catch {
+          // ignore
+        }
+      })
+    },
+    [queryClient, store, closeEventSource, addNodeToCache],
+  )
+
+  const createConnection = useCallback(
+    (executionId: string) => {
+      const token = getAuthToken()
+      const url = `/api/executions/${executionId}/events`
+      const urlWithToken = token ? `${url}?token=${encodeURIComponent(token)}` : url
+
+      const es = new EventSource(urlWithToken)
+      esRef.current = es
+      executionIdRef.current = executionId
+
+      es.onopen = () => {
+        setIsConnected(true)
+        retryCountRef.current = 0
       }
-    })
 
-    es.addEventListener('node_started', (event: MessageEvent) => {
-      try {
-        const data = JSON.parse(event.data) as SseEventData
-        if (!data.nodeId) return
+      setupEventListeners(es)
 
-        nodeStartTimesRef.current.set(data.nodeId, Date.now())
+      es.onerror = () => {
+        setIsConnected(false)
+        es.close()
 
-        const queryKey = getExecutionControllerGetExecutionQueryKey(data.runId)
-        addNodeToCache(queryKey, data.runId, data.nodeId, 'running')
-
-        store.addLog({
-          nodeId: data.nodeId,
-          nodeTitle: '',
-          level: 'info',
-          message: `Started${data.nodeTypeId ? ` (${data.nodeTypeId})` : ''}`,
-        })
-      } catch {
-        // ignore
+        if (retryCountRef.current < MAX_RETRIES) {
+          const delay = BASE_DELAY_MS * Math.pow(2, retryCountRef.current)
+          retryCountRef.current++
+          retryTimerRef.current = setTimeout(
+            () => createConnection(executionId),
+            delay,
+          )
+        }
       }
-    })
+    },
+    [setupEventListeners],
+  )
 
-    es.addEventListener('node_completed', (event: MessageEvent) => {
-      try {
-        const data = JSON.parse(event.data) as SseEventData
-        if (!data.nodeId) return
-
-        const startTime = nodeStartTimesRef.current.get(data.nodeId)
-        const duration = startTime ? Date.now() - startTime : undefined
-        nodeStartTimesRef.current.delete(data.nodeId)
-
-        const outputSummary = data.output
-          ? { count: data.output.count, items: data.output.items }
-          : undefined
-
-        const queryKey = getExecutionControllerGetExecutionQueryKey(data.runId)
-        addNodeToCache(queryKey, data.runId, data.nodeId, 'completed', outputSummary ?? undefined)
-
-        const outputMsg = data.output?.count != null
-          ? ` — ${data.output.count} item(s)`
-          : ''
-
-        store.addLog({
-          nodeId: data.nodeId,
-          nodeTitle: '',
-          level: 'success',
-          message: `Completed${outputMsg}`,
-          duration,
-        })
-      } catch {
-        // ignore
-      }
-    })
-
-    es.addEventListener('run_completed', (event: MessageEvent) => {
-      try {
-        const data = JSON.parse(event.data) as SseEventData
-
-        const queryKey = getExecutionControllerGetExecutionQueryKey(data.runId)
-        const cached = queryClient.getQueryData(queryKey) as
-          | ExecutionCacheData
-          | undefined
-        queryClient.setQueryData(queryKey, {
-          ...cached,
-          id: data.runId,
-          status: 'completed' as const,
-          completedAt: data.timestamp,
-        } as ExecutionCacheData)
-
-        store.completeExecution()
-        closeEventSource()
-      } catch {
-        // ignore
-      }
-    })
-
-    es.onerror = () => {
-      setIsConnected(false)
-      es.close()
-
-      if (retryCountRef.current < MAX_RETRIES) {
-        const delay = BASE_DELAY_MS * Math.pow(2, retryCountRef.current)
-        retryCountRef.current++
-        retryTimerRef.current = setTimeout(connect, delay)
-      }
-    }
-  }, [workflowId, closeEventSource, addNodeToCache, store])
+  const connect = useCallback(
+    (executionId: string) => {
+      closeEventSource()
+      createConnection(executionId)
+    },
+    [closeEventSource, createConnection],
+  )
 
   useEffect(() => {
     return () => {

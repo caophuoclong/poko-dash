@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
-import { WorkflowVersionDtoVersionType } from '#/api/model'
+import { WorkflowVersionDtoVersionType } from '#/api/model/workflowVersionDtoVersionType'
 
 interface HistoryEntry {
   nodes: Node<WorkflowNodeData>[]

@@ -34,7 +34,7 @@ import { ExecutionDock } from './execution-dock'
 import { ExecutionDrawer } from './execution-drawer'
 import { VersionHistoryPanel } from './VersionHistoryPanel'
 import {
-  useWorkflowsControllerRun,
+  useExecutionControllerExecuteWorkflow,
   workflowsControllerGetVersion,
 } from '#/api/client'
 import {
@@ -83,12 +83,12 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
   const failExecution = useExecutionStore((s) => s.failExecution)
   const validateAndStart = useExecutionStore((s) => s.validateAndStart)
 
-  const runMutation = useWorkflowsControllerRun()
+  const runMutation = useExecutionControllerExecuteWorkflow()
   const saveMutation = useSaveWorkflowCanvas()
   const deleteMutation = useDeleteWorkflow()
   const createVersionMutation = useCreateWorkflowVersion()
 
-  const { connect: connectSSE } = useExecutionSSE(workflow.id)
+  const { connect: connectSSE } = useExecutionSSE()
 
   editor.registerSaveCallback(
     useCallback(
@@ -129,11 +129,22 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
 
       setDrawerOpen(true)
 
-      connectSSE()
-
       runMutation.mutate(
-        { id: workflow.id },
         {
+          workflowId: workflow.id,
+          data: {
+            mode,
+            targetNodeId: mode !== 'full' ? (selectedNodeId ?? undefined) : undefined,
+            triggeredBy: 'manual' as const,
+          },
+        },
+        {
+          onSuccess: (response) => {
+            const executionId = response.data?.executionId
+            if (executionId) {
+              connectSSE(executionId)
+            }
+          },
           onError: (error) => {
             failExecution(
               error instanceof Error
