@@ -79,9 +79,7 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
     Edge
   > | null>(null)
 
-  const executionId = useExecutionStore((s) => s.executionId)
   const resetExecution = useExecutionStore((s) => s.resetExecution)
-  const setExecutionId = useExecutionStore((s) => s.setExecutionId)
   const failExecution = useExecutionStore((s) => s.failExecution)
   const validateAndStart = useExecutionStore((s) => s.validateAndStart)
 
@@ -90,14 +88,17 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
   const deleteMutation = useDeleteWorkflow()
   const createVersionMutation = useCreateWorkflowVersion()
 
-  useExecutionSSE(executionId)
+  const { connect: connectSSE } = useExecutionSSE(workflow.id)
 
   editor.registerSaveCallback(
     useCallback(
-      async (nodesToSave, edgesToSave) => {
-        await saveMutation.mutateAsync(
-          { id: workflow.id, nodes: nodesToSave, edges: edgesToSave },
-        )
+      async (nodesToSave, edgesToSave, versionType) => {
+        await saveMutation.mutateAsync({
+          id: workflow.id,
+          nodes: nodesToSave,
+          edges: edgesToSave,
+          versionType: versionType ?? 'auto',
+        })
         showAutoSave()
       },
       [saveMutation, workflow.id],
@@ -128,17 +129,11 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
 
       setDrawerOpen(true)
 
+      connectSSE()
+
       runMutation.mutate(
         { id: workflow.id },
         {
-          onSuccess: (response) => {
-            const runData = response.data
-            if (runData?.id) {
-              setExecutionId(runData.id)
-            } else {
-              failExecution('No execution ID received from server')
-            }
-          },
           onError: (error) => {
             failExecution(
               error instanceof Error
@@ -156,8 +151,8 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
       selectedNodeId,
       runMutation,
       workflow.id,
-      setExecutionId,
       failExecution,
+      connectSSE,
     ],
   )
 
@@ -216,7 +211,12 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
     if (previewVersion === null) return
 
     saveMutation.mutate(
-      { id: workflow.id, nodes: editor.nodes, edges: editor.edges },
+      {
+        id: workflow.id,
+        nodes: editor.nodes,
+        edges: editor.edges,
+        versionType: 'manual',
+      },
       {
         onSuccess: () => {
           editor.markSaved(editor.nodes, editor.edges)
@@ -239,7 +239,12 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
 
   const handleSaveVersion = useCallback(() => {
     createVersionMutation.mutate(
-      { id: workflow.id, message: versionMessage },
+      {
+        id: workflow.id,
+        message: versionMessage,
+        nodes: editor.nodes,
+        edges: editor.edges,
+      },
       {
         onSuccess: () => {
           setSaveVersionPopoverOpen(false)
@@ -247,7 +252,13 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
         },
       },
     )
-  }, [createVersionMutation, workflow.id, versionMessage])
+  }, [
+    createVersionMutation,
+    workflow.id,
+    versionMessage,
+    editor.nodes,
+    editor.edges,
+  ])
 
   const handleAddNode = useCallback(
     (def: WorkflowNodeDefinition) => {
@@ -371,7 +382,8 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
             <div className="flex items-center gap-2">
               <AlertTriangle size={14} className="text-accent-yellow" />
               <span className="text-xs text-accent-yellow">
-                Previewing v{previewVersion} — Save to apply or Cancel to discard
+                Previewing v{previewVersion} — Save to apply or Cancel to
+                discard
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -472,7 +484,9 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
               variant="ghost"
               size="icon-xs"
               onClick={() => setPaletteCollapsed((v) => !v)}
-              title={paletteCollapsed ? 'Show node palette' : 'Hide node palette'}
+              title={
+                paletteCollapsed ? 'Show node palette' : 'Hide node palette'
+              }
               className={
                 !paletteCollapsed
                   ? 'text-accent-blue bg-accent-blue-dim'
@@ -551,7 +565,9 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
                     <GitCommit size={14} />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom">Save a version snapshot</TooltipContent>
+                <TooltipContent side="bottom">
+                  Save a version snapshot
+                </TooltipContent>
               </Tooltip>
             </div>
 
@@ -579,10 +595,9 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
               <Button
                 size="xs"
                 color="green-dim"
-                onClick={() => editor.triggerSave()}
+                onClick={() => editor.triggerSave('manual')}
                 disabled={
-                  saveMutation.isPending ||
-                  editor.saveStatus === 'saving'
+                  saveMutation.isPending || editor.saveStatus === 'saving'
                 }
               >
                 {editor.saveStatus === 'saving' ? (
@@ -641,9 +656,7 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
                 </span>
               )}
               {editor.saveStatus === 'error' && (
-                <span className="text-[10px] text-accent-red">
-                  Save failed
-                </span>
+                <span className="text-[10px] text-accent-red">Save failed</span>
               )}
               {autoSaveVisible && editor.saveStatus === 'idle' && (
                 <span className="text-[10px] text-muted-text">
@@ -691,6 +704,7 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
               onToggleDrawer={() => setDrawerOpen((v) => !v)}
               drawerOpen={drawerOpen}
               workflowId={workflow.id}
+              onStartSSE={connectSSE}
             />
           </div>
 

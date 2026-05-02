@@ -1,9 +1,17 @@
-import { useCallback } from 'react'
-import { formatDistanceToNow } from 'date-fns'
+import { useCallback, useMemo } from 'react'
+import { formatDistanceToNow, isToday, isYesterday, format } from 'date-fns'
 import { History, RotateCcw, Loader2, X } from 'lucide-react'
 import { cn } from '#/shared/utils'
 import { Button } from '#/components/ui/button'
 import { useWorkflowVersions } from '../hooks/use-workflows'
+
+interface VersionItem {
+  id: string
+  versionNumber: number
+  message: string
+  versionType: 'auto' | 'manual'
+  createdAt: string
+}
 
 interface VersionHistoryPanelProps {
   workflowId: string
@@ -26,6 +34,13 @@ function SkeletonRow() {
   )
 }
 
+function getGroupLabel(dateStr: string): string {
+  const date = new Date(dateStr)
+  if (isToday(date)) return 'Today'
+  if (isYesterday(date)) return 'Yesterday'
+  return format(date, 'MMM dd')
+}
+
 export function VersionHistoryPanel({
   workflowId,
   open,
@@ -43,11 +58,27 @@ export function VersionHistoryPanel({
     }
   }, [])
 
-  if (!open) return null
-
-  const sorted = [...versions].sort(
-    (a, b) => b.versionNumber - a.versionNumber,
+  const sorted = useMemo(
+    () =>
+      [...versions].sort((a, b) => b.versionNumber - a.versionNumber),
+    [versions],
   )
+
+  const grouped = useMemo(() => {
+    const groups: { label: string; items: VersionItem[] }[] = []
+    for (const v of sorted) {
+      const label = getGroupLabel(v.createdAt)
+      const last = groups[groups.length - 1]
+      if (last && last.label === label) {
+        last.items.push(v)
+      } else {
+        groups.push({ label, items: [v] })
+      }
+    }
+    return groups
+  }, [sorted])
+
+  if (!open) return null
 
   return (
     <div
@@ -89,36 +120,61 @@ export function VersionHistoryPanel({
         )}
 
         {!isLoading &&
-          sorted.map((version) => (
-            <div
-              key={version.id}
-              className="flex items-center gap-3 px-4 py-2.5 border-b border-frost/50 hover:bg-surface-2 transition-colors"
-            >
-              <div className="text-[10px] font-mono font-semibold text-accent-blue w-8 shrink-0">
-                v{version.versionNumber}
+          grouped.map((group) => (
+            <div key={group.label}>
+              <div className="px-4 py-2 bg-surface-2/50 border-b border-frost/30">
+                <span className="text-[10px] font-medium text-muted-text">
+                  {group.label}
+                </span>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] text-near-white truncate">
-                  {version.message || 'Auto-save'}
-                </p>
-                <p className="text-[10px] text-muted-text">
-                  {formatTime(version.createdAt)}
-                </p>
-              </div>
-              <Button
-                size="xs"
-                variant="ghost"
-                className="text-[10px] h-6 text-accent-blue hover:text-accent-blue/80"
-                onClick={() => onRestore(version.versionNumber)}
-                disabled={restoringVersion === version.versionNumber}
-              >
-                {restoringVersion === version.versionNumber ? (
-                  <Loader2 size={12} className="animate-spin" />
-                ) : (
-                  <RotateCcw size={12} />
-                )}
-                <span className="ml-1">Restore</span>
-              </Button>
+              {group.items.map((version) => (
+                <div
+                  key={version.id}
+                  className="flex items-center gap-3 px-4 py-2.5 border-b border-frost/50 hover:bg-surface-2 transition-colors"
+                >
+                  <div className="text-[10px] font-mono font-semibold text-accent-blue w-8 shrink-0">
+                    v{version.versionNumber}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={cn(
+                        'text-[11px] truncate',
+                        version.versionType === 'manual'
+                          ? 'text-near-white font-medium'
+                          : 'text-muted-text',
+                      )}
+                    >
+                      {version.versionType === 'auto'
+                        ? 'Auto-save'
+                        : version.message || 'Manual save'}
+                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-[10px] text-muted-text">
+                        {formatTime(version.createdAt)}
+                      </p>
+                      {version.versionType === 'manual' && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-accent-purple/15 text-accent-purple font-medium">
+                          Manual
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    className="text-[10px] h-6 text-accent-blue hover:text-accent-blue/80"
+                    onClick={() => onRestore(version.versionNumber)}
+                    disabled={restoringVersion === version.versionNumber}
+                  >
+                    {restoringVersion === version.versionNumber ? (
+                      <Loader2 size={12} className="animate-spin" />
+                    ) : (
+                      <RotateCcw size={12} />
+                    )}
+                    <span className="ml-1">Restore</span>
+                  </Button>
+                </div>
+              ))}
             </div>
           ))}
       </div>

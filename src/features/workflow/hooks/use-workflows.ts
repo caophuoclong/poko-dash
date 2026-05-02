@@ -9,12 +9,12 @@ import {
   getWorkflowsControllerListVersionsQueryKey,
   workflowsControllerSaveCanvas,
   workflowsControllerDelete,
-  workflowsControllerCreateVersion,
 } from '#/api/client'
 import type { WorkflowSummaryDto } from '#/api/model/workflowSummaryDto'
 import type { WorkflowDetailDto } from '#/api/model/workflowDetailDto'
 import type { WorkflowNodeDto } from '#/api/model/workflowNodeDto'
 import type { WorkflowEdgeDto } from '#/api/model/workflowEdgeDto'
+import type { SaveWorkflowCanvasBodyDtoVersionType } from '#/api/model/saveWorkflowCanvasBodyDtoVersionType'
 import type { WorkflowSummary, WorkflowDetail, WorkflowNodeData } from '../types'
 import type { Node, Edge } from '@xyflow/react'
 
@@ -71,7 +71,7 @@ function mapEdge(dto: WorkflowEdgeDto): Edge {
 }
 
 export function useWorkflows() {
-  return useWorkflowsControllerList({
+  return useWorkflowsControllerList(undefined, {
     query: {
       select: (res) => {
         const data = res?.data as any
@@ -116,8 +116,9 @@ export function useSaveWorkflowCanvas() {
       id: string
       nodes: Node<WorkflowNodeData>[]
       edges: Edge[]
+      versionType?: SaveWorkflowCanvasBodyDtoVersionType
     }) => {
-      const body = JSON.stringify({
+      const dto: Record<string, unknown> = {
         nodes: params.nodes.map((n) => ({
           xyflow_id: n.id,
           type: n.type ?? 'workflow-node',
@@ -130,21 +131,21 @@ export function useSaveWorkflowCanvas() {
           config: (n.data as WorkflowNodeData).config ?? {},
         })),
         edges: params.edges.map((e) => ({
-          id: e.id,
           source_node_id: e.source,
           target_node_id: e.target,
-          source_handle: e.sourceHandle,
+          source_handle: e.sourceHandle ?? undefined,
           type: e.type ?? 'smoothstep',
         })),
-      })
+      }
 
-      const res = await workflowsControllerSaveCanvas(params.id, {
-        body,
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-      })
+      if (params.versionType) {
+        dto.versionType = params.versionType
+      }
 
-      return res
+      return workflowsControllerSaveCanvas(
+        params.id,
+        dto as Parameters<typeof workflowsControllerSaveCanvas>[1],
+      )
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
@@ -180,6 +181,7 @@ export function useWorkflowVersions(workflowId: string) {
           id: v.id,
           versionNumber: v.version_number,
           message: v.message ?? '',
+          versionType: v.version_type as 'auto' | 'manual',
           createdAt: v.created_at,
         }))
       },
@@ -191,14 +193,38 @@ export function useCreateWorkflowVersion() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (params: { id: string; message: string }) => {
-      const body = JSON.stringify({ message: params.message || undefined })
-      const res = await workflowsControllerCreateVersion(params.id, {
-        body,
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      })
-      return res
+    mutationFn: async (params: {
+      id: string
+      message: string
+      nodes: Node<WorkflowNodeData>[]
+      edges: Edge[]
+    }) => {
+      const dto: Record<string, unknown> = {
+        nodes: params.nodes.map((n) => ({
+          xyflow_id: n.id,
+          type: n.type ?? 'workflow-node',
+          node_type_id: (n.data as WorkflowNodeData).nodeTypeId ?? '',
+          position_x: n.position.x,
+          position_y: n.position.y,
+          title: (n.data as WorkflowNodeData).title,
+          subtitle: (n.data as WorkflowNodeData).subtitle,
+          icon: (n.data as WorkflowNodeData).icon,
+          config: (n.data as WorkflowNodeData).config ?? {},
+        })),
+        edges: params.edges.map((e) => ({
+          source_node_id: e.source,
+          target_node_id: e.target,
+          source_handle: e.sourceHandle ?? undefined,
+          type: e.type ?? 'smoothstep',
+        })),
+        message: params.message || undefined,
+        versionType: 'manual' as const,
+      }
+
+      return workflowsControllerSaveCanvas(
+        params.id,
+        dto as Parameters<typeof workflowsControllerSaveCanvas>[1],
+      )
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({

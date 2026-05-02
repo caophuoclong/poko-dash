@@ -6,10 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 import type { WorkflowVersionDtoMessage } from './workflowVersionDtoMessage';
+import type { WorkflowVersionDtoVersionType } from './workflowVersionDtoVersionType';
 
 export interface WorkflowVersionDto {
   id: string;
   version_number: number;
   message?: WorkflowVersionDtoMessage;
+  version_type: WorkflowVersionDtoVersionType;
   created_at: string;
 }

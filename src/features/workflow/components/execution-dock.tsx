@@ -35,6 +35,7 @@ interface ExecutionDockProps {
   onToggleDrawer: () => void
   drawerOpen: boolean
   workflowId: string
+  onStartSSE: () => void
 }
 
 export function ExecutionDock({
@@ -44,6 +45,7 @@ export function ExecutionDock({
   onToggleDrawer,
   drawerOpen,
   workflowId,
+  onStartSSE,
 }: ExecutionDockProps) {
   const running = useExecutionStore((s) => s.running)
   const executionPath = useExecutionStore((s) => s.executionPath)
@@ -52,7 +54,6 @@ export function ExecutionDock({
   const validationResult = useExecutionStore((s) => s.validationResult)
   const validateAndStart = useExecutionStore((s) => s.validateAndStart)
   const resetExecution = useExecutionStore((s) => s.resetExecution)
-  const setExecutionId = useExecutionStore((s) => s.setExecutionId)
   const failExecution = useExecutionStore((s) => s.failExecution)
 
   const runMutation = useWorkflowsControllerRun()
@@ -71,16 +72,13 @@ export function ExecutionDock({
 
   const progressInfo = useMemo(() => {
     if (!running || executionPath.length === 0) return null
-    const currentIdx = currentNodeId
-      ? executionPath.indexOf(currentNodeId)
-      : -1
+    const currentIdx = currentNodeId ? executionPath.indexOf(currentNodeId) : -1
     const completedCount = Math.max(0, currentIdx)
     const total = executionPath.length
     return { completedCount, total }
   }, [running, executionPath, currentNodeId])
 
-  const hasValidationErrors =
-    validationResult && validationResult.length > 0
+  const hasValidationErrors = validationResult && validationResult.length > 0
 
   const handleStart = (mode: ExecutionMode) => {
     const validationErrors = validateAndStart(
@@ -94,17 +92,11 @@ export function ExecutionDock({
       return
     }
 
+    onStartSSE()
+
     runMutation.mutate(
       { id: workflowId },
       {
-        onSuccess: (response) => {
-          const runData = response.data
-          if (runData?.id) {
-            setExecutionId(runData.id)
-          } else {
-            failExecution('No execution ID received from server')
-          }
-        },
         onError: (error) => {
           failExecution(
             error instanceof Error

@@ -160,3 +160,4 @@ export * from './workflowVersionDetailDtoMessage';
 export * from './workflowVersionDetailDtoSnapshot';
 export * from './workflowVersionDto';
 export * from './workflowVersionDtoMessage';
+export * from './workflowVersionDtoVersionType';

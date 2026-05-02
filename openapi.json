@@ -3517,9 +3517,10 @@
           "id": { "type": "string" },
           "version_number": { "type": "number" },
           "message": { "type": "object" },
+          "version_type": { "type": "string", "enum": ["auto", "manual"] },
           "created_at": { "type": "string" }
         },
-        "required": ["id", "version_number", "created_at"]
+        "required": ["id", "version_number", "version_type", "created_at"]
       },
       "WorkflowVersionDetailDto": {
         "type": "object",

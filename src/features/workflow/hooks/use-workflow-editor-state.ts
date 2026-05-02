@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
+import { WorkflowVersionDtoVersionType } from '#/api/model'
 
 interface HistoryEntry {
   nodes: Node<WorkflowNodeData>[]
@@ -22,7 +23,14 @@ export function useWorkflowEditorState(initialNodes: Node<WorkflowNodeData>[], i
   const skipHistoryRef = useRef(false)
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const saveStatusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const saveCallbackRef = useRef<((nodes: Node<WorkflowNodeData>[], edges: Edge[]) => Promise<void>) | null>(null)
+  const saveCallbackRef = useRef<
+    | ((
+        nodes: Node<WorkflowNodeData>[],
+        edges: Edge[],
+        versionType: WorkflowVersionDtoVersionType,
+      ) => Promise<void>)
+    | null
+  >(null)
   const dirtyCheckTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const isDirty = useCallback(() => {
@@ -126,28 +134,41 @@ export function useWorkflowEditorState(initialNodes: Node<WorkflowNodeData>[], i
   }, [])
 
   const registerSaveCallback = useCallback(
-    (cb: (nodes: Node<WorkflowNodeData>[], edges: Edge[]) => Promise<void>) => {
+    (
+      cb: (
+        nodes: Node<WorkflowNodeData>[],
+        edges: Edge[],
+        versionType: WorkflowVersionDtoVersionType,
+      ) => Promise<void>,
+    ) => {
       saveCallbackRef.current = cb
     },
     [],
   )
 
-  const triggerSave = useCallback(async () => {
-    if (!saveCallbackRef.current) return
-    setSaveStatus('saving')
-    try {
-      await saveCallbackRef.current(nodes, edges)
-      markSaved(nodes, edges)
-    } catch {
-      setSaveStatus('error')
-    }
-  }, [nodes, edges, markSaved])
+  const triggerSave = useCallback(
+    async (versionType?: WorkflowVersionDtoVersionType) => {
+      if (!saveCallbackRef.current) return
+      setSaveStatus('saving')
+      try {
+        await saveCallbackRef.current(
+          nodes,
+          edges,
+          versionType ?? WorkflowVersionDtoVersionType.manual,
+        )
+        markSaved(nodes, edges)
+      } catch {
+        setSaveStatus('error')
+      }
+    },
+    [nodes, edges, markSaved],
+  )
 
   const scheduleAutoSave = useCallback(() => {
     clearAutoSaveTimer()
     setSaveStatus('dirty')
     autoSaveTimerRef.current = setTimeout(() => {
-      triggerSave()
+      triggerSave('auto')
     }, 3000)
   }, [clearAutoSaveTimer, triggerSave])
 

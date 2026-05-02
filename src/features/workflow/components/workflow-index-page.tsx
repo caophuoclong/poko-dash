@@ -69,14 +69,20 @@ export function WorkflowIndexPage() {
   })
 
   const handleCreate = () => {
-    createWorkflow.mutate(undefined, {
-      onSuccess: (res: any) => {
-        const data = res?.data
-        if (data?.id) {
-          navigate({ to: '/workflow/$workflowId', params: { workflowId: data.id } })
-        }
+    createWorkflow.mutate(
+      { data: { name: 'New Workflow' } },
+      {
+        onSuccess: (res: any) => {
+          const data = res?.data
+          if (data?.id) {
+            navigate({
+              to: '/workflow/$workflowId',
+              params: { workflowId: data.id },
+            })
+          }
+        },
       },
-    })
+    )
   }
 
   const handleDelete = (id: string, e: React.MouseEvent) => {
