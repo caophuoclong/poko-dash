@@ -238,6 +238,16 @@
   }
 }
 
+@keyframes pill-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;

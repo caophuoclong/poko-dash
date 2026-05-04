@@ -5,21 +5,29 @@ import {
   MiniMap,
   BackgroundVariant,
   SelectionMode,
-  type Node,
-  type Edge,
-  type ReactFlowInstance,
 } from '@xyflow/react'
+import type { Node, Edge, ReactFlowInstance } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import WorkflowNode from './nodes/workflow-node'
+import CompactPillNode from './nodes/compact-pill-node'
+import { WorkflowEdge } from './edges/workflow-edge'
+import { CompactPillEdge } from './edges/compact-pill-edge'
 import type { WorkflowNodeData } from '../types'
 import { useWorkflowCanvasLogic } from '../hooks/use-workflow-canvas'
 
 const nodeTypes = {
   'workflow-node': WorkflowNode,
+  'compact-pill-node': CompactPillNode,
+}
+
+const edgeTypes = {
+  'workflow-edge': WorkflowEdge,
+  'compact-pill-edge': CompactPillEdge,
 }
 
 const defaultEdgeOptions = {
-  type: 'smoothstep' as const,
+  type: 'workflow-edge' as const,
+  data: { style: 'auto' as const },
   style: { stroke: 'var(--t-frost)', strokeWidth: 1 },
   animated: false,
 }
@@ -90,6 +98,7 @@ export function WorkflowCanvas({
         onNodeDoubleClick={handleNodeDoubleClick}
         onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
         fitView
         fitViewOptions={{ padding: 0.3 }}
@@ -97,7 +106,7 @@ export function WorkflowCanvas({
         selectionMode={SelectionMode.Partial}
         selectNodesOnDrag={true}
         deleteKeyCode={['Delete', 'Backspace']}
-        className="[&_.react-flow__attribution]:!bg-transparent [&_.react-flow__attribution]:!text-muted-text [&_.react-flow__attribution]:!text-[10px]"
+        className="[&_.react-flow__attribution]:!bg-transparent [&_.react-flow__attribution]:!text-muted-text [&_.react-flow__attribution]:!text-[10px] [&_.react-flow__edges]:!z-[2] [&_.react-flow__nodes]:!z-[3] [&_.react-flow__pane]:!overflow-visible"
       >
         <Background
           variant={BackgroundVariant.Dots}

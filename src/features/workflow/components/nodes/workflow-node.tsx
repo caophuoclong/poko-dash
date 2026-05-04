@@ -1,10 +1,6 @@
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 import { Handle, Position, type NodeProps } from '@xyflow/react'
-import {
-  Loader2,
-  CheckCircle2,
-  XCircle,
-} from 'lucide-react'
+import { Loader2, CheckCircle2, XCircle, Copy } from 'lucide-react'
 import { cn } from '#/shared/utils'
 import {
   getNodeDefinition,
@@ -12,8 +8,57 @@ import {
   CATEGORY_CONFIG,
 } from '../../node-registry'
 import type { WorkflowNodeData } from '../../types'
+import type { PortDefinition } from '../../node-types'
 import { useNodeExecutionStatus } from '../../hooks/use-node-execution-status'
-import { ICON_MAP, statusConfig, executionStatusStyles } from './workflow-node.constants'
+import { ICON_MAP, statusConfig, executionStatusStyles, PORT_KIND_COLOR } from './workflow-node.constants'
+
+const PORT_SPACING = 22
+
+function PortDot({ port, type, position, index, total }: {
+  port: PortDefinition
+  type: 'target' | 'source'
+  position: Position
+  index: number
+  total: number
+}) {
+  const color = PORT_KIND_COLOR[port.type] ?? PORT_KIND_COLOR.data
+  const isInput = type === 'target'
+
+  const spacingPx = total > 1
+    ? (index - (total - 1) / 2) * PORT_SPACING
+    : 0
+
+  return (
+    <>
+      <Handle
+        id={port.id}
+        type={type}
+        position={position}
+        style={spacingPx !== 0 ? { translate: `${spacingPx}px 0` } : undefined}
+        className={cn(
+          isInput
+            ? '!w-[3px] !h-[14px] !rounded-[1px] !border-0'
+            : '!w-[10px] !h-[10px] !rounded-full !border-0',
+          'transition-transform hover:!scale-125',
+          color,
+        )}
+        title={port.label || port.id}
+      />
+      {port.label && (
+        <span
+          className="absolute text-[9px] font-mono font-bold tracking-wider uppercase text-muted-text select-none pointer-events-none"
+          style={{
+            [isInput ? 'top' : 'bottom']: 0,
+            left: `calc(50% + ${spacingPx}px)`,
+            transform: isInput ? 'translate(-50%, -22px)' : 'translate(-50%, 22px)',
+          }}
+        >
+          {port.label}
+        </span>
+      )}
+    </>
+  )
+}
 
 function WorkflowNode({ data, selected, id }: NodeProps) {
   const nodeData = data as unknown as WorkflowNodeData
@@ -30,17 +75,19 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
     ? getNodeSummaryData(def.typeId, nodeData.config as Record<string, unknown>)
     : null
 
-  const hasMultiOutput = def && def.outputs.length > 1
+  const inputs = def?.inputs ?? [{ id: 'target', label: '', type: 'data' as const }]
+  const outputs = def?.outputs ?? [{ id: 'output', label: '', type: 'data' as const }]
+  const hasMultiPort = inputs.length > 1 || outputs.length > 1
+
+  const handleDuplicate = useCallback(() => {
+    const event = new CustomEvent('workflow-node-duplicate', {
+      detail: { nodeId: id }, bubbles: true,
+    })
+    document.dispatchEvent(event)
+  }, [id])
 
   return (
-    <>
-      <Handle
-        type="target"
-        position={Position.Top}
-        id="target"
-        className="!bg-frost !border-2 !border-surface !w-2.5 !h-2.5"
-      />
-
+    <div className={cn('relative', hasMultiPort && 'min-h-[80px]')}>
       <div
         className={cn(
           'bg-surface border rounded-xl px-3.5 py-3 shadow-sm min-w-[220px] max-w-[260px]',
@@ -55,10 +102,7 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
       >
         {executionStatus === 'running' && (
           <div className="absolute -top-1 -right-1">
-            <Loader2
-              size={16}
-              className="text-accent-blue animate-spin"
-            />
+            <Loader2 size={16} className="text-accent-blue animate-spin" />
           </div>
         )}
 
@@ -117,6 +161,16 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
               </p>
             )}
           </div>
+
+          {selected && (
+            <button
+              onClick={handleDuplicate}
+              className="w-5 h-5 flex items-center justify-center rounded text-muted-text hover:text-accent-blue hover:bg-accent-blue-dim transition-colors shrink-0"
+              title="Duplicate node"
+            >
+              <Copy size={11} />
+            </button>
+          )}
         </div>
 
         {(summaryItems && summaryItems.length > 0) && (
@@ -159,36 +213,31 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
             </div>
           </div>
         )}
-      </div>
 
-      {hasMultiOutput && def ? (
-        <div className="flex items-end justify-between px-4 gap-1">
-          {def.outputs.map((port) => (
-            <div key={port.id} className={cn('flex flex-col items-center')}>
-              <Handle
-                id={port.id}
-                type="source"
-                position={Position.Bottom}
-                className={cn(
-                  '!static !transform-none !w-2.5 !h-2.5 !border-2 !border-surface',
-                  port.type === 'data' ? '!bg-accent-blue' : port.type === 'signal' ? '!bg-accent-orange' : '!bg-accent-red',
-                )}
-              />
-              <span className="text-[9px] font-medium text-muted-text mt-0.5">
-                {port.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <Handle
-          type="source"
-          id="output"
-          position={Position.Bottom}
-          className="!bg-frost !border-2 !border-surface !w-2.5 !h-2.5"
-        />
-      )}
-    </>
+        {/* Ports rendered inside card for width-relative centering */}
+        {inputs.map((port, i) => (
+          <PortDot
+            key={`in-${port.id}`}
+            port={port}
+            type="target"
+            position={Position.Top}
+            index={i}
+            total={inputs.length}
+          />
+        ))}
+
+        {outputs.map((port, i) => (
+          <PortDot
+            key={`out-${port.id}`}
+            port={port}
+            type="source"
+            position={Position.Bottom}
+            index={i}
+            total={outputs.length}
+          />
+        ))}
+      </div>
+    </div>
   )
 }
 

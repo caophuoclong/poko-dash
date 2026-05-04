@@ -1,4 +1,4 @@
-import { useCallback, useRef, useMemo } from 'react'
+import { useCallback, useRef, useMemo, useEffect } from 'react'
 import {
   type Node,
   type Edge,
@@ -14,6 +14,7 @@ import type { WorkflowNodeData } from '../types'
 import { getNodeDefinition } from '../node-registry'
 import { useExecutionStore } from '../stores/execution-store'
 import { useExecutionEdgeStates } from './use-execution-edge-states'
+import type { EdgeStyle } from '../components/edges/workflow-edge'
 
 interface WorkflowCanvasLogic {
   nodes: Node<WorkflowNodeData>[]
@@ -130,13 +131,22 @@ export function useWorkflowCanvasLogic({
 
   const onConnect = useCallback(
     (connection: Connection) => {
+      const label =
+        connection.sourceHandle && connection.targetHandle
+          ? `${connection.sourceHandle} → ${connection.targetHandle}`
+          : undefined
+
       onEdgesChange([
         ...edges,
         {
           ...connection,
           id: `e-${connection.source}-${connection.target}-${Date.now()}`,
-          type: 'smoothstep',
-          style: { stroke: 'var(--t-muted-text)', strokeWidth: 1.5 },
+          type: 'workflow-edge',
+          data: {
+            style: 'auto' as EdgeStyle,
+            ...(label ? { label } : {}),
+          },
+          style: { stroke: 'var(--t-frost)', strokeWidth: 1.5 },
         } as Edge,
       ])
     },
@@ -187,6 +197,47 @@ export function useWorkflowCanvasLogic({
     },
     [nodes, edges, onNodesChange, onEdgesChange, onNodeSelect],
   )
+
+  useEffect(() => {
+    const handleEdgeStyleChange = (e: Event) => {
+      const { edgeId, style } = (e as CustomEvent).detail as { edgeId: string; style: EdgeStyle }
+      onEdgesChange(
+        edges.map((edge) =>
+          edge.id === edgeId
+            ? { ...edge, data: { ...(edge.data as Record<string, unknown>), style } }
+            : edge,
+        ),
+      )
+    }
+
+    const handleEdgeDelete = (e: Event) => {
+      const { edgeId } = (e as CustomEvent).detail as { edgeId: string }
+      onEdgesChange(edges.filter((edge) => edge.id !== edgeId))
+    }
+
+    document.addEventListener('workflow-edge-style-change', handleEdgeStyleChange)
+    document.addEventListener('workflow-edge-delete', handleEdgeDelete)
+
+    const handleNodeDuplicate = (e: Event) => {
+      const { nodeId } = (e as CustomEvent).detail as { nodeId: string }
+      const node = nodes.find((n) => n.id === nodeId)
+      if (!node) return
+      const copy: Node<WorkflowNodeData> = {
+        ...node,
+        id: `node-${Date.now()}`,
+        position: { x: node.position.x + 32, y: node.position.y + 32 },
+        selected: false,
+      }
+      onNodesChange([...nodes.map((n) => ({ ...n, selected: false })), { ...copy, selected: true }])
+    }
+
+    document.addEventListener('workflow-node-duplicate', handleNodeDuplicate)
+    return () => {
+      document.removeEventListener('workflow-edge-style-change', handleEdgeStyleChange)
+      document.removeEventListener('workflow-edge-delete', handleEdgeDelete)
+      document.removeEventListener('workflow-node-duplicate', handleNodeDuplicate)
+    }
+  }, [edges, onEdgesChange])
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault()

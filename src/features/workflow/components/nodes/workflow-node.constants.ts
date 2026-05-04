@@ -30,6 +30,12 @@ export const statusConfig: Record<string, { dot: string; ring: string; label: st
   paused: { dot: 'bg-muted-text', ring: 'ring-muted-text/20', label: 'Paused' },
 }
 
+export const PORT_KIND_COLOR: Record<string, string> = {
+  data: 'bg-frost',
+  signal: 'bg-accent-orange',
+  error: 'bg-accent-red',
+}
+
 export const executionStatusStyles: Record<
   NodeExecutionStatus,
   { border: string; bg: string; overlay?: string }
