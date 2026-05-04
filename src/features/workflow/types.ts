@@ -41,3 +41,19 @@ export interface WorkflowDetail {
   updatedAt: string
 }
 
+export interface NodeExecutionData {
+  nodeId: string
+  title?: string
+  status: string
+  outputSummary?: Record<string, unknown>
+  error?: string
+  durationMs?: number
+}
+
+export interface ExecutionCacheData {
+  id: string
+  workflowId?: string
+  status: string
+  nodes?: NodeExecutionData[]
+}
+

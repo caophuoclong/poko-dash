@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import {
   GitBranch,
@@ -19,7 +18,8 @@ import {
   DropdownMenuTrigger,
 } from '#/components/ui/dropdown-menu'
 import { cn } from '#/shared/utils'
-import { useWorkflows, useCreateWorkflow, useDeleteWorkflow } from '../hooks/use-workflows'
+import { useWorkflowIndexPage } from '../hooks/use-workflow-index-page'
+import { formatRelative, formatDate } from '../utils/workflow-index-utils'
 import type { WorkflowSummary } from '../types'
 
 const statusConfig: Record<
@@ -32,64 +32,20 @@ const statusConfig: Record<
   archived: { label: 'Archived', tone: 'neutral' },
 }
 
-function formatRelative(dateString?: string): string {
-  if (!dateString) return 'Never'
-  const diff = Date.now() - new Date(dateString).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 1) return 'Just now'
-  if (mins < 60) return `${mins}m ago`
-  const hours = Math.floor(mins / 60)
-  if (hours < 24) return `${hours}h ago`
-  const days = Math.floor(hours / 24)
-  return `${days}d ago`
-}
-
-function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
-}
-
 export function WorkflowIndexPage() {
   const navigate = useNavigate()
-  const [search, setSearch] = useState('')
-  const { data: workflows = [], isLoading, isError, refetch } = useWorkflows()
-  const createWorkflow = useCreateWorkflow()
-  const deleteWorkflow = useDeleteWorkflow()
-
-  const filtered = workflows.filter((wf) => {
-    if (!search) return true
-    const q = search.toLowerCase()
-    return (
-      wf.name.toLowerCase().includes(q) ||
-      wf.description.toLowerCase().includes(q)
-    )
-  })
-
-  const handleCreate = () => {
-    createWorkflow.mutate(
-      { data: { name: 'New Workflow' } },
-      {
-        onSuccess: (res: any) => {
-          const data = res?.data
-          if (data?.id) {
-            navigate({
-              to: '/workflow/$workflowId',
-              params: { workflowId: data.id },
-            })
-          }
-        },
-      },
-    )
-  }
-
-  const handleDelete = (id: string, e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    deleteWorkflow.mutate(id)
-  }
+  const {
+    search,
+    setSearch,
+    workflows,
+    filtered,
+    isLoading,
+    isError,
+    refetch,
+    createWorkflow,
+    handleCreate,
+    handleDelete,
+  } = useWorkflowIndexPage()
 
   return (
     <div className="">

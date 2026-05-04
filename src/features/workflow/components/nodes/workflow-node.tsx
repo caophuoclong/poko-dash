@@ -1,152 +1,19 @@
 import { memo } from 'react'
 import { Handle, Position, type NodeProps } from '@xyflow/react'
-import { useQueryClient } from '@tanstack/react-query'
-import { useSyncExternalStore, useCallback } from 'react'
 import {
-  Play,
-  Clock,
-  ListPlus,
-  Globe,
-  Layers,
-  Filter,
-  Link2,
-  Sparkles,
-  ListTodo,
-  Send,
-  BarChart3,
-  GitBranch,
-  Timer,
-  Bell,
   Loader2,
   CheckCircle2,
   XCircle,
-  type LucideIcon,
 } from 'lucide-react'
 import { cn } from '#/shared/utils'
-import { getExecutionControllerGetExecutionQueryKey } from '#/api/client'
 import {
   getNodeDefinition,
   getNodeSummaryData,
   CATEGORY_CONFIG,
 } from '../../node-registry'
 import type { WorkflowNodeData } from '../../types'
-import { useExecutionStore } from '../../stores/execution-store'
-import type { NodeExecutionStatus } from '../../utils/execution-engine'
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Play, Clock, ListPlus, Globe, Layers, Filter,
-  LinkCheck: Link2, Sparkles, ListTodo, Send, BarChart3, GitBranch, Timer, Bell,
-}
-
-const statusConfig: Record<string, { dot: string; ring: string; label: string }> = {
-  completed: { dot: 'bg-accent-green', ring: 'ring-accent-green/20', label: 'Completed' },
-  active: { dot: 'bg-accent-blue', ring: 'ring-accent-blue/20', label: 'Running' },
-  pending: { dot: 'bg-accent-yellow', ring: 'ring-accent-yellow/20', label: 'Pending' },
-  error: { dot: 'bg-accent-red', ring: 'ring-accent-red/20', label: 'Error' },
-  paused: { dot: 'bg-muted-text', ring: 'ring-muted-text/20', label: 'Paused' },
-}
-
-interface NodeExecutionData {
-  nodeId: string
-  title?: string
-  status: string
-  outputSummary?: Record<string, unknown>
-  error?: string
-  durationMs?: number
-}
-
-interface ExecutionCacheData {
-  id: string
-  workflowId?: string
-  status: string
-  nodes?: NodeExecutionData[]
-}
-
-function mapCacheStatusToExecutionStatus(
-  cacheStatus: string | undefined,
-): NodeExecutionStatus {
-  switch (cacheStatus) {
-    case 'running':
-      return 'running'
-    case 'completed':
-      return 'success'
-    case 'failed':
-      return 'error'
-    case 'pending':
-      return 'pending'
-    default:
-      return 'idle'
-  }
-}
-
-function useNodeExecutionStatus(nodeId: string): NodeExecutionStatus {
-  const queryClient = useQueryClient()
-  const executionId = useExecutionStore((s) => s.executionId)
-  const running = useExecutionStore((s) => s.running)
-
-  const queryKey = executionId
-    ? getExecutionControllerGetExecutionQueryKey(executionId)
-    : null
-
-  const subscribe = useCallback(
-    (onStoreChange: () => void) => {
-      if (!queryKey) return () => {}
-      const unsubscribe = queryClient.getQueryCache().subscribe((event) => {
-        if (
-          event.type === 'updated' &&
-          event.query.queryHash === JSON.stringify(queryKey)
-        ) {
-          onStoreChange()
-        }
-      })
-      return unsubscribe
-    },
-    [queryKey],
-  )
-
-  const getSnapshot = useCallback((): NodeExecutionStatus => {
-    if (!running || !queryKey) return 'idle'
-    const data = queryClient.getQueryData(queryKey) as
-      | ExecutionCacheData
-      | undefined
-    const nodeExec = data?.nodes?.find((n) => n.nodeId === nodeId)
-    return mapCacheStatusToExecutionStatus(nodeExec?.status)
-  }, [running, queryKey, nodeId])
-
-  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
-}
-
-const executionStatusStyles: Record<
-  NodeExecutionStatus,
-  { border: string; bg: string; overlay?: string }
-> = {
-  idle: { border: '', bg: '' },
-  pending: {
-    border: 'border-accent-yellow/40',
-    bg: 'bg-accent-yellow/5',
-  },
-  running: {
-    border: 'border-accent-blue shadow-md shadow-accent-blue/10',
-    bg: 'bg-accent-blue/5',
-  },
-  success: {
-    border: 'border-accent-green/40',
-    bg: 'bg-accent-green/5',
-  },
-  error: {
-    border: 'border-accent-red/40',
-    bg: 'bg-accent-red/5',
-  },
-  skipped: {
-    border: 'border-muted-text/20',
-    bg: 'bg-muted-text/5',
-  },
-  'out-of-scope': {
-    border: 'border-frost/50',
-    bg: 'bg-void/60',
-    overlay: 'opacity-40',
-  },
-}
+import { useNodeExecutionStatus } from '../../hooks/use-node-execution-status'
+import { ICON_MAP, statusConfig, executionStatusStyles } from './workflow-node.constants'
 
 function WorkflowNode({ data, selected, id }: NodeProps) {
   const nodeData = data as unknown as WorkflowNodeData
@@ -188,12 +55,10 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
       >
         {executionStatus === 'running' && (
           <div className="absolute -top-1 -right-1">
-            <div className="relative">
-              <Loader2
-                size={16}
-                className="text-accent-blue animate-spin"
-              />
-            </div>
+            <Loader2
+              size={16}
+              className="text-accent-blue animate-spin"
+            />
           </div>
         )}
 
