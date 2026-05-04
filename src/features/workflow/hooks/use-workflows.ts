@@ -32,13 +32,19 @@ function mapSummary(dto: WorkflowSummaryDto): WorkflowSummary {
 }
 
 function mapDetail(dto: WorkflowDetailDto): WorkflowDetail {
+  const mappingNodes = new Map(dto.nodes.map((n) => [n.id, n.xyflow_id]))
+  const edges = dto.edges.map((e) => ({
+    ...e,
+    source_node_id: mappingNodes.get(e.source_node_id) ?? e.source_node_id,
+    target_node_id: mappingNodes.get(e.target_node_id) ?? e.target_node_id,
+  }))
   return {
     id: dto.id,
     name: dto.name,
     description: dto.description ?? '',
     status: (dto.status as WorkflowDetail['status']) ?? 'draft',
     nodes: dto.nodes.map(mapNode),
-    edges: dto.edges.map(mapEdge),
+    edges: edges.map(mapEdge),
     createdAt: dto.created_at,
     updatedAt: dto.updated_at,
   }
@@ -65,8 +71,9 @@ function mapEdge(dto: WorkflowEdgeDto): Edge {
     id: dto.id,
     source: dto.source_node_id,
     target: dto.target_node_id,
-    sourceHandle: dto.source_handle,
-    type: dto.type,
+    type: 'workflow-edge',
+    data: { style: 'auto' },
+    style: { stroke: 'var(--t-frost)', strokeWidth: 1.5 },
   }
 }
 
@@ -133,8 +140,7 @@ export function useSaveWorkflowCanvas() {
         edges: params.edges.map((e) => ({
           source_node_id: e.source,
           target_node_id: e.target,
-          source_handle: e.sourceHandle ?? undefined,
-          type: e.type ?? 'smoothstep',
+          type: e.type ?? 'workflow-edge',
         })),
       }
 
@@ -214,8 +220,7 @@ export function useCreateWorkflowVersion() {
         edges: params.edges.map((e) => ({
           source_node_id: e.source,
           target_node_id: e.target,
-          source_handle: e.sourceHandle ?? undefined,
-          type: e.type ?? 'smoothstep',
+          type: e.type ?? 'workflow-edge',
         })),
         message: params.message || undefined,
         versionType: 'manual' as const,

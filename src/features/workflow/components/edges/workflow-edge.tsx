@@ -1,6 +1,7 @@
 import {
   BaseEdge,
   EdgeLabelRenderer,
+  MarkerType,
   getBezierPath,
   getSmoothStepPath,
   getStraightPath,
@@ -108,12 +109,7 @@ export function WorkflowEdge({
   return (
     <>
       {hasPath && (
-        <path
-          d={d}
-          stroke="transparent"
-          strokeWidth="20"
-          fill="none"
-        />
+        <path d={d} stroke="transparent" strokeWidth="20" fill="none" />
       )}
       {hasPath && (
         <BaseEdge
@@ -124,7 +120,12 @@ export function WorkflowEdge({
             stroke: edgeColor,
             strokeWidth: selected ? 2 : (baseStyle?.strokeWidth ?? 1.5),
           }}
-          markerEnd={markerEnd}
+          markerEnd={(markerEnd ?? {
+            type: MarkerType.ArrowClosed,
+            color: edgeColor,
+            width: 16,
+            height: 16,
+          }) as string}
         />
       )}
 
@@ -132,7 +133,9 @@ export function WorkflowEdge({
         <EdgeLabelRenderer>
           <div
             className="absolute text-[10px] font-mono text-muted-text bg-surface/80 px-1.5 py-0.5 rounded border border-frost pointer-events-none"
-            style={{ transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)` }}
+            style={{
+              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+            }}
           >
             {label}
           </div>
@@ -142,17 +145,22 @@ export function WorkflowEdge({
       {selected && hasPath && (
         <EdgeLabelRenderer>
           <div
-            className="absolute flex items-center gap-0.5 bg-surface border border-frost rounded-lg p-0.5 shadow-sm z-[1000]"
-            style={{ transform: `translate(-50%, 0) translate(${labelX}px, ${labelY + 14}px)` }}
+            className="absolute nodrag nopan pointer-events-auto z-[1000] flex items-center gap-0.5 bg-surface border border-frost rounded-lg p-0.5 shadow-sm"
+            style={{
+              transform: `translate(-50%, 0) translate(${labelX}px, ${labelY + 14}px)`,
+              pointerEvents: 'all',
+            }}
           >
             {EDGE_STYLES.map((s) => (
               <button
                 key={s}
                 onClick={(e) => {
                   e.stopPropagation()
-                  document.dispatchEvent(new CustomEvent('workflow-edge-style-change', {
-                    detail: { edgeId: id, style: s },
-                  }))
+                  document.dispatchEvent(
+                    new CustomEvent('workflow-edge-style-change', {
+                      detail: { edgeId: id, style: s },
+                    }),
+                  )
                 }}
                 className={cn(
                   'text-[9px] font-mono font-bold tracking-wider uppercase px-1.5 py-0.5 rounded transition-colors',
@@ -168,9 +176,11 @@ export function WorkflowEdge({
             <button
               onClick={(e) => {
                 e.stopPropagation()
-                document.dispatchEvent(new CustomEvent('workflow-edge-delete', {
-                  detail: { edgeId: id },
-                }))
+                document.dispatchEvent(
+                  new CustomEvent('workflow-edge-delete', {
+                    detail: { edgeId: id },
+                  }),
+                )
               }}
               className="ml-1 w-5 h-5 flex items-center justify-center rounded text-muted-text hover:text-accent-red hover:bg-accent-red/10 transition-colors"
               title="Delete edge"

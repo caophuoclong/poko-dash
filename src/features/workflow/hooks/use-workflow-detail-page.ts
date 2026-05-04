@@ -164,8 +164,9 @@ export function useWorkflowDetailPage(workflow: WorkflowDetail) {
             id: e.id,
             source: e.source_node_id,
             target: e.target_node_id,
-            sourceHandle: e.source_handle,
-            type: e.type ?? 'smoothstep',
+            type: 'workflow-edge',
+            data: { style: 'auto' },
+            style: { stroke: 'var(--t-frost)', strokeWidth: 1.5 },
           })) as Edge[]
 
           editor.replaceState(mappedNodes, mappedEdges)

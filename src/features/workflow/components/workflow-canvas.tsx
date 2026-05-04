@@ -1,10 +1,9 @@
 import {
   ReactFlow,
-  Background,
   Controls,
   MiniMap,
-  BackgroundVariant,
   SelectionMode,
+  MarkerType,
 } from '@xyflow/react'
 import type { Node, Edge, ReactFlowInstance } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
@@ -29,6 +28,9 @@ const defaultEdgeOptions = {
   type: 'workflow-edge' as const,
   data: { style: 'auto' as const },
   style: { stroke: 'var(--t-frost)', strokeWidth: 1 },
+  markerEnd: {
+    type: MarkerType.ArrowClosed,
+  },
   animated: false,
 }
 
@@ -75,7 +77,6 @@ export function WorkflowCanvas({
     onNodeSelect,
     onNodeDoubleClick,
   })
-
   return (
     <div
       className="flex-1 relative"
@@ -106,15 +107,8 @@ export function WorkflowCanvas({
         selectionMode={SelectionMode.Partial}
         selectNodesOnDrag={true}
         deleteKeyCode={['Delete', 'Backspace']}
-        className="[&_.react-flow__attribution]:!bg-transparent [&_.react-flow__attribution]:!text-muted-text [&_.react-flow__attribution]:!text-[10px] [&_.react-flow__edges]:!z-[2] [&_.react-flow__nodes]:!z-[3] [&_.react-flow__pane]:!overflow-visible"
+        className="workflow-grid-bg [&_.react-flow__attribution]:!bg-transparent [&_.react-flow__attribution]:!text-muted-text [&_.react-flow__attribution]:!text-[10px] [&_.react-flow__edges]:!z-[2] [&_.react-flow__nodes]:!z-[3] [&_.react-flow__pane]:!overflow-visible"
       >
-        <Background
-          variant={BackgroundVariant.Dots}
-          gap={24}
-          size={1}
-          color="var(--t-frost)"
-        />
-
         <Controls
           position="top-left"
           className="!shadow-none !rounded-lg !border !border-frost !bg-surface !overflow-hidden [&_button]:!bg-transparent [&_button]:!border-frost [&_button]:!text-muted-text hover:[&_button]:!text-near-white hover:[&_button]:!bg-surface-2 [&_button]:!w-7 [&_button]:!h-7 [&_svg]:!w-3 [&_svg]:!h-3"

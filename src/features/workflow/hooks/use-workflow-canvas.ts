@@ -131,11 +131,6 @@ export function useWorkflowCanvasLogic({
 
   const onConnect = useCallback(
     (connection: Connection) => {
-      const label =
-        connection.sourceHandle && connection.targetHandle
-          ? `${connection.sourceHandle} → ${connection.targetHandle}`
-          : undefined
-
       onEdgesChange([
         ...edges,
         {
@@ -144,7 +139,6 @@ export function useWorkflowCanvasLogic({
           type: 'workflow-edge',
           data: {
             style: 'auto' as EdgeStyle,
-            ...(label ? { label } : {}),
           },
           style: { stroke: 'var(--t-frost)', strokeWidth: 1.5 },
         } as Edge,

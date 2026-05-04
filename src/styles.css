@@ -248,6 +248,16 @@
   }
 }
 
+@layer utilities {
+  .workflow-grid-bg {
+    background-color: var(--t-void);
+    background-image:
+      linear-gradient(var(--hero-grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--hero-grid-line) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+}
+
 @layer base {
   * {
     @apply border-border;

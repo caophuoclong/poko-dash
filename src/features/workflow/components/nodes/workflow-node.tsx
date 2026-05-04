@@ -1,20 +1,36 @@
-import { memo, useCallback } from 'react'
-import { Handle, Position, type NodeProps } from '@xyflow/react'
+import { memo, useCallback, useEffect, useLayoutEffect, useRef } from 'react'
+import {
+  Handle,
+  Position,
+  useUpdateNodeInternals,
+  type NodeProps,
+} from '@xyflow/react'
 import { Loader2, CheckCircle2, XCircle, Copy } from 'lucide-react'
 import { cn } from '#/shared/utils'
 import {
-  getNodeDefinition,
+  useNodeRegistryStore,
   getNodeSummaryData,
   CATEGORY_CONFIG,
 } from '../../node-registry'
 import type { WorkflowNodeData } from '../../types'
 import type { PortDefinition } from '../../node-types'
 import { useNodeExecutionStatus } from '../../hooks/use-node-execution-status'
-import { ICON_MAP, statusConfig, executionStatusStyles, PORT_KIND_COLOR } from './workflow-node.constants'
+import {
+  ICON_MAP,
+  statusConfig,
+  executionStatusStyles,
+  PORT_KIND_COLOR,
+} from './workflow-node.constants'
 
 const PORT_SPACING = 22
 
-function PortDot({ port, type, position, index, total }: {
+function PortDot({
+  port,
+  type,
+  position,
+  index,
+  total,
+}: {
   port: PortDefinition
   type: 'target' | 'source'
   position: Position
@@ -23,10 +39,8 @@ function PortDot({ port, type, position, index, total }: {
 }) {
   const color = PORT_KIND_COLOR[port.type] ?? PORT_KIND_COLOR.data
   const isInput = type === 'target'
-
-  const spacingPx = total > 1
-    ? (index - (total - 1) / 2) * PORT_SPACING
-    : 0
+  const spacing = 100 / (total + 1)
+  const top = spacing * (index + 1)
 
   return (
     <>
@@ -34,7 +48,7 @@ function PortDot({ port, type, position, index, total }: {
         id={port.id}
         type={type}
         position={position}
-        style={spacingPx !== 0 ? { translate: `${spacingPx}px 0` } : undefined}
+        style={{ top: `${top}%` }}
         className={cn(
           isInput
             ? '!w-[3px] !h-[14px] !rounded-[1px] !border-0'
@@ -48,9 +62,13 @@ function PortDot({ port, type, position, index, total }: {
         <span
           className="absolute text-[9px] font-mono font-bold tracking-wider uppercase text-muted-text select-none pointer-events-none"
           style={{
-            [isInput ? 'top' : 'bottom']: 0,
-            left: `calc(50% + ${spacingPx}px)`,
-            transform: isInput ? 'translate(-50%, -22px)' : 'translate(-50%, 22px)',
+            top: `calc(${top}% + 4px)`,
+
+            left: isInput ? '0%' : '100%',
+
+            transform: isInput
+              ? 'translate(-120%, -50%)'
+              : 'translate(20%, -50%)',
           }}
         >
           {port.label}
@@ -64,24 +82,52 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
   const nodeData = data as unknown as WorkflowNodeData
   const Icon = nodeData.icon ? ICON_MAP[nodeData.icon] : null
   const status = nodeData.status ? statusConfig[nodeData.status] : null
-  const def = nodeData.nodeTypeId ? getNodeDefinition(String(nodeData.nodeTypeId)) : null
+  const def = useNodeRegistryStore((s) =>
+    nodeData.nodeTypeId ? s.definitions[String(nodeData.nodeTypeId)] : undefined
+  )
   const catConfig = def ? CATEGORY_CONFIG[def.category] : null
-
+  const updateNodeInternals = useUpdateNodeInternals()
   const executionStatus = useNodeExecutionStatus(id)
 
-  const execStyles = executionStatusStyles[executionStatus] ?? executionStatusStyles.idle
+  const inputs = def?.inputs ?? [
+    { id: 'target', label: '', type: 'data' as const },
+  ]
+  const outputs = def?.outputs ?? [
+    { id: 'output', label: '', type: 'data' as const },
+  ]
 
-  const summaryItems = def && nodeData.config
-    ? getNodeSummaryData(def.typeId, nodeData.config as Record<string, unknown>)
-    : null
+  useLayoutEffect(() => {
+    updateNodeInternals(id)
+  }, [id, inputs.length, outputs.length, updateNodeInternals])
 
-  const inputs = def?.inputs ?? [{ id: 'target', label: '', type: 'data' as const }]
-  const outputs = def?.outputs ?? [{ id: 'output', label: '', type: 'data' as const }]
+  useLayoutEffect(() => {
+    const raf = requestAnimationFrame(() => updateNodeInternals(id))
+    return () => cancelAnimationFrame(raf)
+  }, [id, inputs, outputs, updateNodeInternals])
+
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(() => updateNodeInternals(id))
+    const el = document.querySelector(`[data-id="${id}"]`) as HTMLElement | null
+    if (el) resizeObserver.observe(el)
+    return () => resizeObserver.disconnect()
+  }, [id, updateNodeInternals])
+
+  const execStyles =
+    executionStatusStyles[executionStatus] ?? executionStatusStyles.idle
+
+  const summaryItems =
+    def && nodeData.config
+      ? getNodeSummaryData(
+          def.typeId,
+          nodeData.config as Record<string, unknown>,
+        )
+      : null
   const hasMultiPort = inputs.length > 1 || outputs.length > 1
 
   const handleDuplicate = useCallback(() => {
     const event = new CustomEvent('workflow-node-duplicate', {
-      detail: { nodeId: id }, bubbles: true,
+      detail: { nodeId: id },
+      bubbles: true,
     })
     document.dispatchEvent(event)
   }, [id])
@@ -141,12 +187,14 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
                 <span
                   className={cn(
                     'inline-flex items-center gap-0.5 px-1 py-px rounded-full text-[9px] font-medium leading-none shrink-0',
-                    status.ring, 'ring-1',
+                    status.ring,
+                    'ring-1',
                     nodeData.status === 'completed' && 'text-accent-green',
                     nodeData.status === 'active' && 'text-accent-blue',
                     nodeData.status === 'pending' && 'text-accent-yellow',
                     nodeData.status === 'error' && 'text-accent-red',
-                    (nodeData.status as string) === 'paused' && 'text-muted-text',
+                    (nodeData.status as string) === 'paused' &&
+                      'text-muted-text',
                   )}
                 >
                   <span className={cn('w-1 h-1 rounded-full', status.dot)} />
@@ -162,18 +210,20 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
             )}
           </div>
 
-          {selected && (
-            <button
-              onClick={handleDuplicate}
-              className="w-5 h-5 flex items-center justify-center rounded text-muted-text hover:text-accent-blue hover:bg-accent-blue-dim transition-colors shrink-0"
-              title="Duplicate node"
-            >
-              <Copy size={11} />
-            </button>
-          )}
+          <button
+            onClick={handleDuplicate}
+            className={cn(
+              'w-5 h-5 flex items-center justify-center rounded text-muted-text hover:text-accent-blue hover:bg-accent-blue-dim transition-colors shrink-0 invisible',
+              selected && 'text-accent-blue',
+              selected && 'visible',
+            )}
+            title="Duplicate node"
+          >
+            <Copy size={11} />
+          </button>
         </div>
 
-        {(summaryItems && summaryItems.length > 0) && (
+        {summaryItems && summaryItems.length > 0 && (
           <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-2 pt-2 border-t border-frost">
             {summaryItems.map((item) => (
               <div key={item.label} className="flex items-baseline gap-1">
@@ -192,8 +242,12 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
           <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-2 pt-2 border-t border-frost">
             {nodeData.metrics.map((m, i) => (
               <div key={i} className="flex items-baseline gap-1">
-                <span className="text-[11px] font-semibold text-near-white leading-none">{m.value}</span>
-                <span className="text-[9px] text-muted-text leading-none">{m.label}</span>
+                <span className="text-[11px] font-semibold text-near-white leading-none">
+                  {m.value}
+                </span>
+                <span className="text-[9px] text-muted-text leading-none">
+                  {m.label}
+                </span>
               </div>
             ))}
           </div>
@@ -203,10 +257,15 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
           <div className="mt-1.5 pt-1.5 border-t border-frost">
             <div className="flex items-center gap-2">
               <span className="text-[9px] font-mono rounded px-1.5 py-0.5 bg-accent-yellow/10 text-accent-yellow">
-                {((nodeData.config as Record<string, unknown>)?.logic as string) === 'any' ? 'ANY' : 'ALL'}
+                {((nodeData.config as Record<string, unknown>)
+                  ?.logic as string) === 'any'
+                  ? 'ANY'
+                  : 'ALL'}
               </span>
               <span className="text-[10px] text-muted-text">
-                {Array.isArray((nodeData.config as Record<string, unknown>)?.rules)
+                {Array.isArray(
+                  (nodeData.config as Record<string, unknown>)?.rules,
+                )
                   ? `${((nodeData.config as Record<string, unknown>).rules as unknown[]).length} rule(s)`
                   : '0 rules'}
               </span>
@@ -220,22 +279,24 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
             key={`in-${port.id}`}
             port={port}
             type="target"
-            position={Position.Top}
+            position={Position.Left}
             index={i}
             total={inputs.length}
           />
         ))}
 
-        {outputs.map((port, i) => (
-          <PortDot
-            key={`out-${port.id}`}
-            port={port}
-            type="source"
-            position={Position.Bottom}
-            index={i}
-            total={outputs.length}
-          />
-        ))}
+        {outputs.map((port, i) => {
+          return (
+            <PortDot
+              key={`out-${port.id}`}
+              port={port}
+              type="source"
+              position={Position.Right}
+              index={i}
+              total={outputs.length}
+            />
+          )
+        })}
       </div>
     </div>
   )
