@@ -15,7 +15,7 @@ import {
   Timer,
   Bell,
 } from 'lucide-react'
-import type { NodeExecutionStatus } from '../../utils/execution-engine'
+import type { NodeExecutionStatus } from '../../stores/execution-store/useExecutionStore'
 
 export const ICON_MAP: Record<string, LucideIcon> = {
   Play, Clock, ListPlus, Globe, Layers, Filter,
@@ -36,6 +36,26 @@ export const PORT_KIND_COLOR: Record<string, string> = {
   error: 'bg-accent-red',
 }
 
+export const EDGE_TYPE_STYLES: Record<string, { stroke: string; dash?: string; label?: string }> = {
+  main: { stroke: 'var(--t-frost)' },
+  reference: { stroke: 'var(--t-accent-blue)', dash: '4 2' },
+  error: { stroke: 'var(--t-accent-red)' },
+  condition_true: { stroke: 'var(--t-accent-green)', label: 'true' },
+  condition_false: { stroke: 'var(--t-accent-red)', label: 'false' },
+}
+
+export const NODE_COLOR_MAP: Record<string, { border: string; bg: string; text: string }> = {
+  purple: { border: 'border-accent-purple/30', bg: 'bg-accent-purple/10', text: 'text-accent-purple' },
+  teal: { border: 'border-accent-teal/30', bg: 'bg-accent-teal/10', text: 'text-accent-teal' },
+  coral: { border: 'border-accent-orange/30', bg: 'bg-accent-orange/10', text: 'text-accent-orange' },
+  pink: { border: 'border-accent-pink/30', bg: 'bg-accent-pink/10', text: 'text-accent-pink' },
+  blue: { border: 'border-accent-blue/30', bg: 'bg-accent-blue/10', text: 'text-accent-blue' },
+  green: { border: 'border-accent-green/30', bg: 'bg-accent-green/10', text: 'text-accent-green' },
+  amber: { border: 'border-accent-yellow/30', bg: 'bg-accent-yellow/10', text: 'text-accent-yellow' },
+  red: { border: 'border-accent-red/30', bg: 'bg-accent-red/10', text: 'text-accent-red' },
+  gray: { border: 'border-frost', bg: 'bg-surface-2', text: 'text-muted-text' },
+}
+
 export const executionStatusStyles: Record<
   NodeExecutionStatus,
   { border: string; bg: string; overlay?: string }
@@ -49,21 +69,16 @@ export const executionStatusStyles: Record<
     border: 'border-accent-blue shadow-md shadow-accent-blue/10',
     bg: 'bg-accent-blue/5',
   },
-  success: {
+  completed: {
     border: 'border-accent-green/40',
     bg: 'bg-accent-green/5',
   },
-  error: {
+  failed: {
     border: 'border-accent-red/40',
     bg: 'bg-accent-red/5',
   },
   skipped: {
     border: 'border-muted-text/20',
     bg: 'bg-muted-text/5',
-  },
-  'out-of-scope': {
-    border: 'border-frost/50',
-    bg: 'bg-void/60',
-    overlay: 'opacity-40',
   },
 }

@@ -5,36 +5,24 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { PortDefinitionDto } from './portDefinitionDto';
-import type { PropertySchemaDto } from './propertySchemaDto';
-import type { SummaryFieldConfigDto } from './summaryFieldConfigDto';
-import type { UpsertNodeDefinitionBodyDtoDefaultProps } from './upsertNodeDefinitionBodyDtoDefaultProps';
+import type { ConfigDto } from './configDto';
+import type { IdentityDto } from './identityDto';
+import type { IODto } from './iODto';
+import type { LimitsDto } from './limitsDto';
+import type { RetryDto } from './retryDto';
+import type { SecurityDto } from './securityDto';
+import type { UIDto } from './uIDto';
+import type { UpsertNodeDefinitionBodyDtoExecution } from './upsertNodeDefinitionBodyDtoExecution';
 
 export interface UpsertNodeDefinitionBodyDto {
-  /** Unique semantic type identifier */
-  typeId: string;
-  /** Grouping category (trigger, source, content, utility) */
-  category: string;
-  /** Display title in the node palette */
-  title: string;
-  /** Tooltip description */
-  description: string;
-  /** Lucide icon name */
-  icon: string;
-  /** Long-form purpose explanation */
-  purpose: string;
-  /** Input port definitions */
-  inputs: PortDefinitionDto[];
-  /** Output port definitions */
-  outputs: PortDefinitionDto[];
-  /** Default props when a new node instance is placed */
-  defaultProps: UpsertNodeDefinitionBodyDtoDefaultProps;
-  /** Property panel schema — defines the config form */
-  propertySchema: PropertySchemaDto[];
-  /** Fields shown in the node compact summary on canvas */
-  summaryFields: SummaryFieldConfigDto[];
-  /** True for seeded built-in nodes (immutable via API) */
-  builtIn: boolean;
-  /** Monotonically increasing version number */
-  version: number;
+  identity: IdentityDto;
+  io: IODto;
+  /** Execution config (discriminated by mode) */
+  execution: UpsertNodeDefinitionBodyDtoExecution;
+  config: ConfigDto;
+  limits: LimitsDto;
+  retry: RetryDto;
+  ui: UIDto;
+  security?: SecurityDto;
+  builtIn?: boolean;
 }

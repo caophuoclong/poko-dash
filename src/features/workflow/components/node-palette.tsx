@@ -20,11 +20,15 @@ import {
 } from 'lucide-react'
 import { cn } from '#/shared/utils'
 import {
+  useNodeRegistryStore,
+  type NodeDefinition,
+} from '../stores/node-registry/use-node-registry.store'
+import {
   CATEGORY_CONFIG,
   CATEGORY_ORDER,
-  useAllNodeDefinitions,
-} from '../node-registry'
-import type { NodeDefinition, WorkflowNodeCategory } from '../node-types'
+  type WorkflowNodeCategory,
+} from '../stores/node-registry/constants'
+
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Play, Clock, ListPlus, Globe, Layers, Filter,
@@ -39,12 +43,12 @@ interface NodePaletteProps {
 
 export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps) {
   const [searchQuery, setSearchQuery] = useState('')
-  const allDefs = useAllNodeDefinitions()
+  const allDefs = useNodeRegistryStore().allNodeDefinitions
 
   const grouped = useMemo(() => {
     const g: Record<WorkflowNodeCategory, NodeDefinition[]> = {} as Record<WorkflowNodeCategory, NodeDefinition[]>
     for (const cat of CATEGORY_ORDER) {
-      const nodes = allDefs.filter((d) => d.category === cat)
+      const nodes = allDefs.filter((d) => d.identity.category === cat)
       g[cat] = nodes
     }
     return g
@@ -57,9 +61,8 @@ export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps
     for (const cat of CATEGORY_ORDER) {
       const nodes = (grouped[cat] ?? []).filter(
         (d) =>
-          d.title.toLowerCase().includes(q) ||
-          d.description.toLowerCase().includes(q) ||
-          d.purpose.toLowerCase().includes(q),
+          d.identity.title.toLowerCase().includes(q) ||
+          d.identity.description.toLowerCase().includes(q),
       )
       if (nodes.length > 0) result[cat] = nodes
     }
@@ -73,12 +76,12 @@ export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps
         JSON.stringify({
           type: 'workflow-node',
           data: {
-            title: nodeDef.title,
-            subtitle: nodeDef.description,
-            icon: nodeDef.icon,
-            nodeTypeId: nodeDef.typeId,
+            title: nodeDef.identity.title,
+            subtitle: nodeDef.identity.description,
+            icon: nodeDef.identity.icon,
+            nodeTypeId: nodeDef.identity.typeId,
             status: 'pending' as const,
-            config: nodeDef.defaultProps,
+            config: nodeDef.config.defaultProps,
           },
         }),
       )
@@ -148,15 +151,15 @@ export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps
 
               return (
                 <div key={cat} className="mb-2">
-                  <div className={cn(
-                    'flex items-center gap-2 px-3 py-1.5',
-                  )}>
-                    <div className={cn(
-                      'w-2 h-2 rounded-sm shrink-0',
-                      config.bgColor,
-                    )} />
+                  <div className={cn('flex items-center gap-2 px-3 py-1.5')}>
+                    <div
+                      className={cn(
+                        'w-2 h-2 rounded-sm shrink-0',
+                        config?.bgColor,
+                      )}
+                    />
                     <span className="font-mono text-[9px] font-bold tracking-[0.18em] uppercase text-muted-text">
-                      {config.label}
+                      {config?.label}
                     </span>
                     <span className="font-mono text-[9px] text-muted-text/40 ml-auto">
                       {items.length}
@@ -165,10 +168,10 @@ export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps
 
                   <div className="px-1">
                     {items.map((item) => {
-                      const Icon = ICON_MAP[item.icon]
+                      const Icon = ICON_MAP[item.identity.icon ?? '']
                       return (
                         <div
-                          key={item.typeId}
+                          key={item.identity.typeId}
                           className="flex items-center group"
                         >
                           <button
@@ -176,19 +179,21 @@ export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps
                             onDragStart={(e) => handleDragStart(e, item)}
                             onClick={() => handleClickAdd(item)}
                             className="flex-1 flex items-center gap-2 px-2 py-1.5 rounded text-left cursor-grab active:cursor-grabbing hover:bg-surface-2 transition-colors min-w-0"
-                            title={item.description}
+                            title={item.identity.description}
                           >
                             {Icon && (
-                              <div className={cn(
-                                'w-5 h-5 rounded flex items-center justify-center shrink-0',
-                                config.bgColor,
-                                config.color,
-                              )}>
+                              <div
+                                className={cn(
+                                  'w-5 h-5 rounded flex items-center justify-center shrink-0',
+                                  config.bgColor,
+                                  config.color,
+                                )}
+                              >
                                 <Icon size={11} strokeWidth={2.5} />
                               </div>
                             )}
                             <span className="text-[11px] font-medium text-near-white truncate leading-tight">
-                              {item.title}
+                              {item.identity.title}
                             </span>
                           </button>
                         </div>

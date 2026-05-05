@@ -1,4 +1,4 @@
-import type { PropertySchema, ValidationError } from '../../node-types'
+import type { PropertySchema, ValidationError } from '../../node-types.old.abcd'
 import { TextFieldEditor } from './text-field-editor'
 import { TextareaFieldEditor } from './textarea-field-editor'
 import { NumberFieldEditor } from './number-field-editor'
@@ -27,11 +27,14 @@ export interface PropertyEditorProps {
 
 const EDITOR_MAP: Record<string, React.ComponentType<PropertyEditorProps>> = {
   text: TextFieldEditor,
+  string: TextFieldEditor,
   textarea: TextareaFieldEditor,
   number: NumberFieldEditor,
   select: SelectFieldEditor,
   'multi-select': MultiSelectFieldEditor,
+  multiselect: MultiSelectFieldEditor,
   toggle: ToggleFieldEditor,
+  boolean: ToggleFieldEditor,
   slider: SliderFieldEditor,
   'tag-input': TagInputFieldEditor,
   cron: CronFieldEditor,
@@ -43,11 +46,24 @@ const EDITOR_MAP: Record<string, React.ComponentType<PropertyEditorProps>> = {
   keyValue: KeyValueFieldEditor,
   assignments: AssignmentsFieldEditor,
   conditions: ConditionsFieldEditor,
+  enum: SelectFieldEditor,
   date: TextFieldEditor,
   datetime: TextFieldEditor,
 }
 
-export function PropertyEditor({ schema, value, onChange, allProps, errors }: PropertyEditorProps) {
+export function PropertyEditor({
+  schema,
+  value,
+  onChange,
+  allProps,
+  errors,
+}: PropertyEditorProps) {
+  if (
+    schema.showWhen &&
+    allProps[schema.showWhen.field] !== schema.showWhen.equals
+  ) {
+    return null
+  }
   if (schema.visibleWhen && !schema.visibleWhen(allProps)) {
     return null
   }
@@ -59,7 +75,6 @@ export function PropertyEditor({ schema, value, onChange, allProps, errors }: Pr
   }
 
   const fieldErrors = errors.filter((e) => e.propertyKey === schema.key)
-
   return (
     <div className="space-y-1.5">
       <Editor

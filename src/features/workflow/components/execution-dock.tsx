@@ -21,12 +21,15 @@ import {
   DropdownMenuTrigger,
 } from '#/components/ui/dropdown-menu'
 import { cn } from '#/shared/utils'
-import { useExecutionControllerExecuteWorkflow } from '#/api/client'
 import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
-import { useExecutionStore } from '../stores/execution-store'
-import { canExecuteSingleNode } from '../utils/execution-engine'
-import type { ExecutionMode } from '../utils/execution-engine'
+import {
+  canExecuteSingleNode,
+  useExecutionStore,
+  type ExecutionMode,
+} from '../stores/execution-store/useExecutionStore'
+import { useExecutionControllerExecuteWorkflow } from '#/api/client'
+
 
 interface ExecutionDockProps {
   selectedNodeId: string | null
@@ -110,8 +113,8 @@ export function ExecutionDock({
         },
         onError: (error) => {
           failExecution(
-            error instanceof Error
-              ? error.message
+            (error as unknown)
+              ? (error as unknown as Error).message
               : 'Failed to start execution',
           )
         },

@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 import type { WorkflowNodeDtoConfig } from './workflowNodeDtoConfig';
+import type { WorkflowNodeDtoPinData } from './workflowNodeDtoPinData';
 
 export interface WorkflowNodeDto {
   id: string;
@@ -19,4 +20,10 @@ export interface WorkflowNodeDto {
   icon?: string;
   status: string;
   config: WorkflowNodeDtoConfig;
+  disabled?: boolean;
+  notes?: string;
+  continueOnFail?: boolean;
+  retryOnFail?: boolean;
+  retryCount?: number;
+  pinData?: WorkflowNodeDtoPinData;
 }

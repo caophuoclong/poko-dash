@@ -6844,6 +6844,215 @@ export const useWorkflowsControllerRestoreVersion = <TError = void,
     }
 
 /**
+ * @summary Export workflow as JSON file
+ */
+export type workflowImportExportControllerExportWorkflowResponse200 = {
+  data: void
+  status: 200
+}
+
+export type workflowImportExportControllerExportWorkflowResponse404 = {
+  data: void
+  status: 404
+}
+
+export type workflowImportExportControllerExportWorkflowResponseSuccess = (workflowImportExportControllerExportWorkflowResponse200) & {
+  headers: Headers;
+};
+export type workflowImportExportControllerExportWorkflowResponseError = (workflowImportExportControllerExportWorkflowResponse404) & {
+  headers: Headers;
+};
+
+export type workflowImportExportControllerExportWorkflowResponse = (workflowImportExportControllerExportWorkflowResponseSuccess | workflowImportExportControllerExportWorkflowResponseError)
+
+export const getWorkflowImportExportControllerExportWorkflowUrl = (id: string,) => {
+
+
+
+
+  return `/api/workflows/${id}/export`
+}
+
+export const workflowImportExportControllerExportWorkflow = async (id: string, options?: RequestInit): Promise<workflowImportExportControllerExportWorkflowResponse> => {
+
+  return customFetch<workflowImportExportControllerExportWorkflowResponse>(getWorkflowImportExportControllerExportWorkflowUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getWorkflowImportExportControllerExportWorkflowQueryKey = (id: string,) => {
+    return [
+    `/api/workflows/${id}/export`
+    ] as const;
+    }
+
+
+export const getWorkflowImportExportControllerExportWorkflowQueryOptions = <TData = Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getWorkflowImportExportControllerExportWorkflowQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>> = ({ signal }) => workflowImportExportControllerExportWorkflow(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type WorkflowImportExportControllerExportWorkflowQueryResult = NonNullable<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>>
+export type WorkflowImportExportControllerExportWorkflowQueryError = void
+
+
+export function useWorkflowImportExportControllerExportWorkflow<TData = Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError = void>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>,
+          TError,
+          Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowImportExportControllerExportWorkflow<TData = Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>,
+          TError,
+          Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useWorkflowImportExportControllerExportWorkflow<TData = Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Export workflow as JSON file
+ */
+
+export function useWorkflowImportExportControllerExportWorkflow<TData = Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError = void>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getWorkflowImportExportControllerExportWorkflowQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+/**
+ * @summary Import workflow from JSON file
+ */
+export type workflowImportExportControllerImportWorkflowResponse201 = {
+  data: void
+  status: 201
+}
+
+export type workflowImportExportControllerImportWorkflowResponse400 = {
+  data: void
+  status: 400
+}
+
+export type workflowImportExportControllerImportWorkflowResponseSuccess = (workflowImportExportControllerImportWorkflowResponse201) & {
+  headers: Headers;
+};
+export type workflowImportExportControllerImportWorkflowResponseError = (workflowImportExportControllerImportWorkflowResponse400) & {
+  headers: Headers;
+};
+
+export type workflowImportExportControllerImportWorkflowResponse = (workflowImportExportControllerImportWorkflowResponseSuccess | workflowImportExportControllerImportWorkflowResponseError)
+
+export const getWorkflowImportExportControllerImportWorkflowUrl = () => {
+
+
+
+
+  return `/api/workflows/import`
+}
+
+export const workflowImportExportControllerImportWorkflow = async ( options?: RequestInit): Promise<workflowImportExportControllerImportWorkflowResponse> => {
+
+  return customFetch<workflowImportExportControllerImportWorkflowResponse>(getWorkflowImportExportControllerImportWorkflowUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getWorkflowImportExportControllerImportWorkflowMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>, TError,void, TContext> => {
+
+const mutationKey = ['workflowImportExportControllerImportWorkflow'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>, void> = () => {
+
+
+          return  workflowImportExportControllerImportWorkflow(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type WorkflowImportExportControllerImportWorkflowMutationResult = NonNullable<Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>>
+
+    export type WorkflowImportExportControllerImportWorkflowMutationError = void
+
+    /**
+ * @summary Import workflow from JSON file
+ */
+export const useWorkflowImportExportControllerImportWorkflow = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getWorkflowImportExportControllerImportWorkflowMutationOptions(options), queryClient);
+    }
+
+/**
  * Returns all node definitions ordered by category, then title. Includes both built-in (seeded) and user-defined nodes.
  * @summary List all node definitions
  */
@@ -7267,215 +7476,6 @@ export const useNodeDefinitionControllerDelete = <TError = void,
         TContext
       > => {
       return useMutation(getNodeDefinitionControllerDeleteMutationOptions(options), queryClient);
-    }
-
-/**
- * @summary Export workflow as JSON file
- */
-export type workflowImportExportControllerExportWorkflowResponse200 = {
-  data: void
-  status: 200
-}
-
-export type workflowImportExportControllerExportWorkflowResponse404 = {
-  data: void
-  status: 404
-}
-
-export type workflowImportExportControllerExportWorkflowResponseSuccess = (workflowImportExportControllerExportWorkflowResponse200) & {
-  headers: Headers;
-};
-export type workflowImportExportControllerExportWorkflowResponseError = (workflowImportExportControllerExportWorkflowResponse404) & {
-  headers: Headers;
-};
-
-export type workflowImportExportControllerExportWorkflowResponse = (workflowImportExportControllerExportWorkflowResponseSuccess | workflowImportExportControllerExportWorkflowResponseError)
-
-export const getWorkflowImportExportControllerExportWorkflowUrl = (id: string,) => {
-
-
-
-
-  return `/api/workflows/${id}/export`
-}
-
-export const workflowImportExportControllerExportWorkflow = async (id: string, options?: RequestInit): Promise<workflowImportExportControllerExportWorkflowResponse> => {
-
-  return customFetch<workflowImportExportControllerExportWorkflowResponse>(getWorkflowImportExportControllerExportWorkflowUrl(id),
-  {
-    ...options,
-    method: 'GET'
-
-
-  }
-);}
-
-
-
-
-
-export const getWorkflowImportExportControllerExportWorkflowQueryKey = (id: string,) => {
-    return [
-    `/api/workflows/${id}/export`
-    ] as const;
-    }
-
-
-export const getWorkflowImportExportControllerExportWorkflowQueryOptions = <TData = Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError = void>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
-) => {
-
-const {query: queryOptions, request: requestOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getWorkflowImportExportControllerExportWorkflowQueryKey(id);
-
-
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>> = ({ signal }) => workflowImportExportControllerExportWorkflow(id, { signal, ...requestOptions });
-
-
-
-
-
-   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type WorkflowImportExportControllerExportWorkflowQueryResult = NonNullable<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>>
-export type WorkflowImportExportControllerExportWorkflowQueryError = void
-
-
-export function useWorkflowImportExportControllerExportWorkflow<TData = Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError = void>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>,
-          TError,
-          Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useWorkflowImportExportControllerExportWorkflow<TData = Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError = void>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>,
-          TError,
-          Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>
-        > , 'initialData'
-      >, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useWorkflowImportExportControllerExportWorkflow<TData = Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError = void>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Export workflow as JSON file
- */
-
-export function useWorkflowImportExportControllerExportWorkflow<TData = Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError = void>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof workflowImportExportControllerExportWorkflow>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getWorkflowImportExportControllerExportWorkflowQueryOptions(id,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return { ...query, queryKey: queryOptions.queryKey };
-}
-
-
-
-
-
-
-
-/**
- * @summary Import workflow from JSON file
- */
-export type workflowImportExportControllerImportWorkflowResponse201 = {
-  data: void
-  status: 201
-}
-
-export type workflowImportExportControllerImportWorkflowResponse400 = {
-  data: void
-  status: 400
-}
-
-export type workflowImportExportControllerImportWorkflowResponseSuccess = (workflowImportExportControllerImportWorkflowResponse201) & {
-  headers: Headers;
-};
-export type workflowImportExportControllerImportWorkflowResponseError = (workflowImportExportControllerImportWorkflowResponse400) & {
-  headers: Headers;
-};
-
-export type workflowImportExportControllerImportWorkflowResponse = (workflowImportExportControllerImportWorkflowResponseSuccess | workflowImportExportControllerImportWorkflowResponseError)
-
-export const getWorkflowImportExportControllerImportWorkflowUrl = () => {
-
-
-
-
-  return `/api/workflows/import`
-}
-
-export const workflowImportExportControllerImportWorkflow = async ( options?: RequestInit): Promise<workflowImportExportControllerImportWorkflowResponse> => {
-
-  return customFetch<workflowImportExportControllerImportWorkflowResponse>(getWorkflowImportExportControllerImportWorkflowUrl(),
-  {
-    ...options,
-    method: 'POST'
-
-
-  }
-);}
-
-
-
-
-export const getWorkflowImportExportControllerImportWorkflowMutationOptions = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>, TError,void, TContext> => {
-
-const mutationKey = ['workflowImportExportControllerImportWorkflow'];
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>, void> = () => {
-
-
-          return  workflowImportExportControllerImportWorkflow(requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type WorkflowImportExportControllerImportWorkflowMutationResult = NonNullable<Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>>
-
-    export type WorkflowImportExportControllerImportWorkflowMutationError = void
-
-    /**
- * @summary Import workflow from JSON file
- */
-export const useWorkflowImportExportControllerImportWorkflow = <TError = void,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof workflowImportExportControllerImportWorkflow>>,
-        TError,
-        void,
-        TContext
-      > => {
-      return useMutation(getWorkflowImportExportControllerImportWorkflowMutationOptions(options), queryClient);
     }
 
 /**
@@ -8346,6 +8346,7 @@ export const scheduleControllerGetSchedule = async (workflowId: string, options?
 
   }
 );}
+
 
 
 

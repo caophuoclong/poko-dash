@@ -12,6 +12,8 @@ export interface WorkflowEdgeDto {
   source_node_id: string;
   target_node_id: string;
   source_handle?: string;
+  target_handle?: string;
   type: string;
+  edge_type?: string;
   style?: WorkflowEdgeDtoStyle;
 }

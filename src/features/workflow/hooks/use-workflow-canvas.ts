@@ -7,15 +7,14 @@ import {
   type Connection,
   type OnSelectionChangeParams,
   type ReactFlowInstance,
-  type EdgeChange,
   applyNodeChanges,
   applyEdgeChanges,
 } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
-import { getNodeDefinition } from '../node-registry'
-import { useExecutionStore } from '../stores/execution-store'
-import { useExecutionEdgeStates } from './use-execution-edge-states'
+
 import type { EdgeStyle } from '../components/edges/workflow-edge'
+import { useExecutionStore } from '../stores/execution-store/useExecutionStore'
+import { getNodeDefinition } from '../stores/node-registry/use-node-registry.store'
 
 interface WorkflowCanvasLogic {
   nodes: Node<WorkflowNodeData>[]
@@ -41,7 +40,7 @@ export function useWorkflowCanvasLogic({
 
   const running = useExecutionStore((s) => s.running)
   const executionPath = useExecutionStore((s) => s.executionPath)
-  const nodeExecutions = useExecutionEdgeStates()
+  const nodeExecutions = useExecutionStore((s) => s.nodeExecutions)
 
   const completedNodeIds = useMemo(() => {
     if (!nodeExecutions) return new Set<string>()
@@ -108,7 +107,7 @@ export function useWorkflowCanvasLogic({
           publish: 'var(--t-accent-green)',
           metric: 'var(--t-accent-purple)',
         }
-        return catColors[def.category] ?? 'var(--t-accent-blue)'
+        return catColors[def.identity?.category] ?? 'var(--t-accent-blue)'
       }
     }
     return 'var(--t-accent-blue)'

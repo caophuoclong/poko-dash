@@ -10,10 +10,19 @@ import {
 } from '@xyflow/react'
 import { X } from 'lucide-react'
 import { cn } from '#/shared/utils'
+import type { EdgeType } from '../../node-types.old.abcd'
 
 export type EdgeStyle = 'auto' | 'bezier' | 'straight' | 'polyline' | 'step' | 'smoothstep' | 'quadratic' | 'cubic'
 
 const EDGE_STYLES: EdgeStyle[] = ['auto', 'bezier', 'straight', 'polyline', 'step', 'smoothstep', 'quadratic', 'cubic']
+
+const EDGE_TYPE_CONFIG: Record<string, { stroke: string; dash?: string }> = {
+  main: { stroke: 'var(--t-frost)' },
+  reference: { stroke: 'var(--t-accent-blue)', dash: '4 2' },
+  error: { stroke: 'var(--t-accent-red)' },
+  condition_true: { stroke: 'var(--t-accent-green)' },
+  condition_false: { stroke: 'var(--t-accent-red)' },
+}
 
 function pickAutoStyle(sx: number, sy: number, tx: number, ty: number): EdgeStyle {
   const dx = tx - sx
@@ -76,6 +85,7 @@ interface WorkflowEdgeData {
   style?: EdgeStyle
   label?: string
   accent?: string
+  edgeType?: EdgeType
 }
 
 export type WorkflowEdgeProps = EdgeProps & { data?: WorkflowEdgeData }
@@ -92,7 +102,13 @@ export function WorkflowEdge({
   data,
 }: WorkflowEdgeProps) {
   const resolved = data?.style ?? 'auto'
-  const label = data?.label
+  const edgeTypeConfig = data?.edgeType ? EDGE_TYPE_CONFIG[data.edgeType] : null
+  const edgeTypeLabel = data?.edgeType === 'condition_true'
+    ? 'true'
+    : data?.edgeType === 'condition_false'
+      ? 'false'
+      : undefined
+  const label = edgeTypeLabel ?? data?.label
   const accent = data?.accent
 
   const [d, labelX, labelY] = getEdgePath(
@@ -102,7 +118,13 @@ export function WorkflowEdge({
     targetPosition,
   )
 
-  const edgeColor = accent ?? (selected ? 'var(--t-accent-blue)' : 'var(--t-frost)')
+  const edgeColor = edgeTypeConfig?.stroke
+    ?? accent
+    ?? (selected ? 'var(--t-accent-blue)' : 'var(--t-frost)')
+
+  const edgeStyle = edgeTypeConfig?.dash
+    ? { strokeDasharray: edgeTypeConfig.dash }
+    : undefined
 
   const hasPath = d && d.length > 0
 
@@ -119,6 +141,7 @@ export function WorkflowEdge({
             ...baseStyle,
             stroke: edgeColor,
             strokeWidth: selected ? 2 : (baseStyle?.strokeWidth ?? 1.5),
+            ...edgeStyle,
           }}
           markerEnd={(markerEnd ?? {
             type: MarkerType.ArrowClosed,

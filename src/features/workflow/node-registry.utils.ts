@@ -1,5 +1,11 @@
 import cronstrue from 'cronstrue'
-import type { PropertySchema, ValidationError } from './node-types'
+import type {
+  PropertySchema,
+  ValidationError,
+  PortDefinition,
+  SummaryFieldConfig,
+  NodeDefinitionRecord,
+} from './node-types'
 
 export function deriveValidator(
   schema: PropertySchema[],
@@ -84,4 +90,32 @@ export function deriveValidator(
 
     return errors
   }
+}
+
+export function resolveInputs(def: NodeDefinitionRecord): PortDefinition[] {
+  return def.io?.inputs ?? def.inputs ?? []
+}
+
+export function resolveOutputs(def: NodeDefinitionRecord): PortDefinition[] {
+  return def.io?.outputs ?? def.outputs ?? []
+}
+
+export function resolvePropertySchema(def: NodeDefinitionRecord): PropertySchema[] {
+  return def.config?.propertySchema ?? def.propertySchema ?? []
+}
+
+export function resolveDefaultProps(def: NodeDefinitionRecord): Record<string, unknown> {
+  return def.config?.defaultProps ?? def.defaultProps ?? {}
+}
+
+export function resolveSummaryFields(def: NodeDefinitionRecord): SummaryFieldConfig[] {
+  return def.ui?.summaryFields ?? def.summaryFields ?? []
+}
+
+export function resolveColor(def: NodeDefinitionRecord): string | undefined {
+  return def.ui?.color
+}
+
+export function isNodeHidden(def: NodeDefinitionRecord): boolean {
+  return Boolean(def.identity?.supportingOnly || def.identity?.deprecated)
 }

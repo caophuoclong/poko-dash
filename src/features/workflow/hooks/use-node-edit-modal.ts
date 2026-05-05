@@ -1,11 +1,14 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
-import { getNodeDefinition, CATEGORY_CONFIG } from '../node-registry'
 import { buildVariableList } from '../utils/variable-system-utils'
 import { ICON_MAP } from '../components/nodes/workflow-node.constants'
-import type { ValidationError } from '../node-types'
 import type { LucideIcon } from 'lucide-react'
+import {
+  getNodeDefinition,
+  type ValidationError,
+} from '../stores/node-registry/use-node-registry.store'
+import { CATEGORY_CONFIG } from '../stores/node-registry/constants'
 
 interface UseNodeEditModalProps {
   nodeId: string
@@ -28,7 +31,7 @@ export function useNodeEditModal({
   const [activeTab, setActiveTab] = useState<'properties' | 'validation'>('properties')
 
   const [localProps, setLocalProps] = useState<Record<string, unknown>>(() => ({
-    ...def?.defaultProps,
+    ...def?.config.defaultProps,
     ...(data.config ?? {}),
   }))
 
@@ -84,8 +87,10 @@ export function useNodeEditModal({
     onClose()
   }, [nodeId, title, subtitle, onNodeDataUpdate, onClose, handleTitleBlur, handleSubtitleBlur])
 
-  const catConfig = def ? CATEGORY_CONFIG[def.category] : null
-  const Icon: LucideIcon | undefined = def ? ICON_MAP[def.icon] : undefined
+  const catConfig = def ? CATEGORY_CONFIG[def.identity?.category] : null
+  const Icon: LucideIcon | undefined = def
+    ? (ICON_MAP[def.identity?.icon ?? ''] ?? ICON_MAP['default'])
+    : undefined
 
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
   const dragState = useRef<{ startX: number; startY: number; offsetX: number; offsetY: number } | null>(null)

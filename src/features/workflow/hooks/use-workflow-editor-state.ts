@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
-import { WorkflowVersionDtoVersionType } from '#/api/model/workflowVersionDtoVersionType'
+import { SaveWorkflowCanvasBodyDtoVersionType } from '#/api/model'
 
 interface HistoryEntry {
   nodes: Node<WorkflowNodeData>[]
@@ -9,6 +9,8 @@ interface HistoryEntry {
 }
 
 type SaveStatus = 'idle' | 'dirty' | 'saving' | 'saved' | 'error'
+
+type WorkflowVersionDtoVersionType = SaveWorkflowCanvasBodyDtoVersionType
 
 export function useWorkflowEditorState(initialNodes: Node<WorkflowNodeData>[], initialEdges: Edge[]) {
   const [nodes, setNodes] = useState<Node<WorkflowNodeData>[]>(initialNodes)
@@ -166,11 +168,7 @@ export function useWorkflowEditorState(initialNodes: Node<WorkflowNodeData>[], i
       if (!saveCallbackRef.current) return
       setSaveStatus('saving')
       try {
-        await saveCallbackRef.current(
-          nodes,
-          edges,
-          versionType ?? WorkflowVersionDtoVersionType.manual,
-        )
+        await saveCallbackRef.current(nodes, edges, versionType ?? 'manual')
         markSaved(nodes, edges)
       } catch {
         setSaveStatus('error')

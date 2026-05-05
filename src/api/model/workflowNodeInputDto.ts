@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 import type { WorkflowNodeInputDtoConfig } from './workflowNodeInputDtoConfig';
+import type { WorkflowNodeInputDtoPinData } from './workflowNodeInputDtoPinData';
 
 export interface WorkflowNodeInputDto {
   xyflow_id: string;
@@ -17,4 +18,16 @@ export interface WorkflowNodeInputDto {
   subtitle?: string;
   icon?: string;
   config?: WorkflowNodeInputDtoConfig;
+  /** Skip node during execution but keep in graph */
+  disabled?: boolean;
+  /** Per-node sticky note */
+  notes?: string;
+  /** On error: route to error port instead of stopping workflow */
+  continueOnFail?: boolean;
+  /** Retry this node on failure */
+  retryOnFail?: boolean;
+  /** How many times (1-5), only used if retryOnFail=true */
+  retryCount?: number;
+  /** Override this node's output (for debugging) */
+  pinData?: WorkflowNodeInputDtoPinData;
 }

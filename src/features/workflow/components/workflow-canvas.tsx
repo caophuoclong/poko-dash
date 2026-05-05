@@ -8,20 +8,16 @@ import {
 import type { Node, Edge, ReactFlowInstance } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import WorkflowNode from './nodes/workflow-node'
-import CompactPillNode from './nodes/compact-pill-node'
 import { WorkflowEdge } from './edges/workflow-edge'
-import { CompactPillEdge } from './edges/compact-pill-edge'
 import type { WorkflowNodeData } from '../types'
 import { useWorkflowCanvasLogic } from '../hooks/use-workflow-canvas'
 
 const nodeTypes = {
   'workflow-node': WorkflowNode,
-  'compact-pill-node': CompactPillNode,
 }
 
 const edgeTypes = {
   'workflow-edge': WorkflowEdge,
-  'compact-pill-edge': CompactPillEdge,
 }
 
 const defaultEdgeOptions = {

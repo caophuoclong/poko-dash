@@ -10,13 +10,18 @@ import {
 import { cn } from '#/shared/utils'
 import type { Node } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
-import { getNodeDefinition, CATEGORY_CONFIG } from '../node-registry'
+import { resolveInputs, resolveOutputs } from '../node-registry.utils'
 import { type VariableRef } from '../utils/variable-system-utils'
 import { ICON_MAP } from './nodes/workflow-node.constants'
+import {
+  getNodeDefinition,
+  type NodeDefinition,
+} from '../stores/node-registry/use-node-registry.store'
+import { CATEGORY_CONFIG } from '../stores/node-registry/constants'
 
 interface OutputPreviewPanelProps {
   nextNodes: Node<WorkflowNodeData>[]
-  selectedDef: ReturnType<typeof getNodeDefinition>
+  selectedDef?: NodeDefinition
   localProps: Record<string, unknown>
   variables: VariableRef[]
 }
@@ -30,7 +35,7 @@ export function OutputPreviewPanel({
   const resolvedOutputs = useMemo(() => {
     if (!selectedDef) return {}
     const out: Record<string, string> = {}
-    for (const port of selectedDef.outputs) {
+    for (const port of resolveOutputs(selectedDef)) {
       out[port.label] = resolveSampleValue(port.type, port.label, localProps, variables)
     }
     return out
@@ -54,7 +59,7 @@ export function OutputPreviewPanel({
               <span className="text-[10px] font-medium text-muted-text uppercase tracking-wider">Outputs</span>
             </div>
             <div className="space-y-1.5">
-              {selectedDef.outputs.map((port) => (
+              {resolveOutputs(selectedDef).map((port) => (
                 <div key={port.id} className="p-2.5 rounded-lg bg-surface border border-frost">
                   <div className="flex items-center gap-2 mb-1">
                     <span className={cn('w-1.5 h-1.5 rounded-full', port.type === 'data' ? 'bg-accent-blue' : port.type === 'signal' ? 'bg-accent-orange' : 'bg-accent-red')} />
@@ -82,35 +87,68 @@ export function OutputPreviewPanel({
         {nextNodes.map((next) => {
           const nextData = next.data as WorkflowNodeData
           const nextDef = nextData.nodeTypeId ? getNodeDefinition(nextData.nodeTypeId) : null
-          const NextIcon = nextDef ? (ICON_MAP[nextDef.icon] ?? Info) : Info
+          const NextIcon = nextDef
+            ? (ICON_MAP[nextDef.identity.icon || ''] ?? Info)
+            : Info
           const outputMismatch = checkOutputMismatch(selectedDef, nextDef)
 
           return (
             <div key={next.id} className="space-y-2">
               <div className="flex items-center gap-1.5 mb-1">
                 <ArrowDown size={11} className="text-muted-text" />
-                <span className="text-[10px] font-medium text-muted-text uppercase tracking-wider">Next Node</span>
+                <span className="text-[10px] font-medium text-muted-text uppercase tracking-wider">
+                  Next Node
+                </span>
               </div>
 
               <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-surface border border-frost">
-                <div className={cn('w-7 h-7 rounded-md flex items-center justify-center shrink-0',
-                  nextDef && CATEGORY_CONFIG[nextDef.category] ? `${CATEGORY_CONFIG[nextDef.category].bgColor} ${CATEGORY_CONFIG[nextDef.category].color}` : 'bg-surface-2 text-muted-text')}>
+                <div
+                  className={cn(
+                    'w-7 h-7 rounded-md flex items-center justify-center shrink-0',
+                    nextDef && CATEGORY_CONFIG[nextDef.identity.category]
+                      ? `${CATEGORY_CONFIG[nextDef.identity.category].bgColor} ${CATEGORY_CONFIG[nextDef.identity.category].color}`
+                      : 'bg-surface-2 text-muted-text',
+                  )}
+                >
                   <NextIcon size={13} />
                 </div>
                 <div className="min-w-0">
-                  <div className="text-[12px] font-medium text-near-white truncate">{nextData.title || next.id}</div>
-                  <div className="text-[10px] text-muted-text">{(nextData.nodeTypeId && nextDef?.title) || 'Unknown type'}</div>
+                  <div className="text-[12px] font-medium text-near-white truncate">
+                    {nextData.title || next.id}
+                  </div>
+                  <div className="text-[10px] text-muted-text">
+                    {(nextData.nodeTypeId && nextDef?.identity.title) ||
+                      'Unknown type'}
+                  </div>
                 </div>
               </div>
 
-              {nextDef && nextDef.inputs.length > 0 && (
+              {nextDef && resolveInputs(nextDef).length > 0 && (
                 <div className="space-y-1">
-                  <span className="text-[10px] font-medium text-muted-text">Expected Inputs</span>
-                  {nextDef.inputs.map((port) => (
-                    <div key={port.id} className="flex items-center gap-2 px-2 py-1.5 rounded bg-surface/50 border border-frost/50">
-                      <span className={cn('w-1.5 h-1.5 rounded-full', port.type === 'data' ? 'bg-accent-blue' : port.type === 'signal' ? 'bg-accent-orange' : 'bg-accent-red')} />
-                      <span className="text-[11px] text-near-white">{port.label}</span>
-                      <span className="text-[10px] text-muted-text ml-auto">{port.type}</span>
+                  <span className="text-[10px] font-medium text-muted-text">
+                    Expected Inputs
+                  </span>
+                  {resolveInputs(nextDef).map((port) => (
+                    <div
+                      key={port.id}
+                      className="flex items-center gap-2 px-2 py-1.5 rounded bg-surface/50 border border-frost/50"
+                    >
+                      <span
+                        className={cn(
+                          'w-1.5 h-1.5 rounded-full',
+                          port.type === 'data'
+                            ? 'bg-accent-blue'
+                            : port.type === 'signal'
+                              ? 'bg-accent-orange'
+                              : 'bg-accent-red',
+                        )}
+                      />
+                      <span className="text-[11px] text-near-white">
+                        {port.label}
+                      </span>
+                      <span className="text-[10px] text-muted-text ml-auto">
+                        {port.type}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -118,15 +156,20 @@ export function OutputPreviewPanel({
 
               {outputMismatch && (
                 <div className="flex gap-2 p-2 rounded-lg bg-accent-yellow/5 border border-accent-yellow/10">
-                  <AlertTriangle size={13} className="text-accent-yellow shrink-0 mt-0.5" />
-                  <p className="text-[10px] text-accent-yellow leading-relaxed">{outputMismatch}</p>
+                  <AlertTriangle
+                    size={13}
+                    className="text-accent-yellow shrink-0 mt-0.5"
+                  />
+                  <p className="text-[10px] text-accent-yellow leading-relaxed">
+                    {outputMismatch}
+                  </p>
                 </div>
               )}
             </div>
           )
         })}
 
-        {selectedDef && selectedDef.outputs.length === 0 && nextNodes.length > 0 && (
+        {selectedDef && resolveOutputs(selectedDef).length === 0 && nextNodes.length > 0 && (
           <div className="flex gap-2 p-2 rounded-lg bg-accent-red/5 border border-accent-red/10">
             <AlertTriangle size={13} className="text-accent-red shrink-0 mt-0.5" />
             <p className="text-[10px] text-accent-red">This node declares no outputs but has downstream nodes connected.</p>
@@ -158,8 +201,8 @@ function checkOutputMismatch(
   nextDef: ReturnType<typeof getNodeDefinition> | null,
 ): string | null {
   if (!selectedDef || !nextDef) return null
-  const selectOutputTypes = new Set(selectedDef.outputs.map((p) => p.type))
-  const nextInputTypes = new Set(nextDef.inputs.map((p) => p.type))
+  const selectOutputTypes = new Set(resolveOutputs(selectedDef).map((p) => p.type))
+  const nextInputTypes = new Set(resolveInputs(nextDef).map((p) => p.type))
   const missing = [...nextInputTypes].filter((t) => !selectOutputTypes.has(t))
   if (missing.length > 0) {
     return `Next node expects ${missing.join('/')} input but selected node does not provide it`

@@ -1,9 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
-import {
-  getExecutionControllerGetExecutionQueryKey,
-} from '#/api/client'
-import { useExecutionStore } from '../stores/execution-store'
+import { useExecutionStore } from '../stores/execution-store/useExecutionStore'
 
 interface SseEventData {
   type: string
@@ -11,28 +7,11 @@ interface SseEventData {
   nodeId?: string
   nodeTitle?: string
   status?: string
-  outputSummary?: { count?: number; items?: unknown[]; [key: string]: unknown }
+  outputSummary?: Record<string, unknown>
+  outputData?: Record<string, unknown>
   error?: string
   durationMs?: number
   nodeTypeId?: string
-}
-
-interface NodeExecutionData {
-  nodeId: string
-  title?: string
-  status: 'pending' | 'running' | 'completed' | 'failed'
-  outputSummary?: Record<string, unknown>
-  error?: string
-  durationMs?: number
-}
-
-interface ExecutionCacheData {
-  id: string
-  workflowId?: string
-  status: 'running' | 'completed' | 'failed' | 'cancelled' | 'pending'
-  startedAt?: string
-  completedAt?: string
-  nodes?: NodeExecutionData[]
 }
 
 const MAX_RETRIES = 5
@@ -55,7 +34,6 @@ function getAuthToken(): string | null {
 }
 
 export function useExecutionSSE() {
-  const queryClient = useQueryClient()
   const store = useExecutionStore()
   const [isConnected, setIsConnected] = useState(false)
   const esRef = useRef<EventSource | null>(null)
@@ -77,42 +55,6 @@ export function useExecutionSSE() {
     retryCountRef.current = 0
     nodeStartTimesRef.current.clear()
   }, [])
-
-  const addNodeToCache = useCallback(
-    (queryKey: readonly string[], executionId: string, nodeId: string, status: 'running' | 'completed' | 'failed', outputSummary?: Record<string, unknown>) => {
-      const cached = queryClient.getQueryData(queryKey) as
-        | ExecutionCacheData
-        | undefined
-
-      const current: ExecutionCacheData = cached ?? {
-        id: executionId,
-        status: 'running',
-        nodes: [],
-      }
-
-      const nodes = current.nodes ? [...current.nodes] : []
-      const nodeIndex = nodes.findIndex((n) => n.nodeId === nodeId)
-
-      const nodeEntry: NodeExecutionData = {
-        nodeId,
-        status,
-        outputSummary: outputSummary ?? (nodeIndex >= 0 ? nodes[nodeIndex].outputSummary : undefined),
-      }
-
-      if (nodeIndex >= 0) {
-        nodes[nodeIndex] = { ...nodes[nodeIndex], ...nodeEntry }
-      } else {
-        nodes.push(nodeEntry)
-      }
-
-      queryClient.setQueryData(queryKey, {
-        ...current,
-        status: current.status === 'pending' ? 'running' : current.status,
-        nodes,
-      } as ExecutionCacheData)
-    },
-    [queryClient],
-  )
 
   const setupEventListeners = useCallback(
     (es: EventSource) => {
@@ -142,8 +84,11 @@ export function useExecutionSSE() {
 
           nodeStartTimesRef.current.set(data.nodeId, Date.now())
 
-          const queryKey = getExecutionControllerGetExecutionQueryKey(data.executionId)
-          addNodeToCache(queryKey, data.executionId, data.nodeId, 'running')
+          store.upsertNodeExecution({
+            nodeId: data.nodeId,
+            title: data.nodeTitle,
+            status: 'running',
+          })
 
           store.addLog({
             nodeId: data.nodeId,
@@ -165,16 +110,18 @@ export function useExecutionSSE() {
           const duration = startTime ? Date.now() - startTime : data.durationMs
           nodeStartTimesRef.current.delete(data.nodeId)
 
-          const outputSummary = data.outputSummary
-            ? { count: data.outputSummary.count, items: data.outputSummary.items }
-            : undefined
+          store.upsertNodeExecution({
+            nodeId: data.nodeId,
+            title: data.nodeTitle,
+            status: 'completed',
+            outputSummary: data.outputSummary ?? undefined,
+            outputData: data.outputData ?? undefined,
+          })
 
-          const queryKey = getExecutionControllerGetExecutionQueryKey(data.executionId)
-          addNodeToCache(queryKey, data.executionId, data.nodeId, 'completed', outputSummary ?? undefined)
-
-          const outputMsg = data.outputSummary?.count != null
-            ? ` — ${data.outputSummary.count} item(s)`
-            : ''
+          const outputMsg =
+            data.outputSummary?.count != null
+              ? ` — ${data.outputSummary.count} item(s)`
+              : ''
 
           store.addLog({
             nodeId: data.nodeId,
@@ -197,8 +144,14 @@ export function useExecutionSSE() {
           const duration = startTime ? Date.now() - startTime : data.durationMs
           nodeStartTimesRef.current.delete(data.nodeId)
 
-          const queryKey = getExecutionControllerGetExecutionQueryKey(data.executionId)
-          addNodeToCache(queryKey, data.executionId, data.nodeId, 'failed')
+          store.upsertNodeExecution({
+            nodeId: data.nodeId,
+            title: data.nodeTitle,
+            status: 'failed',
+            outputSummary: data.outputSummary ?? undefined,
+            outputData: data.outputData ?? undefined,
+            error: data.error,
+          })
 
           store.addLog({
             nodeId: data.nodeId,
@@ -214,18 +167,6 @@ export function useExecutionSSE() {
 
       es.addEventListener('execution.completed', (event: MessageEvent) => {
         try {
-          const data = JSON.parse(event.data) as SseEventData
-
-          const queryKey = getExecutionControllerGetExecutionQueryKey(data.executionId)
-          const cached = queryClient.getQueryData(queryKey) as
-            | ExecutionCacheData
-            | undefined
-          queryClient.setQueryData(queryKey, {
-            ...cached,
-            id: data.executionId,
-            status: 'completed' as const,
-          } as ExecutionCacheData)
-
           store.completeExecution()
           closeEventSource()
         } catch {
@@ -237,16 +178,6 @@ export function useExecutionSSE() {
         try {
           const data = JSON.parse(event.data) as SseEventData
 
-          const queryKey = getExecutionControllerGetExecutionQueryKey(data.executionId)
-          const cached = queryClient.getQueryData(queryKey) as
-            | ExecutionCacheData
-            | undefined
-          queryClient.setQueryData(queryKey, {
-            ...cached,
-            id: data.executionId,
-            status: 'failed' as const,
-          } as ExecutionCacheData)
-
           store.failExecution(data.error ?? 'Execution failed')
           closeEventSource()
         } catch {
@@ -254,14 +185,16 @@ export function useExecutionSSE() {
         }
       })
     },
-    [queryClient, store, closeEventSource, addNodeToCache],
+    [store, closeEventSource],
   )
 
   const createConnection = useCallback(
     (executionId: string) => {
       const token = getAuthToken()
       const url = `/api/executions/${executionId}/events`
-      const urlWithToken = token ? `${url}?token=${encodeURIComponent(token)}` : url
+      const urlWithToken = token
+        ? `${url}?token=${encodeURIComponent(token)}`
+        : url
 
       const es = new EventSource(urlWithToken)
       esRef.current = es

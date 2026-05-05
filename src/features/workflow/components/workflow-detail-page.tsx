@@ -33,9 +33,9 @@ import { NodeEditModal } from './node-edit-modal'
 import { ExecutionDock } from './execution-dock'
 import { ExecutionDrawer } from './execution-drawer'
 import { VersionHistoryPanel } from './VersionHistoryPanel'
-import { useWorkflowDetailPage } from '../hooks/use-workflow-detail-page'
 import { exportWorkflow } from '../workflow-transfer'
 import type { WorkflowDetail, WorkflowNodeData } from '../types'
+import { useWorkflowDetailPage } from '../hooks/use-workflow-detail-page/useWorkflowDetailPage'
 
 interface WorkflowDetailPageProps {
   workflow: WorkflowDetail

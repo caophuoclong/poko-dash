@@ -7,94 +7,41 @@ import {
 } from '@xyflow/react'
 import { Loader2, CheckCircle2, XCircle, Copy } from 'lucide-react'
 import { cn } from '#/shared/utils'
-import {
-  useNodeRegistryStore,
-  getNodeSummaryData,
-  CATEGORY_CONFIG,
-} from '../../node-registry'
-import type { WorkflowNodeData } from '../../types'
-import type { PortDefinition } from '../../node-types'
-import { useNodeExecutionStatus } from '../../hooks/use-node-execution-status'
+import type { NodeExecutionData, WorkflowNodeData } from '../../types'
 import {
   ICON_MAP,
   statusConfig,
   executionStatusStyles,
-  PORT_KIND_COLOR,
+  NODE_COLOR_MAP,
 } from './workflow-node.constants'
+import { useNodeRegistryStore } from '../../stores/node-registry/use-node-registry.store'
+import { CATEGORY_CONFIG } from '../../stores/node-registry/constants'
+import { useExecutionStore } from '../../stores/execution-store/useExecutionStore'
+import { PortDot } from './PortDot'
 
-const PORT_SPACING = 22
 
-function PortDot({
-  port,
-  type,
-  position,
-  index,
-  total,
-}: {
-  port: PortDefinition
-  type: 'target' | 'source'
-  position: Position
-  index: number
-  total: number
-}) {
-  const color = PORT_KIND_COLOR[port.type] ?? PORT_KIND_COLOR.data
-  const isInput = type === 'target'
-  const spacing = 100 / (total + 1)
-  const top = spacing * (index + 1)
-
-  return (
-    <>
-      <Handle
-        id={port.id}
-        type={type}
-        position={position}
-        style={{ top: `${top}%` }}
-        className={cn(
-          isInput
-            ? '!w-[3px] !h-[14px] !rounded-[1px] !border-0'
-            : '!w-[10px] !h-[10px] !rounded-full !border-0',
-          'transition-transform hover:!scale-125',
-          color,
-        )}
-        title={port.label || port.id}
-      />
-      {port.label && (
-        <span
-          className="absolute text-[9px] font-mono font-bold tracking-wider uppercase text-muted-text select-none pointer-events-none"
-          style={{
-            top: `calc(${top}% + 4px)`,
-
-            left: isInput ? '0%' : '100%',
-
-            transform: isInput
-              ? 'translate(-120%, -50%)'
-              : 'translate(20%, -50%)',
-          }}
-        >
-          {port.label}
-        </span>
-      )}
-    </>
-  )
-}
 
 function WorkflowNode({ data, selected, id }: NodeProps) {
   const nodeData = data as unknown as WorkflowNodeData
   const Icon = nodeData.icon ? ICON_MAP[nodeData.icon] : null
   const status = nodeData.status ? statusConfig[nodeData.status] : null
-  const def = useNodeRegistryStore((s) =>
-    nodeData.nodeTypeId ? s.definitions[String(nodeData.nodeTypeId)] : undefined
-  )
-  const catConfig = def ? CATEGORY_CONFIG[def.category] : null
-  const updateNodeInternals = useUpdateNodeInternals()
-  const executionStatus = useNodeExecutionStatus(id)
+    const definitionStore = useNodeRegistryStore()
 
-  const inputs = def?.inputs ?? [
-    { id: 'target', label: '', type: 'data' as const },
-  ]
-  const outputs = def?.outputs ?? [
-    { id: 'output', label: '', type: 'data' as const },
-  ]
+    const def = definitionStore.getNodeDefinition(nodeData.nodeTypeId || '')
+    const catConfig = def ? CATEGORY_CONFIG[def.identity.category] : null
+    const nodeColor = def ? def.ui.color : undefined
+  const colorStyles = nodeColor ? NODE_COLOR_MAP[nodeColor] : null
+  const updateNodeInternals = useUpdateNodeInternals()
+  const executionsStore = useExecutionStore()
+  const executionStatus =
+    executionsStore.nodeExecutions?.find((n) => n.nodeId === id)?.status ??
+    'idle'
+  const execInfo =
+    executionsStore.nodeExecutions?.find((n) => n.nodeId === id) ??
+    ({} as NodeExecutionData)
+
+  const inputs = def ? def.io.inputs : []
+  const outputs = def ? def.io.outputs : []
 
   useLayoutEffect(() => {
     updateNodeInternals(id)
@@ -117,8 +64,8 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
 
   const summaryItems =
     def && nodeData.config
-      ? getNodeSummaryData(
-          def.typeId,
+      ? definitionStore.getNodeSummaryData(
+          def.identity.typeId,
           nodeData.config as Record<string, unknown>,
         )
       : null
@@ -140,7 +87,9 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
           'transition-all duration-150 relative',
           selected
             ? 'border-accent-blue ring-1 ring-accent-blue/20 shadow-md shadow-accent-blue/5'
-            : 'border-frost hover:border-frost-hover hover:shadow-sm',
+            : colorStyles
+              ? cn(colorStyles.border, 'hover:border-opacity-50')
+              : 'border-frost hover:border-frost-hover hover:shadow-sm',
           execStyles.border,
           execStyles.bg,
           execStyles.overlay,
@@ -152,13 +101,13 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
           </div>
         )}
 
-        {executionStatus === 'success' && (
+        {executionStatus === 'completed' && (
           <div className="absolute -top-1 -right-1">
             <CheckCircle2 size={14} className="text-accent-green" />
           </div>
         )}
 
-        {executionStatus === 'error' && (
+        {executionStatus === 'failed' && (
           <div className="absolute -top-1 -right-1">
             <XCircle size={14} className="text-accent-red" />
           </div>
@@ -169,9 +118,11 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
             <div
               className={cn(
                 'w-7 h-7 rounded-lg flex items-center justify-center shrink-0',
-                catConfig
-                  ? `${catConfig.bgColor} ${catConfig.color}`
-                  : 'bg-surface-2 text-muted-text',
+                colorStyles
+                  ? cn(colorStyles.bg, colorStyles.text)
+                  : catConfig
+                    ? `${catConfig.bgColor} ${catConfig.color}`
+                    : 'bg-surface-2 text-muted-text',
               )}
             >
               <Icon size={14} />
@@ -238,6 +189,27 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
           </div>
         )}
 
+        {execInfo.outputSummary && executionStatus === 'completed' && (
+          <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-2 pt-2 border-t border-accent-green/20">
+            {Object.entries(execInfo.outputSummary).map(([key, val]) => {
+              if (key === 'items' || val === undefined || val === null)
+                return null
+              return (
+                <div key={key} className="flex items-baseline gap-1">
+                  <span className="text-[11px] font-semibold text-near-white leading-none">
+                    {typeof val === 'object'
+                      ? JSON.stringify(val)
+                      : String(val)}
+                  </span>
+                  <span className="text-[9px] text-muted-text leading-none">
+                    {key}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
         {!summaryItems && nodeData.metrics && nodeData.metrics.length > 0 && (
           <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-2 pt-2 border-t border-frost">
             {nodeData.metrics.map((m, i) => (
@@ -253,7 +225,7 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
           </div>
         )}
 
-        {def && def.typeId === 'logic.condition' && (
+        {def && def.identity.typeId === 'logic.condition' && (
           <div className="mt-1.5 pt-1.5 border-t border-frost">
             <div className="flex items-center gap-2">
               <span className="text-[9px] font-mono rounded px-1.5 py-0.5 bg-accent-yellow/10 text-accent-yellow">

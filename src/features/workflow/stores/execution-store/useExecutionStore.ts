@@ -1,0 +1,205 @@
+import { create } from 'zustand'
+import type { Node, Edge } from '@xyflow/react'
+import type { WorkflowNodeData } from '../../types'
+import {
+  type ExecutionMode,
+  type ExecutionLog,
+  type ValidationBlock,
+  createInitialExecutionState,
+} from './utils/types'
+import { computeExecutionPath } from './utils/graph'
+import { validateExecutionPath, canExecuteSingleNode } from './utils/validation'
+
+export type {
+  ExecutionMode,
+  ExecutionLog,
+  ExecutionState,
+  ExecutionNodeState,
+  ExecutionEdgeState,
+  ValidationBlock,
+  NodeExecutionStatus,
+} from './utils/types'
+export { createInitialExecutionState } from './utils/types'
+export {
+  findRootNodes,
+  getUpstreamNodeIds,
+  topologicalSort,
+  computeExecutionPath,
+  getEdgesForPath,
+} from './utils/graph'
+export { validateExecutionPath, canExecuteSingleNode } from './utils/validation'
+
+export interface NodeExecutionData {
+  nodeId: string
+  title?: string
+  status: 'pending' | 'running' | 'completed' | 'failed'
+  outputSummary?: Record<string, unknown>
+  outputData?: Record<string, unknown>
+  error?: string
+  durationMs?: number
+}
+
+interface ExecutionStore {
+  executionId: string | null
+  mode: ExecutionMode
+  running: boolean
+  currentNodeId: string | null
+  logs: ExecutionLog[]
+  nodeExecutions: NodeExecutionData[]
+  startedAt: number | null
+  completedAt: number | null
+  targetNodeId: string | null
+  executionPath: string[]
+  validationResult: ValidationBlock[] | null
+
+  validateAndStart: (
+    mode: ExecutionMode,
+    nodes: Node<WorkflowNodeData>[],
+    edges: Edge[],
+    targetNodeId?: string | null,
+  ) => ValidationBlock[] | null
+
+  setExecutionId: (id: string | null) => void
+  setRunning: (running: boolean) => void
+  addLog: (log: Omit<ExecutionLog, 'timestamp'>) => void
+  upsertNodeExecution: (node: NodeExecutionData) => void
+  completeExecution: () => void
+  failExecution: (error: string) => void
+  resetExecution: () => void
+}
+
+export const useExecutionStore = create<ExecutionStore>((set) => ({
+  ...createInitialExecutionState(),
+  executionId: null,
+  nodeExecutions: [],
+
+  validateAndStart: (mode, nodes, edges, targetNodeId = null) => {
+    if (mode === 'single-node' && targetNodeId) {
+      const check = canExecuteSingleNode(targetNodeId, nodes, edges)
+      if (!check.allowed) return null
+    }
+
+    const executionPath = computeExecutionPath(mode, nodes, edges, targetNodeId)
+    if (executionPath.length === 0) return null
+
+    const validationBlocks = validateExecutionPath(executionPath, nodes)
+    const hasErrors = validationBlocks.some((b) =>
+      b.errors.some((e) => e.severity === 'error'),
+    )
+    if (hasErrors) {
+      set({
+        mode,
+        targetNodeId,
+        validationResult: validationBlocks,
+      })
+      return validationBlocks
+    }
+
+    const firstNodeId = executionPath[0]
+    const nodeMap = new Map(nodes.map((n) => [n.id, n]))
+    const firstNode = nodeMap.get(firstNodeId)
+
+    const now = Date.now()
+
+    set({
+      mode,
+      running: true,
+      currentNodeId: firstNodeId,
+      startedAt: now,
+      completedAt: null,
+      targetNodeId,
+      executionPath,
+      validationResult: null,
+      logs: [
+        {
+          timestamp: now,
+          nodeId: '',
+          nodeTitle: '',
+          level: 'info',
+          message:
+            mode === 'full'
+              ? 'Starting full workflow execution'
+              : mode === 'to-node'
+                ? `Running to "${firstNode?.data?.title ?? targetNodeId}"`
+                : `Executing single node`,
+        },
+      ],
+    })
+
+    return null
+  },
+
+  setExecutionId: (id) => {
+    set({ executionId: id })
+  },
+
+  setRunning: (running) => {
+    set({ running })
+  },
+
+  addLog: (log) => {
+    set((state) => ({
+      logs: [...state.logs, { ...log, timestamp: Date.now() }],
+    }))
+  },
+
+  upsertNodeExecution: (node) => {
+    set((state) => {
+      const index = state.nodeExecutions.findIndex(
+        (n) => n.nodeId === node.nodeId,
+      )
+      if (index >= 0) {
+        const updated = [...state.nodeExecutions]
+        updated[index] = { ...updated[index], ...node }
+        return { nodeExecutions: updated }
+      }
+      return { nodeExecutions: [...state.nodeExecutions, node] }
+    })
+  },
+
+  completeExecution: () => {
+    const now = Date.now()
+    set((state) => ({
+      running: false,
+      completedAt: now,
+      currentNodeId: null,
+      logs: [
+        ...state.logs,
+        {
+          timestamp: now,
+          nodeId: '',
+          nodeTitle: '',
+          level: 'success',
+          message: 'Execution completed',
+        },
+      ],
+    }))
+  },
+
+  failExecution: (error) => {
+    const now = Date.now()
+    set((state) => ({
+      running: false,
+      completedAt: now,
+      currentNodeId: null,
+      logs: [
+        ...state.logs,
+        {
+          timestamp: now,
+          nodeId: '',
+          nodeTitle: '',
+          level: 'error',
+          message: error,
+        },
+      ],
+    }))
+  },
+
+  resetExecution: () => {
+    set({
+      ...createInitialExecutionState(),
+      executionId: null,
+      nodeExecutions: [],
+    })
+  },
+}))

@@ -1,6 +1,7 @@
 import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
-import { getNodeDefinition } from '../node-registry'
+import { resolveOutputs } from '../node-registry.utils'
+import { getNodeDefinition } from '../stores/node-registry/use-node-registry.store'
 
 export interface VariableRef {
   id: string
@@ -42,7 +43,7 @@ export function buildVariableList(
     const source: VariableRef['source'] = prevNodeIds.includes(n.id) ? 'previous' : 'upstream'
 
     if (def) {
-      def.outputs.forEach((port) => {
+      resolveOutputs(def).forEach((port) => {
         const varId = `${sanitizeTitle(n.data?.title || n.id)}.output.${port.id}`
         vars.push({
           id: varId,

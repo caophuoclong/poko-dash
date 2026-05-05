@@ -9,18 +9,17 @@ import {
   EyeOff,
   X,
 } from 'lucide-react'
-import { useQueryClient } from '@tanstack/react-query'
-import {
-  getExecutionControllerGetExecutionQueryKey,
-  getExecutionControllerGetNodeOutputQueryOptions,
-} from '#/api/client'
 import { useQuery } from '@tanstack/react-query'
 import { cn } from '#/shared/utils'
 import { Button } from '#/components/ui/button'
-import { useExecutionStore } from '../stores/execution-store'
+
 import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
-import type { ExecutionLog } from '../utils/execution-engine'
+import {
+  useExecutionStore,
+  type ExecutionLog,
+} from '../stores/execution-store/useExecutionStore'
+import { getExecutionControllerGetNodeOutputQueryOptions } from '#/api/client'
 
 interface ExecutionDrawerProps {
   nodes: Node<WorkflowNodeData>[]
@@ -58,50 +57,24 @@ function formatTimestamp(ts: number): string {
   })
 }
 
-interface NodeExecutionData {
-  nodeId: string
-  title?: string
-  status: 'pending' | 'running' | 'completed' | 'failed'
-  outputSummary?: Record<string, unknown>
-  error?: string
-  durationMs?: number
-}
-
-interface ExecutionCacheData {
-  id: string
-  workflowId?: string
-  status: 'running' | 'completed' | 'failed' | 'cancelled' | 'pending'
-  startedAt?: string
-  completedAt?: string
-  nodes?: NodeExecutionData[]
-}
-
 export function ExecutionDrawer({
   nodes,
   open,
   onClose,
 }: ExecutionDrawerProps) {
-  const queryClient = useQueryClient()
   const logs = useExecutionStore((s) => s.logs)
   const running = useExecutionStore((s) => s.running)
   const startedAt = useExecutionStore((s) => s.startedAt)
   const completedAt = useExecutionStore((s) => s.completedAt)
   const executionPath = useExecutionStore((s) => s.executionPath)
   const executionId = useExecutionStore((s) => s.executionId)
+  const nodeExecutions = useExecutionStore((s) => {
+    return s.nodeExecutions
+  })
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const [expandedOutputs, setExpandedOutputs] = useState<Set<string>>(new Set())
   const [expandedNodeId, setExpandedNodeId] = useState<string | null>(null)
-
-  const executionQueryKey = executionId
-    ? getExecutionControllerGetExecutionQueryKey(executionId)
-    : null
-
-  const executionData = executionQueryKey
-    ? (queryClient.getQueryData(executionQueryKey) as ExecutionCacheData | undefined)
-    : undefined
-
-  const nodeExecutions = executionData?.nodes ?? []
 
   const nodeOutputQuery = useQuery({
     ...(expandedNodeId && executionId
@@ -125,10 +98,7 @@ export function ExecutionDrawer({
     [nodeOutputQuery],
   )
 
-  const nodeMap = useMemo(
-    () => new Map(nodes.map((n) => [n.id, n])),
-    [nodes],
-  )
+  const nodeMap = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes])
 
   const enrichedLogs = useMemo(() => {
     return logs.map((log) => ({
@@ -146,9 +116,13 @@ export function ExecutionDrawer({
 
   const progressStats = useMemo(() => {
     const total = executionPath.length
-    const success = nodeExecutions.filter((n) => n.status === 'completed').length
+    const success = nodeExecutions.filter(
+      (n) => n.status === 'completed',
+    ).length
     const error = nodeExecutions.filter((n) => n.status === 'failed').length
-    const runningCount = nodeExecutions.filter((n) => n.status === 'running').length
+    const runningCount = nodeExecutions.filter(
+      (n) => n.status === 'running',
+    ).length
     const pending = total - success - error - runningCount
     return { total, success, error, running: runningCount, pending }
   }, [nodeExecutions, executionPath])
@@ -270,8 +244,7 @@ export function ExecutionDrawer({
             const nodeExec = log.nodeId
               ? nodeExecutions.find((n) => n.nodeId === log.nodeId)
               : undefined
-            const showOutputBtn =
-              nodeExec?.status === 'completed' && log.nodeId
+            const showOutputBtn = nodeExec?.status === 'completed' && log.nodeId
 
             return (
               <div
@@ -330,9 +303,15 @@ export function ExecutionDrawer({
             {Array.from(expandedOutputs).map((nodeId) => {
               const outputData =
                 expandedNodeId === nodeId ? nodeOutputQuery.data : null
+              const nodeTitle =
+                nodeMap.get(nodeId)?.data.title ||
+                nodeExecutions.find((n) => n.nodeId === nodeId)?.title ||
+                nodeId
               return (
                 <div key={nodeId} className="mb-2 last:mb-0">
-                  <div className="text-[10px] text-muted-text mb-1">{nodeId}</div>
+                  <div className="text-[10px] text-muted-text mb-1">
+                    {nodeTitle}
+                  </div>
                   <pre className="bg-surface-2 rounded p-2 text-[10px] font-mono text-near-white overflow-x-auto max-h-[250px] overflow-y-auto">
                     {nodeOutputQuery.isLoading
                       ? 'Loading...'
