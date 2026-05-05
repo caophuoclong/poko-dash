@@ -7,6 +7,7 @@ import {
   type Connection,
   type OnSelectionChangeParams,
   type ReactFlowInstance,
+  type EdgeChange,
   applyNodeChanges,
   applyEdgeChanges,
 } from '@xyflow/react'
@@ -125,6 +126,27 @@ export function useWorkflowCanvasLogic({
     (changes) => {
       const updated = applyEdgeChanges(changes, edges)
       onEdgesChange(updated)
+    },
+    [edges, onEdgesChange],
+  )
+
+  const onReconnect = useCallback(
+    (oldEdge: Edge, connection: Connection) => {
+      const updatedEdges = edges.map((edge) => {
+        if (edge.id !== oldEdge.id) return edge
+        return {
+          ...edge,
+          source: connection.source ?? edge.source,
+          target: connection.target ?? edge.target,
+          sourceHandle: connection.sourceHandle ?? edge.sourceHandle,
+          targetHandle: connection.targetHandle ?? edge.targetHandle,
+          data: {
+            ...(edge.data as Record<string, unknown>),
+            style: ((edge.data as { style?: EdgeStyle } | undefined)?.style ?? 'auto') as EdgeStyle,
+          },
+        }
+      })
+      onEdgesChange(updatedEdges)
     },
     [edges, onEdgesChange],
   )
@@ -279,6 +301,7 @@ export function useWorkflowCanvasLogic({
     handleNodesChange,
     handleEdgesChange,
     onConnect,
+    onReconnect,
     handleSelectionChange,
     handleNodeDoubleClick,
     handleKeyDown,

@@ -25,6 +25,11 @@ export type PropertyEditorType =
   | 'tag-input'
   | 'slider'
   | 'url'
+  | 'json'
+  | 'code'
+  | 'keyValue'
+  | 'assignments'
+  | 'conditions'
 
 export interface PropertyOption {
   value: string

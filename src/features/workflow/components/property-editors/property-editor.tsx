@@ -10,6 +10,12 @@ import { TagInputFieldEditor } from './tag-input-field-editor'
 import { CronFieldEditor } from './cron-field-editor'
 import { RuleBuilderEditor } from './rule-builder-editor'
 import { FieldPickerEditor } from './field-picker-editor'
+import { UrlFieldEditor } from './url-field-editor'
+import { JsonFieldEditor } from './json-field-editor'
+import { CodeFieldEditor } from './code-field-editor'
+import { KeyValueFieldEditor } from './key-value-field-editor'
+import { AssignmentsFieldEditor } from './assignments-field-editor'
+import { ConditionsFieldEditor } from './conditions-field-editor'
 
 export interface PropertyEditorProps {
   schema: PropertySchema
@@ -31,6 +37,12 @@ const EDITOR_MAP: Record<string, React.ComponentType<PropertyEditorProps>> = {
   cron: CronFieldEditor,
   'rule-builder': RuleBuilderEditor,
   'field-picker': FieldPickerEditor,
+  url: UrlFieldEditor,
+  json: JsonFieldEditor,
+  code: CodeFieldEditor,
+  keyValue: KeyValueFieldEditor,
+  assignments: AssignmentsFieldEditor,
+  conditions: ConditionsFieldEditor,
   date: TextFieldEditor,
   datetime: TextFieldEditor,
 }

@@ -64,6 +64,7 @@ export function WorkflowCanvas({
     handleNodesChange,
     handleEdgesChange,
     onConnect,
+    onReconnect,
     handleSelectionChange,
     handleNodeDoubleClick,
     handleKeyDown,
@@ -95,6 +96,8 @@ export function WorkflowCanvas({
         onNodesChange={handleNodesChange}
         onEdgesChange={handleEdgesChange}
         onConnect={onConnect}
+        onReconnect={onReconnect}
+        reconnectRadius={30}
         onSelectionChange={handleSelectionChange}
         onNodeDoubleClick={handleNodeDoubleClick}
         onPaneClick={onPaneClick}
@@ -107,7 +110,7 @@ export function WorkflowCanvas({
         selectionMode={SelectionMode.Partial}
         selectNodesOnDrag={true}
         deleteKeyCode={['Delete', 'Backspace']}
-        className="workflow-grid-bg [&_.react-flow__attribution]:!bg-transparent [&_.react-flow__attribution]:!text-muted-text [&_.react-flow__attribution]:!text-[10px] [&_.react-flow__edges]:!z-[2] [&_.react-flow__nodes]:!z-[3] [&_.react-flow__pane]:!overflow-visible"
+        className="workflow-grid-bg [&_.react-flow__attribution]:!bg-transparent [&_.react-flow__attribution]:!text-muted-text [&_.react-flow__attribution]:!text-[10px] [&_.react-flow__edges]:!z-[2] [&_.react-flow__nodes]:!z-[3] [&_.react-flow__pane]:!overflow-visible [&_.react-flow__edgeupdater]:!cursor-grab"
       >
         <Controls
           position="top-left"

@@ -8,6 +8,30 @@ export interface WorkflowNodeData extends Record<string, unknown> {
   status?: 'active' | 'pending' | 'completed' | 'error' | 'paused'
   metrics?: { label: string; value: string }[]
   config?: Record<string, unknown>
+  disabled?: boolean
+  notes?: string
+  continueOnFail?: boolean
+  retryOnFail?: boolean
+  retryCount?: number
+  pinData?: unknown
+}
+
+export interface NodeMeta {
+  disabled?: boolean
+  notes?: string
+  continueOnFail?: boolean
+  retryOnFail?: boolean
+  retryCount?: number
+}
+
+export interface NodeOutputResult {
+  status: 'success' | 'error' | 'skipped'
+  startedAt: string
+  finishedAt: string
+  durationMs: number
+  inputData?: unknown
+  outputData?: unknown
+  error?: { message: string; stack?: string }
 }
 
 export interface NodeTypeDefinition {

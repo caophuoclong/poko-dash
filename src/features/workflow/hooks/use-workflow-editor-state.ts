@@ -90,18 +90,33 @@ export function useWorkflowEditorState(initialNodes: Node<WorkflowNodeData>[], i
 
   const handleNodesChange = useCallback(
     (newNodes: Node<WorkflowNodeData>[]) => {
-      pushHistory()
+      const hasRealChange = newNodes.some((n, i) => {
+        const prev = nodes[i]
+        if (!prev || n.id !== prev.id) return true
+        if (n.position.x !== prev.position.x || n.position.y !== prev.position.y) return true
+        if (JSON.stringify(n.data) !== JSON.stringify(prev.data)) return true
+        return false
+      })
+      if (hasRealChange) pushHistory()
       setNodes(newNodes)
     },
-    [pushHistory],
+    [pushHistory, nodes],
   )
 
   const handleEdgesChange = useCallback(
     (newEdges: Edge[]) => {
-      pushHistory()
+      const hasRealChange = newEdges.some((e, i) => {
+        const prev = edges[i]
+        if (!prev || e.id !== prev.id) return true
+        if (e.source !== prev.source || e.target !== prev.target) return true
+        if (e.sourceHandle !== prev.sourceHandle || e.targetHandle !== prev.targetHandle) return true
+        if (JSON.stringify(e.data) !== JSON.stringify(prev.data)) return true
+        return false
+      })
+      if (hasRealChange) pushHistory()
       setEdges(newEdges)
     },
-    [pushHistory],
+    [pushHistory, edges],
   )
 
   const replaceState = useCallback(
@@ -233,7 +248,6 @@ function deepEqualNodes(a: Node<WorkflowNodeData>[], b: Node<WorkflowNodeData>[]
     if (na.data.subtitle !== nb.data.subtitle) return false
     if (na.data.nodeTypeId !== nb.data.nodeTypeId) return false
     if (na.data.status !== nb.data.status) return false
-    if (na.selected !== nb.selected) return false
     if (!deepEqualConfig(na.data.config as Record<string, unknown>, nb.data.config as Record<string, unknown>)) return false
   }
   return true
