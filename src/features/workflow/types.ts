@@ -14,6 +14,7 @@ export interface WorkflowNodeData extends Record<string, unknown> {
   retryOnFail?: boolean
   retryCount?: number
   pinData?: unknown
+  originalId?: string
 }
 
 export interface NodeMeta {

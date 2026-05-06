@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useExecutionStore } from '../stores/execution-store/useExecutionStore'
+import { useWorkflow } from './use-workflows'
+import { useParams, useRouter } from '@tanstack/react-router'
 
 interface SseEventData {
   type: string
@@ -35,6 +37,7 @@ function getAuthToken(): string | null {
 
 export function useExecutionSSE() {
   const store = useExecutionStore()
+
   const [isConnected, setIsConnected] = useState(false)
   const esRef = useRef<EventSource | null>(null)
   const executionIdRef = useRef<string | null>(null)

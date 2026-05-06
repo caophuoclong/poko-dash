@@ -34,11 +34,13 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
   const updateNodeInternals = useUpdateNodeInternals()
   const executionsStore = useExecutionStore()
   const executionStatus =
-    executionsStore.nodeExecutions?.find((n) => n.nodeId === id)?.status ??
-    'idle'
+    executionsStore.nodeExecutions?.find(
+      (n) => n.nodeId === nodeData.originalId,
+    )?.status ?? 'idle'
   const execInfo =
-    executionsStore.nodeExecutions?.find((n) => n.nodeId === id) ??
-    ({} as NodeExecutionData)
+    executionsStore.nodeExecutions?.find(
+      (n) => n.nodeId === nodeData.originalId,
+    ) ?? ({} as NodeExecutionData)
 
   const inputs = def ? def.io.inputs : []
   const outputs = def ? def.io.outputs : []
@@ -173,21 +175,6 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
             <Copy size={11} />
           </button>
         </div>
-
-        {summaryItems && summaryItems.length > 0 && (
-          <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-2 pt-2 border-t border-frost">
-            {summaryItems.map((item) => (
-              <div key={item.label} className="flex items-baseline gap-1">
-                <span className="text-[11px] font-semibold text-near-white leading-none">
-                  {item.value}
-                </span>
-                <span className="text-[9px] text-muted-text leading-none">
-                  {item.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
 
         {execInfo.outputSummary && executionStatus === 'completed' && (
           <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-2 pt-2 border-t border-accent-green/20">

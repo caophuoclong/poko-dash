@@ -29,7 +29,7 @@ import {
 } from '#/components/ui/dropdown-menu'
 import { WorkflowCanvas } from './workflow-canvas'
 import { NodePalette } from './node-palette'
-import { NodeEditModal } from './node-edit-modal'
+import { NodeEditModal } from './node-edit-modal/index'
 import { ExecutionDock } from './execution-dock'
 import { ExecutionDrawer } from './execution-drawer'
 import { VersionHistoryPanel } from './VersionHistoryPanel'

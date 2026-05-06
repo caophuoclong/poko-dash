@@ -31,8 +31,20 @@ import {
 
 
 const ICON_MAP: Record<string, LucideIcon> = {
-  Play, Clock, ListPlus, Globe, Layers, Filter,
-  LinkCheck, Sparkles, ListTodo, Send, BarChart3, GitBranch, Timer, Bell,
+  play: Play,
+  clock: Clock,
+  'list-plus': ListPlus,
+  globe: Globe,
+  layers: Layers,
+  filter: Filter,
+  link: LinkCheck,
+  sparkles: Sparkles,
+  'list-todo': ListTodo,
+  send: Send,
+  'bar-chart-3': BarChart3,
+  'git-branch': GitBranch,
+  timer: Timer,
+  bell: Bell,
 }
 
 interface NodePaletteProps {
@@ -185,8 +197,8 @@ export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps
                               <div
                                 className={cn(
                                   'w-5 h-5 rounded flex items-center justify-center shrink-0',
-                                  config.bgColor,
-                                  config.color,
+                                  config?.bgColor,
+                                  config?.color,
                                 )}
                               >
                                 <Icon size={11} strokeWidth={2.5} />

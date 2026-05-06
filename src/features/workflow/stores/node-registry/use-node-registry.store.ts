@@ -53,8 +53,8 @@ export const getNodeDefinition = (
 
 export function useNodeRegistryStore() {
   const query = useNodeDefinitionControllerList()
+  const definitions = store((s) => s.definitions)
   useEffect(() => {
-    console.log('test')
     store.setState((state) => ({
       ...state,
       definitions: query.data
@@ -137,7 +137,7 @@ export function useNodeRegistryStore() {
 
   return {
     getNodeDefinition,
-    allNodeDefinitions: Object.values(store.getState().definitions),
+    allNodeDefinitions: Object.values(definitions),
     validateNodeProps,
     getNodeSummaryData,
     registerNodeDefinition,

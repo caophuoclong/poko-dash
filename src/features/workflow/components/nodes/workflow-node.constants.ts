@@ -18,8 +18,20 @@ import {
 import type { NodeExecutionStatus } from '../../stores/execution-store/useExecutionStore'
 
 export const ICON_MAP: Record<string, LucideIcon> = {
-  Play, Clock, ListPlus, Globe, Layers, Filter,
-  LinkCheck: Link2, Sparkles, ListTodo, Send, BarChart3, GitBranch, Timer, Bell,
+  play: Play,
+  clock: Clock,
+  'list-plus': ListPlus,
+  globe: Globe,
+  layers: Layers,
+  filter: Filter,
+  link: Link2,
+  sparkles: Sparkles,
+  'list-todo': ListTodo,
+  send: Send,
+  'bar-chart-3': BarChart3,
+  'git-branch': GitBranch,
+  timer: Timer,
+  bell: Bell,
 }
 
 export const statusConfig: Record<string, { dot: string; ring: string; label: string }> = {

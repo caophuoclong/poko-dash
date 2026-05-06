@@ -62,6 +62,7 @@ function mapNode(dto: WorkflowNodeDto): Node<WorkflowNodeData> {
       nodeTypeId: dto.node_type_id,
       status: (dto.status as WorkflowNodeData['status']) ?? 'pending',
       config: dto.config as Record<string, unknown>,
+      originalId: dto.id,
     },
   }
 }
