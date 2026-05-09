@@ -1,12 +1,8 @@
 import { create } from 'zustand'
 import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../../types'
-import {
-  type ExecutionMode,
-  type ExecutionLog,
-  type ValidationBlock,
-  createInitialExecutionState,
-} from './utils/types'
+import { createInitialExecutionState } from './utils/types'
+import type { ExecutionMode, ExecutionLog, ValidationBlock } from './utils/types'
 import { computeExecutionPath } from './utils/graph'
 import { validateExecutionPath, canExecuteSingleNode } from './utils/validation'
 
@@ -63,6 +59,10 @@ interface ExecutionStore {
   setRunning: (running: boolean) => void
   addLog: (log: Omit<ExecutionLog, 'timestamp'>) => void
   upsertNodeExecution: (node: NodeExecutionData) => void
+  flushBatch: (updates: {
+    logs?: Omit<ExecutionLog, 'timestamp'>[]
+    nodeUpdates?: NodeExecutionData[]
+  }) => void
   completeExecution: () => void
   failExecution: (error: string) => void
   resetExecution: () => void
@@ -120,7 +120,7 @@ export const useExecutionStore = create<ExecutionStore>((set) => ({
             mode === 'full'
               ? 'Starting full workflow execution'
               : mode === 'to-node'
-                ? `Running to "${firstNode?.data?.title ?? targetNodeId}"`
+                ? `Running to "${firstNode!.data.title}"`
                 : `Executing single node`,
         },
       ],
@@ -154,6 +154,37 @@ export const useExecutionStore = create<ExecutionStore>((set) => ({
         return { nodeExecutions: updated }
       }
       return { nodeExecutions: [...state.nodeExecutions, node] }
+    })
+  },
+
+  flushBatch: (updates) => {
+    const now = Date.now()
+    set((state) => {
+      const result: Partial<ExecutionStore> = {}
+
+      if (updates.logs && updates.logs.length > 0) {
+        result.logs = [
+          ...state.logs,
+          ...updates.logs.map((l) => ({ ...l, timestamp: now })),
+        ]
+      }
+
+      if (updates.nodeUpdates && updates.nodeUpdates.length > 0) {
+        const nodeExecutions = [...state.nodeExecutions]
+        for (const node of updates.nodeUpdates) {
+          const index = nodeExecutions.findIndex(
+            (n) => n.nodeId === node.nodeId,
+          )
+          if (index >= 0) {
+            nodeExecutions[index] = { ...nodeExecutions[index], ...node }
+          } else {
+            nodeExecutions.push(node)
+          }
+        }
+        result.nodeExecutions = nodeExecutions
+      }
+
+      return result
     })
   },
 

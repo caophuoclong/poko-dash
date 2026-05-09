@@ -34,13 +34,11 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
   const updateNodeInternals = useUpdateNodeInternals()
   const executionsStore = useExecutionStore()
   const executionStatus =
-    executionsStore.nodeExecutions?.find(
-      (n) => n.nodeId === nodeData.originalId,
-    )?.status ?? 'idle'
+    executionsStore.nodeExecutions?.find((n) => n.nodeId === id)?.status ??
+    'idle'
   const execInfo =
-    executionsStore.nodeExecutions?.find(
-      (n) => n.nodeId === nodeData.originalId,
-    ) ?? ({} as NodeExecutionData)
+    executionsStore.nodeExecutions?.find((n) => n.nodeId === id) ??
+    ({} as NodeExecutionData)
 
   const inputs = def ? def.io.inputs : []
   const outputs = def ? def.io.outputs : []

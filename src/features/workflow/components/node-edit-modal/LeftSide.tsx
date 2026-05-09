@@ -97,24 +97,25 @@ export function LeftSide({
 }: LeftSideProps) {
   const executionStore = useExecutionStore()
   const prevExecInfo = executionStore.nodeExecutions.find(
-    (ne) => ne.nodeId === prevNode?.data.originalId,
+    (ne) => ne.nodeId === prevNode?.id,
   )
   const upstreamData = useMemo(() => {
     if (!prevNode) return null
-    const synthesized = synthesizeOutput(prevNode)
+    // const synthesized = synthesizeOutput(prevNode)
     if (
       prevExecInfo &&
       prevExecInfo.status === 'completed' &&
       prevExecInfo.outputSummary
     ) {
       return {
-        ...synthesized,
-        ...prevExecInfo.outputSummary,
+        // ...synthesized,
+        // ...prevExecInfo.outputSummary,
         ...prevExecInfo.outputData,
       }
     }
-    return synthesized
+    // return synthesized
   }, [prevNode, prevExecInfo])
+  console.log('🚀 ~ LeftSide ~ upstreamData:', upstreamData)
 
   const upstreamDef = prevNode
     ? getNodeDefinition((prevNode.data as WorkflowNodeData).nodeTypeId ?? '')

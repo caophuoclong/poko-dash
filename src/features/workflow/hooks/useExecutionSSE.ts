@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useExecutionStore } from '../stores/execution-store/useExecutionStore'
-import { useWorkflow } from './use-workflows'
-import { useParams, useRouter } from '@tanstack/react-router'
+import type { NodeExecutionData } from '../stores/execution-store/useExecutionStore'
+import type { ExecutionLog } from '../stores/execution-store/utils/types'
 
 interface SseEventData {
   type: string
@@ -45,7 +45,43 @@ export function useExecutionSSE() {
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const nodeStartTimesRef = useRef<Map<string, number>>(new Map())
 
+  const storeRef = useRef(store)
+  storeRef.current = store
+
+  const bufferRef = useRef<{
+    logs: Omit<ExecutionLog, 'timestamp'>[]
+    nodeUpdates: NodeExecutionData[]
+    rafId: ReturnType<typeof requestAnimationFrame> | null
+  }>({ logs: [], nodeUpdates: [], rafId: null })
+
+  const scheduleFlush = useCallback(() => {
+    if (bufferRef.current.rafId !== null) return
+    bufferRef.current.rafId = requestAnimationFrame(() => {
+      bufferRef.current.rafId = null
+      const buf = bufferRef.current
+      if (buf.logs.length > 0 || buf.nodeUpdates.length > 0) {
+        storeRef.current.flushBatch({ logs: buf.logs, nodeUpdates: buf.nodeUpdates })
+        buf.logs = []
+        buf.nodeUpdates = []
+      }
+    })
+  }, [])
+
+  const flushImmediate = useCallback(() => {
+    const buf = bufferRef.current
+    if (buf.rafId !== null) {
+      cancelAnimationFrame(buf.rafId)
+      buf.rafId = null
+    }
+    if (buf.logs.length > 0 || buf.nodeUpdates.length > 0) {
+      storeRef.current.flushBatch({ logs: buf.logs, nodeUpdates: buf.nodeUpdates })
+      buf.logs = []
+      buf.nodeUpdates = []
+    }
+  }, [])
+
   const closeEventSource = useCallback(() => {
+    flushImmediate()
     if (esRef.current) {
       esRef.current.close()
       esRef.current = null
@@ -57,7 +93,7 @@ export function useExecutionSSE() {
     setIsConnected(false)
     retryCountRef.current = 0
     nodeStartTimesRef.current.clear()
-  }, [])
+  }, [flushImmediate])
 
   const setupEventListeners = useCallback(
     (es: EventSource) => {
@@ -69,12 +105,13 @@ export function useExecutionSSE() {
         try {
           const data = JSON.parse(event.data) as SseEventData
           store.setExecutionId(data.executionId)
-          store.addLog({
+          bufferRef.current.logs.push({
             nodeId: '',
             nodeTitle: '',
             level: 'info',
             message: `Execution started (${data.executionId.slice(0, 8)})`,
           })
+          scheduleFlush()
         } catch {
           // ignore
         }
@@ -87,18 +124,20 @@ export function useExecutionSSE() {
 
           nodeStartTimesRef.current.set(data.nodeId, Date.now())
 
-          store.upsertNodeExecution({
+          bufferRef.current.nodeUpdates.push({
             nodeId: data.nodeId,
             title: data.nodeTitle,
             status: 'running',
           })
 
-          store.addLog({
+          bufferRef.current.logs.push({
             nodeId: data.nodeId,
             nodeTitle: data.nodeTitle ?? '',
             level: 'info',
             message: `Started${data.nodeTypeId ? ` (${data.nodeTypeId})` : ''}${data.nodeTitle ? ` — ${data.nodeTitle}` : ''}`,
           })
+
+          scheduleFlush()
         } catch {
           // ignore
         }
@@ -113,7 +152,7 @@ export function useExecutionSSE() {
           const duration = startTime ? Date.now() - startTime : data.durationMs
           nodeStartTimesRef.current.delete(data.nodeId)
 
-          store.upsertNodeExecution({
+          bufferRef.current.nodeUpdates.push({
             nodeId: data.nodeId,
             title: data.nodeTitle,
             status: 'completed',
@@ -126,13 +165,15 @@ export function useExecutionSSE() {
               ? ` — ${data.outputSummary.count} item(s)`
               : ''
 
-          store.addLog({
+          bufferRef.current.logs.push({
             nodeId: data.nodeId,
             nodeTitle: data.nodeTitle ?? '',
             level: 'success',
             message: `Completed${outputMsg}`,
             duration,
           })
+
+          scheduleFlush()
         } catch {
           // ignore
         }
@@ -147,7 +188,7 @@ export function useExecutionSSE() {
           const duration = startTime ? Date.now() - startTime : data.durationMs
           nodeStartTimesRef.current.delete(data.nodeId)
 
-          store.upsertNodeExecution({
+          bufferRef.current.nodeUpdates.push({
             nodeId: data.nodeId,
             title: data.nodeTitle,
             status: 'failed',
@@ -156,20 +197,23 @@ export function useExecutionSSE() {
             error: data.error,
           })
 
-          store.addLog({
+          bufferRef.current.logs.push({
             nodeId: data.nodeId,
             nodeTitle: data.nodeTitle ?? '',
             level: 'error',
             message: data.error ?? 'Node execution failed',
             duration,
           })
+
+          scheduleFlush()
         } catch {
           // ignore
         }
       })
 
-      es.addEventListener('execution.completed', (event: MessageEvent) => {
+      es.addEventListener('execution.completed', () => {
         try {
+          flushImmediate()
           store.completeExecution()
           closeEventSource()
         } catch {
@@ -180,7 +224,7 @@ export function useExecutionSSE() {
       es.addEventListener('execution.failed', (event: MessageEvent) => {
         try {
           const data = JSON.parse(event.data) as SseEventData
-
+          flushImmediate()
           store.failExecution(data.error ?? 'Execution failed')
           closeEventSource()
         } catch {
@@ -188,7 +232,7 @@ export function useExecutionSSE() {
         }
       })
     },
-    [store, closeEventSource],
+    [store, closeEventSource, scheduleFlush, flushImmediate],
   )
 
   const createConnection = useCallback(
