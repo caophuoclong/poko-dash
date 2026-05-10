@@ -19,7 +19,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       <select
         ref={ref}
         className={cn(
-          'flex h-9 w-full items-center justify-between rounded-md border border-frost bg-surface px-3 py-2 text-sm text-near-white shadow-sm ring-offset-void focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none',
+          'flex h-12 w-full items-center justify-between rounded-[var(--radius-sm)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-2 text-body-sm text-[var(--color-ink)] focus-visible:outline-none focus-visible:border-[var(--color-ink)] focus-visible:border-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none',
           className,
         )}
         value={value}
@@ -40,7 +40,7 @@ const SelectTrigger = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'flex h-9 w-full items-center justify-between rounded-md border border-frost bg-surface px-3 py-2 text-sm text-near-white shadow-sm ring-offset-void focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+      'flex h-12 w-full items-center justify-between rounded-[var(--radius-sm)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] px-3 py-2 text-body-sm text-[var(--color-ink)] focus-visible:outline-none focus-visible:border-[var(--color-ink)] focus-visible:border-2 disabled:cursor-not-allowed disabled:opacity-50',
       className,
     )}
     {...props}
@@ -66,7 +66,7 @@ const SelectContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'relative z-50 min-w-[8rem] overflow-hidden rounded-md border border-frost bg-surface-2 text-near-white shadow-md',
+      'relative z-50 min-w-[8rem] overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-ink)] shadow-[var(--shadow-card)]',
       className,
     )}
     {...props}
