@@ -1,29 +1,29 @@
-import type { DashboardBreakdownItem } from '#/dtos/dashboard'
+import type { TopBreakdownDto } from '#/api/model'
 import { cn } from '#/shared/utils'
 
 interface TopBreakdownsSectionProps {
-  categories: DashboardBreakdownItem[]
-  platforms: DashboardBreakdownItem[]
-  topSeeds: DashboardBreakdownItem[]
+  categories: TopBreakdownDto[]
 }
 
 export function TopBreakdownsSection({
   categories,
-  platforms,
-  topSeeds,
 }: TopBreakdownsSectionProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <BreakdownCard title="Top categories" items={categories} />
-      <BreakdownCard title="Top platforms" items={platforms} />
-      <BreakdownCard title="Top seeds" items={topSeeds} />
+      {categories.map((cat) => (
+        <BreakdownCard
+          key={cat.label}
+          title={`Top ${cat.label.toLowerCase()}s`}
+          items={cat.rows}
+        />
+      ))}
     </div>
   )
 }
 
 interface BreakdownCardProps {
   title: string
-  items: DashboardBreakdownItem[]
+  items: TopBreakdownDto['rows']
 }
 
 function BreakdownCard({ title, items }: BreakdownCardProps) {
@@ -42,7 +42,7 @@ function BreakdownCard({ title, items }: BreakdownCardProps) {
             <div key={index} className="space-y-1">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-near-white font-medium truncate">
-                  {item.label}
+                  {item.dimension}
                 </span>
                 <span className="text-muted-text tabular-nums ml-2">
                   {item.value}

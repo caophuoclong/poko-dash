@@ -127,21 +127,17 @@ export default function DashboardPage() {
       </div>
     )
   }
-
+  const [] = data.trendSeries.map((series) => {})
   return (
     <div className="space-y-6">
       {/* Summary cards */}
       <SummaryCardGrid cards={data.summaryCards} />
 
       {/* Pipeline snapshot */}
-      <PipelineSnapshot statuses={data.pipelineSnapshot || []} />
+      {/* <PipelineSnapshot statuses={data.pipelineSnapshot} /> */}
 
       {/* Trend charts */}
-      <TrendChartsSection
-        postsGenerated={data.trendSeries.postsGenerated}
-        postsPublished={data.trendSeries.postsPublished}
-        seedsApproved={data.trendSeries.seedsApproved}
-      />
+      <TrendChartsSection trendSeries={data.trendSeries} />
 
       {/* Two-column layout for attention and schedule */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
@@ -150,11 +146,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Top breakdowns */}
-      <TopBreakdownsSection
-        categories={data.topBreakdowns.categories}
-        platforms={data.topBreakdowns.platforms}
-        topSeeds={data.topBreakdowns.topSeeds}
-      />
+      <TopBreakdownsSection categories={data.topBreakdowns} />
     </div>
   )
 }

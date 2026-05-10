@@ -1,41 +1,37 @@
-import type { DashboardTrendSeries } from '#/dtos/dashboard'
+import type { TrendSeriesDto } from '#/api/model'
 import { format, parseISO } from 'date-fns'
 
 interface TrendChartsSectionProps {
-  postsGenerated: DashboardTrendSeries
-  postsPublished: DashboardTrendSeries
-  seedsApproved: DashboardTrendSeries
+  trendSeries: TrendSeriesDto[]
 }
-
-export function TrendChartsSection({
-  postsGenerated,
-  postsPublished,
-  seedsApproved,
-}: TrendChartsSectionProps) {
+const TREND_SERIES_COLORS = [
+  '#F97316', // orange-500
+  '#3B82F6', // blue-500
+  '#10B981', // green-500
+  '#8B5CF6', // purple-500
+]
+export function TrendChartsSection({ trendSeries }: TrendChartsSectionProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <TrendChart
-        title="Posts generated"
-        data={postsGenerated.data}
-        color="#F97316"
-      />
-      <TrendChart
-        title="Posts published"
-        data={postsPublished.data}
-        color="#3B82F6"
-      />
-      <TrendChart
-        title="Seeds approved"
-        data={seedsApproved.data}
-        color="#10B981"
-      />
+      {trendSeries.map((ser) => (
+        <TrendChart
+          key={ser.key}
+          title={ser.label}
+          data={ser.data}
+          color={
+            TREND_SERIES_COLORS[
+              trendSeries.indexOf(ser) % TREND_SERIES_COLORS.length
+            ]
+          }
+        />
+      ))}
     </div>
   )
 }
 
 interface TrendChartProps {
   title: string
-  data: DashboardTrendSeries['data']
+  data: TrendSeriesDto['data']
   color: string
 }
 
