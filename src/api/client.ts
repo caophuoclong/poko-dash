@@ -8351,7 +8351,6 @@ export const scheduleControllerGetSchedule = async (workflowId: string, options?
 
 
 
-
 export const getScheduleControllerGetScheduleQueryKey = (workflowId: string,) => {
     return [
     `/api/workflows/${workflowId}/schedule`

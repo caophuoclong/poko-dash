@@ -151,7 +151,7 @@ export function FieldGroup({ label, path, value, nodeName, depth = 0 }: FieldGro
 }
 
 interface UpstreamDataViewProps {
-  data: Record<string, unknown> | null
+  data: Record<string, unknown> | null | undefined
   nodeName: string
 }
 

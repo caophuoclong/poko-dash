@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 import type { ExecuteWorkflowDtoMode } from './executeWorkflowDtoMode';
+import type { ExecuteWorkflowDtoTriggerData } from './executeWorkflowDtoTriggerData';
 import type { ExecuteWorkflowDtoTriggeredBy } from './executeWorkflowDtoTriggeredBy';
 
 export interface ExecuteWorkflowDto {
@@ -15,4 +16,6 @@ export interface ExecuteWorkflowDto {
   targetNodeId?: string;
   /** What triggered this execution */
   triggeredBy?: ExecuteWorkflowDtoTriggeredBy;
+  /** Trigger data passed to the workflow (accessible as {{ trigger.* }} or {{ input.* }}) */
+  triggerData?: ExecuteWorkflowDtoTriggerData;
 }

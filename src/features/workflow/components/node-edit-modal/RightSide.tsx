@@ -7,6 +7,7 @@ import { getNodeDefinition } from '../../stores/node-registry/use-node-registry.
 import type { NodeDefinition } from '../../stores/node-registry/use-node-registry.store'
 import { ICON_MAP } from '../nodes/workflow-node.constants'
 import type { PaneHeaderProps } from './types'
+import type { VariableRef } from '../variable-system'
 
 function PaneHeader({
   side, idx, total, title, subtitle, color, icon: Icon,
@@ -38,7 +39,7 @@ interface RightSideProps {
   catConfigBgColor?: string
   def: NodeDefinition | undefined
   localProps: Record<string, unknown>
-  availableVars: string[]
+  availableVars: VariableRef[]
 }
 
 export function RightSide({

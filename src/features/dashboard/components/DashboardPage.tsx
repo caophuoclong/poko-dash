@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import type { DashboardRange } from '#/dtos/dashboard'
 import { useDashboardOverview } from '../hooks/use-dashboard'
 import { usePageHeader } from '@/components/ui/page-header-context'
 import { SummaryCardGrid } from './SummaryCardGrid'
@@ -14,15 +13,20 @@ import { Button } from '@/components/ui/button'
 import { useNavigate } from '@tanstack/react-router'
 import { Plus, RefreshCw } from 'lucide-react'
 import { cn } from '#/shared/utils'
+import type { DashboardOverviewResponseDtoRange } from '#/api/model'
 
-const RANGE_OPTIONS: { value: DashboardRange; label: string }[] = [
+const RANGE_OPTIONS: {
+  value: DashboardOverviewResponseDtoRange
+  label: string
+}[] = [
   { value: '7d', label: '7 days' },
   { value: '30d', label: '30 days' },
   { value: '90d', label: '90 days' },
 ]
 
 export default function DashboardPage() {
-  const [selectedRange, setSelectedRange] = useState<DashboardRange>('7d')
+  const [selectedRange, setSelectedRange] =
+    useState<DashboardOverviewResponseDtoRange>('7d')
   const navigate = useNavigate()
 
   const { data, isLoading, isError, refetch, isRefetching } =
@@ -63,10 +67,7 @@ export default function DashboardPage() {
           disabled={isRefetching}
           className="h-8 px-2"
         >
-          <RefreshCw
-            size={16}
-            className={cn(isRefetching && 'animate-spin')}
-          />
+          <RefreshCw size={16} className={cn(isRefetching && 'animate-spin')} />
         </Button>
       </div>
     ),
@@ -134,7 +135,7 @@ export default function DashboardPage() {
       <SummaryCardGrid cards={data.summaryCards} />
 
       {/* Pipeline snapshot */}
-      <PipelineSnapshot statuses={data.pipelineSnapshot} />
+      <PipelineSnapshot statuses={data.pipelineSnapshot || []} />
 
       {/* Trend charts */}
       <TrendChartsSection

@@ -26,6 +26,12 @@ export const CATEGORY_CONFIG: Record<
     borderColor: string
   }
 > = {
+  io: {
+    label: 'IO',
+    color: 'text-accent-orange',
+    bgColor: 'bg-accent-orange-dim',
+    borderColor: 'border-accent-orange/20',
+  },
   trigger: {
     label: 'Triggers',
     color: 'text-accent-orange',

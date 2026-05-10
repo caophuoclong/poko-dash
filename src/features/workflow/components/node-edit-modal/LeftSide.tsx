@@ -5,9 +5,13 @@ import { cn } from '#/shared/utils'
 import type { WorkflowNodeData } from '../../types'
 import { UpstreamDataView } from '../draggable-field-tag'
 import { useExecutionStore } from '../../stores/execution-store/useExecutionStore'
-import { getNodeDefinition } from '../../stores/node-registry/use-node-registry.store'
+import {
+  getNodeDefinition,
+  useNodeRegistryStore,
+} from '../../stores/node-registry/use-node-registry.store'
 import { ICON_MAP } from '../nodes/workflow-node.constants'
 import type { PaneHeaderProps } from './types'
+import { useWorkflow } from '../../hooks/use-workflows'
 
 function PaneHeader({
   side,
@@ -95,6 +99,9 @@ export function LeftSide({
   prevNode,
   catConfigBgColor,
 }: LeftSideProps) {
+    const nodeRegistry = useNodeRegistryStore().getNodeDefinition(
+      prevNode?.data.nodeTypeId ?? '',
+    )
   const executionStore = useExecutionStore()
   const prevExecInfo = executionStore.nodeExecutions.find(
     (ne) => ne.nodeId === prevNode?.id,
@@ -102,6 +109,7 @@ export function LeftSide({
   const upstreamData = useMemo(() => {
     if (!prevNode) return null
     // const synthesized = synthesizeOutput(prevNode)
+    console.log('🚀 ~ LeftSide ~ prevNode:', prevNode)
     if (
       prevExecInfo &&
       prevExecInfo.status === 'completed' &&
@@ -110,12 +118,12 @@ export function LeftSide({
       return {
         // ...synthesized,
         // ...prevExecInfo.outputSummary,
+        // ...(nodeRegistry || {}).config?.suggestedVariables,
         ...prevExecInfo.outputData,
       }
     }
     // return synthesized
   }, [prevNode, prevExecInfo])
-  console.log('🚀 ~ LeftSide ~ upstreamData:', upstreamData)
 
   const upstreamDef = prevNode
     ? getNodeDefinition((prevNode.data as WorkflowNodeData).nodeTypeId ?? '')

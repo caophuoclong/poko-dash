@@ -7,10 +7,13 @@
  */
 import type { ConfigDtoDefaultProps } from './configDtoDefaultProps';
 import type { PropertyFieldDto } from './propertyFieldDto';
+import type { SuggestedVariableDto } from './suggestedVariableDto';
 
 export interface ConfigDto {
   /** Ordered list of inspector panel fields */
   propertySchema: PropertyFieldDto[];
   /** Default configuration values */
   defaultProps: ConfigDtoDefaultProps;
+  /** Variable suggestions for this node type */
+  suggestedVariables?: SuggestedVariableDto[];
 }
