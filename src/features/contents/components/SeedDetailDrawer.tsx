@@ -33,13 +33,13 @@ import {
 } from '#/features/posts'
 
 const PRODUCT_COLORS = [
-  '#3b82f6',
-  '#10b981',
-  '#f59e0b',
-  '#ef4444',
-  '#8b5cf6',
-  '#ec4899',
-  '#06b6d4',
+  'var(--color-primary)',
+  'var(--color-legal-link)',
+  'var(--color-primary-active)',
+  'var(--color-primary-error)',
+  'var(--color-ink)',
+  'var(--color-muted)',
+  'var(--color-muted-soft)',
 ]
 
 function getProductColor(idx: number): string {
@@ -152,7 +152,7 @@ export function SeedDetailDrawer({
   return (
     <div
       className={cn(
-        'fixed inset-y-0 right-0 z-50 w-[520px] bg-surface border-l border-frost shadow-2xl transition-transform duration-300 ease-in-out',
+        'fixed inset-y-0 right-0 z-50 w-[520px] bg-[var(--color-canvas)] border-l border-[var(--color-hairline)] shadow-[var(--shadow-card)] transition-transform duration-300 ease-in-out',
         isOpen ? 'translate-x-0' : 'translate-x-full',
       )}
     >
@@ -251,9 +251,9 @@ function DrawerHeader({
   const label = STATUS_LABELS[idea.status]
 
   return (
-    <div className="flex items-center justify-between px-6 py-4 border-b border-frost bg-surface/80 backdrop-blur-sm">
+    <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-hairline)] bg-[var(--color-canvas)]">
       <div className="flex items-center gap-2.5 min-w-0 flex-1">
-        <h2 className="text-base font-semibold text-near-white truncate">
+        <h2 className="text-title-md text-[var(--color-ink)] truncate">
           {idea.hook}
         </h2>
         <Badge tone={tone} size="sm" className="shrink-0">
@@ -265,7 +265,7 @@ function DrawerHeader({
         <Link
           to="/dash/content/$ideaId"
           params={{ ideaId: idea.ideaId }}
-          className="inline-flex items-center gap-1 px-2 py-1.5 text-xs text-muted-text hover:text-near-white hover:bg-surface-2 rounded-md transition-colors"
+          className="inline-flex items-center gap-1 px-2 py-1.5 text-caption-sm text-[var(--color-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-soft)] rounded-[var(--radius-sm)] transition-colors"
         >
           <ExternalLink size={13} />
           Open
@@ -273,16 +273,16 @@ function DrawerHeader({
         <Link
           to="/dash/content/$ideaId/edit"
           params={{ ideaId: idea.ideaId }}
-          className="inline-flex items-center gap-1 px-2 py-1.5 text-xs text-muted-text hover:text-near-white hover:bg-surface-2 rounded-md transition-colors"
+          className="inline-flex items-center gap-1 px-2 py-1.5 text-caption-sm text-[var(--color-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-soft)] rounded-[var(--radius-sm)] transition-colors"
         >
           <Edit size={13} />
           Edit
         </Link>
         <button
           onClick={onClose}
-          className="p-1.5 hover:bg-surface-2 rounded-lg transition-colors ml-1"
+          className="p-1.5 hover:bg-[var(--color-surface-soft)] rounded-lg transition-colors ml-1"
         >
-          <X size={18} className="text-muted-text" />
+          <X size={18} className="text-[var(--color-muted)]" />
         </button>
       </div>
     </div>
@@ -301,9 +301,9 @@ function SeedSummarySection({
   platformOption?: (typeof PLATFORM_OPTIONS)[number]
 }) {
   return (
-    <div className="bg-surface-2/50 rounded-lg p-4 space-y-3">
+    <div className="bg-[var(--color-surface-soft)] rounded-lg p-4 space-y-3">
       <div>
-        <p className="text-sm text-near-white leading-relaxed">{idea.hook}</p>
+        <p className="text-body-sm text-[var(--color-ink)] leading-relaxed">{idea.hook}</p>
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
@@ -327,7 +327,7 @@ function SeedSummarySection({
           {angles.map((angle, idx) => (
             <span
               key={idx}
-              className="text-xs text-muted-text bg-surface px-2 py-0.5 rounded border border-frost/50"
+              className="text-caption-sm text-[var(--color-muted)] bg-[var(--color-canvas)] px-2 py-0.5 rounded border border-[var(--color-hairline-soft)]"
             >
               {angle}
             </span>
@@ -335,7 +335,7 @@ function SeedSummarySection({
         </div>
       )}
 
-      <div className="flex items-center gap-4 text-xs text-muted-text pt-1 border-t border-frost/30">
+      <div className="flex items-center gap-4 text-xs text-[var(--color-muted)] pt-1 border-t border-frost/30">
         <div className="flex items-center gap-1.5">
           <div
             className={cn(
@@ -378,11 +378,11 @@ function SeedProductsGenerationSection({
   if (productIds.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-frost/50 p-6 text-center">
-        <Package size={28} className="mx-auto mb-3 text-muted-text opacity-40" />
-        <p className="text-sm text-near-white font-medium mb-1">
+        <Package size={28} className="mx-auto mb-3 text-[var(--color-muted)] opacity-40" />
+        <p className="text-sm text-[var(--color-ink)] font-medium mb-1">
           No products linked
         </p>
-        <p className="text-xs text-muted-text mb-4">
+        <p className="text-xs text-[var(--color-muted)] mb-4">
           Link products to start generating posts
         </p>
         <Link
@@ -402,11 +402,11 @@ function SeedProductsGenerationSection({
   return (
     <div className="space-y-0.5">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-xs font-semibold text-muted-text uppercase tracking-wider">
+        <h3 className="text-xs font-semibold text-[var(--color-muted)] uppercase tracking-wider">
           Products ({productIds.length})
         </h3>
         {generationSummary && (
-          <span className="text-[10px] text-muted-text">
+          <span className="text-[10px] text-[var(--color-muted)]">
             {generationSummary.generatedProducts}/{generationSummary.totalProducts} generated
           </span>
         )}
@@ -446,7 +446,7 @@ function SeedProductsGenerationSection({
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-near-white truncate">
+                  <span className="text-sm text-[var(--color-ink)] truncate">
                     {product.canonicalTitle}
                   </span>
                   {hasPosts && (
@@ -458,14 +458,14 @@ function SeedProductsGenerationSection({
                 </div>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   {product.brand && (
-                    <span className="text-[10px] text-muted-text">
+                    <span className="text-[10px] text-[var(--color-muted)]">
                       {product.brand}
                     </span>
                   )}
                   {product.priceCurrent && (
                     <>
                       {product.brand && (
-                        <span className="text-[10px] text-muted-text">•</span>
+                        <span className="text-[10px] text-[var(--color-muted)]">•</span>
                       )}
                       <span className="text-[10px] font-medium text-accent-green">
                         {product.priceCurrent}
@@ -522,7 +522,7 @@ function SeedProductsGenerationSection({
                 ) : (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span className="inline-flex items-center text-xs text-muted-text opacity-30 px-2 py-1">
+                      <span className="inline-flex items-center text-xs text-[var(--color-muted)] opacity-30 px-2 py-1">
                         <Sparkles size={12} />
                       </span>
                     </TooltipTrigger>
@@ -561,7 +561,7 @@ function SeedBatchGenerationSection({
     <div className="rounded-lg border border-accent-orange/20 bg-accent-orange/5 p-4">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <h3 className="text-xs font-semibold text-muted-text uppercase tracking-wider">
+          <h3 className="text-xs font-semibold text-[var(--color-muted)] uppercase tracking-wider">
             Batch Generation
           </h3>
         </div>
@@ -588,10 +588,10 @@ function SeedBatchGenerationSection({
       {genState.canGenerateAll ? (
         <div className="grid grid-cols-3 gap-3">
           <div className="text-center bg-surface/60 rounded-md p-2">
-            <div className="text-lg font-semibold text-near-white">
+            <div className="text-lg font-semibold text-[var(--color-ink)]">
               {totalProducts}
             </div>
-            <div className="text-[10px] text-muted-text mt-0.5">
+            <div className="text-[10px] text-[var(--color-muted)] mt-0.5">
               Total products
             </div>
           </div>
@@ -599,7 +599,7 @@ function SeedBatchGenerationSection({
             <div className="text-lg font-semibold text-accent-orange">
               {genState.pendingProductIds.length}
             </div>
-            <div className="text-[10px] text-muted-text mt-0.5">
+            <div className="text-[10px] text-[var(--color-muted)] mt-0.5">
               Eligible
             </div>
           </div>
@@ -607,19 +607,19 @@ function SeedBatchGenerationSection({
             <div className="text-lg font-semibold text-accent-green">
               {genState.generatedProductIds.length}
             </div>
-            <div className="text-[10px] text-muted-text mt-0.5">
+            <div className="text-[10px] text-[var(--color-muted)] mt-0.5">
               Generated
             </div>
           </div>
         </div>
       ) : (
-        <div className="text-xs text-muted-text bg-surface/40 rounded p-2.5 text-center">
+        <div className="text-xs text-[var(--color-muted)] bg-surface/40 rounded p-2.5 text-center">
           {genState.blockedReason ?? 'Batch generation not available'}
         </div>
       )}
 
       {someProductsGenerated && genState.canGenerateAll && (
-        <p className="text-[10px] text-muted-text mt-2.5">
+        <p className="text-[10px] text-[var(--color-muted)] mt-2.5">
           Generation will skip {genState.generatedProductIds.length} already-generated product
           {genState.generatedProductIds.length !== 1 ? 's' : ''}
         </p>
@@ -651,16 +651,16 @@ function SeedOutputSection({
   if (postCount === 0 && !recentPosts?.length) {
     return (
       <div className="rounded-lg border border-frost/40 p-4">
-        <h3 className="text-xs font-semibold text-muted-text uppercase tracking-wider mb-3">
+        <h3 className="text-xs font-semibold text-[var(--color-muted)] uppercase tracking-wider mb-3">
           Output
         </h3>
         <div className="text-center py-4">
           <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-surface-2 mb-2">
-            <Sparkles size={18} className="text-muted-text opacity-40" />
+            <Sparkles size={18} className="text-[var(--color-muted)] opacity-40" />
           </div>
-          <p className="text-sm text-muted-text">No posts generated yet</p>
+          <p className="text-sm text-[var(--color-muted)]">No posts generated yet</p>
           {totalProducts > 0 && (
-            <p className="text-xs text-muted-text mt-1">
+            <p className="text-xs text-[var(--color-muted)] mt-1">
               {totalProducts} product{totalProducts !== 1 && 's'} ready for
               generation
             </p>
@@ -675,7 +675,7 @@ function SeedOutputSection({
   return (
     <div className="rounded-lg border border-frost/40 p-4">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-xs font-semibold text-muted-text uppercase tracking-wider">
+        <h3 className="text-xs font-semibold text-[var(--color-muted)] uppercase tracking-wider">
           Output
         </h3>
         <button
@@ -693,7 +693,7 @@ function SeedOutputSection({
           </Badge>
         </div>
         {totalProducts > 0 && (
-          <span className="text-xs text-muted-text">
+          <span className="text-xs text-[var(--color-muted)]">
             {generatedProducts}/{totalProducts} product
             {totalProducts !== 1 && 's'} covered
           </span>
@@ -710,24 +710,24 @@ function SeedOutputSection({
               className="flex items-center gap-2 p-2 rounded-md hover:bg-surface-2 transition-colors group"
             >
               <div className="w-5 h-5 rounded bg-surface-2 border border-frost/30 shrink-0 flex items-center justify-center">
-                <FileTextIcon size={10} className="text-muted-text" />
+                <FileTextIcon size={10} className="text-[var(--color-muted)]" />
               </div>
-              <span className="text-xs text-muted-text truncate flex-1 group-hover:text-near-white transition-colors">
+              <span className="text-xs text-[var(--color-muted)] truncate flex-1 group-hover:text-[var(--color-ink)] transition-colors">
                 {post.title}
               </span>
               {post.primaryProduct && (
-                <span className="text-[10px] text-muted-text shrink-0 truncate max-w-[100px]">
+                <span className="text-[10px] text-[var(--color-muted)] shrink-0 truncate max-w-[100px]">
                   {post.primaryProduct.canonicalTitle}
                 </span>
               )}
               <ExternalLink
                 size={10}
-                className="shrink-0 text-muted-text opacity-0 group-hover:opacity-100 transition-opacity"
+                className="shrink-0 text-[var(--color-muted)] opacity-0 group-hover:opacity-100 transition-opacity"
               />
             </Link>
           ))}
           {(recentPosts?.length ?? 0) > 3 && (
-            <p className="text-[10px] text-muted-text pl-2">
+            <p className="text-[10px] text-[var(--color-muted)] pl-2">
               +{(recentPosts?.length ?? 0) - 3} more posts
             </p>
           )}
