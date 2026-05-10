@@ -12,12 +12,9 @@ import TiptapViewer from '#/components/editor/tiptap-viewer'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { POST_STATUS, getStatusMeta } from '#/shared/constants'
 import { Link } from '@tanstack/react-router'
-import {
-  getCompositeStatus,
-  COMPOSITE_STATUS_META,
-} from '../types/publication'
+import { getCompositeStatus, COMPOSITE_STATUS_META } from '../types/publication'
 import { FileText, Send } from 'lucide-react'
-import { useState } from 'react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
 
 interface PostDetailPageProps {
   postId: string
@@ -30,8 +27,6 @@ function PostDetailPageInner({ postId }: PostDetailPageProps) {
   const { data: scheduledJob } = useScheduledJobForPost(postId)
   const { data: publications = [], isLoading: pubLoading } =
     usePublications(postId)
-  const [activeTab, setActiveTab] = useState<DetailTab>('content')
-
   if (isLoading) {
     return <LoadingState variant="block" />
   }
@@ -49,8 +44,17 @@ function PostDetailPageInner({ postId }: PostDetailPageProps) {
   const compositeStatus = getCompositeStatus(publications)
   const compositeMeta = COMPOSITE_STATUS_META[compositeStatus]
 
-  const tabs: { id: DetailTab; label: string; icon: React.ReactNode; count?: number }[] = [
-    { id: 'content', label: 'Nội dung', icon: <FileText className="size-3.5" /> },
+  const tabs: {
+    id: DetailTab
+    label: string
+    icon: React.ReactNode
+    count?: number
+  }[] = [
+    {
+      id: 'content',
+      label: 'Nội dung',
+      icon: <FileText className="size-3.5" />,
+    },
     {
       id: 'publications',
       label: 'Bản đăng',
@@ -69,10 +73,7 @@ function PostDetailPageInner({ postId }: PostDetailPageProps) {
           <Badge tone={compositeMeta.tone}>{compositeMeta.label}</Badge>
         )}
         <Badge tone={tone}>{label}</Badge>
-        <Link
-          to="/dash/posts/$postId/edit"
-          params={{ postId: post.postId }}
-        >
+        <Link to="/dash/posts/$postId/edit" params={{ postId: post.postId }}>
           <Button size="sm">Sửa bài viết</Button>
         </Link>
       </div>
@@ -80,116 +81,117 @@ function PostDetailPageInner({ postId }: PostDetailPageProps) {
   })
 
   return (
-    <div className="max-w-full">
+    <div className="max-w-full space-y-6">
+      <div className="bg-surface border border-frost rounded-2xl overflow-hidden">
+        <Tabs defaultValue="content" className="w-full">
+          <div className="border-b border-frost px-4 pt-4">
+            <TabsList className="gap-0 rounded-none bg-transparent p-0 h-auto w-full justify-start border-b-0">
+              {tabs.map((tab) => (
+                <TabsTrigger
+                  key={tab.id}
+                  value={tab.id}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-none border-b-2 border-transparent data-[state=active]:border-accent-blue data-[state=active]:text-accent-blue data-[state=active]:bg-transparent data-[state=active]:shadow-none text-muted-text hover:text-near-white transition-colors"
+                >
+                  {tab.icon}
+                  {tab.label}
+                  {tab.count !== undefined && tab.count > 0 && (
+                    <span className="ml-1 text-xs bg-surface-2 px-1.5 py-0.5 rounded-full">
+                      {tab.count}
+                    </span>
+                  )}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
 
-      <div className="mb-6 border-b border-frost">
-        <nav className="flex gap-1">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? 'border-accent-blue text-accent-blue'
-                  : 'border-transparent text-muted-text hover:text-near-white'
-              }`}
-            >
-              {tab.icon}
-              {tab.label}
-              {tab.count !== undefined && tab.count > 0 && (
-                <span className="ml-1 text-xs bg-surface-2 px-1.5 py-0.5 rounded-full">
-                  {tab.count}
-                </span>
-              )}
-            </button>
-          ))}
-        </nav>
-      </div>
-
-      {activeTab === 'content' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <div className="bg-surface border border-frost rounded-2xl p-6 space-y-6">
-              <div>
-                <h2 className="text-sm text-muted-text mb-2">Tiêu đề</h2>
-                <p className="text-near-white">{post.title}</p>
-              </div>
-
-              <div>
-                <h2 className="text-sm text-muted-text mb-2">Nội dung</h2>
-                <div className="bg-surface-2 border border-frost rounded-lg p-4">
-                  <TiptapViewer content={post.body} />
-                </div>
-              </div>
-
-              {post.hashtags && post.hashtags.length > 0 && (
-                <div>
-                  <h2 className="text-sm text-muted-text mb-2">Hashtags</h2>
-                  <div className="flex flex-wrap gap-2">
-                    {post.hashtags.map((tag, index) => (
-                      <span key={index} className="text-sm text-accent-blue">
-                        {tag}
-                      </span>
-                    ))}
+          <TabsContent value="content" className="mt-0 p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <div className="bg-surface border border-frost rounded-2xl p-6 space-y-6">
+                  <div>
+                    <h2 className="text-sm text-muted-text mb-2">Tiêu đề</h2>
+                    <p className="text-near-white">{post.title}</p>
                   </div>
-                </div>
-              )}
 
-              {(post.supportingProducts?.length ?? 0) > 0 && (
+                  <div>
+                    <h2 className="text-sm text-muted-text mb-2">Nội dung</h2>
+                    <div className="bg-surface-2 border border-frost rounded-lg p-4">
+                      <TiptapViewer content={post.body} />
+                    </div>
+                  </div>
+
+                  {post.hashtags && post.hashtags.length > 0 && (
+                    <div>
+                      <h2 className="text-sm text-muted-text mb-2">Hashtags</h2>
+                      <div className="flex flex-wrap gap-2">
+                        {post.hashtags.map((tag: string, index: number) => (
+                          <span
+                            key={index}
+                            className="text-sm text-accent-blue"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {(post.supportingProducts?.length ?? 0) > 0 && (
+                    <div>
+                      <h2 className="text-sm text-muted-text mb-2">
+                        Sản phẩm hỗ trợ
+                      </h2>
+                      <div className="grid grid-cols-2 gap-4">
+                        {post.supportingProducts?.map((product: { imageCover?: string | null }, index: number) => (
+                          <img
+                            key={index}
+                            src={product.imageCover?.trim()}
+                            alt={`Image ${index + 1}`}
+                            className="w-full h-48 object-cover rounded-lg border border-frost"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="lg:col-span-1">
+                <PostMetadataSidebar post={post} scheduledJob={scheduledJob} />
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="publications" className="mt-0 p-6">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-sm text-muted-text mb-2">
-                    Sản phẩm hỗ trợ
+                  <h2 className="text-lg font-semibold text-near-white">
+                    Lịch sử đăng bài
                   </h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    {post.supportingProducts?.map((product, index) => (
-                      <img
-                        key={index}
-                        src={product.imageCover?.trim()}
-                        alt={`Image ${index + 1}`}
-                        className="w-full h-48 object-cover rounded-lg border border-frost"
-                      />
-                    ))}
-                  </div>
+                  <p className="text-sm text-muted-text mt-1">
+                    Các lần đăng bài lên nền tảng và kết quả tương ứng
+                  </p>
                 </div>
-              )}
+                <Link
+                  to="/dash/posts/$postId/edit"
+                  params={{ postId: post.postId }}
+                >
+                  <Button variant="outline" size="sm" className="gap-1.5">
+                    <Send className="size-3.5" />
+                    Thêm nền tảng
+                  </Button>
+                </Link>
+              </div>
+
+              <PublicationsList
+                publications={publications}
+                isLoading={pubLoading}
+              />
             </div>
-          </div>
-
-          <div className="lg:col-span-1">
-            <PostMetadataSidebar post={post} scheduledJob={scheduledJob} />
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'publications' && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-near-white">
-                Lịch sử đăng bài
-              </h2>
-              <p className="text-sm text-muted-text mt-1">
-                Các lần đăng bài lên nền tảng và kết quả tương ứng
-              </p>
-            </div>
-            <Link
-              to="/dash/posts/$postId/edit"
-              params={{ postId: post.postId }}
-            >
-              <Button variant="outline" size="sm" className="gap-1.5">
-                <Send className="size-3.5" />
-                Thêm nền tảng
-              </Button>
-            </Link>
-          </div>
-
-          <PublicationsList
-            publications={publications}
-            isLoading={pubLoading}
-          />
-        </div>
-      )}
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   )
 }

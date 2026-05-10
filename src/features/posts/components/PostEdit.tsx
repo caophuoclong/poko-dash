@@ -28,9 +28,9 @@ export function PostEditPage({ postId }: PostEditPageProps) {
   const updatePost = useUpdateContentPost()
   const [isSaving, setIsSaving] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-  const [platformTargets, setPlatformTargets] = useState<PlatformTargetConfig[]>(
-    [],
-  )
+  const [platformTargets, setPlatformTargets] = useState<
+    PlatformTargetConfig[]
+  >([])
 
   const methods = useForm<ContentPostEditFormData>({
     resolver: zodResolver(ContentPostEditSchema),
@@ -54,7 +54,7 @@ export function PostEditPage({ postId }: PostEditPageProps) {
   const [initialHashTags, setInitialHashTags] = useState<string[]>([])
   useEffect(() => {
     if (post?.hashtags) {
-      const tags = post.hashtags.map((tag) => tag.trim())
+      const tags = post.hashtags.map((tag: string) => tag.trim())
       setInitialHashTags(tags)
     }
   }, [post?.hashtags])
@@ -108,13 +108,15 @@ export function PostEditPage({ postId }: PostEditPageProps) {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(handleSave)}>
-        <div className="max-w-full">
-          <PageHeader
-            postId={post.postId}
-            status={status || ''}
-            hasUnsavedChanges={hasUnsavedChanges}
-            isSaving={isSaving}
-          />
+        <div className="max-w-full space-y-6">
+          <div className="bg-surface border border-frost rounded-2xl p-4 md:p-5">
+            <PageHeader
+              postId={post.postId}
+              status={status || ''}
+              hasUnsavedChanges={hasUnsavedChanges}
+              isSaving={isSaving}
+            />
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">

@@ -10,7 +10,7 @@ export default function PostsToolbar({
   onSearchChange,
 }: PostsToolbarProps) {
   return (
-    <div className="mb-4 max-w-sm">
+    <div className="w-full md:max-w-sm">
       <Input
         type="search"
         placeholder="Tìm kiếm bài viết..."

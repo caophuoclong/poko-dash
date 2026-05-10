@@ -259,68 +259,77 @@ export default function PostList(props: Props) {
   })
 
   return (
-    <div className="max-w-full">
-
-      <PostsToolbar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-
-      <PostsFilterBar
-        platforms={platforms}
-        statuses={statusOptions}
-        ideas={ideaOptions}
-        selectedPlatform={selectedPlatform}
-        selectedStatus={selectedStatus}
-        selectedIdea={selectedIdea}
-        onPlatformChange={setSelectedPlatform}
-        onStatusChange={setSelectedStatus}
-        onIdeaChange={setSelectedIdea}
-      />
-
-      {filteredPosts.length === 0 ? (
-        <EmptyState
-          icon={<FileText />}
-          title="Không tìm thấy bài viết nào"
-          description={
-            searchTerm || selectedPlatform || selectedStatus || selectedIdea
-              ? 'Thử thay đổi bộ lọc hoặc từ khoá tìm kiếm'
-              : undefined
-          }
-          action={
-            searchTerm || selectedPlatform || selectedStatus || selectedIdea ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSearchTerm('')
-                  setSelectedPlatform(undefined)
-                  setSelectedStatus(undefined)
-                  setSelectedIdea(undefined)
-                }}
-              >
-                Xóa bộ lọc
-              </Button>
-            ) : (
-              <Button
-                color="orange"
-                size="sm"
-                onClick={() => navigate({ to: '/dash/posts/new' })}
-              >
-                Tạo bài viết đầu tiên
-              </Button>
-            )
-          }
+    <div className="max-w-full space-y-6">
+      {/* Filter workspace */}
+      <div className="bg-surface border border-frost rounded-2xl p-4 md:p-5 space-y-4">
+        <PostsToolbar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+        <PostsFilterBar
+          platforms={platforms}
+          statuses={statusOptions}
+          ideas={ideaOptions}
+          selectedPlatform={selectedPlatform}
+          selectedStatus={selectedStatus}
+          selectedIdea={selectedIdea}
+          onPlatformChange={setSelectedPlatform}
+          onStatusChange={setSelectedStatus}
+          onIdeaChange={setSelectedIdea}
         />
-      ) : (
-        <CommonTable
-          table={table}
-          onRowClick={(row) => {
-            navigate({
-              to: '/dash/posts/$postId',
-              params: { postId: row.postId },
-            })
-          }}
-          className="bg-surface"
-        />
-      )}
+      </div>
+
+      {/* Results workspace */}
+      <div className="bg-surface border border-frost rounded-2xl overflow-hidden">
+        {filteredPosts.length === 0 ? (
+          <div className="p-6 md:p-10">
+            <EmptyState
+              icon={<FileText />}
+              title="Không tìm thấy bài viết nào"
+              description={
+                searchTerm || selectedPlatform || selectedStatus || selectedIdea
+                  ? 'Thử thay đổi bộ lọc hoặc từ khoá tìm kiếm'
+                  : undefined
+              }
+              action={
+                searchTerm ||
+                selectedPlatform ||
+                selectedStatus ||
+                selectedIdea ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setSearchTerm('')
+                      setSelectedPlatform(undefined)
+                      setSelectedStatus(undefined)
+                      setSelectedIdea(undefined)
+                    }}
+                  >
+                    Xóa bộ lọc
+                  </Button>
+                ) : (
+                  <Button
+                    color="orange"
+                    size="sm"
+                    onClick={() => navigate({ to: '/dash/posts/new' })}
+                  >
+                    Tạo bài viết đầu tiên
+                  </Button>
+                )
+              }
+            />
+          </div>
+        ) : (
+          <CommonTable
+            table={table}
+            onRowClick={(row) => {
+              navigate({
+                to: '/dash/posts/$postId',
+                params: { postId: row.postId },
+              })
+            }}
+            className="rounded-2xl"
+          />
+        )}
+      </div>
     </div>
   )
 }

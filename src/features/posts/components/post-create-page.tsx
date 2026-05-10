@@ -36,9 +36,9 @@ export function PostCreatePage() {
   const createPost = useCreateContentPost()
   const [isSaving, setIsSaving] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-  const [platformTargets, setPlatformTargets] = useState<PlatformTargetConfig[]>(
-    [],
-  )
+  const [platformTargets, setPlatformTargets] = useState<
+    PlatformTargetConfig[]
+  >([])
 
   const methods = useForm<ContentPostCreateFormData>({
     resolver: zodResolver(ContentPostCreateSchema),
@@ -102,37 +102,39 @@ export function PostCreatePage() {
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(handleSave)}>
-        <div className="max-w-full">
-          <div className="flex items-center justify-between mb-6">
-            <a
-              href="/dash/posts"
-              className="inline-flex items-center gap-2 text-sm text-muted-text hover:text-near-white transition-colors"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
+        <div className="max-w-full space-y-6">
+          <div className="bg-surface border border-frost rounded-2xl p-4 md:p-5">
+            <div className="flex items-center justify-between">
+              <a
+                href="/dash/posts"
+                className="inline-flex items-center gap-2 text-sm text-muted-text hover:text-near-white transition-colors"
               >
-                <path d="M10 12L6 8L10 4" />
-              </svg>
-              Quay lại
-            </a>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <path d="M10 12L6 8L10 4" />
+                </svg>
+                Quay lại
+              </a>
 
-            <div className="flex items-center gap-3">
-              {hasUnsavedChanges && (
-                <span className="text-xs text-accent-orange">
-                  • Có thay đổi chưa lưu
+              <div className="flex items-center gap-3">
+                {hasUnsavedChanges && (
+                  <span className="text-xs text-accent-orange">
+                    • Có thay đổi chưa lưu
+                  </span>
+                )}
+                <span className="text-sm text-muted-text">
+                  {statusOptions.find((s) => s.value === status)?.label}
                 </span>
-              )}
-              <span className="text-sm text-muted-text">
-                {statusOptions.find((s) => s.value === status)?.label}
-              </span>
-              <Button type="submit" disabled={isSaving || !hasUnsavedChanges}>
-                {isSaving ? 'Đang tạo...' : 'Tạo bài viết'}
-              </Button>
+                <Button type="submit" disabled={isSaving || !hasUnsavedChanges}>
+                  {isSaving ? 'Đang tạo...' : 'Tạo bài viết'}
+                </Button>
+              </div>
             </div>
           </div>
 
