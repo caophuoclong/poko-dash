@@ -9,6 +9,7 @@ import { getNodeDefinition } from '../../stores/node-registry/use-node-registry.
 import { ICON_MAP } from '../nodes/workflow-node.constants'
 import type { PaneHeaderProps } from './types'
 import { findLoopScope } from '../../utils/loop-scope-utils'
+import { resolveLoopItem } from '../../utils/loop-output-utils'
 
 function PaneHeader({
   side,
@@ -121,26 +122,13 @@ export function LeftSide({
     ]
   }, [loopScope.inLoopScope])
 
-  /** Sample data for loop.item — taken from the loop node's execution output (first item of its input array) */
+  /** Sample data for loop.item — resolved from loop node execution output via canonical shape first, fallback to heuristic */
   const loopItemSample = useMemo(() => {
     if (!loopScope.inLoopScope || !loopScope.loopNodeId) return null
     const loopExec = executionStore.nodeExecutions.find(
       (ne) => ne.nodeId === loopScope.loopNodeId,
     )
-    if (!loopExec?.outputData) return null
-    // Loop node output typically has an `items` or `data` array — find first array value
-    const output = loopExec.outputData as Record<string, unknown>
-    for (const val of Object.values(output)) {
-      if (Array.isArray(val) && val.length > 0) {
-        const first = val[0]
-        if (first !== null && typeof first === 'object') {
-          return first as Record<string, unknown>
-        }
-        // Primitive array — wrap so it renders as a single field
-        return { value: first } as Record<string, unknown>
-      }
-    }
-    return null
+    return resolveLoopItem(loopExec?.outputData)
   }, [loopScope, executionStore.nodeExecutions])
 
   const loopScopeTitle = loopScope.loopNodeName
@@ -149,7 +137,6 @@ export function LeftSide({
   const upstreamData = useMemo(() => {
     if (!prevNode) return null
     // const synthesized = synthesizeOutput(prevNode)
-    console.log('🚀 ~ LeftSide ~ prevNode:', prevNode)
     if (
       prevExecInfo &&
       prevExecInfo.status === 'completed' &&

@@ -31,7 +31,6 @@ export default function DashboardPage() {
 
   const { data, isLoading, isError, refetch, isRefetching } =
     useDashboardOverview(selectedRange)
-  console.log('🚀 ~ DashboardPage ~ data:', data)
 
   const handleRefresh = () => {
     refetch()
@@ -98,7 +97,7 @@ export default function DashboardPage() {
   // Check if this is a completely empty state (no data at all)
   const isEmpty =
     (data.summaryCards || []).every((card) => card.value === 0) &&
-    (data.pipelineSnapshot || []).every((status) => status.count === 0) &&
+    (Object.keys(data.pipelineSnapshot) || []).every(() => Boolean) &&
     (data.attentionItems || []).length === 0 &&
     (data.upcomingSchedule || []).length === 0
 

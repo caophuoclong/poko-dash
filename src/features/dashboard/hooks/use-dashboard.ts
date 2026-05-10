@@ -1,16 +1,15 @@
-import type { DashboardRange } from '#/dtos/dashboard'
-import { generateMockDashboardData } from '../utils/mock-dashboard-data'
-import {
-  useDashboardControllerGetOverview,
-} from '#/api/client'
+import { useDashboardControllerGetOverview } from '#/api/client'
+import type { DashboardOverviewResponseDtoRange } from '#/api/model'
 
-export function useDashboardOverview(range: DashboardRange = '7d') {
+export function useDashboardOverview(
+  range: DashboardOverviewResponseDtoRange = '7d',
+) {
   return useDashboardControllerGetOverview({
     query: {
       staleTime: 60_000,
       refetchOnWindowFocus: true,
-      select: (res: any) => res.data,
-      placeholderData: generateMockDashboardData(range) as any,
+      select: (res) => res.data,
+      // placeholderData: generateMockDashboardData(range),
     },
   })
 }
