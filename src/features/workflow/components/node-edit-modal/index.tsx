@@ -3,7 +3,7 @@ import { X, GripHorizontal, Route, Play } from 'lucide-react'
 import type { Node, Edge } from '@xyflow/react'
 import { Button } from '#/components/ui/button'
 import { cn } from '#/shared/utils'
-import type { WorkflowNodeData } from '../../types'
+import type { WorkflowNodeData, WorkflowVariable } from '../../types'
 import { useNodeEditModal } from '../../hooks/use-node-edit-modal'
 import { LeftSide } from './LeftSide'
 import { NodeEdit } from './NodeEdit'
@@ -16,6 +16,7 @@ interface NodeEditModalProps {
   position: { x: number; y: number }
   nodes: Node<WorkflowNodeData>[]
   edges: Edge[]
+  workflowVariables?: WorkflowVariable[]
   onClose: () => void
   onNodeDataUpdate: (nodeId: string, patch: Partial<WorkflowNodeData>) => void
   onDeleteNode: (nodeId: string) => void
@@ -29,6 +30,7 @@ export function NodeEditModal({
   position,
   nodes,
   edges,
+  workflowVariables,
   onClose,
   onNodeDataUpdate,
   onDeleteNode,
@@ -61,6 +63,7 @@ export function NodeEditModal({
     data,
     nodes,
     edges,
+    workflowVariables,
     onClose,
     onNodeDataUpdate,
   })
@@ -157,6 +160,9 @@ export function NodeEditModal({
             setPrevIdx={setPrevIdx}
             prevNode={prevNode}
             catConfigBgColor={catConfig?.bgColor}
+            nodeId={nodeId}
+            nodes={nodes}
+            edges={edges}
           />
 
           <NodeEdit
@@ -173,6 +179,7 @@ export function NodeEditModal({
             nodeTypeId={data.nodeTypeId ?? ''}
             catConfigBgColor={catConfig?.bgColor}
             Icon={Icon}
+            availableVars={availableVars}
             onTitleChange={setTitle}
             onSubtitleChange={setSubtitle}
             onTitleBlur={handleTitleBlur}

@@ -3,6 +3,7 @@ import { cn } from '#/shared/utils'
 import { Button } from '#/components/ui/button'
 import { resolvePropertySchema, resolveInputs, resolveOutputs } from '../node-registry.utils'
 import { PropertyEditor } from './property-editors/property-editor'
+import type { VariableRef } from '../utils/variable-system-utils'
 import type {
   NodeDefinition,
   ValidationError,
@@ -18,6 +19,7 @@ interface PropertiesTabProps {
   position: { x: number; y: number }
   nodeId: string
   nodeTypeId: string
+  availableVars?: VariableRef[]
   onTitleChange: (v: string) => void
   onSubtitleChange: (v: string) => void
   onTitleBlur: () => void
@@ -28,6 +30,7 @@ interface PropertiesTabProps {
 
 export function PropertiesTab({
   def, title, subtitle, localProps, errors, position, nodeId, nodeTypeId,
+  availableVars,
   onTitleChange, onSubtitleChange, onTitleBlur, onSubtitleBlur, onPropChange, onDelete,
 }: PropertiesTabProps) {
   return (
@@ -97,6 +100,7 @@ export function PropertiesTab({
                           onChange={onPropChange}
                           allProps={localProps}
                           errors={errors}
+                          availableVars={availableVars}
                         />
                       ))}
                   </div>

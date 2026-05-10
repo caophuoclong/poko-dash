@@ -55,6 +55,12 @@ export interface WorkflowSummary {
   updatedAt: string
 }
 
+export interface WorkflowVariable {
+  key: string
+  value: string
+  description?: string
+}
+
 export interface WorkflowDetail {
   id: string
   name: string
@@ -62,6 +68,7 @@ export interface WorkflowDetail {
   status: 'draft' | 'active' | 'paused' | 'archived'
   nodes: Node<WorkflowNodeData>[]
   edges: Edge[]
+  variables?: WorkflowVariable[]
   createdAt: string
   updatedAt: string
 }

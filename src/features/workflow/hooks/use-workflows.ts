@@ -15,8 +15,9 @@ import type { WorkflowDetailDto } from '#/api/model/workflowDetailDto'
 import type { WorkflowNodeDto } from '#/api/model/workflowNodeDto'
 import type { WorkflowEdgeDto } from '#/api/model/workflowEdgeDto'
 import type { SaveWorkflowCanvasBodyDtoVersionType } from '#/api/model/saveWorkflowCanvasBodyDtoVersionType'
-import type { WorkflowSummary, WorkflowDetail, WorkflowNodeData } from '../types'
+import type { WorkflowSummary, WorkflowDetail, WorkflowNodeData, WorkflowVariable } from '../types'
 import type { Node, Edge } from '@xyflow/react'
+import { mapCanvasEdgeToDtoEdge, mapDtoEdgeToCanvasEdge } from '../utils/edge-mapping'
 
 function mapSummary(dto: WorkflowSummaryDto): WorkflowSummary {
   return {
@@ -45,6 +46,7 @@ function mapDetail(dto: WorkflowDetailDto): WorkflowDetail {
     status: (dto.status as WorkflowDetail['status']) ?? 'draft',
     nodes: dto.nodes.map(mapNode),
     edges: edges.map(mapEdge),
+    variables: (dto as any).variables ?? [],
     createdAt: dto.created_at,
     updatedAt: dto.updated_at,
   }
@@ -68,14 +70,7 @@ function mapNode(dto: WorkflowNodeDto): Node<WorkflowNodeData> {
 }
 
 function mapEdge(dto: WorkflowEdgeDto): Edge {
-  return {
-    id: dto.id,
-    source: dto.source_node_id,
-    target: dto.target_node_id,
-    type: 'workflow-edge',
-    data: { style: 'auto' },
-    style: { stroke: 'var(--t-frost)', strokeWidth: 1.5 },
-  }
+  return mapDtoEdgeToCanvasEdge(dto)
 }
 
 export function useWorkflows() {
@@ -124,6 +119,7 @@ export function useSaveWorkflowCanvas() {
       id: string
       nodes: Node<WorkflowNodeData>[]
       edges: Edge[]
+      variables?: WorkflowVariable[]
       versionType?: SaveWorkflowCanvasBodyDtoVersionType
     }) => {
       const dto: Record<string, unknown> = {
@@ -138,11 +134,11 @@ export function useSaveWorkflowCanvas() {
           icon: (n.data as WorkflowNodeData).icon,
           config: (n.data as WorkflowNodeData).config ?? {},
         })),
-        edges: params.edges.map((e) => ({
-          source_node_id: e.source,
-          target_node_id: e.target,
-          type: e.type ?? 'workflow-edge',
-        })),
+        edges: params.edges.map(mapCanvasEdgeToDtoEdge),
+      }
+
+      if (params.variables !== undefined) {
+        dto.variables = params.variables
       }
 
       if (params.versionType) {
@@ -160,6 +156,45 @@ export function useSaveWorkflowCanvas() {
       })
       queryClient.invalidateQueries({
         queryKey: getWorkflowsControllerListQueryKey(),
+      })
+    },
+  })
+}
+
+export function useUpdateWorkflowVariables() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (params: {
+      id: string
+      variables: WorkflowVariable[]
+      nodes: Node<WorkflowNodeData>[]
+      edges: Edge[]
+    }) => {
+      const dto: Record<string, unknown> = {
+        nodes: params.nodes.map((n) => ({
+          xyflow_id: n.id,
+          type: n.type ?? 'workflow-node',
+          node_type_id: (n.data as WorkflowNodeData).nodeTypeId ?? '',
+          position_x: n.position.x,
+          position_y: n.position.y,
+          title: (n.data as WorkflowNodeData).title,
+          subtitle: (n.data as WorkflowNodeData).subtitle,
+          icon: (n.data as WorkflowNodeData).icon,
+          config: (n.data as WorkflowNodeData).config ?? {},
+        })),
+        edges: params.edges.map(mapCanvasEdgeToDtoEdge),
+        variables: params.variables,
+        versionType: 'auto' as const,
+      }
+      return workflowsControllerSaveCanvas(
+        params.id,
+        dto as Parameters<typeof workflowsControllerSaveCanvas>[1],
+      )
+    },
+    onSuccess: (_data, params) => {
+      queryClient.invalidateQueries({
+        queryKey: getWorkflowsControllerFindOneQueryKey(params.id),
       })
     },
   })
@@ -205,6 +240,7 @@ export function useCreateWorkflowVersion() {
       message: string
       nodes: Node<WorkflowNodeData>[]
       edges: Edge[]
+      variables?: WorkflowVariable[]
     }) => {
       const dto: Record<string, unknown> = {
         nodes: params.nodes.map((n) => ({
@@ -218,13 +254,13 @@ export function useCreateWorkflowVersion() {
           icon: (n.data as WorkflowNodeData).icon,
           config: (n.data as WorkflowNodeData).config ?? {},
         })),
-        edges: params.edges.map((e) => ({
-          source_node_id: e.source,
-          target_node_id: e.target,
-          type: e.type ?? 'workflow-edge',
-        })),
+        edges: params.edges.map(mapCanvasEdgeToDtoEdge),
         message: params.message || undefined,
         versionType: 'manual' as const,
+      }
+
+      if (params.variables !== undefined) {
+        dto.variables = params.variables
       }
 
       return workflowsControllerSaveCanvas(

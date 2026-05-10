@@ -1,17 +1,14 @@
 import { useMemo } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import type { Node } from '@xyflow/react'
+import { ChevronLeft, ChevronRight, Repeat } from 'lucide-react'
+import type { Node, Edge } from '@xyflow/react'
 import { cn } from '#/shared/utils'
 import type { WorkflowNodeData } from '../../types'
-import { UpstreamDataView } from '../draggable-field-tag'
+import { UpstreamDataView, SyntheticVariableTag } from '../draggable-field-tag'
 import { useExecutionStore } from '../../stores/execution-store/useExecutionStore'
-import {
-  getNodeDefinition,
-  useNodeRegistryStore,
-} from '../../stores/node-registry/use-node-registry.store'
+import { getNodeDefinition } from '../../stores/node-registry/use-node-registry.store'
 import { ICON_MAP } from '../nodes/workflow-node.constants'
 import type { PaneHeaderProps } from './types'
-import { useWorkflow } from '../../hooks/use-workflows'
+import { findLoopScope } from '../../utils/loop-scope-utils'
 
 function PaneHeader({
   side,
@@ -56,33 +53,6 @@ function PaneHeader({
   )
 }
 
-function synthesizeOutput(
-  node: Node<WorkflowNodeData>,
-): Record<string, unknown> {
-  const nodeData = node.data as WorkflowNodeData
-  const def = nodeData.nodeTypeId
-    ? getNodeDefinition(String(nodeData.nodeTypeId))
-    : null
-  const config = (nodeData.config ?? {}) as Record<string, unknown>
-  const merged: Record<string, unknown> = {
-    id: node.id,
-    __node_label: nodeData.title ?? node.id,
-  }
-  for (const schema of def?.config.propertySchema ?? []) {
-    const val = config[schema.key] ?? schema.default
-    if (val !== undefined && val !== null && val !== '') {
-      merged[schema.key] = val
-    }
-  }
-  if (Object.keys(merged).length <= 2) {
-    return {
-      id: node.id,
-      __node_label: nodeData.title ?? node.id,
-      ...(config as Record<string, unknown>),
-    }
-  }
-  return merged
-}
 
 interface LeftSideProps {
   prevNodes: Node<WorkflowNodeData>[]
@@ -90,6 +60,9 @@ interface LeftSideProps {
   setPrevIdx: React.Dispatch<React.SetStateAction<number>>
   prevNode: Node<WorkflowNodeData> | undefined
   catConfigBgColor?: string
+  nodeId: string
+  nodes: Node<WorkflowNodeData>[]
+  edges: Edge[]
 }
 
 export function LeftSide({
@@ -98,14 +71,81 @@ export function LeftSide({
   setPrevIdx,
   prevNode,
   catConfigBgColor,
+  nodeId,
+  nodes,
+  edges,
 }: LeftSideProps) {
-    const nodeRegistry = useNodeRegistryStore().getNodeDefinition(
-      prevNode?.data.nodeTypeId ?? '',
-    )
   const executionStore = useExecutionStore()
   const prevExecInfo = executionStore.nodeExecutions.find(
     (ne) => ne.nodeId === prevNode?.id,
   )
+
+  const loopScope = useMemo(
+    () => findLoopScope(nodeId, nodes, edges),
+    [nodeId, nodes, edges],
+  )
+
+  const loopContextVariables = useMemo(() => {
+    if (!loopScope.inLoopScope) return []
+    return [
+      {
+        id: 'loop.item',
+        label: 'item',
+        description: 'Current array element at this iteration',
+      },
+      {
+        id: 'loop.index',
+        label: 'index',
+        description: 'Current iteration index (0-based)',
+      },
+      {
+        id: 'loop.items',
+        label: 'items',
+        description: 'Full input array being iterated',
+      },
+      {
+        id: 'loop.length',
+        label: 'length',
+        description: 'Total number of items in the loop',
+      },
+      {
+        id: 'loop.isFirst',
+        label: 'isFirst',
+        description: 'True when index is 0',
+      },
+      {
+        id: 'loop.isLast',
+        label: 'isLast',
+        description: 'True for final iteration',
+      },
+    ]
+  }, [loopScope.inLoopScope])
+
+  /** Sample data for loop.item — taken from the loop node's execution output (first item of its input array) */
+  const loopItemSample = useMemo(() => {
+    if (!loopScope.inLoopScope || !loopScope.loopNodeId) return null
+    const loopExec = executionStore.nodeExecutions.find(
+      (ne) => ne.nodeId === loopScope.loopNodeId,
+    )
+    if (!loopExec?.outputData) return null
+    // Loop node output typically has an `items` or `data` array — find first array value
+    const output = loopExec.outputData as Record<string, unknown>
+    for (const val of Object.values(output)) {
+      if (Array.isArray(val) && val.length > 0) {
+        const first = val[0]
+        if (first !== null && typeof first === 'object') {
+          return first as Record<string, unknown>
+        }
+        // Primitive array — wrap so it renders as a single field
+        return { value: first } as Record<string, unknown>
+      }
+    }
+    return null
+  }, [loopScope, executionStore.nodeExecutions])
+
+  const loopScopeTitle = loopScope.loopNodeName
+    ? `Loop context from ${loopScope.loopNodeName}`
+    : 'Loop context variables'
   const upstreamData = useMemo(() => {
     if (!prevNode) return null
     // const synthesized = synthesizeOutput(prevNode)
@@ -171,6 +211,43 @@ export function LeftSide({
           >
             <ChevronRight size={12} />
           </button>
+        </div>
+      )}
+
+      {loopScope.inLoopScope && loopContextVariables.length > 0 && (
+        <div className="border-b border-frost bg-surface-2/50">
+          <div className="px-3 py-2 flex items-center gap-2 border-b border-frost/30">
+            <Repeat size={11} className="text-accent-green" />
+            <span className="text-[10px] font-mono tracking-wide uppercase text-accent-green">
+              LOOP CONTEXT
+            </span>
+          </div>
+          <div className="p-3 space-y-1">
+            {loopContextVariables.map((v) => (
+              <SyntheticVariableTag
+                key={v.id}
+                varId={v.id}
+                label={v.label}
+                description={v.description}
+                typeHint="variable"
+              />
+            ))}
+          </div>
+          {loopItemSample && (
+            <div className="px-3 pb-3">
+              <div className="text-[9px] font-mono tracking-wide uppercase text-muted-text/70 mb-1.5">
+                loop.item preview
+              </div>
+              <UpstreamDataView
+                data={loopItemSample}
+                nodeName="loop_item"
+                baseRef="loop.item"
+              />
+            </div>
+          )}
+          <div className="px-3 py-1.5 border-t border-frost/30 bg-surface">
+            <p className="text-[9px] text-muted-text/70">{loopScopeTitle}</p>
+          </div>
         </div>
       )}
 

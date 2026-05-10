@@ -1,5 +1,6 @@
 import {
   Save,
+  Variable,
   Undo2,
   Redo2,
   MoreHorizontal,
@@ -33,6 +34,7 @@ import { NodeEditModal } from './node-edit-modal/index'
 import { ExecutionDock } from './execution-dock'
 import { ExecutionDrawer } from './execution-drawer'
 import { VersionHistoryPanel } from './VersionHistoryPanel'
+import { WorkflowVariablesPanel } from './workflow-variables-panel'
 import { exportWorkflow } from '../workflow-transfer'
 import type { WorkflowDetail, WorkflowNodeData } from '../types'
 import { useWorkflowDetailPage } from '../hooks/use-workflow-detail-page/useWorkflowDetailPage'
@@ -52,6 +54,10 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
     setDrawerOpen,
     versionPanelOpen,
     setVersionPanelOpen,
+    variablesPanelOpen,
+    setVariablesPanelOpen,
+    workflowVariables,
+    handleVariablesChange,
     previewVersion,
     restoringVersion,
     saveVersionPopoverOpen,
@@ -96,6 +102,7 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
             position={editingNode.position}
             nodes={editor.nodes}
             edges={editor.edges}
+            workflowVariables={workflowVariables}
             onClose={handleCloseModal}
             onNodeDataUpdate={handleNodeDataUpdate}
             onDeleteNode={handleDeleteNode}
@@ -204,6 +211,26 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
             >
               <Download size={14} />
             </Button>
+
+            <div className="w-px h-5 bg-frost mx-1" />
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  onClick={() => setVariablesPanelOpen((v) => !v)}
+                  className={
+                    variablesPanelOpen
+                      ? 'text-accent-blue bg-accent-blue-dim'
+                      : 'text-muted-text hover:text-near-white'
+                  }
+                >
+                  <Variable size={14} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">Workflow variables</TooltipContent>
+            </Tooltip>
 
             <div className="w-px h-5 bg-frost mx-1" />
 
@@ -462,6 +489,14 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
             onRestore={handleRestoreClick}
             restoringVersion={restoringVersion}
           />
+
+          {variablesPanelOpen && (
+            <WorkflowVariablesPanel
+              variables={workflowVariables}
+              onChange={handleVariablesChange}
+              onClose={() => setVariablesPanelOpen(false)}
+            />
+          )}
         </div>
       </div>
       <input

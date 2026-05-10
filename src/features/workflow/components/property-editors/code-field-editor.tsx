@@ -1,7 +1,10 @@
-import { lazy, Suspense } from 'react'
-import { Loader2 } from 'lucide-react'
+import { lazy, Suspense, useRef, useCallback, useState } from 'react'
+import { Loader2, Variable } from 'lucide-react'
 import { FieldLabel } from './field-label'
+import { VariablePicker } from '../variable-picker'
+import { TemplateLint } from './template-lint'
 import type { PropertyEditorProps } from './property-editor'
+import type { Monaco } from '@monaco-editor/react'
 
 const MonacoEditor = lazy(() => import('@monaco-editor/react'))
 
@@ -19,19 +22,117 @@ const LANG_MAP: Record<string, string> = {
   sql: 'sql',
 }
 
-export function CodeFieldEditor({ schema, value, onChange }: PropertyEditorProps) {
+export function CodeFieldEditor({ schema, value, onChange, availableVars }: PropertyEditorProps) {
   const codeSchema = schema as unknown as CodeSchema
   const language = codeSchema.language ?? 'javascript'
   const codeValue = typeof value === 'string' ? value : ''
+  const editorRef = useRef<any>(null)
+  const completionRef = useRef<any>(null)
+  const [pickerOpen, setPickerOpen] = useState(false)
+
+  const handleInsert = useCallback((varRef: string) => {
+    const editor = editorRef.current
+    if (!editor) return
+    const position = editor.getPosition()
+    if (!position) return
+    const insert = `{{${varRef}}}`
+    editor.executeEdits('variable-insert', [
+      {
+        range: {
+          startLineNumber: position.lineNumber,
+          startColumn: position.column,
+          endLineNumber: position.lineNumber,
+          endColumn: position.column,
+        },
+        text: insert,
+      },
+    ])
+    editor.focus()
+    setPickerOpen(false)
+  }, [])
+
+  const handleEditorMount = useCallback(
+    (ed: any, monaco: Monaco) => {
+      monaco.editor.setTheme('poko-dark')
+      editorRef.current = ed
+
+      // Dispose previous provider if remounting
+      completionRef.current?.dispose()
+
+      if (!availableVars || availableVars.length === 0) return
+
+      completionRef.current = monaco.languages.registerCompletionItemProvider(language, {
+        triggerCharacters: ['{', '.'],
+        provideCompletionItems(model: any, position: any) {
+          const textUntil = model.getValueInRange({
+            startLineNumber: position.lineNumber,
+            startColumn: 1,
+            endLineNumber: position.lineNumber,
+            endColumn: position.column,
+          })
+
+          // Only trigger inside {{ or after {{ prefix
+          const match = textUntil.match(/\{\{([a-zA-Z_$][a-zA-Z0-9_.$]*)$/)
+          if (!match && !textUntil.endsWith('{{')) return { suggestions: [] }
+
+          const prefix = match ? match[1] : ''
+          const word = model.getWordUntilPosition(position)
+          const range = {
+            startLineNumber: position.lineNumber,
+            endLineNumber: position.lineNumber,
+            startColumn: word.startColumn,
+            endColumn: word.endColumn,
+          }
+
+          const filtered = prefix
+            ? availableVars.filter((v) => v.id.startsWith(prefix))
+            : availableVars
+
+          return {
+            suggestions: filtered.map((v) => ({
+              label: v.id,
+              kind: monaco.languages.CompletionItemKind.Variable,
+              detail: v.description,
+              documentation: v.sampleValue ? `Sample: ${v.sampleValue}` : undefined,
+              insertText: textUntil.endsWith('{{') ? `${v.id}}}` : `${v.id.slice(prefix.length)}}}`,
+              range,
+            })),
+          }
+        },
+      })
+    },
+    [availableVars, language],
+  )
 
   return (
     <div className="space-y-1">
-      <FieldLabel required={schema.required}>
-        {schema.label}
-        <span className="ml-1.5 text-muted-text/50 normal-case font-mono text-[9px]">
-          {LANG_MAP[language]}
-        </span>
-      </FieldLabel>
+      <div className="flex items-center justify-between">
+        <FieldLabel required={schema.required}>
+          {schema.label}
+          <span className="ml-1.5 text-muted-text/50 normal-case font-mono text-[9px]">
+            {LANG_MAP[language]}
+          </span>
+        </FieldLabel>
+        {availableVars && availableVars.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setPickerOpen((v) => !v)}
+            className="w-5 h-5 flex items-center justify-center rounded text-muted-text hover:text-accent-blue hover:bg-accent-blue/10 transition-colors"
+            title="Insert variable"
+          >
+            <Variable size={12} />
+          </button>
+        )}
+      </div>
+      {pickerOpen && availableVars && (
+        <div className="mb-2">
+          <VariablePicker
+            variables={availableVars}
+            onInsert={handleInsert}
+            onClose={() => setPickerOpen(false)}
+          />
+        </div>
+      )}
       <div className="border border-frost rounded-lg overflow-hidden bg-void">
         <Suspense
           fallback={
@@ -74,13 +175,16 @@ export function CodeFieldEditor({ schema, value, onChange }: PropertyEditorProps
                 },
               })
             }}
-            onMount={(editor, monaco) => {
-              monaco.editor.setTheme('poko-dark')
-            }}
+            onMount={handleEditorMount}
           />
         </Suspense>
       </div>
-      <p className="text-[10px] text-muted-text/60 font-mono">Available: $input</p>
+      <p className="text-[10px] text-muted-text/60 font-mono">
+        Available: $input — type <code>{'{{'}  </code> for variable suggestions
+      </p>
+      {availableVars && codeValue && (
+        <TemplateLint value={codeValue} availableVars={availableVars} />
+      )}
       {schema.helperText && (
         <p className="text-[10px] text-muted-text/70">{schema.helperText}</p>
       )}

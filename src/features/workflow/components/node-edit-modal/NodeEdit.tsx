@@ -5,6 +5,7 @@ import { cn } from '#/shared/utils'
 import { PropertiesTab } from '../properties-tab'
 import { ValidationTab } from '../validation-tab'
 import type { ValidationError, NodeDefinition } from '../../stores/node-registry/use-node-registry.store'
+import type { VariableRef } from '../../utils/variable-system-utils'
 import type { TabId, PaneHeaderProps } from './types'
 
 function PaneHeader({
@@ -43,6 +44,7 @@ interface NodeEditProps {
   nodeTypeId: string
   catConfigBgColor?: string
   Icon?: LucideIcon
+  availableVars?: VariableRef[]
   onTitleChange: (value: string) => void
   onSubtitleChange: (value: string) => void
   onTitleBlur: () => void
@@ -68,6 +70,7 @@ export function NodeEdit({
   nodeTypeId,
   catConfigBgColor,
   Icon,
+  availableVars,
   onTitleChange,
   onSubtitleChange,
   onTitleBlur,
@@ -133,6 +136,7 @@ export function NodeEdit({
             position={position}
             nodeId={nodeId}
             nodeTypeId={nodeTypeId}
+            availableVars={availableVars}
             onTitleChange={onTitleChange}
             onSubtitleChange={onSubtitleChange}
             onTitleBlur={onTitleBlur}

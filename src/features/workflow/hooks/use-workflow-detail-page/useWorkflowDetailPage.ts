@@ -5,6 +5,7 @@ import {
   useSaveWorkflowCanvas,
   useDeleteWorkflow,
   useCreateWorkflowVersion,
+  useUpdateWorkflowVariables,
 } from '../use-workflows'
 
 import {
@@ -18,7 +19,7 @@ import {
   resolveNodePosition,
   buildNewNodeFromDefinition,
 } from '../use-workflow-detail-page/utils'
-import type { WorkflowDetail, WorkflowNodeData } from '../../types'
+import type { WorkflowDetail, WorkflowNodeData, WorkflowVariable } from '../../types'
 import type { Node, Edge, ReactFlowInstance } from '@xyflow/react'
 import { useWorkflowEditorState } from '../use-workflow-editor-state'
 import { useExecutionStore } from '../../stores/execution-store/useExecutionStore'
@@ -32,6 +33,7 @@ export function useWorkflowDetailPage(workflow: WorkflowDetail) {
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [versionPanelOpen, setVersionPanelOpen] = useState(false)
+  const [variablesPanelOpen, setVariablesPanelOpen] = useState(false)
   const [previewVersion, setPreviewVersion] = useState<number | null>(null)
   const [restoringVersion, setRestoringVersion] = useState<number | null>(null)
   const [saveVersionPopoverOpen, setSaveVersionPopoverOpen] = useState(false)
@@ -40,6 +42,10 @@ export function useWorkflowDetailPage(workflow: WorkflowDetail) {
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const selectedNodeRef = useRef<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  const [workflowVariables, setWorkflowVariables] = useState<WorkflowVariable[]>(
+    workflow.variables ?? [],
+  )
 
   const editor = useWorkflowEditorState(
     workflow.nodes as Node<WorkflowNodeData>[],
@@ -60,6 +66,7 @@ export function useWorkflowDetailPage(workflow: WorkflowDetail) {
   const saveMutation = useSaveWorkflowCanvas()
   const deleteMutation = useDeleteWorkflow()
   const createVersionMutation = useCreateWorkflowVersion()
+  const variablesMutation = useUpdateWorkflowVariables()
 
   const { connect: connectSSE } = useExecutionSSE()
 
@@ -70,12 +77,26 @@ export function useWorkflowDetailPage(workflow: WorkflowDetail) {
           id: workflow.id,
           nodes: nodesToSave,
           edges: edgesToSave,
+          variables: workflowVariables,
           versionType: versionType ?? 'auto',
         })
         showAutoSave()
       },
-      [saveMutation, workflow.id],
+      [saveMutation, workflow.id, workflowVariables],
     ),
+  )
+
+  const handleVariablesChange = useCallback(
+    (updated: WorkflowVariable[]) => {
+      setWorkflowVariables(updated)
+      variablesMutation.mutate({
+        id: workflow.id,
+        variables: updated,
+        nodes: editor.nodes,
+        edges: editor.edges,
+      })
+    },
+    [variablesMutation, workflow.id, editor.nodes, editor.edges],
   )
 
   const showAutoSave = useCallback(() => {
@@ -251,6 +272,7 @@ export function useWorkflowDetailPage(workflow: WorkflowDetail) {
         workflow.nodes as Node<WorkflowNodeData>[],
         workflow.edges,
       )
+      setWorkflowVariables(workflow.variables ?? [])
       setSelectedNodeId(null)
       setEditingNodeId(null)
       resetExecution()
@@ -345,6 +367,10 @@ export function useWorkflowDetailPage(workflow: WorkflowDetail) {
     setDrawerOpen,
     versionPanelOpen,
     setVersionPanelOpen,
+    variablesPanelOpen,
+    setVariablesPanelOpen,
+    workflowVariables,
+    handleVariablesChange,
     previewVersion,
     restoringVersion,
     saveVersionPopoverOpen,

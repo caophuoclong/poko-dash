@@ -15,4 +15,5 @@ export type ExecuteWorkflowDtoTriggeredBy = typeof ExecuteWorkflowDtoTriggeredBy
 export const ExecuteWorkflowDtoTriggeredBy = {
   manual: 'manual',
   schedule: 'schedule',
+  webhook: 'webhook',
 } as const;

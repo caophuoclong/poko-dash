@@ -2,10 +2,30 @@ import { useState, useCallback } from 'react'
 import { ChevronDown, GripVertical } from 'lucide-react'
 import { cn } from '#/shared/utils'
 
-/** Builds a variable reference expression like {{ $node.NodeName.field }} */
-export function buildVarRef(nodeName: string, path: string): string {
+/**
+ * Builds a variable reference expression.
+ *
+ * When `baseRef` is provided (e.g. "previous.output") the expression is
+ * `{{baseRef.path}}` — used by the left-side upstream panel so dragged
+ * items produce paths like `{{previous.output.body.products}}`.
+ *
+ * Without `baseRef` it falls back to the legacy `$node.NodeName.path` form.
+ */
+export function buildVarRef(nodeName: string, path: string, baseRef?: string): string {
+  if (baseRef) {
+    return `{{${baseRef}${path ? `.${path}` : ''}}}`
+  }
   const safe = (nodeName ?? 'node').replace(/\s+/g, '_')
   return `{{ $node.${safe}${path ? `.${path}` : ''} }}`
+}
+
+/**
+ * Extracts the bare variable id from an expression like `{{previous.output.body.products}}`.
+ * Returns the inner string without braces/spaces, or the original if it can't be parsed.
+ */
+function varIdFromExpr(expr: string): string {
+  const m = expr.match(/^\{\{\s*([^\s}]+)\s*\}\}$/)
+  return m ? m[1] : expr
 }
 
 /** Detects the type of a value for display purposes */
@@ -28,6 +48,7 @@ const TYPE_COLORS: Record<string, string> = {
   number: 'text-accent-purple',
   boolean: 'text-accent-yellow',
   null: 'text-muted-text',
+  variable: 'text-accent-green',
 }
 
 interface DraggableFieldTagProps {
@@ -35,20 +56,24 @@ interface DraggableFieldTagProps {
   path: string
   value: unknown
   nodeName: string
+  /** Optional base reference like "previous.output" — if provided, expr becomes {{baseRef.path}} */
+  baseRef?: string
 }
 
-/** Single draggable field — can be dragged into a form input to insert {{ $node.X.path }} */
-export function DraggableFieldTag({ label, path, value, nodeName }: DraggableFieldTagProps) {
-  const expr = buildVarRef(nodeName, path)
+/** Single draggable field — can be dragged into a form input to insert variable expression */
+export function DraggableFieldTag({ label, path, value, nodeName, baseRef }: DraggableFieldTagProps) {
+  const expr = buildVarRef(nodeName, path, baseRef)
+  const varId = varIdFromExpr(expr)
   const t = detectType(value)
   const preview = formatPreview(value, t)
 
   const onDragStart = useCallback(
     (e: React.DragEvent) => {
       e.dataTransfer.setData('text/plain', expr)
+      e.dataTransfer.setData('application/variable-ref', varId)
       e.dataTransfer.setData(
         'application/x-forge-ref',
-        JSON.stringify({ expr, path, nodeName }),
+        JSON.stringify({ expr, path, nodeName, baseRef }),
       )
       e.dataTransfer.effectAllowed = 'copy'
 
@@ -60,7 +85,7 @@ export function DraggableFieldTag({ label, path, value, nodeName }: DraggableFie
       e.dataTransfer.setDragImage(ghost, 8, 8)
       setTimeout(() => ghost.remove(), 0)
     },
-    [expr, path, nodeName],
+    [expr, varId, path, nodeName, baseRef],
   )
 
   return (
@@ -82,12 +107,67 @@ export function DraggableFieldTag({ label, path, value, nodeName }: DraggableFie
   )
 }
 
+interface SyntheticVariableTagProps {
+  /** Variable ID like "loop.item" */
+  varId: string
+  /** Display label */
+  label: string
+  /** Description for tooltip */
+  description: string
+  /** Optional type hint */
+  typeHint?: string
+}
+
+/** Draggable tag for synthetic variables (loop context, system vars, etc.) that don't come from object keys */
+export function SyntheticVariableTag({ varId, label, description, typeHint = 'variable' }: SyntheticVariableTagProps) {
+  const expr = `{{${varId}}}`
+
+  const onDragStart = useCallback(
+    (e: React.DragEvent) => {
+      e.dataTransfer.setData('text/plain', expr)
+      e.dataTransfer.setData('application/variable-ref', varId)
+      e.dataTransfer.setData(
+        'application/x-forge-ref',
+        JSON.stringify({ expr, varId }),
+      )
+      e.dataTransfer.effectAllowed = 'copy'
+
+      const ghost = document.createElement('div')
+      ghost.style.cssText =
+        'position:absolute;top:-9999px;padding:4px 8px;background:var(--t-void);color:var(--t-accent-green);font-family:monospace;font-size:11px;font-weight:700;border:1px solid var(--t-frost);border-radius:4px;'
+      ghost.textContent = expr
+      document.body.appendChild(ghost)
+      e.dataTransfer.setDragImage(ghost, 8, 8)
+      setTimeout(() => ghost.remove(), 0)
+    },
+    [expr, varId],
+  )
+
+  return (
+    <div
+      draggable
+      onDragStart={onDragStart}
+      className={cn(
+        'group flex items-center gap-1.5 px-2 py-1 rounded-md',
+        'border border-frost bg-surface cursor-grab active:cursor-grabbing',
+        'hover:border-accent-green/30 hover:bg-accent-green-dim/20 transition-all',
+      )}
+      title={description}
+    >
+      <GripVertical size={10} className="text-muted-text/50 group-hover:text-muted-text shrink-0" />
+      <span className="text-[11px] font-mono font-bold text-near-white shrink-0">{label}</span>
+      <span className={cn('text-[9px] font-mono tracking-wider uppercase px-1 rounded border border-frost bg-surface-2 shrink-0', TYPE_COLORS[typeHint] ?? 'text-muted-text')}>{typeHint}</span>
+      <span className="text-[11px] font-mono text-muted-text/70 truncate min-w-0 flex-1">{description}</span>
+    </div>
+  )
+}
+
 interface FieldGroupProps extends DraggableFieldTagProps {
   depth?: number
 }
 
 /** Recursive field group — expands nested objects/arrays */
-export function FieldGroup({ label, path, value, nodeName, depth = 0 }: FieldGroupProps) {
+export function FieldGroup({ label, path, value, nodeName, baseRef, depth = 0 }: FieldGroupProps) {
   const [open, setOpen] = useState(depth < 2)
   const t = detectType(value)
 
@@ -98,15 +178,17 @@ export function FieldGroup({ label, path, value, nodeName, depth = 0 }: FieldGro
         ? Object.entries(value as Record<string, unknown>)
         : []
 
-  const expr = buildVarRef(nodeName, path)
+  const expr = buildVarRef(nodeName, path, baseRef)
+  const varId = varIdFromExpr(expr)
 
   const onDragGroup = useCallback(
     (e: React.DragEvent) => {
       e.dataTransfer.setData('text/plain', expr)
-      e.dataTransfer.setData('application/x-forge-ref', JSON.stringify({ expr, path, nodeName }))
+      e.dataTransfer.setData('application/variable-ref', varId)
+      e.dataTransfer.setData('application/x-forge-ref', JSON.stringify({ expr, path, nodeName, baseRef }))
       e.dataTransfer.effectAllowed = 'copy'
     },
-    [expr, path, nodeName],
+    [expr, varId, path, nodeName, baseRef],
   )
 
   return (
@@ -140,9 +222,9 @@ export function FieldGroup({ label, path, value, nodeName, depth = 0 }: FieldGro
                 : k
             const ct = detectType(v)
             if (ct === 'object' || ct === 'array') {
-              return <FieldGroup key={k} label={k} path={childPath} value={v} nodeName={nodeName} depth={depth + 1} />
+              return <FieldGroup key={k} label={k} path={childPath} value={v} nodeName={nodeName} baseRef={baseRef} depth={depth + 1} />
             }
-            return <DraggableFieldTag key={k} label={k} path={childPath} value={v} nodeName={nodeName} />
+            return <DraggableFieldTag key={k} label={k} path={childPath} value={v} nodeName={nodeName} baseRef={baseRef} />
           })}
         </div>
       )}
@@ -153,10 +235,12 @@ export function FieldGroup({ label, path, value, nodeName, depth = 0 }: FieldGro
 interface UpstreamDataViewProps {
   data: Record<string, unknown> | null | undefined
   nodeName: string
+  /** Base reference prefix for variable expressions, e.g. "previous.output" */
+  baseRef?: string
 }
 
 /** Renders upstream node output as a tree of draggable field tags */
-export function UpstreamDataView({ data, nodeName }: UpstreamDataViewProps) {
+export function UpstreamDataView({ data, nodeName, baseRef = 'previous.output' }: UpstreamDataViewProps) {
   if (!data || Object.keys(data).length === 0) {
     return (
       <div className="flex items-center justify-center h-full p-6 text-center">
@@ -176,9 +260,9 @@ export function UpstreamDataView({ data, nodeName }: UpstreamDataViewProps) {
       {Object.entries(data).map(([k, v]) => {
         const t = detectType(v)
         if (t === 'object' || t === 'array') {
-          return <FieldGroup key={k} label={k} path={k} value={v} nodeName={nodeName} />
+          return <FieldGroup key={k} label={k} path={k} value={v} nodeName={nodeName} baseRef={baseRef} />
         }
-        return <DraggableFieldTag key={k} label={k} path={k} value={v} nodeName={nodeName} />
+        return <DraggableFieldTag key={k} label={k} path={k} value={v} nodeName={nodeName} baseRef={baseRef} />
       })}
     </div>
   )

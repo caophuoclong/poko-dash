@@ -1,4 +1,5 @@
 import type { PropertySchema, ValidationError } from '../../node-types.old.abcd'
+import type { VariableRef } from '../../utils/variable-system-utils'
 import { TextFieldEditor } from './text-field-editor'
 import { TextareaFieldEditor } from './textarea-field-editor'
 import { NumberFieldEditor } from './number-field-editor'
@@ -23,6 +24,7 @@ export interface PropertyEditorProps {
   onChange: (key: string, value: unknown) => void
   allProps: Record<string, unknown>
   errors: ValidationError[]
+  availableVars?: VariableRef[]
 }
 
 const EDITOR_MAP: Record<string, React.ComponentType<PropertyEditorProps>> = {
@@ -57,6 +59,7 @@ export function PropertyEditor({
   onChange,
   allProps,
   errors,
+  availableVars,
 }: PropertyEditorProps) {
   if (
     schema.showWhen &&
@@ -83,6 +86,7 @@ export function PropertyEditor({
         onChange={onChange}
         allProps={allProps}
         errors={fieldErrors}
+        availableVars={availableVars}
       />
       {fieldErrors.length > 0 && (
         <div className="space-y-0.5">

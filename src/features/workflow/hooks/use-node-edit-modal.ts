@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import type { Node, Edge } from '@xyflow/react'
-import type { WorkflowNodeData } from '../types'
+import type { WorkflowNodeData, WorkflowVariable } from '../types'
 import { buildVariableList } from '../utils/variable-system-utils'
 import { ICON_MAP } from '../components/nodes/workflow-node.constants'
 import type { LucideIcon } from 'lucide-react'
@@ -15,6 +15,7 @@ interface UseNodeEditModalProps {
   data: WorkflowNodeData
   nodes: Node<WorkflowNodeData>[]
   edges: Edge[]
+  workflowVariables?: WorkflowVariable[]
   onClose: () => void
   onNodeDataUpdate: (nodeId: string, patch: Partial<WorkflowNodeData>) => void
 }
@@ -24,6 +25,7 @@ export function useNodeEditModal({
   data,
   nodes,
   edges,
+  workflowVariables,
   onClose,
   onNodeDataUpdate,
 }: UseNodeEditModalProps) {
@@ -39,8 +41,8 @@ export function useNodeEditModal({
   const [subtitle, setSubtitle] = useState(data.subtitle ?? '')
 
   const availableVars = useMemo(
-    () => buildVariableList(nodes, edges, nodeId),
-    [nodes, edges, nodeId],
+    () => buildVariableList(nodes, edges, nodeId, undefined, workflowVariables),
+    [nodes, edges, nodeId, workflowVariables],
   )
 
   const errors: ValidationError[] = useMemo(() => {
