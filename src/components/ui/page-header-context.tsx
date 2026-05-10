@@ -11,12 +11,48 @@ import { ChevronLeft } from 'lucide-react'
 
 export interface PageHeaderConfig {
   title: ReactNode
+  description?: ReactNode
+  breadcrumb?: ReactNode
+  primaryAction?: ReactNode
+  secondaryActions?: ReactNode
   subtitle?: ReactNode
   eyebrow?: ReactNode
   backHref?: string
   backLabel?: ReactNode
   actions?: ReactNode
   custom?: ReactNode
+}
+
+function normalizePageHeaderConfig(
+  config: PageHeaderConfig | null,
+): PageHeaderConfig | null {
+  if (!config) return null
+
+  const description = config.description ?? config.subtitle
+  const breadcrumb = config.breadcrumb ?? config.eyebrow
+  const primaryAction = config.primaryAction
+  const secondaryActions = config.secondaryActions
+
+  let actions = config.actions
+  if (!actions && (primaryAction || secondaryActions)) {
+    actions = (
+      <>
+        {secondaryActions}
+        {primaryAction}
+      </>
+    )
+  }
+
+  return {
+    ...config,
+    description,
+    subtitle: description,
+    breadcrumb,
+    eyebrow: breadcrumb,
+    primaryAction,
+    secondaryActions,
+    actions,
+  }
 }
 
 interface PageHeaderContextValue {
@@ -43,18 +79,34 @@ export function usePageHeader(config: PageHeaderConfig | null) {
 
   const { setConfig } = ctx
 
-  const stableKey = useMemo(() => {
-    if (!config) return null
-    return [
-      String(config.title ?? ''),
-      String(config.subtitle ?? ''),
-      config.backHref ?? '',
-      String(config.eyebrow ?? ''),
-    ].join('|')
-  }, [config?.title, config?.subtitle, config?.backHref, config?.eyebrow])
+  const normalizedConfig = useMemo(
+    () => normalizePageHeaderConfig(config),
+    [config],
+  )
 
-  const configRef = useRef(config)
-  configRef.current = config
+  const stableKey = useMemo(() => {
+    if (!normalizedConfig) return null
+    return [
+      String(normalizedConfig.title ?? ''),
+      String(normalizedConfig.description ?? ''),
+      normalizedConfig.backHref ?? '',
+      String(normalizedConfig.breadcrumb ?? ''),
+      String(normalizedConfig.primaryAction ?? ''),
+      String(normalizedConfig.secondaryActions ?? ''),
+      String(normalizedConfig.actions ?? ''),
+    ].join('|')
+  }, [
+    normalizedConfig?.title,
+    normalizedConfig?.description,
+    normalizedConfig?.backHref,
+    normalizedConfig?.breadcrumb,
+    normalizedConfig?.primaryAction,
+    normalizedConfig?.secondaryActions,
+    normalizedConfig?.actions,
+  ])
+
+  const configRef = useRef(normalizedConfig)
+  configRef.current = normalizedConfig
 
   useLayoutEffect(() => {
     setConfig(configRef.current)
@@ -73,8 +125,8 @@ export function PageHeaderSlot() {
 
   const {
     title,
-    subtitle,
-    eyebrow,
+    description,
+    breadcrumb,
     backHref,
     backLabel = 'Quay lại',
     actions,
@@ -85,7 +137,7 @@ export function PageHeaderSlot() {
     return (
       <div
         data-slot="page-header"
-        className="sticky top-0 z-10 bg-surface -mx-4 -mt-4"
+        className="sticky top-0 z-10 bg-[var(--color-canvas)] -mx-4 -mt-4"
       >
         {custom}
       </div>
@@ -95,12 +147,12 @@ export function PageHeaderSlot() {
   return (
     <div
       data-slot="page-header"
-      className="sticky top-0 z-10 bg-surface -mx-4 -mt-4 pt-4 px-4 mb-6 space-y-3 pb-4"
+      className="sticky top-0 z-10 bg-[var(--color-canvas)] -mx-4 -mt-4 pt-4 px-4 mb-6 space-y-3 pb-4"
     >
       {backHref ? (
         <a
           href={backHref}
-          className="inline-flex items-center gap-1 text-xs text-muted-text transition-colors hover:text-near-white"
+          className="inline-flex items-center gap-1 text-xs text-[var(--color-muted)] transition-colors hover:text-[var(--color-ink)]"
         >
           <ChevronLeft className="size-3.5" />
           <span>{backLabel}</span>
@@ -109,16 +161,16 @@ export function PageHeaderSlot() {
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 space-y-1">
-          {eyebrow ? (
-            <div className="text-xs font-medium uppercase tracking-wide text-muted-text">
-              {eyebrow}
+          {breadcrumb ? (
+            <div className="text-xs font-medium uppercase tracking-wide text-[var(--color-muted)]">
+              {breadcrumb}
             </div>
           ) : null}
-          <h1 className="font-display text-2xl font-bold tracking-tight text-near-white">
+          <h1 className="font-display text-2xl font-bold tracking-tight text-[var(--color-ink)]">
             {title}
           </h1>
-          {subtitle ? (
-            <p className="text-sm text-muted-text">{subtitle}</p>
+          {description ? (
+            <p className="text-sm text-[var(--color-muted)]">{description}</p>
           ) : null}
         </div>
         {actions ? (

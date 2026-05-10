@@ -21,6 +21,9 @@ import { cn } from '#/shared/utils'
 import { useWorkflowIndexPage } from '../hooks/use-workflow-index-page'
 import { formatRelative, formatDate } from '../utils/workflow-index-utils'
 import type { WorkflowSummary } from '../types'
+import { usePageHeader } from '@/components/ui/page-header-context'
+import { EmptyState } from '@/components/ui/empty-state'
+import { WorkflowSkeleton } from '@/components/feedback'
 
 const statusConfig: Record<
   WorkflowSummary['status'],
@@ -47,56 +50,51 @@ export function WorkflowIndexPage() {
     handleDelete,
   } = useWorkflowIndexPage()
 
-  return (
-    <div className="">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-semibold text-near-white">Workflows</h1>
-          <p className="text-sm text-muted-text mt-1">
-            Manage your content automation pipelines
-          </p>
-        </div>
-        <Button
-          size="sm"
-          onClick={handleCreate}
-          disabled={createWorkflow.isPending}
-        >
-          {createWorkflow.isPending ? (
-            <Loader2 size={15} className="animate-spin" />
-          ) : (
-            <Plus size={15} />
-          )}
-          New Workflow
-        </Button>
-      </div>
+  usePageHeader({
+    title: 'Workflows',
+    description: 'Manage your content automation pipelines',
+    primaryAction: (
+      <Button size="sm" onClick={handleCreate} disabled={createWorkflow.isPending}>
+        {createWorkflow.isPending ? (
+          <Loader2 size={15} className="animate-spin" />
+        ) : (
+          <Plus size={15} />
+        )}
+        New Workflow
+      </Button>
+    ),
+  })
 
-      <div className="relative mb-5">
+  return (
+    <div className="space-y-5">
+      <div className="relative">
         <Search
           size={15}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-text"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted)]"
         />
         <input
           type="text"
           placeholder="Search workflows..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full h-9 pl-9 pr-4 rounded-lg border border-frost bg-surface text-sm text-near-white placeholder:text-muted-text focus:outline-none focus:ring-2 focus:ring-accent-blue/20 focus:border-accent-blue/30 transition-colors"
+          className="w-full h-9 pl-9 pr-4 rounded-[var(--radius-sm)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-sm text-[var(--color-ink)] placeholder:text-[var(--color-muted)] focus:outline-none focus-visible:border-[var(--color-ink)] focus-visible:border-2 transition-colors"
         />
       </div>
 
-      {isLoading && (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 size={24} className="animate-spin text-muted-text" />
-        </div>
-      )}
+      {isLoading && <WorkflowSkeleton />}
 
       {isError && (
-        <div className="bg-surface border border-frost rounded-xl p-12 text-center">
-          <p className="text-sm text-accent-red mb-3">Failed to load workflows</p>
-          <Button size="sm" variant="ghost" onClick={() => refetch()}>
-            Retry
-          </Button>
-        </div>
+        <EmptyState
+          variant="card"
+          icon={<GitBranch />}
+          title="Failed to load workflows"
+          description="Please try again to continue managing your automation pipelines."
+          primaryAction={
+            <Button size="sm" variant="ghost" onClick={() => refetch()}>
+              Retry
+            </Button>
+          }
+        />
       )}
 
       {!isLoading && !isError && (
@@ -107,8 +105,8 @@ export function WorkflowIndexPage() {
               <div
                 key={wf.id}
                 className={cn(
-                  'block bg-surface border border-frost rounded-xl px-5 py-4 transition-colors',
-                  'hover:border-frost-hover hover:bg-surface-2',
+                  'block bg-[var(--color-canvas)] border border-[var(--color-hairline)] rounded-[var(--radius-md)] px-5 py-4 transition-colors',
+                  'hover:border-[var(--color-border-strong)] hover:bg-[var(--color-surface-soft)]',
                   'cursor-pointer',
                 )}
                 onClick={() =>
@@ -120,38 +118,38 @@ export function WorkflowIndexPage() {
               >
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-4 min-w-0">
-                    <div className="w-9 h-9 rounded-lg bg-accent-blue-dim flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-[var(--radius-sm)] bg-accent-blue-dim flex items-center justify-center shrink-0">
                       <GitBranch size={17} className="text-accent-blue" />
                     </div>
 
                     <div className="min-w-0">
                       <div className="flex items-center gap-2.5">
-                        <span className="text-sm font-medium text-near-white truncate">
+                        <span className="text-sm font-medium text-[var(--color-ink)] truncate">
                           {wf.name}
                         </span>
                         <Badge tone={status.tone} size="sm">
                           {status.label}
                         </Badge>
                       </div>
-                      <p className="text-xs text-muted-text mt-0.5 truncate">
+                      <p className="text-xs text-[var(--color-muted)] mt-0.5 truncate">
                         {wf.description}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-5 shrink-0">
-                    <div className="hidden sm:flex items-center gap-1 text-xs text-muted-text">
+                    <div className="hidden sm:flex items-center gap-1 text-xs text-[var(--color-muted)]">
                       <GitBranch size={13} />
                       <span>{wf.nodeCount} nodes</span>
                     </div>
 
                     <div className="hidden md:flex flex-col items-end gap-0.5">
-                      <span className="text-xs text-muted-text">
+                      <span className="text-xs text-[var(--color-muted)]">
                         {wf.lastRunAt
                           ? `Last run ${formatRelative(wf.lastRunAt)}`
                           : 'Never run'}
                       </span>
-                      <span className="text-[11px] text-muted-text/60">
+                      <span className="text-[11px] text-[var(--color-muted-soft)]">
                         Created {formatDate(wf.createdAt)}
                       </span>
                     </div>
@@ -162,7 +160,7 @@ export function WorkflowIndexPage() {
                     >
                       {wf.status === 'active' && (
                         <button
-                          className="w-7 h-7 flex items-center justify-center rounded-md text-muted-text hover:text-accent-yellow hover:bg-accent-yellow/10 transition-colors"
+                          className="w-7 h-7 flex items-center justify-center rounded-[var(--radius-xs)] text-[var(--color-muted)] hover:text-accent-yellow hover:bg-accent-yellow/10 transition-colors"
                           title="Pause"
                         >
                           <Pause size={15} />
@@ -170,7 +168,7 @@ export function WorkflowIndexPage() {
                       )}
                       {wf.status === 'paused' && (
                         <button
-                          className="w-7 h-7 flex items-center justify-center rounded-md text-muted-text hover:text-accent-green hover:bg-accent-green-dim transition-colors"
+                          className="w-7 h-7 flex items-center justify-center rounded-[var(--radius-xs)] text-[var(--color-muted)] hover:text-accent-green hover:bg-accent-green-dim transition-colors"
                           title="Resume"
                         >
                           <Play size={15} />
@@ -180,7 +178,7 @@ export function WorkflowIndexPage() {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button
-                            className="w-7 h-7 flex items-center justify-center rounded-md text-muted-text hover:text-near-white hover:bg-surface-2 transition-colors"
+                            className="w-7 h-7 flex items-center justify-center rounded-[var(--radius-xs)] text-[var(--color-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-surface-soft)] transition-colors"
                             title="More"
                           >
                             <MoreHorizontal size={15} />
@@ -206,22 +204,26 @@ export function WorkflowIndexPage() {
       )}
 
       {!isLoading && !isError && filtered.length === 0 && workflows.length === 0 && (
-        <div className="bg-surface border border-frost rounded-xl p-12 text-center">
-          <GitBranch size={32} className="mx-auto text-muted-text mb-3" />
-          <p className="text-sm text-muted-text">No workflows yet</p>
-          <Button size="sm" className="mt-4" onClick={handleCreate}>
-            <Plus size={15} />
-            Create your first workflow
-          </Button>
-        </div>
+        <EmptyState
+          variant="card"
+          icon={<GitBranch />}
+          title="No workflows yet"
+          description="Create your first workflow to start automating content operations."
+          primaryAction={
+            <Button size="sm" onClick={handleCreate}>
+              <Plus size={15} />
+              Create your first workflow
+            </Button>
+          }
+        />
       )}
 
       {!isLoading && !isError && filtered.length === 0 && workflows.length > 0 && (
-        <div className="bg-surface border border-frost rounded-xl p-12 text-center">
-          <p className="text-sm text-muted-text">
-            No workflows match your search.
-          </p>
-        </div>
+        <EmptyState
+          variant="no-results"
+          title="No workflows match your search"
+          description="Try a different keyword."
+        />
       )}
     </div>
   )

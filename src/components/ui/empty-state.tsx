@@ -64,17 +64,17 @@ function PageEmptyState({
       </div>
 
       {icon ? (
-        <div className="relative flex size-16 items-center justify-center rounded-2xl border border-frost bg-surface/60 text-silver shadow-[rgba(176,199,217,0.145)_0px_0px_0px_1px] [&_svg]:size-7">
+        <div className="relative flex size-16 items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] text-[var(--color-muted)] [&_svg]:size-7">
           {icon}
         </div>
       ) : null}
 
       <div className="relative max-w-75 space-y-2">
-        <p className="font-display text-xl font-medium tracking-tight text-near-white">
+        <p className="font-display text-xl font-medium tracking-tight text-[var(--color-ink)]">
           {title}
         </p>
         {description ? (
-          <p className="text-sm leading-relaxed text-silver">{description}</p>
+          <p className="text-sm leading-relaxed text-[var(--color-muted)]">{description}</p>
         ) : null}
       </div>
 
@@ -85,7 +85,7 @@ function PageEmptyState({
         </div>
       ) : null}
 
-      {note ? <p className="relative text-xs text-muted-text">{note}</p> : null}
+      {note ? <p className="relative text-xs text-[var(--color-muted)]">{note}</p> : null}
     </div>
   )
 }
@@ -108,20 +108,20 @@ function CardEmptyState({
       data-slot="empty-state"
       data-variant="card"
       className={cn(
-        'flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-frost bg-surface/30 px-8 py-10 text-center',
+        'flex flex-col items-center justify-center gap-4 rounded-[var(--radius-md)] border border-dashed border-[var(--color-hairline)] bg-[var(--color-surface-soft)] px-8 py-10 text-center',
         className,
       )}
     >
       {icon ? (
-        <div className="flex size-10 items-center justify-center rounded-xl bg-surface-2 text-muted-text [&_svg]:size-5">
+        <div className="flex size-10 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--color-surface-strong)] text-[var(--color-muted)] [&_svg]:size-5">
           {icon}
         </div>
       ) : null}
 
       <div className="max-w-60 space-y-1">
-        <p className="text-sm font-medium text-near-white">{title}</p>
+        <p className="text-sm font-medium text-[var(--color-ink)]">{title}</p>
         {description ? (
-          <p className="text-xs leading-relaxed text-muted-text">
+          <p className="text-xs leading-relaxed text-[var(--color-muted)]">
             {description}
           </p>
         ) : null}
@@ -134,7 +134,7 @@ function CardEmptyState({
         </div>
       ) : null}
 
-      {note ? <p className="text-xs text-muted-text">{note}</p> : null}
+      {note ? <p className="text-xs text-[var(--color-muted)]">{note}</p> : null}
     </div>
   )
 }
@@ -160,22 +160,22 @@ function NoResultsEmptyState({
       )}
     >
       {icon ? (
-        <div className="flex size-8 items-center justify-center rounded-lg bg-surface-2 text-muted-text [&_svg]:size-4">
+        <div className="flex size-8 items-center justify-center rounded-[var(--radius-xs)] bg-[var(--color-surface-strong)] text-[var(--color-muted)] [&_svg]:size-4">
           {icon}
         </div>
       ) : null}
 
       <div className="max-w-55 space-y-1">
-        <p className="text-sm font-medium text-near-white">{title}</p>
+        <p className="text-sm font-medium text-[var(--color-ink)]">{title}</p>
         {description ? (
-          <p className="text-xs leading-relaxed text-muted-text">
+          <p className="text-xs leading-relaxed text-[var(--color-muted)]">
             {description}
           </p>
         ) : null}
       </div>
 
       {primaryAction ? <div>{primaryAction}</div> : null}
-      {note ? <p className="text-xs text-muted-text">{note}</p> : null}
+      {note ? <p className="text-xs text-[var(--color-muted)]">{note}</p> : null}
     </div>
   )
 }

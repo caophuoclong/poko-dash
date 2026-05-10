@@ -18,9 +18,9 @@ function LoadingState({
       data-slot="loading-state"
       data-variant={variant}
       className={cn(
-        'flex items-center justify-center gap-2 text-sm text-muted-text',
+        'flex items-center justify-center gap-2 text-sm text-[var(--color-muted)]',
         variant === 'card' &&
-          'rounded-2xl border border-frost bg-surface/30 px-6 py-12',
+          'rounded-[var(--radius-md)] border border-[var(--color-hairline)] bg-[var(--color-surface-soft)] px-6 py-12',
         variant === 'block' && 'py-12',
         variant === 'inline' && 'py-2',
         className,
@@ -33,16 +33,6 @@ function LoadingState({
   )
 }
 
-interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {}
+export { Skeleton } from '@/components/feedback/skeleton'
 
-function Skeleton({ className, ...props }: SkeletonProps) {
-  return (
-    <div
-      data-slot="skeleton"
-      className={cn('animate-pulse rounded-md bg-surface-2', className)}
-      {...props}
-    />
-  )
-}
-
-export { LoadingState, Skeleton }
+export { LoadingState }

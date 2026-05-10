@@ -7,8 +7,10 @@ interface PageHeaderProps extends Omit<
   'title'
 > {
   title: React.ReactNode
-  subtitle?: React.ReactNode
-  eyebrow?: React.ReactNode
+  description?: React.ReactNode
+  breadcrumb?: React.ReactNode
+  primaryAction?: React.ReactNode
+  secondaryActions?: React.ReactNode
   backHref?: string
   backLabel?: React.ReactNode
   actions?: React.ReactNode
@@ -16,24 +18,37 @@ interface PageHeaderProps extends Omit<
 
 function PageHeader({
   title,
-  subtitle,
-  eyebrow,
+  description,
+  breadcrumb,
+  primaryAction,
+  secondaryActions,
   backHref,
   backLabel = 'Quay lại',
-  actions,
+  actions: legacyActions,
   className,
   ...props
 }: PageHeaderProps) {
+  const actions = legacyActions ?? (
+    <>
+      {secondaryActions}
+      {primaryAction}
+    </>
+  )
+
   return (
     <div
       data-slot="page-header"
-      className={cn('sticky top-0 z-10 bg-surface -mx-4 -mt-4 pt-4 px-4 mb-6 space-y-3', className)}
+      className={cn(
+        'sticky top-0 z-10 -mx-4 -mt-4 pt-4 px-4 mb-6 space-y-3',
+        'bg-[var(--color-canvas)]',
+        className,
+      )}
       {...props}
     >
       {backHref ? (
         <a
           href={backHref}
-          className="inline-flex items-center gap-1 text-xs text-muted-text transition-colors hover:text-near-white"
+          className="inline-flex items-center gap-1 text-xs text-[var(--color-muted)] transition-colors hover:text-[var(--color-ink)]"
         >
           <ChevronLeft className="size-3.5" />
           <span>{backLabel}</span>
@@ -42,16 +57,16 @@ function PageHeader({
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 space-y-1">
-          {eyebrow ? (
-            <div className="text-xs font-medium uppercase tracking-wide text-muted-text">
-              {eyebrow}
+          {breadcrumb ? (
+            <div className="text-xs font-medium uppercase tracking-wide text-[var(--color-muted)]">
+              {breadcrumb}
             </div>
           ) : null}
-          <h1 className="font-display text-2xl font-bold tracking-tight text-near-white">
+          <h1 className="font-display text-2xl font-bold tracking-tight text-[var(--color-ink)]">
             {title}
           </h1>
-          {subtitle ? (
-            <p className="text-sm text-muted-text">{subtitle}</p>
+          {description ? (
+            <p className="text-sm text-[var(--color-muted)]">{description}</p>
           ) : null}
         </div>
         {actions ? (

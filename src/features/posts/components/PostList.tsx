@@ -124,7 +124,7 @@ export default function PostList(props: Props) {
         header: 'Tiêu đề',
         size: 350,
         cell: ({ getValue }) => (
-          <div className="truncate text-sm text-near-white">
+          <div className="truncate text-sm text-[var(--color-ink)]">
             {getValue<string>()}
           </div>
         ),
@@ -137,7 +137,7 @@ export default function PostList(props: Props) {
           const linkedIdeaId = postIdeaMap.get(row.original.postId)
           const linkedIdea = ideas.find((i) => i.ideaId === linkedIdeaId)
           if (!linkedIdea) {
-            return <span className="text-sm text-muted-text">—</span>
+            return <span className="text-sm text-[var(--color-muted)]">—</span>
           }
           return (
             <button
@@ -161,7 +161,7 @@ export default function PostList(props: Props) {
         header: 'Nền tảng',
         size: 120,
         cell: ({ getValue }) => (
-          <span className="text-sm text-muted-text capitalize">
+          <span className="text-sm text-[var(--color-muted)] capitalize">
             {getValue<string>()}
           </span>
         ),
@@ -172,10 +172,10 @@ export default function PostList(props: Props) {
         size: 150,
         cell: ({ row }) => {
           if (!row.original.primaryProduct) {
-            return <span className="text-sm text-muted-text">—</span>
+            return <span className="text-sm text-[var(--color-muted)]">—</span>
           }
           return (
-            <span className="text-sm line-clamp-1  text-near-white">
+            <span className="text-sm line-clamp-1 text-[var(--color-ink)]">
               {row.original.primaryProduct.canonicalTitle}
             </span>
           )
@@ -186,7 +186,7 @@ export default function PostList(props: Props) {
         header: 'Cập nhật',
         size: 120,
         cell: ({ getValue }) => (
-          <span className="text-sm text-muted-text">
+          <span className="text-sm text-[var(--color-muted)]">
             {formatDate(getValue<string>())}
           </span>
         ),
@@ -245,10 +245,10 @@ export default function PostList(props: Props) {
         : selectedIdea === NO_IDEA_SENTINEL
           ? 'Bài viết không có ý tưởng'
           : 'Bài viết',
-    subtitle: selectedIdea
+    description: selectedIdea
       ? `Hiển thị ${filteredPosts.length} bài viết`
       : 'Quản lý toàn bộ bài viết của bạn',
-    actions: (
+    primaryAction: (
       <Button
         color="orange"
         onClick={() => navigate({ to: '/dash/posts/new' })}
@@ -261,7 +261,7 @@ export default function PostList(props: Props) {
   return (
     <div className="max-w-full space-y-6">
       {/* Filter workspace */}
-      <div className="bg-surface border border-frost rounded-2xl p-4 md:p-5 space-y-4">
+      <div className="bg-[var(--color-canvas)] border border-[var(--color-hairline)] rounded-[var(--radius-md)] p-4 md:p-5 space-y-4">
         <PostsToolbar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
         <PostsFilterBar
           platforms={platforms}
@@ -277,7 +277,7 @@ export default function PostList(props: Props) {
       </div>
 
       {/* Results workspace */}
-      <div className="bg-surface border border-frost rounded-2xl overflow-hidden">
+      <div className="bg-[var(--color-canvas)] border border-[var(--color-hairline)] rounded-[var(--radius-md)] overflow-hidden">
         {filteredPosts.length === 0 ? (
           <div className="p-6 md:p-10">
             <EmptyState
