@@ -60,7 +60,7 @@ interface PageHeaderContextValue {
   setConfig: (config: PageHeaderConfig | null) => void
 }
 
-const PageHeaderContext = createContext<PageHeaderContextValue | null>(null)
+export const PageHeaderContext = createContext<PageHeaderContextValue | null>(null)
 
 export function PageHeaderProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<PageHeaderConfig | null>(null)
@@ -126,7 +126,6 @@ export function PageHeaderSlot() {
   const {
     title,
     description,
-    breadcrumb,
     backHref,
     backLabel = 'Quay lại',
     actions,
@@ -161,11 +160,6 @@ export function PageHeaderSlot() {
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 space-y-1">
-          {breadcrumb ? (
-            <div className="text-xs font-medium uppercase tracking-wide text-[var(--color-muted)]">
-              {breadcrumb}
-            </div>
-          ) : null}
           <h1 className="font-display text-2xl font-bold tracking-tight text-[var(--color-ink)]">
             {title}
           </h1>

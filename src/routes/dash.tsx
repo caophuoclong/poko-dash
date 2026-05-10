@@ -1,5 +1,6 @@
 import { Outlet, createFileRoute } from '@tanstack/react-router'
 import Sidebar from '#/components/layout/sidebar'
+import { Topbar } from '#/components/layout/topbar'
 import { PageHeaderSlot } from '#/components/ui/page-header-context'
 import { SidebarInset, SidebarProvider } from '#/components/ui/sidebar'
 
@@ -12,9 +13,12 @@ function DashLayout() {
     <SidebarProvider defaultOpen={true}>
       <div className="flex h-screen overflow-hidden w-full">
         <Sidebar />
-        <SidebarInset className="overflow-y-auto p-4 pt-0">
-          <PageHeaderSlot />
-          <Outlet />
+        <SidebarInset className="flex flex-col overflow-hidden">
+          <Topbar />
+          <div className="flex-1 overflow-y-auto px-4 lg:px-6 py-4">
+            <PageHeaderSlot />
+            <Outlet />
+          </div>
         </SidebarInset>
       </div>
     </SidebarProvider>
