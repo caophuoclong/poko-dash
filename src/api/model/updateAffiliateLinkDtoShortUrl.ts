@@ -9,4 +9,4 @@
 /**
  * Shortened tracking URL
  */
-export type UpdateAffiliateLinkDtoShortUrl = { [key: string]: unknown };
+export type UpdateAffiliateLinkDtoShortUrl = { [key: string]: unknown }

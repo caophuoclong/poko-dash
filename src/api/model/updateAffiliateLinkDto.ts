@@ -5,33 +5,33 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { UpdateAffiliateLinkDtoActive } from './updateAffiliateLinkDtoActive';
-import type { UpdateAffiliateLinkDtoAffiliateUrl } from './updateAffiliateLinkDtoAffiliateUrl';
-import type { UpdateAffiliateLinkDtoCommissionRate } from './updateAffiliateLinkDtoCommissionRate';
-import type { UpdateAffiliateLinkDtoCouponCode } from './updateAffiliateLinkDtoCouponCode';
-import type { UpdateAffiliateLinkDtoDeeplinkStatus } from './updateAffiliateLinkDtoDeeplinkStatus';
-import type { UpdateAffiliateLinkDtoMerchant } from './updateAffiliateLinkDtoMerchant';
-import type { UpdateAffiliateLinkDtoOriginalUrl } from './updateAffiliateLinkDtoOriginalUrl';
-import type { UpdateAffiliateLinkDtoPlatform } from './updateAffiliateLinkDtoPlatform';
-import type { UpdateAffiliateLinkDtoShortUrl } from './updateAffiliateLinkDtoShortUrl';
+import type { UpdateAffiliateLinkDtoActive } from './updateAffiliateLinkDtoActive'
+import type { UpdateAffiliateLinkDtoAffiliateUrl } from './updateAffiliateLinkDtoAffiliateUrl'
+import type { UpdateAffiliateLinkDtoCommissionRate } from './updateAffiliateLinkDtoCommissionRate'
+import type { UpdateAffiliateLinkDtoCouponCode } from './updateAffiliateLinkDtoCouponCode'
+import type { UpdateAffiliateLinkDtoDeeplinkStatus } from './updateAffiliateLinkDtoDeeplinkStatus'
+import type { UpdateAffiliateLinkDtoMerchant } from './updateAffiliateLinkDtoMerchant'
+import type { UpdateAffiliateLinkDtoOriginalUrl } from './updateAffiliateLinkDtoOriginalUrl'
+import type { UpdateAffiliateLinkDtoPlatform } from './updateAffiliateLinkDtoPlatform'
+import type { UpdateAffiliateLinkDtoShortUrl } from './updateAffiliateLinkDtoShortUrl'
 
 export interface UpdateAffiliateLinkDto {
   /** Merchant name */
-  merchant?: UpdateAffiliateLinkDtoMerchant;
+  merchant?: UpdateAffiliateLinkDtoMerchant
   /** Original product URL */
-  originalUrl?: UpdateAffiliateLinkDtoOriginalUrl;
+  originalUrl?: UpdateAffiliateLinkDtoOriginalUrl
   /** Affiliate tracking URL */
-  affiliateUrl?: UpdateAffiliateLinkDtoAffiliateUrl;
+  affiliateUrl?: UpdateAffiliateLinkDtoAffiliateUrl
   /** Shortened tracking URL */
-  shortUrl?: UpdateAffiliateLinkDtoShortUrl;
+  shortUrl?: UpdateAffiliateLinkDtoShortUrl
   /** Platform identifier */
-  platform?: UpdateAffiliateLinkDtoPlatform;
+  platform?: UpdateAffiliateLinkDtoPlatform
   /** Commission rate percentage (0-100) */
-  commissionRate?: UpdateAffiliateLinkDtoCommissionRate;
+  commissionRate?: UpdateAffiliateLinkDtoCommissionRate
   /** Coupon code for this link */
-  couponCode?: UpdateAffiliateLinkDtoCouponCode;
+  couponCode?: UpdateAffiliateLinkDtoCouponCode
   /** Deeplink status */
-  deeplinkStatus?: UpdateAffiliateLinkDtoDeeplinkStatus;
+  deeplinkStatus?: UpdateAffiliateLinkDtoDeeplinkStatus
   /** Whether the link is active */
-  active?: UpdateAffiliateLinkDtoActive;
+  active?: UpdateAffiliateLinkDtoActive
 }

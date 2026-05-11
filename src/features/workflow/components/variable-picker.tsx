@@ -1,7 +1,11 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { Variable } from 'lucide-react'
 import { cn } from '#/shared/utils'
-import { groupVariables, type VariableRef } from '../utils/variable-system-utils'
+import {
+  groupVariables
+  
+} from '../utils/variable-system-utils'
+import type {VariableRef} from '../utils/variable-system-utils';
 
 interface VariablePickerProps {
   variables: VariableRef[]
@@ -10,7 +14,12 @@ interface VariablePickerProps {
   anchorRect?: { top: number; left: number }
 }
 
-export function VariablePicker({ variables, onInsert, onClose, anchorRect }: VariablePickerProps) {
+export function VariablePicker({
+  variables,
+  onInsert,
+  onClose,
+  anchorRect,
+}: VariablePickerProps) {
   const [search, setSearch] = useState('')
   const [selectedIdx, setSelectedIdx] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -23,17 +32,16 @@ export function VariablePicker({ variables, onInsert, onClose, anchorRect }: Var
     const result: Record<string, VariableRef[]> = {}
     for (const [key, items] of Object.entries(grouped)) {
       const matched = items.filter(
-        (v) => v.id.toLowerCase().includes(q) || v.description.toLowerCase().includes(q),
+        (v) =>
+          v.id.toLowerCase().includes(q) ||
+          v.description.toLowerCase().includes(q),
       )
       if (matched.length > 0) result[key] = matched
     }
     return result
   }, [grouped, search])
 
-  const allFiltered = useMemo(
-    () => Object.values(filtered).flat(),
-    [filtered],
-  )
+  const allFiltered = useMemo(() => Object.values(filtered).flat(), [filtered])
 
   useEffect(() => {
     setSelectedIdx(0)
@@ -70,9 +78,7 @@ export function VariablePicker({ variables, onInsert, onClose, anchorRect }: Var
     <div
       className="fixed z-[100] w-[320px] rounded-xl border border-frost bg-surface shadow-2xl overflow-hidden"
       style={
-        anchorRect
-          ? { top: anchorRect.top, left: anchorRect.left }
-          : undefined
+        anchorRect ? { top: anchorRect.top, left: anchorRect.left } : undefined
       }
       onKeyDown={handleKeyDown}
     >

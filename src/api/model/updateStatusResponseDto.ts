@@ -7,5 +7,5 @@
  */
 
 export interface UpdateStatusResponseDto {
-  ok: boolean;
+  ok: boolean
 }

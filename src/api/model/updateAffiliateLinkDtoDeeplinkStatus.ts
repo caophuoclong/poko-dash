@@ -9,12 +9,12 @@
 /**
  * Deeplink status
  */
-export type UpdateAffiliateLinkDtoDeeplinkStatus = typeof UpdateAffiliateLinkDtoDeeplinkStatus[keyof typeof UpdateAffiliateLinkDtoDeeplinkStatus];
-
+export type UpdateAffiliateLinkDtoDeeplinkStatus =
+  (typeof UpdateAffiliateLinkDtoDeeplinkStatus)[keyof typeof UpdateAffiliateLinkDtoDeeplinkStatus]
 
 export const UpdateAffiliateLinkDtoDeeplinkStatus = {
   valid: 'valid',
   broken: 'broken',
   pending: 'pending',
   expired: 'expired',
-} as const;
+} as const

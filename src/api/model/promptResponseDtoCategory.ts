@@ -6,8 +6,8 @@
  * OpenAPI spec version: 1.0
  */
 
-export type PromptResponseDtoCategory = typeof PromptResponseDtoCategory[keyof typeof PromptResponseDtoCategory];
-
+export type PromptResponseDtoCategory =
+  (typeof PromptResponseDtoCategory)[keyof typeof PromptResponseDtoCategory]
 
 export const PromptResponseDtoCategory = {
   social_media: 'social_media',
@@ -15,4 +15,4 @@ export const PromptResponseDtoCategory = {
   video: 'video',
   email: 'email',
   general: 'general',
-} as const;
+} as const

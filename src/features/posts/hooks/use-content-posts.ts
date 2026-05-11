@@ -51,10 +51,10 @@ export function useGenerateFromIdea() {
   return {
     ...rest,
     mutate: (variables: any, options?: any) =>
-      origMutate({ ideaId: variables } as any, options),
+      origMutate({ ideaId: variables }, options),
     mutateAsync: (variables: any, options?: any) =>
-      origMutateAsync({ ideaId: variables } as any, options),
-  } as UseMutationResult<any, any, any>
+      origMutateAsync({ ideaId: variables }, options),
+  }
 }
 
 export function useGenerateContentPosts() {
@@ -72,10 +72,10 @@ export function useGenerateContentPosts() {
   return {
     ...rest,
     mutate: (variables: any, options?: any) =>
-      origMutate({ data: variables } as any, options),
+      origMutate({ data: variables }, options),
     mutateAsync: (variables: any, options?: any) =>
-      origMutateAsync({ data: variables } as any, options),
-  } as UseMutationResult<any, any, any>
+      origMutateAsync({ data: variables }, options),
+  }
 }
 
 export function useCreateContentPost() {
@@ -93,10 +93,10 @@ export function useCreateContentPost() {
   return {
     ...rest,
     mutate: (variables: any, options?: any) =>
-      origMutate({ data: variables } as any, options),
+      origMutate({ data: variables }, options),
     mutateAsync: (variables: any, options?: any) =>
-      origMutateAsync({ data: variables } as any, options),
-  } as UseMutationResult<any, any, any>
+      origMutateAsync({ data: variables }, options),
+  }
 }
 
 export function useUpdateContentPost() {
@@ -115,15 +115,15 @@ export function useUpdateContentPost() {
     ...rest,
     mutate: (variables: any, options?: any) =>
       origMutate(
-        { postId: variables.postId, data: variables.data } as any,
+        { postId: variables.postId, data: variables.data },
         options,
       ),
     mutateAsync: (variables: any, options?: any) =>
       origMutateAsync(
-        { postId: variables.postId, data: variables.data } as any,
+        { postId: variables.postId, data: variables.data },
         options,
       ),
-  } as UseMutationResult<any, any, any>
+  }
 }
 
 export function useDeleteContentPost() {
@@ -141,8 +141,8 @@ export function useDeleteContentPost() {
   return {
     ...rest,
     mutate: (variables: any, options?: any) =>
-      origMutate({ postId: variables } as any, options),
+      origMutate({ postId: variables }, options),
     mutateAsync: (variables: any, options?: any) =>
-      origMutateAsync({ postId: variables } as any, options),
-  } as UseMutationResult<any, any, any>
+      origMutateAsync({ postId: variables }, options),
+  }
 }

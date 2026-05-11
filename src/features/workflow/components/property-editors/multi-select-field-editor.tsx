@@ -1,8 +1,16 @@
 import { FieldLabel } from './field-label'
 import type { PropertyEditorProps } from './property-editor'
 
-export function MultiSelectFieldEditor({ schema, value, onChange }: PropertyEditorProps) {
-  const selected: string[] = Array.isArray(value) ? value : (Array.isArray(schema.defaultValue) ? schema.defaultValue as string[] : [])
+export function MultiSelectFieldEditor({
+  schema,
+  value,
+  onChange,
+}: PropertyEditorProps) {
+  const selected: string[] = Array.isArray(value)
+    ? value
+    : Array.isArray(schema.defaultValue)
+      ? (schema.defaultValue as string[])
+      : []
 
   const toggle = (optionValue: string) => {
     const next = selected.includes(optionValue)
@@ -29,7 +37,9 @@ export function MultiSelectFieldEditor({ schema, value, onChange }: PropertyEdit
             <div>
               <span className="text-[12px] text-near-white">{o.label}</span>
               {o.description && (
-                <span className="text-[10px] text-muted-text ml-1.5">{o.description}</span>
+                <span className="text-[10px] text-muted-text ml-1.5">
+                  {o.description}
+                </span>
               )}
             </div>
           </label>

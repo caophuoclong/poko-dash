@@ -5,27 +5,27 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { CreateAffiliateLinkDtoDeeplinkStatus } from './createAffiliateLinkDtoDeeplinkStatus';
+import type { CreateAffiliateLinkDtoDeeplinkStatus } from './createAffiliateLinkDtoDeeplinkStatus'
 
 export interface CreateAffiliateLinkDto {
   /** Product UUID this link belongs to */
-  productId: string;
+  productId: string
   /** Merchant name */
-  merchant: string;
+  merchant: string
   /** Original product URL */
-  originalUrl: string;
+  originalUrl: string
   /** Affiliate tracking URL */
-  affiliateUrl: string;
+  affiliateUrl: string
   /** Shortened tracking URL */
-  shortUrl?: string;
+  shortUrl?: string
   /** Platform identifier */
-  platform: string;
+  platform: string
   /** Commission rate percentage (0-100) */
-  commissionRate?: number;
+  commissionRate?: number
   /** Coupon code for this link */
-  couponCode?: string;
+  couponCode?: string
   /** Deeplink status */
-  deeplinkStatus: CreateAffiliateLinkDtoDeeplinkStatus;
+  deeplinkStatus: CreateAffiliateLinkDtoDeeplinkStatus
   /** Whether the link is active */
-  active?: boolean;
+  active?: boolean
 }

@@ -7,5 +7,5 @@
  */
 
 export interface DeleteContentIdeaResponseDto {
-  message: string;
+  message: string
 }

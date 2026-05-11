@@ -10,12 +10,10 @@ import {
 } from '#/components/ui/dialog'
 import { Button } from '#/components/ui/button'
 import { Checkbox } from '#/components/ui/checkbox'
-import { Loader2 } from 'lucide-react'
+import { Loader2, AlertCircle, CheckCircle2  } from 'lucide-react'
 import { LoadingState } from '#/components/ui/loading-state'
-import { AlertCircle, CheckCircle2 } from 'lucide-react'
 import { cn } from '#/shared/utils'
-import type { AvailableTarget } from '../types'
-import type { Provider } from '../types'
+import type { AvailableTarget, Provider  } from '../types'
 
 interface AvailableTargetsDialogProps {
   open: boolean
@@ -82,8 +80,8 @@ export function AvailableTargetsDialog({
             {isLoading
               ? `Fetching available ${targetLabelPlural.toLowerCase()} from ${providerName}...`
               : isError
-                ? errorMessage ??
-                  `Failed to load ${targetLabelPlural.toLowerCase()}. Please try again.`
+                ? (errorMessage ??
+                  `Failed to load ${targetLabelPlural.toLowerCase()}. Please try again.`)
                 : `Connected to ${providerName}, now choose the ${targetLabelPlural.toLowerCase()} you want to publish from Poko.`}
           </DialogDescription>
         </DialogHeader>
@@ -153,8 +151,8 @@ export function AvailableTargetsDialog({
         ) : (
           <div className="flex flex-col items-center gap-3 py-10 text-center">
             <p className="text-sm text-muted-text">
-              No {targetLabelPlural.toLowerCase()} found for this{' '}
-              {providerName} account.
+              No {targetLabelPlural.toLowerCase()} found for this {providerName}{' '}
+              account.
             </p>
             <Button variant="outline" onClick={handleCancel}>
               Cancel
@@ -165,7 +163,11 @@ export function AvailableTargetsDialog({
         {targets && targets.length > 0 && !isError ? (
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline" disabled={isSubmitting} onClick={handleCancel}>
+              <Button
+                variant="outline"
+                disabled={isSubmitting}
+                onClick={handleCancel}
+              >
                 Cancel
               </Button>
             </DialogClose>

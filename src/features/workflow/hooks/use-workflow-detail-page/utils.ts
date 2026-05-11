@@ -7,9 +7,9 @@ import { mapDtoEdgeToCanvasEdge } from '../../utils/edge-mapping'
 /**
  * Maps raw snapshot node records (from the API version snapshot) to ReactFlow nodes.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export function mapSnapshotNodes(nodes: any[]): Node<WorkflowNodeData>[] {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   return nodes.map((n: any) => ({
     id: n.xyflow_id as string,
     type: (n.type as string | undefined) ?? 'workflow-node',
@@ -28,9 +28,9 @@ export function mapSnapshotNodes(nodes: any[]): Node<WorkflowNodeData>[] {
 /**
  * Maps raw snapshot edge records (from the API version snapshot) to ReactFlow edges.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export function mapSnapshotEdges(edges: any[]): Edge[] {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   return edges.map((e: any) => mapDtoEdgeToCanvasEdge(e))
 }
 

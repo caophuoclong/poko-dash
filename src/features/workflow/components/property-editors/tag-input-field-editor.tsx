@@ -3,7 +3,11 @@ import { X } from 'lucide-react'
 import { FieldLabel } from './field-label'
 import type { PropertyEditorProps } from './property-editor'
 
-export function TagInputFieldEditor({ schema, value, onChange }: PropertyEditorProps) {
+export function TagInputFieldEditor({
+  schema,
+  value,
+  onChange,
+}: PropertyEditorProps) {
   const tags: string[] = Array.isArray(value) ? value : []
   const [input, setInput] = useState('')
 
@@ -16,7 +20,10 @@ export function TagInputFieldEditor({ schema, value, onChange }: PropertyEditorP
   }
 
   const removeTag = (tag: string) => {
-    onChange(schema.key, tags.filter((t) => t !== tag))
+    onChange(
+      schema.key,
+      tags.filter((t) => t !== tag),
+    )
   }
 
   return (

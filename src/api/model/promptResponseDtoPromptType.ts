@@ -6,12 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
-export type PromptResponseDtoPromptType = typeof PromptResponseDtoPromptType[keyof typeof PromptResponseDtoPromptType];
-
+export type PromptResponseDtoPromptType =
+  (typeof PromptResponseDtoPromptType)[keyof typeof PromptResponseDtoPromptType]
 
 export const PromptResponseDtoPromptType = {
   content_generation: 'content_generation',
   analysis: 'analysis',
   refinement: 'refinement',
   custom: 'custom',
-} as const;
+} as const

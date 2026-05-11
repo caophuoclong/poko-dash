@@ -7,6 +7,6 @@
  */
 
 export interface TriggerAggregationResponseDto {
-  ok: boolean;
-  message: string;
+  ok: boolean
+  message: string
 }

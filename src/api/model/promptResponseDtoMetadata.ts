@@ -9,4 +9,4 @@
 /**
  * @nullable
  */
-export type PromptResponseDtoMetadata = { [key: string]: unknown } | null;
+export type PromptResponseDtoMetadata = { [key: string]: unknown } | null

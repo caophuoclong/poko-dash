@@ -9,4 +9,4 @@
 /**
  * Platform identifier
  */
-export type UpdateAffiliateLinkDtoPlatform = { [key: string]: unknown };
+export type UpdateAffiliateLinkDtoPlatform = { [key: string]: unknown }

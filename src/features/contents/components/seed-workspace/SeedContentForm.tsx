@@ -1,26 +1,45 @@
 import { FormField } from '@/components/ui/form-field'
 import { Select } from '@/components/ui/select'
 import { Controller } from 'react-hook-form'
-import type { AutocompleteOption } from '@/components/ui/autocomplete'
-import { Autocomplete } from '@/components/ui/autocomplete'
-import { IdeaType, TargetPlatform } from '../../schemas/content.schema'
+import { PlusIcon } from 'lucide-react'
+import {
+  Combobox,
+  ComboboxChips,
+  ComboboxChip,
+  ComboboxChipsInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxCollection,
+  ComboboxItem,
+  ComboboxEmpty,
+  useComboboxAnchor,
+} from '@/components/ui/combobox'
+import type { ComboboxOption, CreateCandidate } from '@/components/ui/combobox-utils'
+import {
+  filterOptionsByLabel,
+  buildCreateCandidate,
+  isCreateCandidate,
+  CREATE_SENTINEL,
+} from '@/components/ui/combobox-utils'
+import type { IdeaType, TargetPlatform } from '../../schemas/content.schema'
 import { cn } from '#/shared/utils'
+import { useRef, useState } from 'react'
 
 const IDEA_TYPE_OPTIONS = [
-  { value: IdeaType.Review, label: 'Review' },
-  { value: IdeaType.Comparison, label: 'Comparison' },
-  { value: IdeaType.Roundup, label: 'Roundup' },
-  { value: IdeaType.Tutorial, label: 'Tutorial' },
-  { value: IdeaType.Deal, label: 'Deal' },
-  { value: IdeaType.Trending, label: 'Trending' },
+  { value: 'review' as IdeaType, label: 'Review' },
+  { value: 'comparison' as IdeaType, label: 'Comparison' },
+  { value: 'roundup' as IdeaType, label: 'Roundup' },
+  { value: 'tutorial' as IdeaType, label: 'Tutorial' },
+  { value: 'deal' as IdeaType, label: 'Deal' },
+  { value: 'trending' as IdeaType, label: 'Trending' },
 ]
 
 const PLATFORM_OPTIONS = [
-  { value: TargetPlatform.Facebook, label: 'Facebook' },
-  { value: TargetPlatform.TikTok, label: 'TikTok' },
-  { value: TargetPlatform.Instagram, label: 'Instagram' },
-  { value: TargetPlatform.YouTube, label: 'YouTube' },
-  { value: TargetPlatform.Blog, label: 'Blog' },
+  { value: 'facebook' as TargetPlatform, label: 'Facebook' },
+  { value: 'tiktok' as TargetPlatform, label: 'TikTok' },
+  { value: 'instagram' as TargetPlatform, label: 'Instagram' },
+  { value: 'youtube' as TargetPlatform, label: 'YouTube' },
+  { value: 'blog' as TargetPlatform, label: 'Blog' },
 ]
 
 const CATEGORY_OPTIONS = [
@@ -33,7 +52,7 @@ const CATEGORY_OPTIONS = [
   'uncategorized',
 ]
 
-const ANGLE_OPTIONS: AutocompleteOption[] = [
+const ANGLE_OPTIONS: ComboboxOption[] = [
   { value: 'Product-focused', label: 'Product-focused' },
   { value: 'Problem-solution', label: 'Problem-solution' },
   { value: 'Storytelling', label: 'Storytelling' },
@@ -48,7 +67,7 @@ interface SeedContentFormProps {
   control: any
   register: any
   errors: any
-  angleOptions?: AutocompleteOption[]
+  angleOptions?: ComboboxOption[]
 }
 
 export function SeedContentForm({
@@ -81,23 +100,12 @@ export function SeedContentForm({
             name="angle"
             control={control}
             render={({ field }) => (
-              <Autocomplete
+              <AngleMultiSelect
                 options={angleOptions}
-                value={
-                  field.value
-                    ? angleOptions.filter((a) =>
-                        field.value.split(',').includes(a.value),
-                      )
-                    : []
-                }
-                onChange={(vals) =>
-                  field.onChange(vals.map((v) => v.value).join(','))
-                }
+                value={field.value ? field.value.split(',') : []}
+                onChange={(vals) => field.onChange(vals.join(','))}
                 placeholder="Select angles for this seed..."
-                multiple
                 allowCreate
-                emitValue="raw"
-                truncateChipLabel
               />
             )}
           />
@@ -204,5 +212,110 @@ export function SeedContentForm({
         </div>
       </div>
     </div>
+  )
+}
+
+function AngleMultiSelect({
+  options,
+  value,
+  onChange,
+  placeholder,
+  allowCreate,
+}: {
+  options: ComboboxOption[]
+  value: string[]
+  onChange: (vals: string[]) => void
+  placeholder: string
+  allowCreate?: boolean
+}) {
+  const anchorRef = useComboboxAnchor()
+  const [open, setOpen] = useState(false)
+  const [inputValue, setInputValue] = useState('')
+  const [allOptions, setAllOptions] = useState(options)
+  const preventCloseRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const selectedOpts = value
+    .map((v) => allOptions.find((o) => o.value === v))
+    .filter(Boolean) as ComboboxOption[]
+
+  const filtered = filterOptionsByLabel(allOptions, inputValue)
+  const createCandidate = allowCreate ? buildCreateCandidate(inputValue, allOptions) : null
+  const displayItems = createCandidate ? [createCandidate, ...filtered] : filtered
+
+  return (
+    <Combobox<ComboboxOption | CreateCandidate, true>
+      multiple
+      value={selectedOpts}
+      onValueChange={(items) => {
+        const nextItems = Array.isArray(items) ? items : []
+        const createItem = nextItems.find((item) => isCreateCandidate(item))
+
+        if (createItem) {
+          const built: ComboboxOption = {
+            label: createItem.__meta.input,
+            value: createItem.__meta.input,
+          }
+          setAllOptions((prev) => {
+            if (prev.some((o) => o.value === built.value)) return prev
+            return [built, ...prev]
+          })
+          onChange([...value, built.value])
+          setInputValue('')
+          return
+        }
+
+        const raw = nextItems.map((o) => o.value)
+        onChange(raw)
+
+        if (preventCloseRef.current) clearTimeout(preventCloseRef.current)
+        preventCloseRef.current = setTimeout(() => {
+          preventCloseRef.current = null
+        }, 50)
+      }}
+      inputValue={inputValue}
+      onInputValueChange={setInputValue}
+      open={open}
+      onOpenChange={(next) => {
+        if (!next && preventCloseRef.current) setOpen(true)
+        else setOpen(next)
+      }}
+      items={displayItems}
+      itemToStringLabel={(item) => item.label}
+      isItemEqualToValue={(item, value) =>
+        isCreateCandidate(item)
+          ? item.__meta.input === value?.value
+          : item?.value === value?.value
+      }
+    >
+      <div ref={anchorRef}>
+        <ComboboxChips>
+          {selectedOpts.map((item) => (
+            <ComboboxChip key={String(item.value)}>
+              <span className="min-w-0 truncate" title={item.label}>{item.label}</span>
+            </ComboboxChip>
+          ))}
+          <ComboboxChipsInput placeholder={placeholder} />
+        </ComboboxChips>
+      </div>
+      <ComboboxContent anchor={anchorRef}>
+        <ComboboxList>
+          <ComboboxCollection>
+            {(item) => (
+              <ComboboxItem value={item}>
+                {isCreateCandidate(item) ? (
+                  <span className="inline-flex items-center gap-2">
+                    <PlusIcon className="size-4" />
+                    {item.label}
+                  </span>
+                ) : (
+                  item.label
+                )}
+              </ComboboxItem>
+            )}
+          </ComboboxCollection>
+          <ComboboxEmpty>No results found</ComboboxEmpty>
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
   )
 }

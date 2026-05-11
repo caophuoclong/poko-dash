@@ -6,12 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
-export type CreateWorkflowBodyDtoStatus = typeof CreateWorkflowBodyDtoStatus[keyof typeof CreateWorkflowBodyDtoStatus];
-
+export type CreateWorkflowBodyDtoStatus =
+  (typeof CreateWorkflowBodyDtoStatus)[keyof typeof CreateWorkflowBodyDtoStatus]
 
 export const CreateWorkflowBodyDtoStatus = {
   draft: 'draft',
   active: 'active',
   paused: 'paused',
   archived: 'archived',
-} as const;
+} as const

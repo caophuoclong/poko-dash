@@ -77,11 +77,13 @@ function wrapMutation<T extends { mutate: any; mutateAsync: any }>(
   m: T,
   wrapper: (variables: any) => any,
 ): UseMutationResult<any, any, any> {
-  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m as any
+  const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
   return {
     ...rest,
-    mutate: (variables: any, options?: any) => origMutate(wrapper(variables), options),
-    mutateAsync: (variables: any, options?: any) => origMutateAsync(wrapper(variables), options),
+    mutate: (variables: any, options?: any) =>
+      origMutate(wrapper(variables), options),
+    mutateAsync: (variables: any, options?: any) =>
+      origMutateAsync(wrapper(variables), options),
   } as UseMutationResult<any, any, any>
 }
 

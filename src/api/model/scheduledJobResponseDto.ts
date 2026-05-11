@@ -5,21 +5,21 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { ScheduledJobPostDto } from './scheduledJobPostDto';
-import type { ScheduledJobResponseDtoStatus } from './scheduledJobResponseDtoStatus';
+import type { ScheduledJobPostDto } from './scheduledJobPostDto'
+import type { ScheduledJobResponseDtoStatus } from './scheduledJobResponseDtoStatus'
 
 export interface ScheduledJobResponseDto {
-  jobId: string;
-  postId: string;
-  platform: string;
-  status: ScheduledJobResponseDtoStatus;
-  scheduledAt: string;
-  publishedAt?: string;
-  postUrl?: string;
-  utmCode?: string;
-  retryCount: number;
-  errorMessage?: string;
-  createdAt: string;
-  updatedAt: string;
-  post: ScheduledJobPostDto;
+  jobId: string
+  postId: string
+  platform: string
+  status: ScheduledJobResponseDtoStatus
+  scheduledAt: string
+  publishedAt?: string
+  postUrl?: string
+  utmCode?: string
+  retryCount: number
+  errorMessage?: string
+  createdAt: string
+  updatedAt: string
+  post: ScheduledJobPostDto
 }

@@ -6,4 +6,4 @@
  * OpenAPI spec version: 1.0
  */
 
-export type WorkflowEdgeDtoStyle = { [key: string]: unknown };
+export type WorkflowEdgeDtoStyle = { [key: string]: unknown }

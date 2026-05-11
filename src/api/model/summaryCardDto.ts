@@ -5,13 +5,13 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { SummaryCardDtoTrend } from './summaryCardDtoTrend';
+import type { SummaryCardDtoTrend } from './summaryCardDtoTrend'
 
 export interface SummaryCardDto {
-  key: string;
-  label: string;
-  value: number;
-  previousValue?: number;
-  deltaPercent?: number;
-  trend?: SummaryCardDtoTrend;
+  key: string
+  label: string
+  value: number
+  previousValue?: number
+  deltaPercent?: number
+  trend?: SummaryCardDtoTrend
 }

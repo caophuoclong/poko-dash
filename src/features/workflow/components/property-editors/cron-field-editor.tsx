@@ -4,7 +4,11 @@ import cronParser from 'cron-parser'
 import { FieldLabel } from './field-label'
 import type { PropertyEditorProps } from './property-editor'
 
-export function CronFieldEditor({ schema, value, onChange }: PropertyEditorProps) {
+export function CronFieldEditor({
+  schema,
+  value,
+  onChange,
+}: PropertyEditorProps) {
   const cronValue = typeof value === 'string' ? value : ''
 
   const humanReadable = useMemo(() => {
@@ -48,8 +52,16 @@ export function CronFieldEditor({ schema, value, onChange }: PropertyEditorProps
           {nextRuns.map((d, i) => (
             <span key={i}>
               {i > 0 && ' · '}
-              {d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}{' '}
-              {d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+              {d.toLocaleDateString('en-US', {
+                weekday: 'short',
+                day: 'numeric',
+                month: 'short',
+              })}{' '}
+              {d.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+              })}
             </span>
           ))}
         </p>

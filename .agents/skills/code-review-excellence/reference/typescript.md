@@ -22,23 +22,23 @@
 ```typescript
 // ❌ Using any defeats type safety
 function processData(data: any) {
-  return data.value;  // 无类型检查，运行时可能崩溃
+  return data.value // 无类型检查，运行时可能崩溃
 }
 
 // ✅ Use proper types
 interface DataPayload {
-  value: string;
+  value: string
 }
 function processData(data: DataPayload) {
-  return data.value;
+  return data.value
 }
 
 // ✅ 未知类型用 unknown + 类型守卫
 function processUnknown(data: unknown) {
   if (typeof data === 'object' && data !== null && 'value' in data) {
-    return (data as { value: string }).value;
+    return (data as { value: string }).value
   }
-  throw new Error('Invalid data');
+  throw new Error('Invalid data')
 }
 ```
 
@@ -47,26 +47,30 @@ function processUnknown(data: unknown) {
 ```typescript
 // ❌ 不安全的类型断言
 function getLength(value: string | string[]) {
-  return (value as string[]).length;  // 如果是 string 会出错
+  return (value as string[]).length // 如果是 string 会出错
 }
 
 // ✅ 使用类型守卫
 function getLength(value: string | string[]): number {
   if (Array.isArray(value)) {
-    return value.length;
+    return value.length
   }
-  return value.length;
+  return value.length
 }
 
 // ✅ 使用 in 操作符
-interface Dog { bark(): void }
-interface Cat { meow(): void }
+interface Dog {
+  bark(): void
+}
+interface Cat {
+  meow(): void
+}
 
 function speak(animal: Dog | Cat) {
   if ('bark' in animal) {
-    animal.bark();
+    animal.bark()
   } else {
-    animal.meow();
+    animal.meow()
   }
 }
 ```
@@ -100,15 +104,15 @@ request(config.method, config.endpoint);  // 正确！
 ```typescript
 // ❌ 重复代码
 function getFirstString(arr: string[]): string | undefined {
-  return arr[0];
+  return arr[0]
 }
 function getFirstNumber(arr: number[]): number | undefined {
-  return arr[0];
+  return arr[0]
 }
 
 // ✅ 使用泛型
 function getFirst<T>(arr: T[]): T | undefined {
-  return arr[0];
+  return arr[0]
 }
 ```
 
@@ -117,18 +121,18 @@ function getFirst<T>(arr: T[]): T | undefined {
 ```typescript
 // ❌ 泛型没有约束，无法访问属性
 function getProperty<T>(obj: T, key: string) {
-  return obj[key];  // Error: 无法索引
+  return obj[key] // Error: 无法索引
 }
 
 // ✅ 使用 keyof 约束
 function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
-  return obj[key];
+  return obj[key]
 }
 
-const user = { name: 'Alice', age: 30 };
-getProperty(user, 'name');  // 返回类型是 string
-getProperty(user, 'age');   // 返回类型是 number
-getProperty(user, 'foo');   // Error: 'foo' 不在 keyof User
+const user = { name: 'Alice', age: 30 }
+getProperty(user, 'name') // 返回类型是 string
+getProperty(user, 'age') // 返回类型是 number
+getProperty(user, 'foo') // Error: 'foo' 不在 keyof User
 ```
 
 ### 泛型默认值
@@ -152,18 +156,18 @@ const userResponse: ApiResponse<User> = { ... };
 ```typescript
 // ✅ 善用内置工具类型
 interface User {
-  id: number;
-  name: string;
-  email: string;
+  id: number
+  name: string
+  email: string
 }
 
-type PartialUser = Partial<User>;         // 所有属性可选
-type RequiredUser = Required<User>;       // 所有属性必需
-type ReadonlyUser = Readonly<User>;       // 所有属性只读
-type UserKeys = keyof User;               // 'id' | 'name' | 'email'
-type NameOnly = Pick<User, 'name'>;       // { name: string }
-type WithoutId = Omit<User, 'id'>;        // { name: string; email: string }
-type UserRecord = Record<string, User>;   // { [key: string]: User }
+type PartialUser = Partial<User> // 所有属性可选
+type RequiredUser = Required<User> // 所有属性必需
+type ReadonlyUser = Readonly<User> // 所有属性只读
+type UserKeys = keyof User // 'id' | 'name' | 'email'
+type NameOnly = Pick<User, 'name'> // { name: string }
+type WithoutId = Omit<User, 'id'> // { name: string; email: string }
+type UserRecord = Record<string, User> // { [key: string]: User }
 ```
 
 ---
@@ -174,18 +178,18 @@ type UserRecord = Record<string, User>;   // { [key: string]: User }
 
 ```typescript
 // ✅ 根据输入类型返回不同类型
-type IsString<T> = T extends string ? true : false;
+type IsString<T> = T extends string ? true : false
 
-type A = IsString<string>;  // true
-type B = IsString<number>;  // false
+type A = IsString<string> // true
+type B = IsString<number> // false
 
 // ✅ 提取数组元素类型
-type ElementType<T> = T extends (infer U)[] ? U : never;
+type ElementType<T> = T extends (infer U)[] ? U : never
 
-type Elem = ElementType<string[]>;  // string
+type Elem = ElementType<string[]> // string
 
 // ✅ 提取函数返回类型（内置 ReturnType）
-type MyReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
+type MyReturnType<T> = T extends (...args: any[]) => infer R ? R : never
 ```
 
 ### 映射类型
@@ -193,23 +197,23 @@ type MyReturnType<T> = T extends (...args: any[]) => infer R ? R : never;
 ```typescript
 // ✅ 转换对象类型的所有属性
 type Nullable<T> = {
-  [K in keyof T]: T[K] | null;
-};
-
-interface User {
-  name: string;
-  age: number;
+  [K in keyof T]: T[K] | null
 }
 
-type NullableUser = Nullable<User>;
+interface User {
+  name: string
+  age: number
+}
+
+type NullableUser = Nullable<User>
 // { name: string | null; age: number | null }
 
 // ✅ 添加前缀
 type Getters<T> = {
-  [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K];
-};
+  [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K]
+}
 
-type UserGetters = Getters<User>;
+type UserGetters = Getters<User>
 // { getName: () => string; getAge: () => number }
 ```
 
@@ -217,29 +221,27 @@ type UserGetters = Getters<User>;
 
 ```typescript
 // ✅ 类型安全的事件名称
-type EventName = 'click' | 'focus' | 'blur';
-type HandlerName = `on${Capitalize<EventName>}`;
+type EventName = 'click' | 'focus' | 'blur'
+type HandlerName = `on${Capitalize<EventName>}`
 // 'onClick' | 'onFocus' | 'onBlur'
 
 // ✅ API 路由类型
-type ApiRoute = `/api/${string}`;
-const route: ApiRoute = '/api/users';  // OK
-const badRoute: ApiRoute = '/users';   // Error
+type ApiRoute = `/api/${string}`
+const route: ApiRoute = '/api/users' // OK
+const badRoute: ApiRoute = '/users' // Error
 ```
 
 ### Discriminated Unions
 
 ```typescript
 // ✅ 使用判别属性实现类型安全
-type Result<T, E> =
-  | { success: true; data: T }
-  | { success: false; error: E };
+type Result<T, E> = { success: true; data: T } | { success: false; error: E }
 
 function handleResult(result: Result<User, Error>) {
   if (result.success) {
-    console.log(result.data.name);  // TypeScript 知道 data 存在
+    console.log(result.data.name) // TypeScript 知道 data 存在
   } else {
-    console.log(result.error.message);  // TypeScript 知道 error 存在
+    console.log(result.error.message) // TypeScript 知道 error 存在
   }
 }
 
@@ -247,16 +249,16 @@ function handleResult(result: Result<User, Error>) {
 type Action =
   | { type: 'INCREMENT'; payload: number }
   | { type: 'DECREMENT'; payload: number }
-  | { type: 'RESET' };
+  | { type: 'RESET' }
 
 function reducer(state: number, action: Action): number {
   switch (action.type) {
     case 'INCREMENT':
-      return state + action.payload;  // payload 类型已知
+      return state + action.payload // payload 类型已知
     case 'DECREMENT':
-      return state - action.payload;
+      return state - action.payload
     case 'RESET':
-      return 0;  // 这里没有 payload
+      return 0 // 这里没有 payload
   }
 }
 ```
@@ -295,19 +297,19 @@ function reducer(state: number, action: Action): number {
 ```typescript
 // tsconfig: "noUncheckedIndexedAccess": true
 
-const arr = [1, 2, 3];
-const first = arr[0];  // 类型是 number | undefined
+const arr = [1, 2, 3]
+const first = arr[0] // 类型是 number | undefined
 
 // ❌ 直接使用可能出错
-console.log(first.toFixed(2));  // Error: 可能是 undefined
+console.log(first.toFixed(2)) // Error: 可能是 undefined
 
 // ✅ 先检查
 if (first !== undefined) {
-  console.log(first.toFixed(2));
+  console.log(first.toFixed(2))
 }
 
 // ✅ 或使用非空断言（确定时）
-console.log(arr[0]!.toFixed(2));
+console.log(arr[0]!.toFixed(2))
 ```
 
 ---
@@ -319,23 +321,23 @@ console.log(arr[0]!.toFixed(2));
 ```typescript
 // ❌ Not handling async errors
 async function fetchUser(id: string) {
-  const response = await fetch(`/api/users/${id}`);
-  return response.json();  // 网络错误未处理
+  const response = await fetch(`/api/users/${id}`)
+  return response.json() // 网络错误未处理
 }
 
 // ✅ Handle errors properly
 async function fetchUser(id: string): Promise<User> {
   try {
-    const response = await fetch(`/api/users/${id}`);
+    const response = await fetch(`/api/users/${id}`)
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
     }
-    return await response.json();
+    return await response.json()
   } catch (error) {
     if (error instanceof Error) {
-      throw new Error(`Failed to fetch user: ${error.message}`);
+      throw new Error(`Failed to fetch user: ${error.message}`)
     }
-    throw error;
+    throw error
   }
 }
 ```
@@ -345,26 +347,26 @@ async function fetchUser(id: string): Promise<User> {
 ```typescript
 // ❌ Promise.all 一个失败全部失败
 async function fetchAllUsers(ids: string[]) {
-  const users = await Promise.all(ids.map(fetchUser));
-  return users;  // 一个失败就全部失败
+  const users = await Promise.all(ids.map(fetchUser))
+  return users // 一个失败就全部失败
 }
 
 // ✅ Promise.allSettled 获取所有结果
 async function fetchAllUsers(ids: string[]) {
-  const results = await Promise.allSettled(ids.map(fetchUser));
+  const results = await Promise.allSettled(ids.map(fetchUser))
 
-  const users: User[] = [];
-  const errors: Error[] = [];
+  const users: User[] = []
+  const errors: Error[] = []
 
   for (const result of results) {
     if (result.status === 'fulfilled') {
-      users.push(result.value);
+      users.push(result.value)
     } else {
-      errors.push(result.reason);
+      errors.push(result.reason)
     }
   }
 
-  return { users, errors };
+  return { users, errors }
 }
 ```
 
@@ -373,33 +375,33 @@ async function fetchAllUsers(ids: string[]) {
 ```typescript
 // ❌ 竞态条件：旧请求可能覆盖新请求
 function useSearch() {
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
+  const [query, setQuery] = useState('')
+  const [results, setResults] = useState([])
 
   useEffect(() => {
     fetch(`/api/search?q=${query}`)
-      .then(r => r.json())
-      .then(setResults);  // 旧请求可能后返回！
-  }, [query]);
+      .then((r) => r.json())
+      .then(setResults) // 旧请求可能后返回！
+  }, [query])
 }
 
 // ✅ 使用 AbortController
 function useSearch() {
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState([]);
+  const [query, setQuery] = useState('')
+  const [results, setResults] = useState([])
 
   useEffect(() => {
-    const controller = new AbortController();
+    const controller = new AbortController()
 
     fetch(`/api/search?q=${query}`, { signal: controller.signal })
-      .then(r => r.json())
+      .then((r) => r.json())
       .then(setResults)
-      .catch(e => {
-        if (e.name !== 'AbortError') throw e;
-      });
+      .catch((e) => {
+        if (e.name !== 'AbortError') throw e
+      })
 
-    return () => controller.abort();
-  }, [query]);
+    return () => controller.abort()
+  }, [query])
 }
 ```
 
@@ -412,19 +414,19 @@ function useSearch() {
 ```typescript
 // ❌ 可变参数可能被意外修改
 function processUsers(users: User[]) {
-  users.sort((a, b) => a.name.localeCompare(b.name));  // 修改了原数组！
-  return users;
+  users.sort((a, b) => a.name.localeCompare(b.name)) // 修改了原数组！
+  return users
 }
 
 // ✅ 使用 readonly 防止修改
 function processUsers(users: readonly User[]): User[] {
-  return [...users].sort((a, b) => a.name.localeCompare(b.name));
+  return [...users].sort((a, b) => a.name.localeCompare(b.name))
 }
 
 // ✅ 深度只读
 type DeepReadonly<T> = {
-  readonly [K in keyof T]: T[K] extends object ? DeepReadonly<T[K]> : T[K];
-};
+  readonly [K in keyof T]: T[K] extends object ? DeepReadonly<T[K]> : T[K]
+}
 ```
 
 ### 不变式函数参数
@@ -432,10 +434,10 @@ type DeepReadonly<T> = {
 ```typescript
 // ✅ 使用 as const 和 readonly 保护数据
 function createConfig<T extends readonly string[]>(routes: T) {
-  return routes;
+  return routes
 }
 
-const routes = createConfig(['home', 'about', 'contact'] as const);
+const routes = createConfig(['home', 'about', 'contact'] as const)
 // 类型是 readonly ['home', 'about', 'contact']
 ```
 
@@ -452,7 +454,7 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
-    'plugin:@typescript-eslint/strict'
+    'plugin:@typescript-eslint/strict',
   ],
   rules: {
     // ✅ 类型安全
@@ -471,9 +473,9 @@ module.exports = {
     // ✅ 代码风格
     '@typescript-eslint/consistent-type-imports': 'error',
     '@typescript-eslint/prefer-nullish-coalescing': 'error',
-    '@typescript-eslint/prefer-optional-chain': 'error'
-  }
-};
+    '@typescript-eslint/prefer-optional-chain': 'error',
+  },
+}
 ```
 
 ### 常见 ESLint 错误修复
@@ -509,6 +511,7 @@ await Promise.all(items.map(processItem));
 ## Review Checklist
 
 ### 类型系统
+
 - [ ] 没有使用 `any`（使用 `unknown` + 类型守卫代替）
 - [ ] 接口和类型定义完整且有意义的命名
 - [ ] 使用泛型提高代码复用性
@@ -516,16 +519,19 @@ await Promise.all(items.map(processItem));
 - [ ] 善用工具类型（Partial、Pick、Omit 等）
 
 ### 泛型
+
 - [ ] 泛型有适当的约束（extends）
 - [ ] 泛型参数有合理的默认值
 - [ ] 避免过度泛型化（KISS 原则）
 
 ### Strict 模式
+
 - [ ] tsconfig.json 启用了 strict: true
 - [ ] 启用了 noUncheckedIndexedAccess
 - [ ] 没有使用 @ts-ignore（改用 @ts-expect-error）
 
 ### 异步代码
+
 - [ ] async 函数有错误处理
 - [ ] Promise rejection 被正确处理
 - [ ] 没有 floating promises（未处理的 Promise）
@@ -533,11 +539,13 @@ await Promise.all(items.map(processItem));
 - [ ] 竞态条件使用 AbortController 处理
 
 ### 不可变性
+
 - [ ] 不直接修改函数参数
 - [ ] 使用 spread 操作符创建新对象/数组
 - [ ] 考虑使用 readonly 修饰符
 
 ### ESLint
+
 - [ ] 使用 @typescript-eslint/recommended
 - [ ] 没有 ESLint 警告或错误
 - [ ] 使用 consistent-type-imports

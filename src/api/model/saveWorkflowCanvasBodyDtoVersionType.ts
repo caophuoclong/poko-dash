@@ -6,10 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 
-export type SaveWorkflowCanvasBodyDtoVersionType = typeof SaveWorkflowCanvasBodyDtoVersionType[keyof typeof SaveWorkflowCanvasBodyDtoVersionType];
-
+export type SaveWorkflowCanvasBodyDtoVersionType =
+  (typeof SaveWorkflowCanvasBodyDtoVersionType)[keyof typeof SaveWorkflowCanvasBodyDtoVersionType]
 
 export const SaveWorkflowCanvasBodyDtoVersionType = {
   auto: 'auto',
   manual: 'manual',
-} as const;
+} as const

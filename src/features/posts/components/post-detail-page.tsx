@@ -142,14 +142,19 @@ function PostDetailPageInner({ postId }: PostDetailPageProps) {
                         Sản phẩm hỗ trợ
                       </h2>
                       <div className="grid grid-cols-2 gap-4">
-                        {post.supportingProducts?.map((product: { imageCover?: string | null }, index: number) => (
-                          <img
-                            key={index}
-                            src={product.imageCover?.trim()}
-                            alt={`Image ${index + 1}`}
-                            className="w-full h-48 object-cover rounded-lg border border-frost"
-                          />
-                        ))}
+                        {post.supportingProducts?.map(
+                          (
+                            product: { imageCover?: string | null },
+                            index: number,
+                          ) => (
+                            <img
+                              key={index}
+                              src={product.imageCover?.trim()}
+                              alt={`Image ${index + 1}`}
+                              className="w-full h-48 object-cover rounded-lg border border-frost"
+                            />
+                          ),
+                        )}
                       </div>
                     </div>
                   )}

@@ -7,10 +7,10 @@
  */
 
 export interface ScheduledJobPostDto {
-  postId: string;
-  title: string;
-  platform: string;
-  contentType: string;
-  status: string;
-  approvalStatus?: string;
+  postId: string
+  title: string
+  platform: string
+  contentType: string
+  status: string
+  approvalStatus?: string
 }

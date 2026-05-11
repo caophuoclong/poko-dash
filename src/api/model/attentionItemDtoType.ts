@@ -6,12 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
-export type AttentionItemDtoType = typeof AttentionItemDtoType[keyof typeof AttentionItemDtoType];
-
+export type AttentionItemDtoType =
+  (typeof AttentionItemDtoType)[keyof typeof AttentionItemDtoType]
 
 export const AttentionItemDtoType = {
   approved_seed_no_products: 'approved_seed_no_products',
   approved_seed_no_posts: 'approved_seed_no_posts',
   failed_generation: 'failed_generation',
   failed_publish: 'failed_publish',
-} as const;
+} as const

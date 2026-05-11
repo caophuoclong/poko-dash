@@ -29,15 +29,23 @@ interface ConditionsValue {
   combineWith: 'AND' | 'OR'
 }
 
-export function ConditionsFieldEditor({ schema, value, onChange }: PropertyEditorProps) {
-  const data: ConditionsValue = (value && typeof value === 'object' && 'conditions' in value)
-    ? value as ConditionsValue
-    : { conditions: [], combineWith: 'AND' }
+export function ConditionsFieldEditor({
+  schema,
+  value,
+  onChange,
+}: PropertyEditorProps) {
+  const data: ConditionsValue =
+    value && typeof value === 'object' && 'conditions' in value
+      ? (value as ConditionsValue)
+      : { conditions: [], combineWith: 'AND' }
 
   const handleAdd = () => {
     onChange(schema.key, {
       ...data,
-      conditions: [...data.conditions, { left: '', operator: 'equals', right: '' }],
+      conditions: [
+        ...data.conditions,
+        { left: '', operator: 'equals', right: '' },
+      ],
     })
   }
 
@@ -139,7 +147,9 @@ export function ConditionsFieldEditor({ schema, value, onChange }: PropertyEdito
         </div>
       </div>
       {schema.helperText && (
-        <p className="text-[10px] text-muted-text/70 mt-1">{schema.helperText}</p>
+        <p className="text-[10px] text-muted-text/70 mt-1">
+          {schema.helperText}
+        </p>
       )}
     </div>
   )

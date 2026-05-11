@@ -60,7 +60,10 @@ export function useExecutionSSE() {
       bufferRef.current.rafId = null
       const buf = bufferRef.current
       if (buf.logs.length > 0 || buf.nodeUpdates.length > 0) {
-        storeRef.current.flushBatch({ logs: buf.logs, nodeUpdates: buf.nodeUpdates })
+        storeRef.current.flushBatch({
+          logs: buf.logs,
+          nodeUpdates: buf.nodeUpdates,
+        })
         buf.logs = []
         buf.nodeUpdates = []
       }
@@ -74,7 +77,10 @@ export function useExecutionSSE() {
       buf.rafId = null
     }
     if (buf.logs.length > 0 || buf.nodeUpdates.length > 0) {
-      storeRef.current.flushBatch({ logs: buf.logs, nodeUpdates: buf.nodeUpdates })
+      storeRef.current.flushBatch({
+        logs: buf.logs,
+        nodeUpdates: buf.nodeUpdates,
+      })
       buf.logs = []
       buf.nodeUpdates = []
     }

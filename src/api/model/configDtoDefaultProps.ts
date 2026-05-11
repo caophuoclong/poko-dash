@@ -9,4 +9,4 @@
 /**
  * Default configuration values
  */
-export type ConfigDtoDefaultProps = { [key: string]: unknown };
+export type ConfigDtoDefaultProps = { [key: string]: unknown }

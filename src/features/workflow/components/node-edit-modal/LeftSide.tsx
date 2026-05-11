@@ -54,7 +54,6 @@ function PaneHeader({
   )
 }
 
-
 interface LeftSideProps {
   prevNodes: Node<WorkflowNodeData>[]
   prevIdx: number
@@ -153,7 +152,7 @@ export function LeftSide({
   }, [prevNode, prevExecInfo])
 
   const upstreamDef = prevNode
-    ? getNodeDefinition((prevNode.data as WorkflowNodeData).nodeTypeId ?? '')
+    ? getNodeDefinition((prevNode.data).nodeTypeId ?? '')
     : null
   const upstreamIcon = upstreamDef
     ? ICON_MAP[upstreamDef.identity.icon ?? '']
@@ -167,7 +166,7 @@ export function LeftSide({
         total={3}
         title={
           prevNode
-            ? ((prevNode.data as WorkflowNodeData).title ??
+            ? ((prevNode.data).title ??
               upstreamDef?.identity.title ??
               'Unknown')
             : 'No upstream'
@@ -242,7 +241,7 @@ export function LeftSide({
         {prevNode ? (
           <UpstreamDataView
             data={upstreamData}
-            nodeName={((prevNode.data as WorkflowNodeData).title ?? '').replace(
+            nodeName={((prevNode.data).title ?? '').replace(
               /\s+/g,
               '_',
             )}

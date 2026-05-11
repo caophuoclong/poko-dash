@@ -42,7 +42,7 @@ export function findLoopScope(
       const sourceNode = nodeMap.get(edge.source)
       if (!sourceNode) continue
 
-      const sourceData = sourceNode.data as WorkflowNodeData
+      const sourceData = sourceNode.data
       const sourceTypeId = sourceData.nodeTypeId
 
       // Check if source is a loop node

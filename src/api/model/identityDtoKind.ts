@@ -9,11 +9,11 @@
 /**
  * Node execution kind
  */
-export type IdentityDtoKind = typeof IdentityDtoKind[keyof typeof IdentityDtoKind];
-
+export type IdentityDtoKind =
+  (typeof IdentityDtoKind)[keyof typeof IdentityDtoKind]
 
 export const IdentityDtoKind = {
   execution: 'execution',
   resource: 'resource',
   agent: 'agent',
-} as const;
+} as const

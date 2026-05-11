@@ -9,10 +9,10 @@
 /**
  * Edge routing type: main for normal flow, error for error path
  */
-export type WorkflowEdgeInputDtoEdgeType = typeof WorkflowEdgeInputDtoEdgeType[keyof typeof WorkflowEdgeInputDtoEdgeType];
-
+export type WorkflowEdgeInputDtoEdgeType =
+  (typeof WorkflowEdgeInputDtoEdgeType)[keyof typeof WorkflowEdgeInputDtoEdgeType]
 
 export const WorkflowEdgeInputDtoEdgeType = {
   main: 'main',
   error: 'error',
-} as const;
+} as const

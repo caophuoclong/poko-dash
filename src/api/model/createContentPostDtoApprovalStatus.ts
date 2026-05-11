@@ -9,11 +9,11 @@
 /**
  * Approval status
  */
-export type CreateContentPostDtoApprovalStatus = typeof CreateContentPostDtoApprovalStatus[keyof typeof CreateContentPostDtoApprovalStatus];
-
+export type CreateContentPostDtoApprovalStatus =
+  (typeof CreateContentPostDtoApprovalStatus)[keyof typeof CreateContentPostDtoApprovalStatus]
 
 export const CreateContentPostDtoApprovalStatus = {
   pending: 'pending',
   approved: 'approved',
   rejected: 'rejected',
-} as const;
+} as const

@@ -11,7 +11,11 @@ import { cn } from '#/shared/utils'
  *
  * Without `baseRef` it falls back to the legacy `$node.NodeName.path` form.
  */
-export function buildVarRef(nodeName: string, path: string, baseRef?: string): string {
+export function buildVarRef(
+  nodeName: string,
+  path: string,
+  baseRef?: string,
+): string {
   if (baseRef) {
     return `{{${baseRef}${path ? `.${path}` : ''}}}`
   }
@@ -36,7 +40,8 @@ function detectType(v: unknown): string {
 }
 
 function formatPreview(v: unknown, t: string): string {
-  if (t === 'string') return `"${String(v).slice(0, 60)}${String(v).length > 60 ? '…' : ''}"`
+  if (t === 'string')
+    return `"${String(v).slice(0, 60)}${String(v).length > 60 ? '…' : ''}"`
   if (t === 'null') return 'null'
   if (t === 'array') return `[${(v as unknown[]).length}]`
   if (t === 'object') return `{${Object.keys(v as object).length}}`
@@ -61,7 +66,13 @@ interface DraggableFieldTagProps {
 }
 
 /** Single draggable field — can be dragged into a form input to insert variable expression */
-export function DraggableFieldTag({ label, path, value, nodeName, baseRef }: DraggableFieldTagProps) {
+export function DraggableFieldTag({
+  label,
+  path,
+  value,
+  nodeName,
+  baseRef,
+}: DraggableFieldTagProps) {
   const expr = buildVarRef(nodeName, path, baseRef)
   const varId = varIdFromExpr(expr)
   const t = detectType(value)
@@ -99,10 +110,24 @@ export function DraggableFieldTag({ label, path, value, nodeName, baseRef }: Dra
       )}
       title={`Drag to insert ${expr}`}
     >
-      <GripVertical size={10} className="text-muted-text/50 group-hover:text-muted-text shrink-0" />
-      <span className="text-[11px] font-mono font-bold text-near-white shrink-0">{label}</span>
-      <span className={cn('text-[9px] font-mono tracking-wider uppercase px-1 rounded border border-frost bg-surface-2 shrink-0', TYPE_COLORS[t] ?? 'text-muted-text')}>{t}</span>
-      <span className="text-[11px] font-mono text-muted-text truncate min-w-0 flex-1">{preview}</span>
+      <GripVertical
+        size={10}
+        className="text-muted-text/50 group-hover:text-muted-text shrink-0"
+      />
+      <span className="text-[11px] font-mono font-bold text-near-white shrink-0">
+        {label}
+      </span>
+      <span
+        className={cn(
+          'text-[9px] font-mono tracking-wider uppercase px-1 rounded border border-frost bg-surface-2 shrink-0',
+          TYPE_COLORS[t] ?? 'text-muted-text',
+        )}
+      >
+        {t}
+      </span>
+      <span className="text-[11px] font-mono text-muted-text truncate min-w-0 flex-1">
+        {preview}
+      </span>
     </div>
   )
 }
@@ -119,7 +144,12 @@ interface SyntheticVariableTagProps {
 }
 
 /** Draggable tag for synthetic variables (loop context, system vars, etc.) that don't come from object keys */
-export function SyntheticVariableTag({ varId, label, description, typeHint = 'variable' }: SyntheticVariableTagProps) {
+export function SyntheticVariableTag({
+  varId,
+  label,
+  description,
+  typeHint = 'variable',
+}: SyntheticVariableTagProps) {
   const expr = `{{${varId}}}`
 
   const onDragStart = useCallback(
@@ -154,10 +184,24 @@ export function SyntheticVariableTag({ varId, label, description, typeHint = 'va
       )}
       title={description}
     >
-      <GripVertical size={10} className="text-muted-text/50 group-hover:text-muted-text shrink-0" />
-      <span className="text-[11px] font-mono font-bold text-near-white shrink-0">{label}</span>
-      <span className={cn('text-[9px] font-mono tracking-wider uppercase px-1 rounded border border-frost bg-surface-2 shrink-0', TYPE_COLORS[typeHint] ?? 'text-muted-text')}>{typeHint}</span>
-      <span className="text-[11px] font-mono text-muted-text/70 truncate min-w-0 flex-1">{description}</span>
+      <GripVertical
+        size={10}
+        className="text-muted-text/50 group-hover:text-muted-text shrink-0"
+      />
+      <span className="text-[11px] font-mono font-bold text-near-white shrink-0">
+        {label}
+      </span>
+      <span
+        className={cn(
+          'text-[9px] font-mono tracking-wider uppercase px-1 rounded border border-frost bg-surface-2 shrink-0',
+          TYPE_COLORS[typeHint] ?? 'text-muted-text',
+        )}
+      >
+        {typeHint}
+      </span>
+      <span className="text-[11px] font-mono text-muted-text/70 truncate min-w-0 flex-1">
+        {description}
+      </span>
     </div>
   )
 }
@@ -167,7 +211,14 @@ interface FieldGroupProps extends DraggableFieldTagProps {
 }
 
 /** Recursive field group — expands nested objects/arrays */
-export function FieldGroup({ label, path, value, nodeName, baseRef, depth = 0 }: FieldGroupProps) {
+export function FieldGroup({
+  label,
+  path,
+  value,
+  nodeName,
+  baseRef,
+  depth = 0,
+}: FieldGroupProps) {
   const [open, setOpen] = useState(depth < 2)
   const t = detectType(value)
 
@@ -185,7 +236,10 @@ export function FieldGroup({ label, path, value, nodeName, baseRef, depth = 0 }:
     (e: React.DragEvent) => {
       e.dataTransfer.setData('text/plain', expr)
       e.dataTransfer.setData('application/variable-ref', varId)
-      e.dataTransfer.setData('application/x-forge-ref', JSON.stringify({ expr, path, nodeName, baseRef }))
+      e.dataTransfer.setData(
+        'application/x-forge-ref',
+        JSON.stringify({ expr, path, nodeName, baseRef }),
+      )
       e.dataTransfer.effectAllowed = 'copy'
     },
     [expr, varId, path, nodeName, baseRef],
@@ -198,7 +252,10 @@ export function FieldGroup({ label, path, value, nodeName, baseRef, depth = 0 }:
           onClick={() => setOpen(!open)}
           className="w-4 h-4 flex items-center justify-center rounded text-muted-text hover:text-near-white hover:bg-surface-2 shrink-0"
         >
-          <ChevronDown size={10} className={cn('transition-transform', open ? '' : '-rotate-90')} />
+          <ChevronDown
+            size={10}
+            className={cn('transition-transform', open ? '' : '-rotate-90')}
+          />
         </button>
         <div
           draggable
@@ -206,8 +263,12 @@ export function FieldGroup({ label, path, value, nodeName, baseRef, depth = 0 }:
           className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-frost/50 bg-surface-2 cursor-grab active:cursor-grabbing hover:border-accent-blue/30 hover:bg-accent-blue-dim/20"
           title={`Drag to insert ${expr}`}
         >
-          <span className="text-[11px] font-mono font-bold text-near-white">{label || '(root)'}</span>
-          <span className="text-[9px] font-mono text-muted-text">{t === 'array' ? `[${entries.length}]` : `{${entries.length}}`}</span>
+          <span className="text-[11px] font-mono font-bold text-near-white">
+            {label || '(root)'}
+          </span>
+          <span className="text-[9px] font-mono text-muted-text">
+            {t === 'array' ? `[${entries.length}]` : `{${entries.length}}`}
+          </span>
         </div>
       </div>
       {open && (
@@ -222,9 +283,28 @@ export function FieldGroup({ label, path, value, nodeName, baseRef, depth = 0 }:
                 : k
             const ct = detectType(v)
             if (ct === 'object' || ct === 'array') {
-              return <FieldGroup key={k} label={k} path={childPath} value={v} nodeName={nodeName} baseRef={baseRef} depth={depth + 1} />
+              return (
+                <FieldGroup
+                  key={k}
+                  label={k}
+                  path={childPath}
+                  value={v}
+                  nodeName={nodeName}
+                  baseRef={baseRef}
+                  depth={depth + 1}
+                />
+              )
             }
-            return <DraggableFieldTag key={k} label={k} path={childPath} value={v} nodeName={nodeName} baseRef={baseRef} />
+            return (
+              <DraggableFieldTag
+                key={k}
+                label={k}
+                path={childPath}
+                value={v}
+                nodeName={nodeName}
+                baseRef={baseRef}
+              />
+            )
           })}
         </div>
       )}
@@ -240,11 +320,17 @@ interface UpstreamDataViewProps {
 }
 
 /** Renders upstream node output as a tree of draggable field tags */
-export function UpstreamDataView({ data, nodeName, baseRef = 'previous.output' }: UpstreamDataViewProps) {
+export function UpstreamDataView({
+  data,
+  nodeName,
+  baseRef = 'previous.output',
+}: UpstreamDataViewProps) {
   if (!data || Object.keys(data).length === 0) {
     return (
       <div className="flex items-center justify-center h-full p-6 text-center">
-        <p className="text-[11px] text-muted-text">No upstream data available</p>
+        <p className="text-[11px] text-muted-text">
+          No upstream data available
+        </p>
       </div>
     )
   }
@@ -260,9 +346,27 @@ export function UpstreamDataView({ data, nodeName, baseRef = 'previous.output' }
       {Object.entries(data).map(([k, v]) => {
         const t = detectType(v)
         if (t === 'object' || t === 'array') {
-          return <FieldGroup key={k} label={k} path={k} value={v} nodeName={nodeName} baseRef={baseRef} />
+          return (
+            <FieldGroup
+              key={k}
+              label={k}
+              path={k}
+              value={v}
+              nodeName={nodeName}
+              baseRef={baseRef}
+            />
+          )
         }
-        return <DraggableFieldTag key={k} label={k} path={k} value={v} nodeName={nodeName} baseRef={baseRef} />
+        return (
+          <DraggableFieldTag
+            key={k}
+            label={k}
+            path={k}
+            value={v}
+            nodeName={nodeName}
+            baseRef={baseRef}
+          />
+        )
       })}
     </div>
   )
@@ -299,7 +403,8 @@ export function useDropZone(onInsert: (expr: string) => void) {
         e.dataTransfer.getData('text/plain') ||
         (() => {
           try {
-            return JSON.parse(e.dataTransfer.getData('application/x-forge-ref')).expr
+            return JSON.parse(e.dataTransfer.getData('application/x-forge-ref'))
+              .expr
           } catch {
             return ''
           }

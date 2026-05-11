@@ -7,6 +7,6 @@
  */
 
 export interface TrendPointDto {
-  date: string;
-  value: number;
+  date: string
+  value: number
 }

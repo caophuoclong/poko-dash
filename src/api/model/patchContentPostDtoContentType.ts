@@ -9,8 +9,8 @@
 /**
  * Content type
  */
-export type PatchContentPostDtoContentType = typeof PatchContentPostDtoContentType[keyof typeof PatchContentPostDtoContentType];
-
+export type PatchContentPostDtoContentType =
+  (typeof PatchContentPostDtoContentType)[keyof typeof PatchContentPostDtoContentType]
 
 export const PatchContentPostDtoContentType = {
   review: 'review',
@@ -19,4 +19,4 @@ export const PatchContentPostDtoContentType = {
   tutorial: 'tutorial',
   deal: 'deal',
   trending: 'trending',
-} as const;
+} as const

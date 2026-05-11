@@ -6,10 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 
-export type PromptResponseDtoRole = typeof PromptResponseDtoRole[keyof typeof PromptResponseDtoRole];
-
+export type PromptResponseDtoRole =
+  (typeof PromptResponseDtoRole)[keyof typeof PromptResponseDtoRole]
 
 export const PromptResponseDtoRole = {
   system: 'system',
   user: 'user',
-} as const;
+} as const

@@ -8,9 +8,9 @@
 
 export interface SuggestedVariableDto {
   /** Human-readable label */
-  label: string;
+  label: string
   /** Variable expression */
-  expression: string;
+  expression: string
   /** Extended hint */
-  description?: string;
+  description?: string
 }

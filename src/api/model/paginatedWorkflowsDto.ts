@@ -5,11 +5,11 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { WorkflowSummaryDto } from './workflowSummaryDto';
+import type { WorkflowSummaryDto } from './workflowSummaryDto'
 
 export interface PaginatedWorkflowsDto {
-  data: WorkflowSummaryDto[];
-  total: number;
-  page: number;
-  page_size: number;
+  data: WorkflowSummaryDto[]
+  total: number
+  page: number
+  page_size: number
 }

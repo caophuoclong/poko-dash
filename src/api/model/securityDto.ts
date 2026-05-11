@@ -8,9 +8,9 @@
 
 export interface SecurityDto {
   /** If false, node runs in network-isolated worker */
-  allowNetwork: boolean;
+  allowNetwork: boolean
   /** Secret key names this node may read */
-  allowSecrets: string[];
+  allowSecrets: string[]
   /** Workspace permissions checked before job enqueue */
-  requiredPermissions: string[];
+  requiredPermissions: string[]
 }

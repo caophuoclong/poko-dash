@@ -8,9 +8,9 @@
 
 export interface SummaryFieldDto {
   /** Property key */
-  key: string;
+  key: string
   /** Display label */
-  label: string;
+  label: string
   /** Visibility flag */
-  visible: boolean;
+  visible: boolean
 }

@@ -12,8 +12,6 @@ function PagesPage() {
   })
 
   return (
-    <div className="p-6 text-center text-muted-text">
-      Pages coming soon...
-    </div>
+    <div className="p-6 text-center text-muted-text">Pages coming soon...</div>
   )
 }

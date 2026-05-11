@@ -7,5 +7,5 @@
  */
 
 export type ExecutionControllerExecuteWorkflow202 = {
-  executionId?: string;
-};
+  executionId?: string
+}

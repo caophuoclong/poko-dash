@@ -39,9 +39,7 @@ export function ProviderConnectCard({
           <p className="text-xs text-muted-text">{provider.description}</p>
         </div>
         {isConnected ? (
-          <IntegrationStatusBadge
-            status={allActive ? 'active' : 'expired'}
-          />
+          <IntegrationStatusBadge status={allActive ? 'active' : 'expired'} />
         ) : (
           <span className="text-xs text-muted-text">Not connected</span>
         )}

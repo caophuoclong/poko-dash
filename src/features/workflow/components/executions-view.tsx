@@ -1,5 +1,13 @@
 import { useState } from 'react'
-import { CheckCircle2, XCircle, Clock, Loader2, RotateCcw, ChevronRight, ChevronDown } from 'lucide-react'
+import {
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Loader2,
+  RotateCcw,
+  ChevronRight,
+  ChevronDown,
+} from 'lucide-react'
 import { cn } from '#/shared/utils'
 import { Button } from '#/components/ui/button'
 import { useExecutionControllerListExecutions } from '#/api/client'
@@ -21,7 +29,11 @@ interface ExecutionSummary {
   errorCount: number
 }
 
-export function ExecutionsView({ workflowId, onRerun, onSelectNode }: ExecutionsViewProps) {
+export function ExecutionsView({
+  workflowId,
+  onRerun,
+  onSelectNode,
+}: ExecutionsViewProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [page, setPage] = useState(0)
   const pageSize = 20
@@ -32,7 +44,11 @@ export function ExecutionsView({ workflowId, onRerun, onSelectNode }: Executions
       enabled: !!workflowId,
       select: (res: any) => {
         const rawData = res?.data ?? res
-        const items = Array.isArray(rawData?.data) ? rawData.data : Array.isArray(rawData) ? rawData : []
+        const items = Array.isArray(rawData?.data)
+          ? rawData.data
+          : Array.isArray(rawData)
+            ? rawData
+            : []
         return items.map((e: any) => ({
           id: e.id,
           status: e.status,
@@ -40,7 +56,8 @@ export function ExecutionsView({ workflowId, onRerun, onSelectNode }: Executions
           completedAt: e.completed_at ?? e.completedAt,
           durationMs: e.duration_ms ?? e.durationMs ?? 0,
           nodeCount: e.nodes?.length ?? e.node_count ?? 0,
-          errorCount: e.nodes?.filter?.((n: any) => n.status === 'failed').length ?? 0,
+          errorCount:
+            e.nodes?.filter?.((n: any) => n.status === 'failed').length ?? 0,
           nodes: e.nodes ?? [],
         }))
       },
@@ -48,7 +65,9 @@ export function ExecutionsView({ workflowId, onRerun, onSelectNode }: Executions
   } as any)
 
   const executions: ExecutionSummary[] = data ?? []
-  const selected = selectedId ? executions.find((e) => e.id === selectedId) : null
+  const selected = selectedId
+    ? executions.find((e) => e.id === selectedId)
+    : null
 
   return (
     <div className="flex h-full">
@@ -76,27 +95,43 @@ export function ExecutionsView({ workflowId, onRerun, onSelectNode }: Executions
               onClick={() => setSelectedId(exec.id)}
               className={cn(
                 'w-full flex items-start gap-2.5 px-3 py-2.5 text-left border-b border-frost/50 transition-colors',
-                selectedId === exec.id ? 'bg-surface-2' : 'hover:bg-surface-2/50',
+                selectedId === exec.id
+                  ? 'bg-surface-2'
+                  : 'hover:bg-surface-2/50',
               )}
             >
               {exec.status === 'completed' && (
-                <CheckCircle2 size={14} className="text-accent-green shrink-0 mt-0.5" />
+                <CheckCircle2
+                  size={14}
+                  className="text-accent-green shrink-0 mt-0.5"
+                />
               )}
               {exec.status === 'failed' && (
-                <XCircle size={14} className="text-accent-red shrink-0 mt-0.5" />
+                <XCircle
+                  size={14}
+                  className="text-accent-red shrink-0 mt-0.5"
+                />
               )}
               {(exec.status === 'running' || exec.status === 'pending') && (
-                <Loader2 size={14} className="text-accent-blue animate-spin shrink-0 mt-0.5" />
+                <Loader2
+                  size={14}
+                  className="text-accent-blue animate-spin shrink-0 mt-0.5"
+                />
               )}
               <div className="min-w-0">
                 <div className="text-[11px] font-medium text-near-white truncate">
                   {exec.id.slice(0, 8)}
                 </div>
                 <div className="text-[10px] text-muted-text">
-                  {exec.startedAt ? new Date(exec.startedAt).toLocaleString() : '—'}
+                  {exec.startedAt
+                    ? new Date(exec.startedAt).toLocaleString()
+                    : '—'}
                 </div>
                 <div className="text-[10px] text-muted-text/60">
-                  {exec.nodeCount} nodes · {exec.durationMs ? `${(exec.durationMs / 1000).toFixed(1)}s` : '—'}
+                  {exec.nodeCount} nodes ·{' '}
+                  {exec.durationMs
+                    ? `${(exec.durationMs / 1000).toFixed(1)}s`
+                    : '—'}
                 </div>
               </div>
             </button>
@@ -111,7 +146,9 @@ export function ExecutionsView({ workflowId, onRerun, onSelectNode }: Executions
               >
                 Previous
               </Button>
-              <span className="text-[10px] text-muted-text">Page {page + 1}</span>
+              <span className="text-[10px] text-muted-text">
+                Page {page + 1}
+              </span>
               <Button
                 size="xs"
                 variant="ghost"
@@ -176,7 +213,9 @@ function ExecutionDetail({
           </span>
         )}
         {execution.durationMs > 0 && (
-          <span className="text-[11px] text-muted-text">· {(execution.durationMs / 1000).toFixed(2)}s</span>
+          <span className="text-[11px] text-muted-text">
+            · {(execution.durationMs / 1000).toFixed(2)}s
+          </span>
         )}
       </div>
 
@@ -184,13 +223,17 @@ function ExecutionDetail({
         <div className="flex gap-2">
           <span className="text-muted-text shrink-0">Started</span>
           <span className="text-near-white">
-            {execution.startedAt ? new Date(execution.startedAt).toLocaleString() : '—'}
+            {execution.startedAt
+              ? new Date(execution.startedAt).toLocaleString()
+              : '—'}
           </span>
         </div>
         <div className="flex gap-2">
           <span className="text-muted-text shrink-0">Finished</span>
           <span className="text-near-white">
-            {execution.completedAt ? new Date(execution.completedAt).toLocaleString() : '—'}
+            {execution.completedAt
+              ? new Date(execution.completedAt).toLocaleString()
+              : '—'}
           </span>
         </div>
       </div>
@@ -208,7 +251,10 @@ function ExecutionDetail({
           const error = node.error
 
           return (
-            <div key={nodeId} className="border border-frost rounded-lg overflow-hidden">
+            <div
+              key={nodeId}
+              className="border border-frost rounded-lg overflow-hidden"
+            >
               <button
                 onClick={() => setExpandedNode(isExpanded ? null : nodeId)}
                 className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-surface-2/50 transition-colors"
@@ -216,19 +262,31 @@ function ExecutionDetail({
                 {isExpanded ? (
                   <ChevronDown size={12} className="text-muted-text shrink-0" />
                 ) : (
-                  <ChevronRight size={12} className="text-muted-text shrink-0" />
+                  <ChevronRight
+                    size={12}
+                    className="text-muted-text shrink-0"
+                  />
                 )}
-                <span className="font-mono text-[10px] text-muted-text shrink-0">{title}</span>
+                <span className="font-mono text-[10px] text-muted-text shrink-0">
+                  {title}
+                </span>
                 <span className="ml-auto flex items-center gap-2">
                   {status === 'completed' && (
                     <CheckCircle2 size={12} className="text-accent-green" />
                   )}
-                  {status === 'failed' && <XCircle size={12} className="text-accent-red" />}
+                  {status === 'failed' && (
+                    <XCircle size={12} className="text-accent-red" />
+                  )}
                   {status === 'running' && (
-                    <Loader2 size={12} className="text-accent-blue animate-spin" />
+                    <Loader2
+                      size={12}
+                      className="text-accent-blue animate-spin"
+                    />
                   )}
                   {durationMs > 0 && (
-                    <span className="text-[10px] text-muted-text">{durationMs}ms</span>
+                    <span className="text-[10px] text-muted-text">
+                      {durationMs}ms
+                    </span>
                   )}
                 </span>
               </button>
@@ -253,7 +311,11 @@ function ExecutionDetail({
 
       <div className="flex items-center gap-2 pt-2">
         {onRerun && (
-          <Button size="xs" color="blue-dim" onClick={() => onRerun(execution.id)}>
+          <Button
+            size="xs"
+            color="blue-dim"
+            onClick={() => onRerun(execution.id)}
+          >
             <RotateCcw size={11} />
             Re-run
           </Button>

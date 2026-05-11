@@ -6,8 +6,8 @@
  * OpenAPI spec version: 1.0
  */
 
-export type PostPublicationSummaryDtoPublishStatus = typeof PostPublicationSummaryDtoPublishStatus[keyof typeof PostPublicationSummaryDtoPublishStatus];
-
+export type PostPublicationSummaryDtoPublishStatus =
+  (typeof PostPublicationSummaryDtoPublishStatus)[keyof typeof PostPublicationSummaryDtoPublishStatus]
 
 export const PostPublicationSummaryDtoPublishStatus = {
   pending: 'pending',
@@ -15,4 +15,4 @@ export const PostPublicationSummaryDtoPublishStatus = {
   published: 'published',
   failed: 'failed',
   cancelled: 'cancelled',
-} as const;
+} as const

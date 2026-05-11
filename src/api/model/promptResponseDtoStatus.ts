@@ -6,11 +6,11 @@
  * OpenAPI spec version: 1.0
  */
 
-export type PromptResponseDtoStatus = typeof PromptResponseDtoStatus[keyof typeof PromptResponseDtoStatus];
-
+export type PromptResponseDtoStatus =
+  (typeof PromptResponseDtoStatus)[keyof typeof PromptResponseDtoStatus]
 
 export const PromptResponseDtoStatus = {
   active: 'active',
   archived: 'archived',
   draft: 'draft',
-} as const;
+} as const

@@ -6,12 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
-export type SaveWorkflowCanvasBodyDtoStatus = typeof SaveWorkflowCanvasBodyDtoStatus[keyof typeof SaveWorkflowCanvasBodyDtoStatus];
-
+export type SaveWorkflowCanvasBodyDtoStatus =
+  (typeof SaveWorkflowCanvasBodyDtoStatus)[keyof typeof SaveWorkflowCanvasBodyDtoStatus]
 
 export const SaveWorkflowCanvasBodyDtoStatus = {
   draft: 'draft',
   active: 'active',
   paused: 'paused',
   archived: 'archived',
-} as const;
+} as const

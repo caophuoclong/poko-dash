@@ -14,7 +14,11 @@ import {
 import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { cn, formatRelativeTime } from '#/shared/utils'
 import type { ContentIdeaEntity } from '../schemas/content.schema'
 import { IdeaType, TargetPlatform, IdeaStatus } from '../schemas/content.schema'
@@ -28,9 +32,10 @@ import {
   generateActionTooltip,
 } from '../utils/generation-state'
 import {
-  useGenerateContentPosts,
-  type ContentPostParsed,
+  useGenerateContentPosts
+  
 } from '#/features/posts'
+import type {ContentPostParsed} from '#/features/posts';
 
 const PRODUCT_COLORS = [
   'var(--color-primary)',
@@ -157,10 +162,7 @@ export function SeedDetailDrawer({
       )}
     >
       <div className="h-full flex flex-col">
-        <DrawerHeader
-          idea={idea}
-          onClose={onClose}
-        />
+        <DrawerHeader idea={idea} onClose={onClose} />
 
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
           <SeedSummarySection
@@ -223,7 +225,10 @@ const STATUS_ICONS: Record<IdeaStatus, typeof CheckCircle> = {
   [IdeaStatus.Rejected]: AlertCircle,
 }
 
-const STATUS_TONES: Record<IdeaStatus, 'blue' | 'green' | 'yellow' | 'orange' | 'neutral'> = {
+const STATUS_TONES: Record<
+  IdeaStatus,
+  'blue' | 'green' | 'yellow' | 'orange' | 'neutral'
+> = {
   [IdeaStatus.Draft]: 'blue',
   [IdeaStatus.Approved]: 'green',
   [IdeaStatus.Queued]: 'yellow',
@@ -303,7 +308,9 @@ function SeedSummarySection({
   return (
     <div className="bg-[var(--color-surface-soft)] rounded-lg p-4 space-y-3">
       <div>
-        <p className="text-body-sm text-[var(--color-ink)] leading-relaxed">{idea.hook}</p>
+        <p className="text-body-sm text-[var(--color-ink)] leading-relaxed">
+          {idea.hook}
+        </p>
       </div>
 
       <div className="flex items-center gap-2 flex-wrap">
@@ -352,7 +359,10 @@ function SeedSummarySection({
         <span>•</span>
         <span>Updated {formatRelativeTime(idea.updatedAt)}</span>
         <span>•</span>
-        <span>{(idea.ideaProducts || []).length} product{(idea.ideaProducts || []).length !== 1 ? 's' : ''}</span>
+        <span>
+          {(idea.ideaProducts || []).length} product
+          {(idea.ideaProducts || []).length !== 1 ? 's' : ''}
+        </span>
       </div>
     </div>
   )
@@ -378,7 +388,10 @@ function SeedProductsGenerationSection({
   if (productIds.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-frost/50 p-6 text-center">
-        <Package size={28} className="mx-auto mb-3 text-[var(--color-muted)] opacity-40" />
+        <Package
+          size={28}
+          className="mx-auto mb-3 text-[var(--color-muted)] opacity-40"
+        />
         <p className="text-sm text-[var(--color-ink)] font-medium mb-1">
           No products linked
         </p>
@@ -407,7 +420,8 @@ function SeedProductsGenerationSection({
         </h3>
         {generationSummary && (
           <span className="text-[10px] text-[var(--color-muted)]">
-            {generationSummary.generatedProducts}/{generationSummary.totalProducts} generated
+            {generationSummary.generatedProducts}/
+            {generationSummary.totalProducts} generated
           </span>
         )}
       </div>
@@ -419,10 +433,17 @@ function SeedProductsGenerationSection({
             (p) => p.productId === productId,
           )
           const hasPosts = productSummary?.hasPosts ?? false
-          const generating = isProductGenerating(productId, generatingProductIds)
+          const generating = isProductGenerating(
+            productId,
+            generatingProductIds,
+          )
           const generated = isProductGenerated(productId, genState)
           const canGen = genState.canGenerateSeed
-          const tooltip = generateActionTooltip(productId, genState, generatingProductIds)
+          const tooltip = generateActionTooltip(
+            productId,
+            genState,
+            generatingProductIds,
+          )
 
           return (
             <div
@@ -465,7 +486,9 @@ function SeedProductsGenerationSection({
                   {product.priceCurrent && (
                     <>
                       {product.brand && (
-                        <span className="text-[10px] text-[var(--color-muted)]">•</span>
+                        <span className="text-[10px] text-[var(--color-muted)]">
+                          •
+                        </span>
                       )}
                       <span className="text-[10px] font-medium text-accent-green">
                         {product.priceCurrent}
@@ -620,7 +643,8 @@ function SeedBatchGenerationSection({
 
       {someProductsGenerated && genState.canGenerateAll && (
         <p className="text-[10px] text-[var(--color-muted)] mt-2.5">
-          Generation will skip {genState.generatedProductIds.length} already-generated product
+          Generation will skip {genState.generatedProductIds.length}{' '}
+          already-generated product
           {genState.generatedProductIds.length !== 1 ? 's' : ''}
         </p>
       )}
@@ -656,9 +680,14 @@ function SeedOutputSection({
         </h3>
         <div className="text-center py-4">
           <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-surface-2 mb-2">
-            <Sparkles size={18} className="text-[var(--color-muted)] opacity-40" />
+            <Sparkles
+              size={18}
+              className="text-[var(--color-muted)] opacity-40"
+            />
           </div>
-          <p className="text-sm text-[var(--color-muted)]">No posts generated yet</p>
+          <p className="text-sm text-[var(--color-muted)]">
+            No posts generated yet
+          </p>
           {totalProducts > 0 && (
             <p className="text-xs text-[var(--color-muted)] mt-1">
               {totalProducts} product{totalProducts !== 1 && 's'} ready for
@@ -737,7 +766,13 @@ function SeedOutputSection({
   )
 }
 
-function FileTextIcon({ size, className }: { size?: number; className?: string }) {
+function FileTextIcon({
+  size,
+  className,
+}: {
+  size?: number
+  className?: string
+}) {
   return (
     <svg
       width={size ?? 16}
@@ -783,11 +818,7 @@ function DrawerFooter({
   const renderPrimaryAction = () => {
     if (isApproved && productCount > 0) {
       return (
-        <Button
-          className="w-full"
-          onClick={onGenerate}
-          disabled={isGenerating}
-        >
+        <Button className="w-full" onClick={onGenerate} disabled={isGenerating}>
           {isGenerating ? (
             <>
               <Loader2 size={16} className="mr-2 animate-spin" />

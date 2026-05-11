@@ -19,7 +19,11 @@ import {
   resolveNodePosition,
   buildNewNodeFromDefinition,
 } from '../use-workflow-detail-page/utils'
-import type { WorkflowDetail, WorkflowNodeData, WorkflowVariable } from '../../types'
+import type {
+  WorkflowDetail,
+  WorkflowNodeData,
+  WorkflowVariable,
+} from '../../types'
 import type { Node, Edge, ReactFlowInstance } from '@xyflow/react'
 import { useWorkflowEditorState } from '../use-workflow-editor-state'
 import { useExecutionStore } from '../../stores/execution-store/useExecutionStore'
@@ -43,12 +47,12 @@ export function useWorkflowDetailPage(workflow: WorkflowDetail) {
   const selectedNodeRef = useRef<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
-  const [workflowVariables, setWorkflowVariables] = useState<WorkflowVariable[]>(
-    workflow.variables ?? [],
-  )
+  const [workflowVariables, setWorkflowVariables] = useState<
+    WorkflowVariable[]
+  >(workflow.variables ?? [])
 
   const editor = useWorkflowEditorState(
-    workflow.nodes as Node<WorkflowNodeData>[],
+    workflow.nodes,
     workflow.edges,
   )
 
@@ -269,7 +273,7 @@ export function useWorkflowDetailPage(workflow: WorkflowDetail) {
   useEffect(() => {
     if (prevWorkflowId.current !== workflow.id) {
       editor.replaceState(
-        workflow.nodes as Node<WorkflowNodeData>[],
+        workflow.nodes,
         workflow.edges,
       )
       setWorkflowVariables(workflow.variables ?? [])
@@ -308,7 +312,7 @@ export function useWorkflowDetailPage(workflow: WorkflowDetail) {
       editor.setNodes((prev: Node<WorkflowNodeData>[]) =>
         prev.map((n) =>
           n.id === nodeId
-            ? { ...n, data: { ...n.data, ...patch } as WorkflowNodeData }
+            ? { ...n, data: { ...n.data, ...patch } }
             : n,
         ),
       )

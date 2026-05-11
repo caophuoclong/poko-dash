@@ -5,11 +5,11 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { PortDto } from './portDto';
+import type { PortDto } from './portDto'
 
 export interface IODto {
   /** Input ports */
-  inputs: PortDto[];
+  inputs: PortDto[]
   /** Output ports */
-  outputs: PortDto[];
+  outputs: PortDto[]
 }

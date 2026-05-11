@@ -9,8 +9,8 @@
 /**
  * Content type
  */
-export type GenerateContentPostsDtoContentType = typeof GenerateContentPostsDtoContentType[keyof typeof GenerateContentPostsDtoContentType];
-
+export type GenerateContentPostsDtoContentType =
+  (typeof GenerateContentPostsDtoContentType)[keyof typeof GenerateContentPostsDtoContentType]
 
 export const GenerateContentPostsDtoContentType = {
   review: 'review',
@@ -19,4 +19,4 @@ export const GenerateContentPostsDtoContentType = {
   tutorial: 'tutorial',
   deal: 'deal',
   trending: 'trending',
-} as const;
+} as const

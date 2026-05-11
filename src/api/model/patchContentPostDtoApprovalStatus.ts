@@ -9,11 +9,11 @@
 /**
  * Approval status
  */
-export type PatchContentPostDtoApprovalStatus = typeof PatchContentPostDtoApprovalStatus[keyof typeof PatchContentPostDtoApprovalStatus];
-
+export type PatchContentPostDtoApprovalStatus =
+  (typeof PatchContentPostDtoApprovalStatus)[keyof typeof PatchContentPostDtoApprovalStatus]
 
 export const PatchContentPostDtoApprovalStatus = {
   pending: 'pending',
   approved: 'approved',
   rejected: 'rejected',
-} as const;
+} as const

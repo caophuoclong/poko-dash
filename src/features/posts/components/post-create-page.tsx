@@ -1,45 +1,22 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { useNavigate } from '@tanstack/react-router'
 import MainContent from './post-edit-page/MainContent'
 import CreatePreferenceContent from './post-edit-page/CreatePreferenceContent'
-import PlatformTargetConfigPanel from './platform-target-config-panel'
 import { statusOptions } from './post-edit-page/constants'
 import { useCreateContentPost } from '@/features/posts/hooks/use-content-posts'
-import { useScheduledJobs } from '@/features/scheduler/hooks/use-scheduler'
-import { transformScheduledJobsToEvents } from '@/features/scheduler/services/calendar.service'
 import { postCreationService } from '@/features/posts/services/post-creation.service'
 import { ContentPostCreateSchema } from '#/features/posts/schemas/content-post.schema'
 import type { ContentPostCreateFormData } from '#/features/posts/schemas/content-post.schema'
-import type { PlatformTargetConfig } from '../types/publication'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '#/components/ui/button'
 import { usePageHeader } from '#/components/ui/page-header-context'
 
 export function PostCreatePage() {
   const navigate = useNavigate()
-  const now = new Date()
-  const from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
-  const to = new Date(
-    now.getFullYear(),
-    now.getMonth() + 1,
-    0,
-    23,
-    59,
-    59,
-  ).toISOString()
-  const { data: scheduledJobs = [] } = useScheduledJobs({ from, to })
-  const events = useMemo(
-    () => transformScheduledJobsToEvents(scheduledJobs),
-    [scheduledJobs],
-  )
-
   const createPost = useCreateContentPost()
   const [isSaving, setIsSaving] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
-  const [platformTargets, setPlatformTargets] = useState<
-    PlatformTargetConfig[]
-  >([])
 
   const methods = useForm<ContentPostCreateFormData>({
     resolver: zodResolver(ContentPostCreateSchema),
@@ -68,16 +45,12 @@ export function PostCreatePage() {
     setHasUnsavedChanges(isDirty)
   }, [isDirty])
 
-  useEffect(() => {
-    setHasUnsavedChanges(isDirty || platformTargets.length > 0)
-  }, [isDirty, platformTargets])
-
   const handleSave = async (data: ContentPostCreateFormData) => {
     setIsSaving(true)
     try {
       const payload = postCreationService.transformFormDataToPayload({
         ...data,
-        platformTargets,
+        platformTargets: [],
       })
       await createPost.mutateAsync(payload)
       void navigate({ to: '/dash/posts', search: { ideaId: undefined } })
@@ -129,20 +102,25 @@ export function PostCreatePage() {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(handleSave)}>
         <div className="max-w-full space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6">
-              <MainContent control={methods.control} />
-              <PlatformTargetConfigPanel
+          <div className="grid grid-cols-1 lg:grid-cols-[1.86fr_1fr] gap-6 items-start">
+            <div className="space-y-6">
+              <MainContent
                 control={methods.control}
-                targets={platformTargets}
-                onTargetsChange={setPlatformTargets}
+                primaryProductId={watch('primaryProductId')}
+                supportingProductIds={watch('supportingProductIds') ?? []}
+                onPrimaryProductChange={(value) =>
+                  methods.setValue('primaryProductId', value)
+                }
+                onSupportingProductsChange={(values) =>
+                  methods.setValue('supportingProductIds', values)
+                }
               />
             </div>
 
             <CreatePreferenceContent
               control={methods.control}
               onCancel={handleCancel}
-              events={events}
+              isPublishing={isSaving}
             />
           </div>
         </div>

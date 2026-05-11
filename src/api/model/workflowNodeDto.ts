@@ -5,25 +5,25 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { WorkflowNodeDtoConfig } from './workflowNodeDtoConfig';
-import type { WorkflowNodeDtoPinData } from './workflowNodeDtoPinData';
+import type { WorkflowNodeDtoConfig } from './workflowNodeDtoConfig'
+import type { WorkflowNodeDtoPinData } from './workflowNodeDtoPinData'
 
 export interface WorkflowNodeDto {
-  id: string;
-  xyflow_id: string;
-  type: string;
-  node_type_id: string;
-  position_x: number;
-  position_y: number;
-  title?: string;
-  subtitle?: string;
-  icon?: string;
-  status: string;
-  config: WorkflowNodeDtoConfig;
-  disabled?: boolean;
-  notes?: string;
-  continueOnFail?: boolean;
-  retryOnFail?: boolean;
-  retryCount?: number;
-  pinData?: WorkflowNodeDtoPinData;
+  id: string
+  xyflow_id: string
+  type: string
+  node_type_id: string
+  position_x: number
+  position_y: number
+  title?: string
+  subtitle?: string
+  icon?: string
+  status: string
+  config: WorkflowNodeDtoConfig
+  disabled?: boolean
+  notes?: string
+  continueOnFail?: boolean
+  retryOnFail?: boolean
+  retryCount?: number
+  pinData?: WorkflowNodeDtoPinData
 }

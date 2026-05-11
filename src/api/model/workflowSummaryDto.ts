@@ -7,12 +7,12 @@
  */
 
 export interface WorkflowSummaryDto {
-  id: string;
-  name: string;
-  description?: string;
-  status: string;
-  node_count: number;
-  last_run_at?: string;
-  created_at: string;
-  updated_at: string;
+  id: string
+  name: string
+  description?: string
+  status: string
+  node_count: number
+  last_run_at?: string
+  created_at: string
+  updated_at: string
 }

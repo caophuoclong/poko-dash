@@ -9,8 +9,8 @@
 /**
  * Typed data format
  */
-export type PortDtoDataType = typeof PortDtoDataType[keyof typeof PortDtoDataType];
-
+export type PortDtoDataType =
+  (typeof PortDtoDataType)[keyof typeof PortDtoDataType]
 
 export const PortDtoDataType = {
   string: 'string',
@@ -20,4 +20,4 @@ export const PortDtoDataType = {
   array: 'array',
   'array<object>': 'array<object>',
   any: 'any',
-} as const;
+} as const

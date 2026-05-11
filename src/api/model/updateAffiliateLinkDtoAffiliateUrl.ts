@@ -9,4 +9,4 @@
 /**
  * Affiliate tracking URL
  */
-export type UpdateAffiliateLinkDtoAffiliateUrl = { [key: string]: unknown };
+export type UpdateAffiliateLinkDtoAffiliateUrl = { [key: string]: unknown }

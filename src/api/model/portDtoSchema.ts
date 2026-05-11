@@ -9,4 +9,4 @@
 /**
  * Optional JSON Schema for deep runtime data validation
  */
-export type PortDtoSchema = { [key: string]: unknown };
+export type PortDtoSchema = { [key: string]: unknown }

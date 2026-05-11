@@ -5,15 +5,15 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { RecordPublishSuccessDtoResponsePayload } from './recordPublishSuccessDtoResponsePayload';
+import type { RecordPublishSuccessDtoResponsePayload } from './recordPublishSuccessDtoResponsePayload'
 
 export interface RecordPublishSuccessDto {
   /** Post ID returned by the platform */
-  externalPostId?: string;
+  externalPostId?: string
   /** Media IDs from the platform */
-  externalMediaIds?: string[];
+  externalMediaIds?: string[]
   /** Public URL of the published post */
-  externalUrl?: string;
+  externalUrl?: string
   /** Full response payload from the platform API */
-  responsePayload?: RecordPublishSuccessDtoResponsePayload;
+  responsePayload?: RecordPublishSuccessDtoResponsePayload
 }

@@ -5,9 +5,9 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { ProductSummaryResponseDto } from './productSummaryResponseDto';
+import type { ProductSummaryResponseDto } from './productSummaryResponseDto'
 
 export interface BatchProductsResponseDto {
-  items: ProductSummaryResponseDto[];
-  notFound: string[];
+  items: ProductSummaryResponseDto[]
+  notFound: string[]
 }

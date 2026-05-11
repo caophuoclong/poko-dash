@@ -5,29 +5,29 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { PromptResponseDtoCategory } from './promptResponseDtoCategory';
-import type { PromptResponseDtoMetadata } from './promptResponseDtoMetadata';
-import type { PromptResponseDtoPromptType } from './promptResponseDtoPromptType';
-import type { PromptResponseDtoRole } from './promptResponseDtoRole';
-import type { PromptResponseDtoStatus } from './promptResponseDtoStatus';
+import type { PromptResponseDtoCategory } from './promptResponseDtoCategory'
+import type { PromptResponseDtoMetadata } from './promptResponseDtoMetadata'
+import type { PromptResponseDtoPromptType } from './promptResponseDtoPromptType'
+import type { PromptResponseDtoRole } from './promptResponseDtoRole'
+import type { PromptResponseDtoStatus } from './promptResponseDtoStatus'
 
 export interface PromptResponseDto {
-  promptId: string;
-  name: string;
-  description?: string;
-  promptType: PromptResponseDtoPromptType;
-  role: PromptResponseDtoRole;
-  category: PromptResponseDtoCategory;
-  template: string;
-  variables: string[];
-  tags: string[];
-  status: PromptResponseDtoStatus;
-  version: number;
-  parentPromptId?: string;
-  usageCount: number;
-  avgRating?: number;
+  promptId: string
+  name: string
+  description?: string
+  promptType: PromptResponseDtoPromptType
+  role: PromptResponseDtoRole
+  category: PromptResponseDtoCategory
+  template: string
+  variables: string[]
+  tags: string[]
+  status: PromptResponseDtoStatus
+  version: number
+  parentPromptId?: string
+  usageCount: number
+  avgRating?: number
   /** @nullable */
-  metadata: PromptResponseDtoMetadata;
-  createdAt: string;
-  updatedAt: string;
+  metadata: PromptResponseDtoMetadata
+  createdAt: string
+  updatedAt: string
 }

@@ -5,8 +5,8 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { PromptResponseDto } from './promptResponseDto';
+import type { PromptResponseDto } from './promptResponseDto'
 
 export interface PromptVersionsResponseDto {
-  versions: PromptResponseDto[];
+  versions: PromptResponseDto[]
 }

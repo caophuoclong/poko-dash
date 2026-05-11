@@ -5,17 +5,17 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { ExecuteWorkflowDtoMode } from './executeWorkflowDtoMode';
-import type { ExecuteWorkflowDtoTriggerData } from './executeWorkflowDtoTriggerData';
-import type { ExecuteWorkflowDtoTriggeredBy } from './executeWorkflowDtoTriggeredBy';
+import type { ExecuteWorkflowDtoMode } from './executeWorkflowDtoMode'
+import type { ExecuteWorkflowDtoTriggerData } from './executeWorkflowDtoTriggerData'
+import type { ExecuteWorkflowDtoTriggeredBy } from './executeWorkflowDtoTriggeredBy'
 
 export interface ExecuteWorkflowDto {
   /** Execution mode */
-  mode: ExecuteWorkflowDtoMode;
+  mode: ExecuteWorkflowDtoMode
   /** Target node ID (required for to-node and single-node modes) */
-  targetNodeId?: string;
+  targetNodeId?: string
   /** What triggered this execution */
-  triggeredBy?: ExecuteWorkflowDtoTriggeredBy;
+  triggeredBy?: ExecuteWorkflowDtoTriggeredBy
   /** Trigger data passed to the workflow (accessible as {{ trigger.* }} or {{ input.* }}) */
-  triggerData?: ExecuteWorkflowDtoTriggerData;
+  triggerData?: ExecuteWorkflowDtoTriggerData
 }

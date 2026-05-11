@@ -48,7 +48,10 @@ function getWorkflowHealth(wf: WorkflowSummary): WorkflowHealth {
   return 'healthy'
 }
 
-const healthTone: Record<WorkflowHealth, 'green' | 'yellow' | 'orange' | 'neutral'> = {
+const healthTone: Record<
+  WorkflowHealth,
+  'green' | 'yellow' | 'orange' | 'neutral'
+> = {
   healthy: 'green',
   degraded: 'yellow',
   failing: 'orange',
@@ -247,7 +250,7 @@ export function WorkflowIndexPage() {
                         <DropdownMenuContent align="end" side="bottom">
                           <DropdownMenuItem
                             className="text-accent-red"
-                            onClick={(e) => handleDelete(wf.id, e as any)}
+                            onClick={(e) => handleDelete(wf.id, e)}
                           >
                             <Trash2 size={14} />
                             <span>Delete</span>
@@ -263,28 +266,34 @@ export function WorkflowIndexPage() {
         </div>
       )}
 
-      {!isLoading && !isError && filtered.length === 0 && workflows.length === 0 && (
-        <EmptyState
-          variant="card"
-          icon={<GitBranch />}
-          title="No workflows yet"
-          description="Create your first workflow to start automating content operations."
-          primaryAction={
-            <Button size="sm" onClick={handleCreate}>
-              <Plus size={15} />
-              Create your first workflow
-            </Button>
-          }
-        />
-      )}
+      {!isLoading &&
+        !isError &&
+        filtered.length === 0 &&
+        workflows.length === 0 && (
+          <EmptyState
+            variant="card"
+            icon={<GitBranch />}
+            title="No workflows yet"
+            description="Create your first workflow to start automating content operations."
+            primaryAction={
+              <Button size="sm" onClick={handleCreate}>
+                <Plus size={15} />
+                Create your first workflow
+              </Button>
+            }
+          />
+        )}
 
-      {!isLoading && !isError && filtered.length === 0 && workflows.length > 0 && (
-        <EmptyState
-          variant="no-results"
-          title="No workflows match your search"
-          description="Try a different keyword."
-        />
-      )}
+      {!isLoading &&
+        !isError &&
+        filtered.length === 0 &&
+        workflows.length > 0 && (
+          <EmptyState
+            variant="no-results"
+            title="No workflows match your search"
+            description="Try a different keyword."
+          />
+        )}
     </div>
   )
 }

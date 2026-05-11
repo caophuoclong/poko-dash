@@ -44,7 +44,8 @@ const MOCK_NOTIFICATIONS: Notification[] = [
   {
     id: 'n5',
     title: 'Schedule conflict detected',
-    description: 'Two posts are scheduled for the same time slot tomorrow at 9:00 AM.',
+    description:
+      'Two posts are scheduled for the same time slot tomorrow at 9:00 AM.',
     severity: 'warning',
     read: true,
     createdAt: new Date(Date.now() - 5 * 3600 * 1000).toISOString(),

@@ -9,4 +9,4 @@
 /**
  * Merchant name
  */
-export type UpdateAffiliateLinkDtoMerchant = { [key: string]: unknown };
+export type UpdateAffiliateLinkDtoMerchant = { [key: string]: unknown }

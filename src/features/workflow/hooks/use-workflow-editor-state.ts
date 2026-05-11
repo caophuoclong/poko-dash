@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
-import { SaveWorkflowCanvasBodyDtoVersionType } from '#/api/model'
+import type { SaveWorkflowCanvasBodyDtoVersionType } from '#/api/model'
 
 interface HistoryEntry {
   nodes: Node<WorkflowNodeData>[]
@@ -12,13 +12,18 @@ type SaveStatus = 'idle' | 'dirty' | 'saving' | 'saved' | 'error'
 
 type WorkflowVersionDtoVersionType = SaveWorkflowCanvasBodyDtoVersionType
 
-export function useWorkflowEditorState(initialNodes: Node<WorkflowNodeData>[], initialEdges: Edge[]) {
+export function useWorkflowEditorState(
+  initialNodes: Node<WorkflowNodeData>[],
+  initialEdges: Edge[],
+) {
   const [nodes, setNodes] = useState<Node<WorkflowNodeData>[]>(initialNodes)
   const [edges, setEdges] = useState<Edge[]>(initialEdges)
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
   const [lastSavedAt, setLastSavedAt] = useState<number | null>(null)
 
-  const savedNodesRef = useRef<Node<WorkflowNodeData>[]>(structuredClone(initialNodes))
+  const savedNodesRef = useRef<Node<WorkflowNodeData>[]>(
+    structuredClone(initialNodes),
+  )
   const savedEdgesRef = useRef<Edge[]>(structuredClone(initialEdges))
   const undoStack = useRef<HistoryEntry[]>([])
   const redoStack = useRef<HistoryEntry[]>([])
@@ -42,17 +47,20 @@ export function useWorkflowEditorState(initialNodes: Node<WorkflowNodeData>[], i
     return !deepEqualNodes(sn, nodes) || !deepEqualEdges(se, edges)
   }, [nodes, edges])
 
-  const markSaved = useCallback((newNodes: Node<WorkflowNodeData>[], newEdges: Edge[]) => {
-    savedNodesRef.current = structuredClone(newNodes)
-    savedEdgesRef.current = structuredClone(newEdges)
-    setLastSavedAt(Date.now())
-    setSaveStatus('saved')
+  const markSaved = useCallback(
+    (newNodes: Node<WorkflowNodeData>[], newEdges: Edge[]) => {
+      savedNodesRef.current = structuredClone(newNodes)
+      savedEdgesRef.current = structuredClone(newEdges)
+      setLastSavedAt(Date.now())
+      setSaveStatus('saved')
 
-    if (saveStatusTimerRef.current) clearTimeout(saveStatusTimerRef.current)
-    saveStatusTimerRef.current = setTimeout(() => {
-      setSaveStatus((prev) => (prev === 'saved' ? 'idle' : prev))
-    }, 2000)
-  }, [])
+      if (saveStatusTimerRef.current) clearTimeout(saveStatusTimerRef.current)
+      saveStatusTimerRef.current = setTimeout(() => {
+        setSaveStatus((prev) => (prev === 'saved' ? 'idle' : prev))
+      }, 2000)
+    },
+    [],
+  )
 
   const pushHistory = useCallback(() => {
     if (skipHistoryRef.current) {
@@ -95,7 +103,11 @@ export function useWorkflowEditorState(initialNodes: Node<WorkflowNodeData>[], i
       const hasRealChange = newNodes.some((n, i) => {
         const prev = nodes[i]
         if (!prev || n.id !== prev.id) return true
-        if (n.position.x !== prev.position.x || n.position.y !== prev.position.y) return true
+        if (
+          n.position.x !== prev.position.x ||
+          n.position.y !== prev.position.y
+        )
+          return true
         if (JSON.stringify(n.data) !== JSON.stringify(prev.data)) return true
         return false
       })
@@ -111,7 +123,11 @@ export function useWorkflowEditorState(initialNodes: Node<WorkflowNodeData>[], i
         const prev = edges[i]
         if (!prev || e.id !== prev.id) return true
         if (e.source !== prev.source || e.target !== prev.target) return true
-        if (e.sourceHandle !== prev.sourceHandle || e.targetHandle !== prev.targetHandle) return true
+        if (
+          e.sourceHandle !== prev.sourceHandle ||
+          e.targetHandle !== prev.targetHandle
+        )
+          return true
         if (JSON.stringify(e.data) !== JSON.stringify(prev.data)) return true
         return false
       })
@@ -193,7 +209,9 @@ export function useWorkflowEditorState(initialNodes: Node<WorkflowNodeData>[], i
       } else {
         clearAutoSaveTimer()
         if (saveStatus === 'dirty' || saveStatus === 'saved') {
-          setSaveStatus((prev) => (prev === 'dirty' || prev === 'saved' ? 'idle' : prev))
+          setSaveStatus((prev) =>
+            prev === 'dirty' || prev === 'saved' ? 'idle' : prev,
+          )
         }
       }
     }, 150)
@@ -227,11 +245,16 @@ export function useWorkflowEditorState(initialNodes: Node<WorkflowNodeData>[], i
     revertToSaved,
     registerSaveCallback,
     isDirty,
-    skipNextHistory: () => { skipHistoryRef.current = true },
+    skipNextHistory: () => {
+      skipHistoryRef.current = true
+    },
   }
 }
 
-function deepEqualNodes(a: Node<WorkflowNodeData>[], b: Node<WorkflowNodeData>[]): boolean {
+function deepEqualNodes(
+  a: Node<WorkflowNodeData>[],
+  b: Node<WorkflowNodeData>[],
+): boolean {
   if (a.length !== b.length) return false
   for (let i = 0; i < a.length; i++) {
     const na = a[i]
@@ -241,12 +264,19 @@ function deepEqualNodes(a: Node<WorkflowNodeData>[], b: Node<WorkflowNodeData>[]
       na.type !== nb.type ||
       na.position.x !== nb.position.x ||
       na.position.y !== nb.position.y
-    ) return false
+    )
+      return false
     if (na.data.title !== nb.data.title) return false
     if (na.data.subtitle !== nb.data.subtitle) return false
     if (na.data.nodeTypeId !== nb.data.nodeTypeId) return false
     if (na.data.status !== nb.data.status) return false
-    if (!deepEqualConfig(na.data.config as Record<string, unknown>, nb.data.config as Record<string, unknown>)) return false
+    if (
+      !deepEqualConfig(
+        na.data.config,
+        nb.data.config,
+      )
+    )
+      return false
   }
   return true
 }
@@ -262,11 +292,15 @@ function deepEqualEdges(a: Edge[], b: Edge[]): boolean {
       ea.target !== eb.target ||
       ea.sourceHandle !== eb.sourceHandle ||
       ea.type !== eb.type
-    ) return false
+    )
+      return false
   }
   return true
 }
 
-function deepEqualConfig(a: Record<string, unknown> | undefined, b: Record<string, unknown> | undefined): boolean {
+function deepEqualConfig(
+  a: Record<string, unknown> | undefined,
+  b: Record<string, unknown> | undefined,
+): boolean {
   return JSON.stringify(a ?? {}) === JSON.stringify(b ?? {})
 }

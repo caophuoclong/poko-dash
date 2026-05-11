@@ -7,6 +7,6 @@
  */
 
 export interface BackfillAggregationResponseDto {
-  ok: boolean;
-  message: string;
+  ok: boolean
+  message: string
 }

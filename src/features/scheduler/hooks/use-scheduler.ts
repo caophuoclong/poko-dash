@@ -46,9 +46,11 @@ export function useCreateScheduledJob() {
   const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
   return {
     ...rest,
-    mutate: (variables: any, options?: any) => origMutate({ data: variables } as any, options),
-    mutateAsync: (variables: any, options?: any) => origMutateAsync({ data: variables } as any, options),
-  } as UseMutationResult<any, any, any>
+    mutate: (variables: any, options?: any) =>
+      origMutate({ data: variables } as any, options),
+    mutateAsync: (variables: any, options?: any) =>
+      origMutateAsync({ data: variables } as any, options),
+  }
 }
 
 export function useUpdateScheduledJob() {
@@ -66,10 +68,16 @@ export function useUpdateScheduledJob() {
   return {
     ...rest,
     mutate: (variables: any, options?: any) =>
-      origMutate({ jobId: variables.jobId, data: variables.data } as any, options),
+      origMutate(
+        { jobId: variables.jobId, data: variables.data } as any,
+        options,
+      ),
     mutateAsync: (variables: any, options?: any) =>
-      origMutateAsync({ jobId: variables.jobId, data: variables.data } as any, options),
-  } as UseMutationResult<any, any, any>
+      origMutateAsync(
+        { jobId: variables.jobId, data: variables.data } as any,
+        options,
+      ),
+  }
 }
 
 export function useCancelScheduledJob() {
@@ -86,7 +94,9 @@ export function useCancelScheduledJob() {
   const { mutate: origMutate, mutateAsync: origMutateAsync, ...rest } = m
   return {
     ...rest,
-    mutate: (variables: any, options?: any) => origMutate({ jobId: variables } as any, options),
-    mutateAsync: (variables: any, options?: any) => origMutateAsync({ jobId: variables } as any, options),
-  } as UseMutationResult<any, any, any>
+    mutate: (variables: any, options?: any) =>
+      origMutate({ jobId: variables }, options),
+    mutateAsync: (variables: any, options?: any) =>
+      origMutateAsync({ jobId: variables }, options),
+  }
 }

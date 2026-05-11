@@ -99,4 +99,3 @@ export interface ExecutionCacheData {
   status: string
   nodes?: NodeExecutionData[]
 }
-

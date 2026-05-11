@@ -7,5 +7,5 @@
  */
 
 export interface CompiledPromptResponseDto {
-  compiled: string;
+  compiled: string
 }

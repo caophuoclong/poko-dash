@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from '@tanstack/react-router'
@@ -11,8 +11,23 @@ import {
 import { Button } from '#/components/ui/button'
 import { FormField } from '#/components/ui/form-field'
 import { Select } from '#/components/ui/select'
-import { Autocomplete } from '#/components/ui/autocomplete'
-import type { AutocompleteOption } from '#/components/ui/autocomplete'
+import {
+  Combobox,
+  ComboboxChips,
+  ComboboxChip,
+  ComboboxChipsInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxCollection,
+  ComboboxItem,
+  ComboboxEmpty,
+  useComboboxAnchor,
+} from '#/components/ui/combobox'
+import type { ComboboxOption } from '#/components/ui/combobox-utils'
+import {
+  filterOptionsByLabel,
+  sortSelectedFirst,
+} from '#/components/ui/combobox-utils'
 import { useCreateContentIdea } from '../hooks/use-content-ideas'
 import { useProducts } from '#/features/products/hooks/use-products'
 import {
@@ -64,7 +79,7 @@ export function ContentIdeaCreatePage() {
   const { data: products = [], isLoading: productsLoading } = useProducts()
   const [isSaving, setIsSaving] = useState(false)
 
-  const productOptions: AutocompleteOption[] = products.map((p) => ({
+  const productOptions: ComboboxOption[] = products.map((p) => ({
     value: p.productId,
     label: p.canonicalTitle,
   }))
@@ -111,7 +126,11 @@ export function ContentIdeaCreatePage() {
         >
           Hủy
         </Button>
-        <Button type="submit" form="content-idea-create-form" disabled={isSaving || !isDirty}>
+        <Button
+          type="submit"
+          form="content-idea-create-form"
+          disabled={isSaving || !isDirty}
+        >
           {isSaving ? 'Đang tạo...' : 'Tạo ý tưởng'}
         </Button>
       </div>
@@ -120,7 +139,6 @@ export function ContentIdeaCreatePage() {
 
   return (
     <form id="content-idea-create-form" onSubmit={handleSubmit(onSubmit)}>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main content */}
         <div className="lg:col-span-2 space-y-4">
@@ -155,19 +173,64 @@ export function ContentIdeaCreatePage() {
               <Controller
                 name="ideaProducts"
                 control={control}
-                render={({ field }) => (
-                  <div className="space-y-3">
-                    <Autocomplete
-                      options={productOptions}
-                      value={field.value ?? []}
-                      onChange={(vals) => field.onChange(vals)}
-                      placeholder="Tìm và chọn sản phẩm..."
-                      multiple
-                      emitValue="raw"
-                      sortSelectedFirst
-                      truncateChipLabel
-                      disabled={productsLoading}
-                    />
+                render={({ field }) => {
+                  const anchorRef = useComboboxAnchor()
+                  const [cbOpen, setCbOpen] = useState(false)
+                  const [inputValue, setInputValue] = useState('')
+                  const preventCloseRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+                  const selectedOpts = (field.value ?? [])
+                    .map((v: string) => productOptions.find((o) => o.value === v))
+                    .filter(Boolean) as ComboboxOption[]
+                  const filtered = sortSelectedFirst(
+                    filterOptionsByLabel(productOptions, inputValue),
+                    selectedOpts,
+                  )
+
+                  return (
+                    <div className="space-y-3">
+                      <Combobox
+                        multiple
+                        value={selectedOpts}
+                        onValueChange={(items) => {
+                          const raw = (items as ComboboxOption[]).map((o) => o.value)
+                          field.onChange(raw)
+                          if (preventCloseRef.current) clearTimeout(preventCloseRef.current)
+                          preventCloseRef.current = setTimeout(() => { preventCloseRef.current = null }, 50)
+                        }}
+                        inputValue={inputValue}
+                        onInputValueChange={setInputValue}
+                        open={cbOpen}
+                        onOpenChange={(next) => {
+                          if (!next && preventCloseRef.current) setCbOpen(true)
+                          else setCbOpen(next)
+                        }}
+                        items={filtered}
+                        itemToStringLabel={(item) => item.label}
+                        isItemEqualToValue={(item, value) => item?.value === value?.value}
+                        disabled={productsLoading}
+                      >
+                        <div ref={anchorRef}>
+                          <ComboboxChips>
+                            {selectedOpts.map((item) => (
+                              <ComboboxChip key={String(item.value)}>
+                                <span className="min-w-0 truncate" title={item.label}>
+                                  {item.label}
+                                </span>
+                              </ComboboxChip>
+                            ))}
+                            <ComboboxChipsInput placeholder="Tìm và chọn sản phẩm..." />
+                          </ComboboxChips>
+                        </div>
+                        <ComboboxContent anchor={anchorRef}>
+                          <ComboboxList>
+                            <ComboboxCollection>
+                              {(item) => <ComboboxItem value={item}>{item.label}</ComboboxItem>}
+                            </ComboboxCollection>
+                            <ComboboxEmpty>No results found</ComboboxEmpty>
+                          </ComboboxList>
+                        </ComboboxContent>
+                      </Combobox>
                     {(field.value?.length ?? 0) > 0 && (
                       <ul className="space-y-1.5">
                         {field.value?.map((productId) => {
@@ -206,7 +269,8 @@ export function ContentIdeaCreatePage() {
                       </p>
                     )}
                   </div>
-                )}
+                  )
+                }}
               />
             </SectionCardBody>
           </SectionCard>

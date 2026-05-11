@@ -6,9 +6,10 @@ import { SettingsTab } from './node-property-panel/settings-tab'
 import { OutputTab } from './node-property-panel/output-tab'
 import type { WorkflowNodeData, NodeMeta, NodeOutputResult } from '../types'
 import {
-  useNodeRegistryStore,
-  type NodeDefinition,
+  useNodeRegistryStore
+  
 } from '../stores/node-registry/use-node-registry.store'
+import type {NodeDefinition} from '../stores/node-registry/use-node-registry.store';
 import { CATEGORY_CONFIG } from '../stores/node-registry/constants'
 
 type TabId = 'parameters' | 'settings' | 'output'

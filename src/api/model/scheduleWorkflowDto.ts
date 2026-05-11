@@ -8,15 +8,15 @@
 
 export interface ScheduleWorkflowDto {
   /**
-     * Cron expression (e.g. "0 *\/6 * * *")
-     * @maxLength 100
-     */
-  cronExpression: string;
+   * Cron expression (e.g. "0 *\/6 * * *")
+   * @maxLength 100
+   */
+  cronExpression: string
   /**
-     * IANA timezone (e.g. "Asia/Ho_Chi_Minh")
-     * @maxLength 64
-     */
-  timezone: string;
+   * IANA timezone (e.g. "Asia/Ho_Chi_Minh")
+   * @maxLength 64
+   */
+  timezone: string
   /** Whether the schedule is active */
-  enabled?: boolean;
+  enabled?: boolean
 }

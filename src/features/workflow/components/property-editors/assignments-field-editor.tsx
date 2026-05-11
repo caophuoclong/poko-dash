@@ -8,18 +8,32 @@ interface Assignment {
   type: 'string' | 'number' | 'boolean' | 'expression'
 }
 
-export function AssignmentsFieldEditor({ schema, value, onChange }: PropertyEditorProps) {
+export function AssignmentsFieldEditor({
+  schema,
+  value,
+  onChange,
+}: PropertyEditorProps) {
   const assignments: Assignment[] = Array.isArray(value) ? value : []
 
   const handleAdd = () => {
-    onChange(schema.key, [...assignments, { key: '', value: '', type: 'string' }])
+    onChange(schema.key, [
+      ...assignments,
+      { key: '', value: '', type: 'string' },
+    ])
   }
 
   const handleRemove = (index: number) => {
-    onChange(schema.key, assignments.filter((_, i) => i !== index))
+    onChange(
+      schema.key,
+      assignments.filter((_, i) => i !== index),
+    )
   }
 
-  const handleChange = (index: number, field: keyof Assignment, val: string) => {
+  const handleChange = (
+    index: number,
+    field: keyof Assignment,
+    val: string,
+  ) => {
     const updated = [...assignments]
     updated[index] = { ...updated[index], [field]: val }
     onChange(schema.key, updated)
@@ -73,7 +87,9 @@ export function AssignmentsFieldEditor({ schema, value, onChange }: PropertyEdit
         </button>
       </div>
       {schema.helperText && (
-        <p className="text-[10px] text-muted-text/70 mt-1">{schema.helperText}</p>
+        <p className="text-[10px] text-muted-text/70 mt-1">
+          {schema.helperText}
+        </p>
       )}
     </div>
   )

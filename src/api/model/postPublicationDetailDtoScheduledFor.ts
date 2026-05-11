@@ -9,4 +9,6 @@
 /**
  * @nullable
  */
-export type PostPublicationDetailDtoScheduledFor = { [key: string]: unknown } | null;
+export type PostPublicationDetailDtoScheduledFor = {
+  [key: string]: unknown
+} | null

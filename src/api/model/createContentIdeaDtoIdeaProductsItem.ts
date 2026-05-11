@@ -7,5 +7,5 @@
  */
 
 export type CreateContentIdeaDtoIdeaProductsItem = {
-  productId?: string;
-};
+  productId?: string
+}

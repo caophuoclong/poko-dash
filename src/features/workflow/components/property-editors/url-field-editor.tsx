@@ -3,12 +3,16 @@ import { AlertCircle } from 'lucide-react'
 import { FieldLabel } from './field-label'
 import type { PropertyEditorProps } from './property-editor'
 
-export function UrlFieldEditor({ schema, value, onChange }: PropertyEditorProps) {
+export function UrlFieldEditor({
+  schema,
+  value,
+  onChange,
+}: PropertyEditorProps) {
   const [error, setError] = useState<string | null>(null)
 
   const handleChange = (val: string) => {
     onChange(schema.key, val)
-    
+
     if (!val) {
       setError(null)
       return

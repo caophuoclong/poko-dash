@@ -8,16 +8,16 @@
 
 export interface CreatePublicationDto {
   /**
-     * Platform identifier
-     * @maxLength 50
-     */
-  platform?: string;
+   * Platform identifier
+   * @maxLength 50
+   */
+  platform?: string
   /** Target type within the platform */
-  targetType?: string;
+  targetType?: string
   /** Platform-specific target ID */
-  targetId?: string;
+  targetId?: string
   /** Human-readable target name */
-  targetName?: string;
+  targetName?: string
   /** Scheduled publish time (ISO 8601) */
-  scheduledFor?: string;
+  scheduledFor?: string
 }

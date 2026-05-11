@@ -2,7 +2,13 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import { Variable, ArrowRight } from 'lucide-react'
 import { cn } from '#/shared/utils'
 import { FieldLabel } from './field-label'
-import { VariablePicker, extractVariables, highlightVariables, type VariableRef } from '../variable-system'
+import {
+  VariablePicker,
+  extractVariables,
+  highlightVariables
+  
+} from '../variable-system'
+import type {VariableRef} from '../variable-system';
 
 interface VariableFieldEditorProps {
   label: string
@@ -31,24 +37,29 @@ export function VariableFieldEditor({
   const containerRef = useRef<HTMLDivElement>(null)
 
   const vars = extractVariables(value)
-  const hasInvalidVar = vars.some((v) => !availableVariables.some((a) => a.id === v))
+  const hasInvalidVar = vars.some(
+    (v) => !availableVariables.some((a) => a.id === v),
+  )
 
-  const handleInsertVar = useCallback((varRef: string) => {
-    const textarea = textareaRef.current
-    if (!textarea) return
-    const start = textarea.selectionStart
-    const end = textarea.selectionEnd
-    const before = value.slice(0, start)
-    const after = value.slice(end)
-    const insert = `{{${varRef}}}`
-    const newVal = before + insert + after
-    onChange(newVal)
-    requestAnimationFrame(() => {
-      textarea.focus()
-      const cursorPos = start + insert.length
-      textarea.setSelectionRange(cursorPos, cursorPos)
-    })
-  }, [value, onChange])
+  const handleInsertVar = useCallback(
+    (varRef: string) => {
+      const textarea = textareaRef.current
+      if (!textarea) return
+      const start = textarea.selectionStart
+      const end = textarea.selectionEnd
+      const before = value.slice(0, start)
+      const after = value.slice(end)
+      const insert = `{{${varRef}}}`
+      const newVal = before + insert + after
+      onChange(newVal)
+      requestAnimationFrame(() => {
+        textarea.focus()
+        const cursorPos = start + insert.length
+        textarea.setSelectionRange(cursorPos, cursorPos)
+      })
+    },
+    [value, onChange],
+  )
 
   const handleInput = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -124,7 +135,9 @@ export function VariableFieldEditor({
         <div className="px-2.5 py-2 rounded-lg bg-surface-2/50 border border-frost">
           <div className="flex items-center gap-1.5 mb-1">
             <ArrowRight size={11} className="text-muted-text" />
-            <span className="text-[10px] font-medium text-muted-text uppercase tracking-wider">Preview</span>
+            <span className="text-[10px] font-medium text-muted-text uppercase tracking-wider">
+              Preview
+            </span>
           </div>
           <p className="text-[12px] text-near-white leading-relaxed">
             {highlighted.map((part, i) => {
@@ -157,9 +170,7 @@ export function VariableFieldEditor({
         <p className="text-[10px] text-muted-text/70">{helperText}</p>
       )}
 
-      {error && (
-        <p className="text-[10px] text-accent-red">{error}</p>
-      )}
+      {error && <p className="text-[10px] text-accent-red">{error}</p>}
 
       {showPicker && (
         <div onClick={(e) => e.stopPropagation()}>
@@ -202,24 +213,29 @@ export function VariableTextInput({
   const containerRef = useRef<HTMLDivElement>(null)
 
   const vars = extractVariables(value)
-  const hasInvalidVar = vars.some((v) => !availableVariables.some((a) => a.id === v))
+  const hasInvalidVar = vars.some(
+    (v) => !availableVariables.some((a) => a.id === v),
+  )
 
-  const handleInsertVar = useCallback((varRef: string) => {
-    const input = inputRef.current
-    if (!input) return
-    const start = input.selectionStart ?? value.length
-    const end = input.selectionEnd ?? value.length
-    const before = value.slice(0, start)
-    const after = value.slice(end)
-    const insert = `{{${varRef}}}`
-    const newVal = before + insert + after
-    onChange(newVal)
-    requestAnimationFrame(() => {
-      input.focus()
-      const cursorPos = start + insert.length
-      input.setSelectionRange(cursorPos, cursorPos)
-    })
-  }, [value, onChange])
+  const handleInsertVar = useCallback(
+    (varRef: string) => {
+      const input = inputRef.current
+      if (!input) return
+      const start = input.selectionStart ?? value.length
+      const end = input.selectionEnd ?? value.length
+      const before = value.slice(0, start)
+      const after = value.slice(end)
+      const insert = `{{${varRef}}}`
+      const newVal = before + insert + after
+      onChange(newVal)
+      requestAnimationFrame(() => {
+        input.focus()
+        const cursorPos = start + insert.length
+        input.setSelectionRange(cursorPos, cursorPos)
+      })
+    },
+    [value, onChange],
+  )
 
   const handleKeyDown = useCallback(() => {
     const input = inputRef.current

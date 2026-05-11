@@ -5,16 +5,34 @@ import {
   getBezierPath,
   getSmoothStepPath,
   getStraightPath,
-  Position,
-  type EdgeProps,
+  Position
+  
 } from '@xyflow/react'
+import type {EdgeProps} from '@xyflow/react';
 import { X } from 'lucide-react'
 import { cn } from '#/shared/utils'
 import type { EdgeType } from '../../node-types.old.abcd'
 
-export type EdgeStyle = 'auto' | 'bezier' | 'straight' | 'polyline' | 'step' | 'smoothstep' | 'quadratic' | 'cubic'
+export type EdgeStyle =
+  | 'auto'
+  | 'bezier'
+  | 'straight'
+  | 'polyline'
+  | 'step'
+  | 'smoothstep'
+  | 'quadratic'
+  | 'cubic'
 
-const EDGE_STYLES: EdgeStyle[] = ['auto', 'bezier', 'straight', 'polyline', 'step', 'smoothstep', 'quadratic', 'cubic']
+const EDGE_STYLES: EdgeStyle[] = [
+  'auto',
+  'bezier',
+  'straight',
+  'polyline',
+  'step',
+  'smoothstep',
+  'quadratic',
+  'cubic',
+]
 
 const EDGE_TYPE_CONFIG: Record<string, { stroke: string; dash?: string }> = {
   main: { stroke: 'var(--t-frost)' },
@@ -24,7 +42,12 @@ const EDGE_TYPE_CONFIG: Record<string, { stroke: string; dash?: string }> = {
   condition_false: { stroke: 'var(--t-accent-red)' },
 }
 
-function pickAutoStyle(sx: number, sy: number, tx: number, ty: number): EdgeStyle {
+function pickAutoStyle(
+  sx: number,
+  sy: number,
+  tx: number,
+  ty: number,
+): EdgeStyle {
   const dx = tx - sx
   const dy = ty - sy
   const adx = Math.abs(dx)
@@ -37,26 +60,39 @@ function pickAutoStyle(sx: number, sy: number, tx: number, ty: number): EdgeStyl
 }
 
 function getEdgePath(
-  sourceX: number, sourceY: number,
-  targetX: number, targetY: number,
+  sourceX: number,
+  sourceY: number,
+  targetX: number,
+  targetY: number,
   style: EdgeStyle,
   sourcePosition: Position,
   targetPosition: Position,
 ): [path: string, labelX: number, labelY: number] {
-  const resolved = style === 'auto'
-    ? pickAutoStyle(sourceX, sourceY, targetX, targetY)
-    : style
+  const resolved =
+    style === 'auto' ? pickAutoStyle(sourceX, sourceY, targetX, targetY) : style
 
   const sp = sourcePosition
   const tp = targetPosition
 
   switch (resolved) {
     case 'straight': {
-      const [d, lx, ly] = getStraightPath({ sourceX, sourceY, targetX, targetY })
+      const [d, lx, ly] = getStraightPath({
+        sourceX,
+        sourceY,
+        targetX,
+        targetY,
+      })
       return [d, lx, ly]
     }
     case 'smoothstep': {
-      const [d, lx, ly] = getSmoothStepPath({ sourceX, sourceY, sourcePosition: sp, targetX, targetY, targetPosition: tp })
+      const [d, lx, ly] = getSmoothStepPath({
+        sourceX,
+        sourceY,
+        sourcePosition: sp,
+        targetX,
+        targetY,
+        targetPosition: tp,
+      })
       return [d, lx, ly]
     }
     case 'step': {
@@ -74,8 +110,17 @@ function getEdgePath(
     case 'cubic':
     case 'bezier':
     default: {
-      const curvature = resolved === 'cubic' ? 0.7 : resolved === 'quadratic' ? 0.25 : 0.5
-      const [d, lx, ly] = getBezierPath({ sourceX, sourceY, sourcePosition: sp, targetX, targetY, targetPosition: tp, curvature })
+      const curvature =
+        resolved === 'cubic' ? 0.7 : resolved === 'quadratic' ? 0.25 : 0.5
+      const [d, lx, ly] = getBezierPath({
+        sourceX,
+        sourceY,
+        sourcePosition: sp,
+        targetX,
+        targetY,
+        targetPosition: tp,
+        curvature,
+      })
       return [d, lx, ly]
     }
   }
@@ -92,8 +137,10 @@ export type WorkflowEdgeProps = EdgeProps & { data?: WorkflowEdgeData }
 
 export function WorkflowEdge({
   id,
-  sourceX, sourceY,
-  targetX, targetY,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
   sourcePosition = Position.Bottom,
   targetPosition = Position.Top,
   selected,
@@ -103,24 +150,29 @@ export function WorkflowEdge({
 }: WorkflowEdgeProps) {
   const resolved = data?.style ?? 'auto'
   const edgeTypeConfig = data?.edgeType ? EDGE_TYPE_CONFIG[data.edgeType] : null
-  const edgeTypeLabel = data?.edgeType === 'condition_true'
-    ? 'true'
-    : data?.edgeType === 'condition_false'
-      ? 'false'
-      : undefined
+  const edgeTypeLabel =
+    data?.edgeType === 'condition_true'
+      ? 'true'
+      : data?.edgeType === 'condition_false'
+        ? 'false'
+        : undefined
   const label = edgeTypeLabel ?? data?.label
   const accent = data?.accent
 
   const [d, labelX, labelY] = getEdgePath(
-    sourceX, sourceY, targetX, targetY,
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
     resolved,
     sourcePosition,
     targetPosition,
   )
 
-  const edgeColor = edgeTypeConfig?.stroke
-    ?? accent
-    ?? (selected ? 'var(--t-accent-blue)' : 'var(--t-frost)')
+  const edgeColor =
+    edgeTypeConfig?.stroke ??
+    accent ??
+    (selected ? 'var(--t-accent-blue)' : 'var(--t-frost)')
 
   const edgeStyle = edgeTypeConfig?.dash
     ? { strokeDasharray: edgeTypeConfig.dash }
@@ -143,12 +195,14 @@ export function WorkflowEdge({
             strokeWidth: selected ? 2 : (baseStyle?.strokeWidth ?? 1.5),
             ...edgeStyle,
           }}
-          markerEnd={(markerEnd ?? {
-            type: MarkerType.ArrowClosed,
-            color: edgeColor,
-            width: 16,
-            height: 16,
-          }) as string}
+          markerEnd={
+            (markerEnd ?? {
+              type: MarkerType.ArrowClosed,
+              color: edgeColor,
+              width: 16,
+              height: 16,
+            }) as string
+          }
         />
       )}
 

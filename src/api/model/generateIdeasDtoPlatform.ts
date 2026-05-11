@@ -9,8 +9,8 @@
 /**
  * Target platform
  */
-export type GenerateIdeasDtoPlatform = typeof GenerateIdeasDtoPlatform[keyof typeof GenerateIdeasDtoPlatform];
-
+export type GenerateIdeasDtoPlatform =
+  (typeof GenerateIdeasDtoPlatform)[keyof typeof GenerateIdeasDtoPlatform]
 
 export const GenerateIdeasDtoPlatform = {
   facebook: 'facebook',
@@ -18,4 +18,4 @@ export const GenerateIdeasDtoPlatform = {
   instagram: 'instagram',
   youtube: 'youtube',
   blog: 'blog',
-} as const;
+} as const

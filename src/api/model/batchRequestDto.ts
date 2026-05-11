@@ -8,5 +8,5 @@
 
 export interface BatchRequestDto {
   /** Array of IDs to look up (max 500) */
-  ids: string[];
+  ids: string[]
 }

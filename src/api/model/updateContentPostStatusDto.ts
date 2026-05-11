@@ -5,9 +5,9 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { UpdateContentPostStatusDtoStatus } from './updateContentPostStatusDtoStatus';
+import type { UpdateContentPostStatusDtoStatus } from './updateContentPostStatusDtoStatus'
 
 export interface UpdateContentPostStatusDto {
   /** New content status */
-  status: UpdateContentPostStatusDtoStatus;
+  status: UpdateContentPostStatusDtoStatus
 }

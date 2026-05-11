@@ -5,7 +5,11 @@ import type { PropertyEditorProps } from './property-editor'
 
 const MonacoEditor = lazy(() => import('@monaco-editor/react'))
 
-export function JsonFieldEditor({ schema, value, onChange }: PropertyEditorProps) {
+export function JsonFieldEditor({
+  schema,
+  value,
+  onChange,
+}: PropertyEditorProps) {
   const editorRef = useRef<any>(null)
 
   useEffect(() => {
@@ -16,15 +20,19 @@ export function JsonFieldEditor({ schema, value, onChange }: PropertyEditorProps
       monaco?.editor?.setTheme(isDark ? 'poko-dark' : 'poko-light')
     })
 
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
     return () => observer.disconnect()
   }, [])
 
-  const jsonString = typeof value === 'string'
-    ? value
-    : value != null
-      ? JSON.stringify(value, null, 2)
-      : ''
+  const jsonString =
+    typeof value === 'string'
+      ? value
+      : value != null
+        ? JSON.stringify(value, null, 2)
+        : ''
 
   const handleChange = (newValue: string | undefined) => {
     if (newValue === undefined) return
@@ -75,11 +83,21 @@ export function JsonFieldEditor({ schema, value, onChange }: PropertyEditorProps
                 inherit: true,
                 rules: [],
                 colors: {
-                  'editor.background': styles.getPropertyValue('--t-void').trim(),
-                  'editor.foreground': styles.getPropertyValue('--t-foreground').trim(),
-                  'editorLineNumber.foreground': styles.getPropertyValue('--t-muted-text').trim(),
-                  'editorLineNumber.activeForeground': styles.getPropertyValue('--t-silver').trim(),
-                  'editorCursor.foreground': styles.getPropertyValue('--t-accent-blue').trim(),
+                  'editor.background': styles
+                    .getPropertyValue('--t-void')
+                    .trim(),
+                  'editor.foreground': styles
+                    .getPropertyValue('--t-foreground')
+                    .trim(),
+                  'editorLineNumber.foreground': styles
+                    .getPropertyValue('--t-muted-text')
+                    .trim(),
+                  'editorLineNumber.activeForeground': styles
+                    .getPropertyValue('--t-silver')
+                    .trim(),
+                  'editorCursor.foreground': styles
+                    .getPropertyValue('--t-accent-blue')
+                    .trim(),
                   'editor.selectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}33`,
                   'editor.inactiveSelectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}22`,
                 },
@@ -90,11 +108,21 @@ export function JsonFieldEditor({ schema, value, onChange }: PropertyEditorProps
                 inherit: true,
                 rules: [],
                 colors: {
-                  'editor.background': styles.getPropertyValue('--t-void').trim(),
-                  'editor.foreground': styles.getPropertyValue('--t-foreground').trim(),
-                  'editorLineNumber.foreground': styles.getPropertyValue('--t-muted-text').trim(),
-                  'editorLineNumber.activeForeground': styles.getPropertyValue('--t-silver').trim(),
-                  'editorCursor.foreground': styles.getPropertyValue('--t-accent-blue').trim(),
+                  'editor.background': styles
+                    .getPropertyValue('--t-void')
+                    .trim(),
+                  'editor.foreground': styles
+                    .getPropertyValue('--t-foreground')
+                    .trim(),
+                  'editorLineNumber.foreground': styles
+                    .getPropertyValue('--t-muted-text')
+                    .trim(),
+                  'editorLineNumber.activeForeground': styles
+                    .getPropertyValue('--t-silver')
+                    .trim(),
+                  'editorCursor.foreground': styles
+                    .getPropertyValue('--t-accent-blue')
+                    .trim(),
                   'editor.selectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}33`,
                   'editor.inactiveSelectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}22`,
                 },

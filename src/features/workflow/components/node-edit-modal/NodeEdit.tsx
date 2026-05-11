@@ -4,28 +4,52 @@ import { Button } from '#/components/ui/button'
 import { cn } from '#/shared/utils'
 import { PropertiesTab } from '../properties-tab'
 import { ValidationTab } from '../validation-tab'
-import type { ValidationError, NodeDefinition } from '../../stores/node-registry/use-node-registry.store'
+import type {
+  ValidationError,
+  NodeDefinition,
+} from '../../stores/node-registry/use-node-registry.store'
 import type { VariableRef } from '../../utils/variable-system-utils'
 import type { TabId, PaneHeaderProps } from './types'
 
 function PaneHeader({
-  side, idx, total, title, subtitle, color, icon: Icon,
+  side,
+  idx,
+  total,
+  title,
+  subtitle,
+  color,
+  icon: Icon,
 }: PaneHeaderProps) {
   return (
     <div className="px-4 py-2.5 border-b border-frost shrink-0 bg-surface-2/30">
       <div className="flex items-center gap-2 min-w-0">
-        <span className="text-[9px] font-mono text-muted-text shrink-0">{idx}/{total}</span>
+        <span className="text-[9px] font-mono text-muted-text shrink-0">
+          {idx}/{total}
+        </span>
         {Icon && (
-          <div className={cn('w-6 h-6 rounded flex items-center justify-center shrink-0', color ?? 'bg-surface-2 text-muted-text')}>
+          <div
+            className={cn(
+              'w-6 h-6 rounded flex items-center justify-center shrink-0',
+              color ?? 'bg-surface-2 text-muted-text',
+            )}
+          >
             <Icon size={12} />
           </div>
         )}
         <div className="min-w-0">
-          <div className="text-[10px] font-mono tracking-wide uppercase text-muted-text/60 leading-none">{side}</div>
-          <div className="text-[12px] font-medium text-near-white truncate leading-tight mt-0.5">{title}</div>
+          <div className="text-[10px] font-mono tracking-wide uppercase text-muted-text/60 leading-none">
+            {side}
+          </div>
+          <div className="text-[12px] font-medium text-near-white truncate leading-tight mt-0.5">
+            {title}
+          </div>
         </div>
       </div>
-      {subtitle && <div className="text-[10px] text-muted-text truncate mt-1 ml-8">{subtitle}</div>}
+      {subtitle && (
+        <div className="text-[10px] text-muted-text truncate mt-1 ml-8">
+          {subtitle}
+        </div>
+      )}
     </div>
   )
 }
@@ -171,11 +195,7 @@ export function NodeEdit({
         </Button>
         <div className="flex-1" />
         {onExecuteSingle && (
-          <Button
-            size="xs"
-            color="green-dim"
-            onClick={onExecuteSingle}
-          >
+          <Button size="xs" color="green-dim" onClick={onExecuteSingle}>
             <Play size={11} /> Test Run
           </Button>
         )}

@@ -9,4 +9,4 @@
 /**
  * Override this node's output (for debugging)
  */
-export type WorkflowNodeInputDtoPinData = { [key: string]: unknown };
+export type WorkflowNodeInputDtoPinData = { [key: string]: unknown }

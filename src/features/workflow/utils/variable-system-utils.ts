@@ -271,7 +271,8 @@ export function listVariableSuggestions(
 
   const normalized = activeNamespace.replace(/^\$/, '')
   return availableVariables.filter((v) => {
-    if (activeNamespace === '$json' || activeNamespace === 'json') return v.namespace === 'json'
+    if (activeNamespace === '$json' || activeNamespace === 'json')
+      return v.namespace === 'json'
     return v.id.startsWith(`${normalized}.`) || v.namespace === normalized
   })
 }
@@ -310,7 +311,8 @@ export function buildVariableList(
           description: `JSON field: ${key.replace('$json.', '')}`,
           source: 'json',
           namespace: 'json',
-          sampleValue: val !== null && val !== undefined ? String(val) : undefined,
+          sampleValue:
+            val !== null && val !== undefined ? String(val) : undefined,
         })
       }
     }
@@ -321,7 +323,9 @@ export function buildVariableList(
     vars.push({
       id: `var.${wv.key}`,
       display: `{{var.${wv.key}}}`,
-      description: wv.description ? wv.description : `Workflow variable: ${wv.key}`,
+      description: wv.description
+        ? wv.description
+        : `Workflow variable: ${wv.key}`,
       source: 'var',
       namespace: 'var',
       sampleValue: wv.value || undefined,
@@ -330,7 +334,12 @@ export function buildVariableList(
 
   // ── Trigger / Input ────────────────────────────────────────────────────────
   const commonTriggerFields = triggerFields ?? [
-    'id', 'body', 'headers', 'query', 'method', 'path',
+    'id',
+    'body',
+    'headers',
+    'query',
+    'method',
+    'path',
   ]
   for (const field of commonTriggerFields) {
     vars.push({
@@ -379,9 +388,13 @@ export function buildVariableList(
 
   nodes.forEach((n) => {
     if (n.id === selectedNodeId) return
-    const nodeData = n.data as WorkflowNodeData
-    const def = nodeData.nodeTypeId ? getNodeDefinition(nodeData.nodeTypeId) : null
-    const source: VariableRef['source'] = prevNodeIds.includes(n.id) ? 'previous' : 'upstream'
+    const nodeData = n.data
+    const def = nodeData.nodeTypeId
+      ? getNodeDefinition(nodeData.nodeTypeId)
+      : null
+    const source: VariableRef['source'] = prevNodeIds.includes(n.id)
+      ? 'previous'
+      : 'upstream'
 
     if (def) {
       resolveOutputs(def).forEach((port) => {
@@ -406,31 +419,36 @@ export function buildVariableList(
       vars.push({
         id: 'previous.output',
         display: '{{previous.output}}',
-        description: `Full output from: ${(prev.data as WorkflowNodeData).title || prev.id}`,
+        description: `Full output from: ${(prev.data).title || prev.id}`,
         source: 'previous',
         namespace: 'previous',
         sourceNodeId: prev.id,
-        sourceNodeName: (prev.data as WorkflowNodeData).title,
+        sourceNodeName: (prev.data).title,
       })
 
       // Add nested previous.output.* paths from upstream execution output or suggested variables
-      const prevDef = (prev.data as WorkflowNodeData).nodeTypeId
-        ? getNodeDefinition((prev.data as WorkflowNodeData).nodeTypeId ?? '')
+      const prevDef = (prev.data).nodeTypeId
+        ? getNodeDefinition((prev.data).nodeTypeId ?? '')
         : null
       if (prevDef?.config?.suggestedVariables) {
         for (const sv of prevDef.config.suggestedVariables) {
           const expr = sv.expression?.trim() ?? ''
-          const match = expr.match(/^\{\{\s*(previous\.output(?:\.[^\s}]+)?)\s*\}\}$/)
+          const match = expr.match(
+            /^\{\{\s*(previous\.output(?:\.[^\s}]+)?)\s*\}\}$/,
+          )
           if (!match) continue
           const id = match[1]
           vars.push({
             id,
             display: `{{${id}}}`,
-            description: sv.description || sv.label || 'Suggested previous output variable',
+            description:
+              sv.description ||
+              sv.label ||
+              'Suggested previous output variable',
             source: 'previous',
             namespace: 'previous',
             sourceNodeId: prev.id,
-            sourceNodeName: (prev.data as WorkflowNodeData).title,
+            sourceNodeName: (prev.data).title,
           })
         }
       }
@@ -559,7 +577,10 @@ function getLoopContextVariables(
 }
 
 function sanitizeTitle(title: string): string {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_|_$/g, '')
 }
 
 // ─── Extract ─────────────────────────────────────────────────────────────────
@@ -618,7 +639,9 @@ export function renderVariablePreview(
 
 // ─── Grouping ─────────────────────────────────────────────────────────────────
 
-export function groupVariables(vars: VariableRef[]): Record<string, VariableRef[]> {
+export function groupVariables(
+  vars: VariableRef[],
+): Record<string, VariableRef[]> {
   const groups: Record<string, VariableRef[]> = {
     'Upstream JSON': [],
     'Workflow Vars': [],
@@ -635,24 +658,33 @@ export function groupVariables(vars: VariableRef[]): Record<string, VariableRef[
   for (const v of vars) {
     switch (v.source) {
       case 'json':
-        groups['Upstream JSON'].push(v); break
+        groups['Upstream JSON'].push(v)
+        break
       case 'var':
-        groups['Workflow Vars'].push(v); break
+        groups['Workflow Vars'].push(v)
+        break
       case 'trigger':
       case 'input':
-        groups['Trigger / Input'].push(v); break
+        groups['Trigger / Input'].push(v)
+        break
       case 'secrets':
-        groups.Secrets.push(v); break
+        groups.Secrets.push(v)
+        break
       case 'env':
-        groups.Env.push(v); break
+        groups.Env.push(v)
+        break
       case 'previous':
-        groups['Previous Node'].push(v); break
+        groups['Previous Node'].push(v)
+        break
       case 'upstream':
-        groups.Upstream.push(v); break
+        groups.Upstream.push(v)
+        break
       case 'loop':
-        groups.Loop.push(v); break
+        groups.Loop.push(v)
+        break
       case 'workflow':
-        groups.Workflow.push(v); break
+        groups.Workflow.push(v)
+        break
       default:
         groups.System.push(v)
     }
@@ -671,11 +703,12 @@ export function highlightVariables(
   text: string,
   variables: VariableRef[],
 ): (string | { ref: string; valid: boolean; masked: boolean })[] {
-  const parts: (string | { ref: string; valid: boolean; masked: boolean })[] = []
+  const parts: (string | { ref: string; valid: boolean; masked: boolean })[] =
+    []
   let lastIdx = 0
   const matches = text.matchAll(VARIABLE_PATTERN)
   for (const match of matches) {
-    if (match.index! > lastIdx) {
+    if (match.index > lastIdx) {
       parts.push(text.slice(lastIdx, match.index))
     }
     const ref = match[1]
@@ -683,7 +716,7 @@ export function highlightVariables(
     const valid = Boolean(varDef)
     const masked = Boolean(varDef?.masked)
     parts.push({ ref, valid, masked })
-    lastIdx = match.index! + match[0].length
+    lastIdx = match.index + match[0].length
   }
   if (lastIdx < text.length) {
     parts.push(text.slice(lastIdx))

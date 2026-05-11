@@ -21,7 +21,12 @@ import {
 import { Link } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
 import { Badge } from '#/components/ui/badge'
-import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from '#/components/ui/tooltip'
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '#/components/ui/tooltip'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -98,7 +103,7 @@ export function WorkflowDetailPage({ workflow }: WorkflowDetailPageProps) {
             key={editingNodeId}
             open={true}
             nodeId={editingNode.id}
-            data={editingNode.data as WorkflowNodeData}
+            data={editingNode.data}
             position={editingNode.position}
             nodes={editor.nodes}
             edges={editor.edges}

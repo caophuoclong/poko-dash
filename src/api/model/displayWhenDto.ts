@@ -5,11 +5,11 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { DisplayWhenDtoValue } from './displayWhenDtoValue';
+import type { DisplayWhenDtoValue } from './displayWhenDtoValue'
 
 export interface DisplayWhenDto {
   /** Config key to check */
-  key: string;
+  key: string
   /** Expected value */
-  value: DisplayWhenDtoValue;
+  value: DisplayWhenDtoValue
 }

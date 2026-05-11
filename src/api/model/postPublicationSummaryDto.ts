@@ -5,40 +5,40 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { PostPublicationSummaryDtoErrorCode } from './postPublicationSummaryDtoErrorCode';
-import type { PostPublicationSummaryDtoErrorMessage } from './postPublicationSummaryDtoErrorMessage';
-import type { PostPublicationSummaryDtoExternalPostId } from './postPublicationSummaryDtoExternalPostId';
-import type { PostPublicationSummaryDtoExternalUrl } from './postPublicationSummaryDtoExternalUrl';
-import type { PostPublicationSummaryDtoPublishedAt } from './postPublicationSummaryDtoPublishedAt';
-import type { PostPublicationSummaryDtoPublishStatus } from './postPublicationSummaryDtoPublishStatus';
-import type { PostPublicationSummaryDtoScheduledFor } from './postPublicationSummaryDtoScheduledFor';
-import type { PostPublicationSummaryDtoTargetId } from './postPublicationSummaryDtoTargetId';
-import type { PostPublicationSummaryDtoTargetName } from './postPublicationSummaryDtoTargetName';
-import type { PostPublicationSummaryDtoTargetType } from './postPublicationSummaryDtoTargetType';
+import type { PostPublicationSummaryDtoErrorCode } from './postPublicationSummaryDtoErrorCode'
+import type { PostPublicationSummaryDtoErrorMessage } from './postPublicationSummaryDtoErrorMessage'
+import type { PostPublicationSummaryDtoExternalPostId } from './postPublicationSummaryDtoExternalPostId'
+import type { PostPublicationSummaryDtoExternalUrl } from './postPublicationSummaryDtoExternalUrl'
+import type { PostPublicationSummaryDtoPublishedAt } from './postPublicationSummaryDtoPublishedAt'
+import type { PostPublicationSummaryDtoPublishStatus } from './postPublicationSummaryDtoPublishStatus'
+import type { PostPublicationSummaryDtoScheduledFor } from './postPublicationSummaryDtoScheduledFor'
+import type { PostPublicationSummaryDtoTargetId } from './postPublicationSummaryDtoTargetId'
+import type { PostPublicationSummaryDtoTargetName } from './postPublicationSummaryDtoTargetName'
+import type { PostPublicationSummaryDtoTargetType } from './postPublicationSummaryDtoTargetType'
 
 export interface PostPublicationSummaryDto {
-  publicationId: string;
-  postId: string;
-  platform: string;
+  publicationId: string
+  postId: string
+  platform: string
   /** @nullable */
-  targetType?: PostPublicationSummaryDtoTargetType;
+  targetType?: PostPublicationSummaryDtoTargetType
   /** @nullable */
-  targetId?: PostPublicationSummaryDtoTargetId;
+  targetId?: PostPublicationSummaryDtoTargetId
   /** @nullable */
-  targetName?: PostPublicationSummaryDtoTargetName;
-  publishStatus: PostPublicationSummaryDtoPublishStatus;
+  targetName?: PostPublicationSummaryDtoTargetName
+  publishStatus: PostPublicationSummaryDtoPublishStatus
   /** @nullable */
-  externalPostId?: PostPublicationSummaryDtoExternalPostId;
+  externalPostId?: PostPublicationSummaryDtoExternalPostId
   /** @nullable */
-  externalUrl?: PostPublicationSummaryDtoExternalUrl;
+  externalUrl?: PostPublicationSummaryDtoExternalUrl
   /** @nullable */
-  scheduledFor?: PostPublicationSummaryDtoScheduledFor;
+  scheduledFor?: PostPublicationSummaryDtoScheduledFor
   /** @nullable */
-  publishedAt?: PostPublicationSummaryDtoPublishedAt;
+  publishedAt?: PostPublicationSummaryDtoPublishedAt
   /** @nullable */
-  errorCode?: PostPublicationSummaryDtoErrorCode;
+  errorCode?: PostPublicationSummaryDtoErrorCode
   /** @nullable */
-  errorMessage?: PostPublicationSummaryDtoErrorMessage;
-  createdAt: string;
-  updatedAt: string;
+  errorMessage?: PostPublicationSummaryDtoErrorMessage
+  createdAt: string
+  updatedAt: string
 }

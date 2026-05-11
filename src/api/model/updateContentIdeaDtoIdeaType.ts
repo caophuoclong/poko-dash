@@ -9,8 +9,8 @@
 /**
  * Type of content idea
  */
-export type UpdateContentIdeaDtoIdeaType = typeof UpdateContentIdeaDtoIdeaType[keyof typeof UpdateContentIdeaDtoIdeaType];
-
+export type UpdateContentIdeaDtoIdeaType =
+  (typeof UpdateContentIdeaDtoIdeaType)[keyof typeof UpdateContentIdeaDtoIdeaType]
 
 export const UpdateContentIdeaDtoIdeaType = {
   review: 'review',
@@ -19,4 +19,4 @@ export const UpdateContentIdeaDtoIdeaType = {
   tutorial: 'tutorial',
   deal: 'deal',
   trending: 'trending',
-} as const;
+} as const

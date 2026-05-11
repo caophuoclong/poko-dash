@@ -67,10 +67,10 @@ export function useCreateAffiliateLink() {
   return {
     ...rest,
     mutate: (variables: any, options?: any) =>
-      origMutate({ data: variables } as any, options),
+      origMutate({ data: variables }, options),
     mutateAsync: (variables: any, options?: any) =>
-      origMutateAsync({ data: variables } as any, options),
-  } as UseMutationResult<any, any, any>
+      origMutateAsync({ data: variables }, options),
+  }
 }
 
 export function useUpdateAffiliateLink() {
@@ -89,15 +89,15 @@ export function useUpdateAffiliateLink() {
     ...rest,
     mutate: (variables: any, options?: any) =>
       origMutate(
-        { linkId: variables.linkId, data: variables.data } as any,
+        { linkId: variables.linkId, data: variables.data },
         options,
       ),
     mutateAsync: (variables: any, options?: any) =>
       origMutateAsync(
-        { linkId: variables.linkId, data: variables.data } as any,
+        { linkId: variables.linkId, data: variables.data },
         options,
       ),
-  } as UseMutationResult<any, any, any>
+  }
 }
 
 export function useManualImport() {

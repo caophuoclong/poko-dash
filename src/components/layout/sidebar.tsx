@@ -128,10 +128,7 @@ export default function Sidebar() {
           tooltip={item.label}
           className={itemClasses}
         >
-          <Link
-            to={item.to!}
-            activeOptions={{ exact: item.to === '/dash' }}
-          >
+          <Link to={item.to} activeOptions={{ exact: item.to === '/dash' }}>
             {item.icon}
             <span>{item.label}</span>
           </Link>
@@ -217,7 +214,7 @@ export default function Sidebar() {
                     tooltip={item.label}
                     className={itemClasses}
                   >
-                    <Link to={item.to!}>
+                    <Link to={item.to}>
                       {item.icon}
                       <span>{item.label}</span>
                     </Link>

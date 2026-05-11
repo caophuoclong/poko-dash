@@ -7,9 +7,13 @@ interface KeyValuePair {
   value: string
 }
 
-export function KeyValueFieldEditor({ schema, value, onChange }: PropertyEditorProps) {
-  const pairs: KeyValuePair[] = Array.isArray(value) 
-    ? value 
+export function KeyValueFieldEditor({
+  schema,
+  value,
+  onChange,
+}: PropertyEditorProps) {
+  const pairs: KeyValuePair[] = Array.isArray(value)
+    ? value
     : value && typeof value === 'object'
       ? Object.entries(value).map(([k, v]) => ({ key: k, value: String(v) }))
       : []
@@ -19,7 +23,10 @@ export function KeyValueFieldEditor({ schema, value, onChange }: PropertyEditorP
   }
 
   const handleRemove = (index: number) => {
-    onChange(schema.key, pairs.filter((_, i) => i !== index))
+    onChange(
+      schema.key,
+      pairs.filter((_, i) => i !== index),
+    )
   }
 
   const handleChange = (index: number, field: 'key' | 'value', val: string) => {
@@ -65,7 +72,9 @@ export function KeyValueFieldEditor({ schema, value, onChange }: PropertyEditorP
         </button>
       </div>
       {schema.helperText && (
-        <p className="text-[10px] text-muted-text/70 mt-1">{schema.helperText}</p>
+        <p className="text-[10px] text-muted-text/70 mt-1">
+          {schema.helperText}
+        </p>
       )}
     </div>
   )

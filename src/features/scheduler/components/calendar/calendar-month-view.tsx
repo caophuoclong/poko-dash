@@ -61,7 +61,7 @@ export default function CalendarMonthView({
     schedulerControllerList()
       .then((res) => {
         if (!cancelled) {
-          setFetchedEvents(transformScheduledJobsToEvents(res.data as any[]))
+          setFetchedEvents(transformScheduledJobsToEvents(res.data))
         }
       })
       .catch((err) => {

@@ -196,14 +196,14 @@ Phase 4 - Summary & Decision
 
 ### &#127991;&#65039; Severity Labels
 
-| Label | Meaning |
-|-------|---------|
-| &#128308; `blocking` | Must be fixed before merge |
-| &#128992; `important` | Should be fixed; may block depending on context |
-| &#128993; `nit` | Minor style or preference issue |
-| &#128309; `suggestion` | Optional improvement worth considering |
-| &#128218; `learning` | Educational note for the author |
-| &#127775; `praise` | Explicitly highlight great work |
+| Label                  | Meaning                                         |
+| ---------------------- | ----------------------------------------------- |
+| &#128308; `blocking`   | Must be fixed before merge                      |
+| &#128992; `important`  | Should be fixed; may block depending on context |
+| &#128993; `nit`        | Minor style or preference issue                 |
+| &#128309; `suggestion` | Optional improvement worth considering          |
+| &#128218; `learning`   | Educational note for the author                 |
+| &#127775; `praise`     | Explicitly highlight great work                 |
 
 ---
 
@@ -286,19 +286,20 @@ Or create a custom slash command in `.claude/commands/`:
 
 ```markdown
 <!-- .claude/commands/review.md -->
+
 Use code-review-skill to perform a thorough review of the changes in this PR.
 Focus on: security, performance, and maintainability.
 ```
 
 **Example prompts:**
 
-| Prompt | What happens |
-|--------|-------------|
-| `Review this React component` | Loads `react.md` - checks hooks, Server Components, Suspense patterns |
-| `Review this Java PR` | Loads `java.md` - checks virtual threads, JPA, Spring Boot 3 patterns |
-| `Security review of this Go service` | Loads `go.md` + `security-review-guide.md` |
-| `Architecture review` | Loads `architecture-review-guide.md` - SOLID, anti-patterns, coupling |
-| `Performance review` | Loads `performance-review-guide.md` - Web Vitals, N+1, complexity |
+| Prompt                               | What happens                                                          |
+| ------------------------------------ | --------------------------------------------------------------------- |
+| `Review this React component`        | Loads `react.md` - checks hooks, Server Components, Suspense patterns |
+| `Review this Java PR`                | Loads `java.md` - checks virtual threads, JPA, Spring Boot 3 patterns |
+| `Security review of this Go service` | Loads `go.md` + `security-review-guide.md`                            |
+| `Architecture review`                | Loads `architecture-review-guide.md` - SOLID, anti-patterns, coupling |
+| `Performance review`                 | Loads `performance-review-guide.md` - Web Vitals, N+1, complexity     |
 
 ---
 
@@ -363,6 +364,7 @@ Focus on: security, performance, and maintainability.
 Contributions are welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 **Ideas:**
+
 - New language guides (Swift, Ruby, PHP, Scala...)
 - Framework-specific guides (Laravel, Spring WebFlux, FastAPI...)
 - Additional checklists and templates
@@ -401,28 +403,28 @@ MIT &copy; [awesome-skills](https://github.com/awesome-skills)
 
 ### &#127760; 支持的语言与框架
 
-| 分类 | 技术栈 | 指南文件 | 行数 |
-|------|--------|----------|------|
-| **前端** | &#9883;&#65039; React 19 / Next.js / TanStack Query v5 | `reference/react.md` | ~870 |
-| | &#128154; Vue 3.5 Composition API | `reference/vue.md` | ~920 |
-| | &#128302; Angular 17+ / Signals / Zoneless | `reference/angular.md` | ~420 |
-| | &#128293; Svelte 5 / SvelteKit | `reference/svelte.md` | ~1,060 |
-| | &#127912; CSS / Less / Sass | `reference/css-less-sass.md` | ~660 |
-| | &#128311; TypeScript | `reference/typescript.md` | ~540 |
-| **后端** | &#9749; Java 17/21 + Spring Boot 3 | `reference/java.md` | ~800 |
-| | &#128230; NestJS | `reference/nestjs.md` | ~590 |
-| | &#128013; Django / DRF | `reference/django.md` | ~1,030 |
-| | &#128013; Python | `reference/python.md` | ~1,070 |
-| | &#128057; Go | `reference/go.md` | ~990 |
-| | &#129408; Rust | `reference/rust.md` | ~840 |
-| | &#128187; C# / .NET 8 | `reference/csharp.md` | ~520 |
-| **移动 / 系统** | &#128241; Kotlin / Android | `reference/kotlin.md` | ~1,020 |
-| | &#9881;&#65039; C | `reference/c.md` | ~210 |
-| | &#128297; C++ | `reference/cpp.md` | ~300 |
-| | &#128421;&#65039; Qt 框架 | `reference/qt.md` | ~190 |
-| **架构** | &#127963;&#65039; 架构设计审查 | `reference/architecture-review-guide.md` | ~470 |
-| | &#9889; 性能审查 | `reference/performance-review-guide.md` | ~850 |
-| | &#128269; 通用质量反模式 | `reference/code-quality-universal.md` | ~320 |
+| 分类            | 技术栈                                                 | 指南文件                                 | 行数   |
+| --------------- | ------------------------------------------------------ | ---------------------------------------- | ------ |
+| **前端**        | &#9883;&#65039; React 19 / Next.js / TanStack Query v5 | `reference/react.md`                     | ~870   |
+|                 | &#128154; Vue 3.5 Composition API                      | `reference/vue.md`                       | ~920   |
+|                 | &#128302; Angular 17+ / Signals / Zoneless             | `reference/angular.md`                   | ~420   |
+|                 | &#128293; Svelte 5 / SvelteKit                         | `reference/svelte.md`                    | ~1,060 |
+|                 | &#127912; CSS / Less / Sass                            | `reference/css-less-sass.md`             | ~660   |
+|                 | &#128311; TypeScript                                   | `reference/typescript.md`                | ~540   |
+| **后端**        | &#9749; Java 17/21 + Spring Boot 3                     | `reference/java.md`                      | ~800   |
+|                 | &#128230; NestJS                                       | `reference/nestjs.md`                    | ~590   |
+|                 | &#128013; Django / DRF                                 | `reference/django.md`                    | ~1,030 |
+|                 | &#128013; Python                                       | `reference/python.md`                    | ~1,070 |
+|                 | &#128057; Go                                           | `reference/go.md`                        | ~990   |
+|                 | &#129408; Rust                                         | `reference/rust.md`                      | ~840   |
+|                 | &#128187; C# / .NET 8                                  | `reference/csharp.md`                    | ~520   |
+| **移动 / 系统** | &#128241; Kotlin / Android                             | `reference/kotlin.md`                    | ~1,020 |
+|                 | &#9881;&#65039; C                                      | `reference/c.md`                         | ~210   |
+|                 | &#128297; C++                                          | `reference/cpp.md`                       | ~300   |
+|                 | &#128421;&#65039; Qt 框架                              | `reference/qt.md`                        | ~190   |
+| **架构**        | &#127963;&#65039; 架构设计审查                         | `reference/architecture-review-guide.md` | ~470   |
+|                 | &#9889; 性能审查                                       | `reference/performance-review-guide.md`  | ~850   |
+|                 | &#128269; 通用质量反模式                               | `reference/code-quality-universal.md`    | ~320   |
 
 ---
 
@@ -449,14 +451,14 @@ MIT &copy; [awesome-skills](https://github.com/awesome-skills)
 
 ### &#127991;&#65039; 严重性标记说明
 
-| 标记 | 含义 |
-|------|------|
-| &#128308; `blocking` | 合并前必须修复 |
-| &#128992; `important` | 应当修复，视情况可能阻塞合并 |
-| &#128993; `nit` | 风格或偏好上的小问题 |
-| &#128309; `suggestion` | 值得考虑的可选优化 |
-| &#128218; `learning` | 给作者的教育性说明 |
-| &#127775; `praise` | 明确表扬优秀代码 |
+| 标记                   | 含义                         |
+| ---------------------- | ---------------------------- |
+| &#128308; `blocking`   | 合并前必须修复               |
+| &#128992; `important`  | 应当修复，视情况可能阻塞合并 |
+| &#128993; `nit`        | 风格或偏好上的小问题         |
+| &#128309; `suggestion` | 值得考虑的可选优化           |
+| &#128218; `learning`   | 给作者的教育性说明           |
+| &#127775; `praise`     | 明确表扬优秀代码             |
 
 ---
 
@@ -539,19 +541,20 @@ Use code-review-skill to review this PR
 
 ```markdown
 <!-- .claude/commands/review.md -->
+
 使用 code-review-skill 对这次 PR 的变更进行全面审查。
 重点关注：安全性、性能和可维护性。
 ```
 
 **示例提示词：**
 
-| 提示词 | 效果 |
-|--------|------|
-| `审查这个 React 组件` | 加载 `react.md`，检查 Hooks、Server Components、Suspense |
-| `审查这个 Java PR` | 加载 `java.md`，检查虚拟线程、JPA、Spring Boot 3 |
-| `对这个 Go 服务进行安全审查` | 加载 `go.md` + `security-review-guide.md` |
-| `架构审查` | 加载 `architecture-review-guide.md`，检查 SOLID 与反模式 |
-| `性能审查` | 加载 `performance-review-guide.md`，分析 Web Vitals、N+1 等 |
+| 提示词                       | 效果                                                        |
+| ---------------------------- | ----------------------------------------------------------- |
+| `审查这个 React 组件`        | 加载 `react.md`，检查 Hooks、Server Components、Suspense    |
+| `审查这个 Java PR`           | 加载 `java.md`，检查虚拟线程、JPA、Spring Boot 3            |
+| `对这个 Go 服务进行安全审查` | 加载 `go.md` + `security-review-guide.md`                   |
+| `架构审查`                   | 加载 `architecture-review-guide.md`，检查 SOLID 与反模式    |
+| `性能审查`                   | 加载 `performance-review-guide.md`，分析 Web Vitals、N+1 等 |
 
 ---
 
@@ -616,6 +619,7 @@ Use code-review-skill to review this PR
 欢迎贡献！请查阅 [CONTRIBUTING.md](./CONTRIBUTING.md) 了解规范。
 
 **可贡献方向：**
+
 - 新增语言指南（Swift、Ruby、PHP、Scala...）
 - 框架专属指南（Laravel、Spring WebFlux、FastAPI...）
 - 补充检查清单和审查模板

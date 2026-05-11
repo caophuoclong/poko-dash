@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import { useWorkflows, useCreateWorkflow, useDeleteWorkflow } from './use-workflows'
+import {
+  useWorkflows,
+  useCreateWorkflow,
+  useDeleteWorkflow,
+} from './use-workflows'
 
 export function useWorkflowIndexPage() {
   const navigate = useNavigate()

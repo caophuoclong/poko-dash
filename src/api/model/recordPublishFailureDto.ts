@@ -5,13 +5,13 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { RecordPublishFailureDtoResponsePayload } from './recordPublishFailureDtoResponsePayload';
+import type { RecordPublishFailureDtoResponsePayload } from './recordPublishFailureDtoResponsePayload'
 
 export interface RecordPublishFailureDto {
   /** Platform-specific error code */
-  errorCode?: string;
+  errorCode?: string
   /** Human-readable error message from the platform */
-  errorMessage: string;
+  errorMessage: string
   /** Full error response payload from the platform API */
-  responsePayload?: RecordPublishFailureDtoResponsePayload;
+  responsePayload?: RecordPublishFailureDtoResponsePayload
 }

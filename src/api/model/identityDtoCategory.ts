@@ -9,8 +9,8 @@
 /**
  * UI grouping category
  */
-export type IdentityDtoCategory = typeof IdentityDtoCategory[keyof typeof IdentityDtoCategory];
-
+export type IdentityDtoCategory =
+  (typeof IdentityDtoCategory)[keyof typeof IdentityDtoCategory]
 
 export const IdentityDtoCategory = {
   trigger: 'trigger',
@@ -26,4 +26,4 @@ export const IdentityDtoCategory = {
   publish: 'publish',
   affiliate: 'affiliate',
   product: 'product',
-} as const;
+} as const

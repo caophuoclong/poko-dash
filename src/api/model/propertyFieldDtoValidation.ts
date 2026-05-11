@@ -9,4 +9,4 @@
 /**
  * JSON Schema fragment for save-time validation
  */
-export type PropertyFieldDtoValidation = { [key: string]: unknown };
+export type PropertyFieldDtoValidation = { [key: string]: unknown }

@@ -9,4 +9,4 @@
 /**
  * Default value
  */
-export type PropertyFieldDtoDefault = { [key: string]: unknown };
+export type PropertyFieldDtoDefault = { [key: string]: unknown }

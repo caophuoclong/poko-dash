@@ -7,5 +7,5 @@
  */
 
 export interface RecordUsageResponseDto {
-  message: string;
+  message: string
 }

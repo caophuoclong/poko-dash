@@ -6,11 +6,11 @@
  * OpenAPI spec version: 1.0
  */
 
-export type SummaryCardDtoTrend = typeof SummaryCardDtoTrend[keyof typeof SummaryCardDtoTrend];
-
+export type SummaryCardDtoTrend =
+  (typeof SummaryCardDtoTrend)[keyof typeof SummaryCardDtoTrend]
 
 export const SummaryCardDtoTrend = {
   up: 'up',
   down: 'down',
   flat: 'flat',
-} as const;
+} as const

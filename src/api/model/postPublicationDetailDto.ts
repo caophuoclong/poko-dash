@@ -5,48 +5,48 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { PostPublicationDetailDtoErrorCode } from './postPublicationDetailDtoErrorCode';
-import type { PostPublicationDetailDtoErrorMessage } from './postPublicationDetailDtoErrorMessage';
-import type { PostPublicationDetailDtoExternalPostId } from './postPublicationDetailDtoExternalPostId';
-import type { PostPublicationDetailDtoExternalUrl } from './postPublicationDetailDtoExternalUrl';
-import type { PostPublicationDetailDtoPublishedAt } from './postPublicationDetailDtoPublishedAt';
-import type { PostPublicationDetailDtoPublishStatus } from './postPublicationDetailDtoPublishStatus';
-import type { PostPublicationDetailDtoRequestPayload } from './postPublicationDetailDtoRequestPayload';
-import type { PostPublicationDetailDtoResponsePayload } from './postPublicationDetailDtoResponsePayload';
-import type { PostPublicationDetailDtoScheduledFor } from './postPublicationDetailDtoScheduledFor';
-import type { PostPublicationDetailDtoTargetId } from './postPublicationDetailDtoTargetId';
-import type { PostPublicationDetailDtoTargetName } from './postPublicationDetailDtoTargetName';
-import type { PostPublicationDetailDtoTargetType } from './postPublicationDetailDtoTargetType';
+import type { PostPublicationDetailDtoErrorCode } from './postPublicationDetailDtoErrorCode'
+import type { PostPublicationDetailDtoErrorMessage } from './postPublicationDetailDtoErrorMessage'
+import type { PostPublicationDetailDtoExternalPostId } from './postPublicationDetailDtoExternalPostId'
+import type { PostPublicationDetailDtoExternalUrl } from './postPublicationDetailDtoExternalUrl'
+import type { PostPublicationDetailDtoPublishedAt } from './postPublicationDetailDtoPublishedAt'
+import type { PostPublicationDetailDtoPublishStatus } from './postPublicationDetailDtoPublishStatus'
+import type { PostPublicationDetailDtoRequestPayload } from './postPublicationDetailDtoRequestPayload'
+import type { PostPublicationDetailDtoResponsePayload } from './postPublicationDetailDtoResponsePayload'
+import type { PostPublicationDetailDtoScheduledFor } from './postPublicationDetailDtoScheduledFor'
+import type { PostPublicationDetailDtoTargetId } from './postPublicationDetailDtoTargetId'
+import type { PostPublicationDetailDtoTargetName } from './postPublicationDetailDtoTargetName'
+import type { PostPublicationDetailDtoTargetType } from './postPublicationDetailDtoTargetType'
 
 export interface PostPublicationDetailDto {
-  publicationId: string;
-  postId: string;
-  platform: string;
+  publicationId: string
+  postId: string
+  platform: string
   /** @nullable */
-  targetType?: PostPublicationDetailDtoTargetType;
+  targetType?: PostPublicationDetailDtoTargetType
   /** @nullable */
-  targetId?: PostPublicationDetailDtoTargetId;
+  targetId?: PostPublicationDetailDtoTargetId
   /** @nullable */
-  targetName?: PostPublicationDetailDtoTargetName;
-  publishStatus: PostPublicationDetailDtoPublishStatus;
+  targetName?: PostPublicationDetailDtoTargetName
+  publishStatus: PostPublicationDetailDtoPublishStatus
   /** @nullable */
-  externalPostId?: PostPublicationDetailDtoExternalPostId;
+  externalPostId?: PostPublicationDetailDtoExternalPostId
   /** @nullable */
-  externalUrl?: PostPublicationDetailDtoExternalUrl;
+  externalUrl?: PostPublicationDetailDtoExternalUrl
   /** @nullable */
-  scheduledFor?: PostPublicationDetailDtoScheduledFor;
+  scheduledFor?: PostPublicationDetailDtoScheduledFor
   /** @nullable */
-  publishedAt?: PostPublicationDetailDtoPublishedAt;
+  publishedAt?: PostPublicationDetailDtoPublishedAt
   /** @nullable */
-  errorCode?: PostPublicationDetailDtoErrorCode;
+  errorCode?: PostPublicationDetailDtoErrorCode
   /** @nullable */
-  errorMessage?: PostPublicationDetailDtoErrorMessage;
-  createdAt: string;
-  updatedAt: string;
+  errorMessage?: PostPublicationDetailDtoErrorMessage
+  createdAt: string
+  updatedAt: string
   /** @nullable */
-  requestPayload: PostPublicationDetailDtoRequestPayload;
+  requestPayload: PostPublicationDetailDtoRequestPayload
   /** @nullable */
-  responsePayload: PostPublicationDetailDtoResponsePayload;
+  responsePayload: PostPublicationDetailDtoResponsePayload
   /** @nullable */
-  externalMediaIds: string[] | null;
+  externalMediaIds: string[] | null
 }

@@ -14,7 +14,7 @@ export function validateExecutionPath(
     const node = nodeMap.get(nodeId)
     if (!node) continue
 
-    const data = node.data as WorkflowNodeData
+    const data = node.data
     const typeId = data.nodeTypeId
     if (!typeId) {
       blocks.push({
@@ -47,7 +47,7 @@ export function validateExecutionPath(
       continue
     }
 
-    const config = (data.config ?? {}) as Record<string, unknown>
+    const config = (data.config ?? {})
     const errors = def.validate(config)
     const blockingErrors = errors.filter((e) => e.severity === 'error')
     if (blockingErrors.length > 0) {
@@ -70,7 +70,7 @@ export function canExecuteSingleNode(
   const node = nodes.find((n) => n.id === nodeId)
   if (!node) return { allowed: false, reason: 'Node not found' }
 
-  const data = node.data as WorkflowNodeData
+  const data = node.data
   const typeId = data.nodeTypeId
   if (!typeId) return { allowed: false, reason: 'Node type not configured' }
 

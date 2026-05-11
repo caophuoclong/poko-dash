@@ -25,11 +25,11 @@ import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
 import {
   canExecuteSingleNode,
-  useExecutionStore,
-  type ExecutionMode,
+  useExecutionStore
+  
 } from '../stores/execution-store/useExecutionStore'
+import type {ExecutionMode} from '../stores/execution-store/useExecutionStore';
 import { useExecutionControllerExecuteWorkflow } from '#/api/client'
-
 
 interface ExecutionDockProps {
   selectedNodeId: string | null
@@ -100,7 +100,8 @@ export function ExecutionDock({
         workflowId,
         data: {
           mode,
-          targetNodeId: mode !== 'full' ? (selectedNodeId ?? undefined) : undefined,
+          targetNodeId:
+            mode !== 'full' ? (selectedNodeId ?? undefined) : undefined,
           triggeredBy: 'manual' as const,
         },
       },

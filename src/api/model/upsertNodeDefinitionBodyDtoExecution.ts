@@ -9,4 +9,4 @@
 /**
  * Execution config (discriminated by mode)
  */
-export type UpsertNodeDefinitionBodyDtoExecution = { [key: string]: unknown };
+export type UpsertNodeDefinitionBodyDtoExecution = { [key: string]: unknown }

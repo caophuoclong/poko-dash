@@ -58,7 +58,11 @@ export function deriveValidator(
         }
       }
 
-      if (field.min !== undefined && typeof value === 'number' && value < field.min) {
+      if (
+        field.min !== undefined &&
+        typeof value === 'number' &&
+        value < field.min
+      ) {
         errors.push({
           propertyKey: field.key,
           message: `${field.label} must be at least ${field.min}`,
@@ -67,7 +71,11 @@ export function deriveValidator(
         continue
       }
 
-      if (field.max !== undefined && typeof value === 'number' && value > field.max) {
+      if (
+        field.max !== undefined &&
+        typeof value === 'number' &&
+        value > field.max
+      ) {
         errors.push({
           propertyKey: field.key,
           message: `${field.label} must be at most ${field.max}`,
@@ -100,15 +108,21 @@ export function resolveOutputs(def: NodeDefinitionRecord): PortDefinition[] {
   return def.io?.outputs ?? def.outputs ?? []
 }
 
-export function resolvePropertySchema(def: NodeDefinitionRecord): PropertySchema[] {
+export function resolvePropertySchema(
+  def: NodeDefinitionRecord,
+): PropertySchema[] {
   return def.config?.propertySchema ?? def.propertySchema ?? []
 }
 
-export function resolveDefaultProps(def: NodeDefinitionRecord): Record<string, unknown> {
+export function resolveDefaultProps(
+  def: NodeDefinitionRecord,
+): Record<string, unknown> {
   return def.config?.defaultProps ?? def.defaultProps ?? {}
 }
 
-export function resolveSummaryFields(def: NodeDefinitionRecord): SummaryFieldConfig[] {
+export function resolveSummaryFields(
+  def: NodeDefinitionRecord,
+): SummaryFieldConfig[] {
   return def.ui?.summaryFields ?? def.summaryFields ?? []
 }
 

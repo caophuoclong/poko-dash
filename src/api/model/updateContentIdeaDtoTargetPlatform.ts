@@ -9,8 +9,8 @@
 /**
  * Target platform
  */
-export type UpdateContentIdeaDtoTargetPlatform = typeof UpdateContentIdeaDtoTargetPlatform[keyof typeof UpdateContentIdeaDtoTargetPlatform];
-
+export type UpdateContentIdeaDtoTargetPlatform =
+  (typeof UpdateContentIdeaDtoTargetPlatform)[keyof typeof UpdateContentIdeaDtoTargetPlatform]
 
 export const UpdateContentIdeaDtoTargetPlatform = {
   facebook: 'facebook',
@@ -18,4 +18,4 @@ export const UpdateContentIdeaDtoTargetPlatform = {
   instagram: 'instagram',
   youtube: 'youtube',
   blog: 'blog',
-} as const;
+} as const

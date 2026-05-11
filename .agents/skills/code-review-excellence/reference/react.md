@@ -23,16 +23,16 @@ React 审查重点：Hooks 规则、性能优化的适度性、组件设计、�
 // ❌ 条件调用 Hooks — 违反 Hooks 规则
 function BadComponent({ isLoggedIn }) {
   if (isLoggedIn) {
-    const [user, setUser] = useState(null);  // Error!
+    const [user, setUser] = useState(null) // Error!
   }
-  return <div>...</div>;
+  return <div>...</div>
 }
 
 // ✅ Hooks 必须在组件顶层调用
 function GoodComponent({ isLoggedIn }) {
-  const [user, setUser] = useState(null);
-  if (!isLoggedIn) return <LoginPrompt />;
-  return <div>{user?.name}</div>;
+  const [user, setUser] = useState(null)
+  if (!isLoggedIn) return <LoginPrompt />
+  return <div>{user?.name}</div>
 }
 ```
 
@@ -43,59 +43,58 @@ function GoodComponent({ isLoggedIn }) {
 ```tsx
 // ❌ 依赖数组缺失或不完整
 function BadEffect({ userId }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null)
   useEffect(() => {
-    fetchUser(userId).then(setUser);
-  }, []);  // 缺少 userId 依赖！
+    fetchUser(userId).then(setUser)
+  }, []) // 缺少 userId 依赖！
 }
 
 // ✅ 完整的依赖数组
 function GoodEffect({ userId }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null)
   useEffect(() => {
-    let cancelled = false;
-    fetchUser(userId).then(data => {
-      if (!cancelled) setUser(data);
-    });
-    return () => { cancelled = true; };  // 清理函数
-  }, [userId]);
+    let cancelled = false
+    fetchUser(userId).then((data) => {
+      if (!cancelled) setUser(data)
+    })
+    return () => {
+      cancelled = true
+    } // 清理函数
+  }, [userId])
 }
 
 // ❌ useEffect 用于派生状态（反模式）
 function BadDerived({ items }) {
-  const [filteredItems, setFilteredItems] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([])
   useEffect(() => {
-    setFilteredItems(items.filter(i => i.active));
-  }, [items]);  // 不必要的 effect + 额外渲染
-  return <List items={filteredItems} />;
+    setFilteredItems(items.filter((i) => i.active))
+  }, [items]) // 不必要的 effect + 额外渲染
+  return <List items={filteredItems} />
 }
 
 // ✅ 直接在渲染时计算，或用 useMemo
 function GoodDerived({ items }) {
-  const filteredItems = useMemo(
-    () => items.filter(i => i.active),
-    [items]
-  );
-  return <List items={filteredItems} />;
+  const filteredItems = useMemo(() => items.filter((i) => i.active), [items])
+  return <List items={filteredItems} />
 }
 
 // ❌ useEffect 用于事件响应
 function BadEventEffect() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState('')
   useEffect(() => {
     if (query) {
-      analytics.track('search', { query });  // 应该在事件处理器中
+      analytics.track('search', { query }) // 应该在事件处理器中
     }
-  }, [query]);
+  }, [query])
 }
 
 // ✅ 在事件处理器中执行副作用
 function GoodEvent() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState('')
   const handleSearch = (q: string) => {
-    setQuery(q);
-    analytics.track('search', { query: q });
-  };
+    setQuery(q)
+    analytics.track('search', { query: q })
+  }
 }
 ```
 
@@ -106,37 +105,37 @@ function GoodEvent() {
 ```tsx
 // ❌ 过度优化 — 常量不需要 useMemo
 function OverOptimized() {
-  const config = useMemo(() => ({ timeout: 5000 }), []);  // 无意义
+  const config = useMemo(() => ({ timeout: 5000 }), []) // 无意义
   const handleClick = useCallback(() => {
-    console.log('clicked');
-  }, []);  // 如果不传给 memo 组件，无意义
+    console.log('clicked')
+  }, []) // 如果不传给 memo 组件，无意义
 }
 
 // ✅ 只在需要时优化
 function ProperlyOptimized() {
-  const config = { timeout: 5000 };  // 简单对象直接定义
-  const handleClick = () => console.log('clicked');
+  const config = { timeout: 5000 } // 简单对象直接定义
+  const handleClick = () => console.log('clicked')
 }
 
 // ❌ useCallback 依赖总是变化
 function BadCallback({ data }) {
   // data 每次渲染都是新对象，useCallback 无效
   const process = useCallback(() => {
-    return data.map(transform);
-  }, [data]);
+    return data.map(transform)
+  }, [data])
 }
 
 // ✅ useMemo + useCallback 配合 React.memo 使用
 const MemoizedChild = React.memo(function Child({ onClick, items }) {
-  return <div onClick={onClick}>{items.length}</div>;
-});
+  return <div onClick={onClick}>{items.length}</div>
+})
 
 function Parent({ rawItems }) {
-  const items = useMemo(() => processItems(rawItems), [rawItems]);
+  const items = useMemo(() => processItems(rawItems), [rawItems])
   const handleClick = useCallback(() => {
-    console.log(items.length);
-  }, [items]);
-  return <MemoizedChild onClick={handleClick} items={items} />;
+    console.log(items.length)
+  }, [items])
+  return <MemoizedChild onClick={handleClick} items={items} />
 }
 ```
 
@@ -147,35 +146,36 @@ function Parent({ rawItems }) {
 ```tsx
 // ❌ 在组件内定义组件 — 每次渲染都创建新组件
 function BadParent() {
-  function ChildComponent() {  // 每次渲染都是新函数！
-    return <div>child</div>;
+  function ChildComponent() {
+    // 每次渲染都是新函数！
+    return <div>child</div>
   }
-  return <ChildComponent />;
+  return <ChildComponent />
 }
 
 // ✅ 组件定义在外部
 function ChildComponent() {
-  return <div>child</div>;
+  return <div>child</div>
 }
 function GoodParent() {
-  return <ChildComponent />;
+  return <ChildComponent />
 }
 
 // ❌ Props 总是新对象引用
 function BadProps() {
   return (
     <MemoizedComponent
-      style={{ color: 'red' }}  // 每次渲染新对象
-      onClick={() => {}}         // 每次渲染新函数
+      style={{ color: 'red' }} // 每次渲染新对象
+      onClick={() => {}} // 每次渲染新函数
     />
-  );
+  )
 }
 
 // ✅ 稳定的引用
-const style = { color: 'red' };
+const style = { color: 'red' }
 function GoodProps() {
-  const handleClick = useCallback(() => {}, []);
-  return <MemoizedComponent style={style} onClick={handleClick} />;
+  const handleClick = useCallback(() => {}, [])
+  return <MemoizedComponent style={style} onClick={handleClick} />
 }
 ```
 
@@ -188,9 +188,9 @@ function GoodProps() {
 function BadApp() {
   return (
     <Suspense fallback={<Loading />}>
-      <DataComponent />  {/* 错误会导致整个应用崩溃 */}
+      <DataComponent /> {/* 错误会导致整个应用崩溃 */}
     </Suspense>
-  );
+  )
 }
 
 // ✅ Error Boundary 包裹 Suspense
@@ -201,7 +201,7 @@ function GoodApp() {
         <DataComponent />
       </Suspense>
     </ErrorBoundary>
-  );
+  )
 }
 ```
 
@@ -256,39 +256,39 @@ React 19 引入了 Actions 系统和新的表单处理 Hooks，简化异步操�
 ```tsx
 // ❌ 传统方式：多个状态变量
 function OldForm() {
-  const [isPending, setIsPending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState(null);
+  const [isPending, setIsPending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [data, setData] = useState(null)
 
   const handleSubmit = async (formData: FormData) => {
-    setIsPending(true);
-    setError(null);
+    setIsPending(true)
+    setError(null)
     try {
-      const result = await submitForm(formData);
-      setData(result);
+      const result = await submitForm(formData)
+      setData(result)
     } catch (e) {
-      setError(e.message);
+      setError(e.message)
     } finally {
-      setIsPending(false);
+      setIsPending(false)
     }
-  };
+  }
 }
 
 // ✅ React 19: useActionState 统一管理
-import { useActionState } from 'react';
+import { useActionState } from 'react'
 
 function NewForm() {
   const [state, formAction, isPending] = useActionState(
     async (prevState, formData: FormData) => {
       try {
-        const result = await submitForm(formData);
-        return { success: true, data: result };
+        const result = await submitForm(formData)
+        return { success: true, data: result }
       } catch (e) {
-        return { success: false, error: e.message };
+        return { success: false, error: e.message }
       }
     },
-    { success: false, data: null, error: null }
-  );
+    { success: false, data: null, error: null },
+  )
 
   return (
     <form action={formAction}>
@@ -298,7 +298,7 @@ function NewForm() {
       </button>
       {state.error && <p className="error">{state.error}</p>}
     </form>
-  );
+  )
 }
 ```
 
@@ -307,39 +307,37 @@ function NewForm() {
 ```tsx
 // ❌ Props 透传表单状态
 function BadSubmitButton({ isSubmitting }) {
-  return <button disabled={isSubmitting}>Submit</button>;
+  return <button disabled={isSubmitting}>Submit</button>
 }
 
 // ✅ useFormStatus 访问父 <form> 状态（无需 props）
-import { useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom'
 
 function SubmitButton() {
-  const { pending, data, method, action } = useFormStatus();
+  const { pending, data, method, action } = useFormStatus()
   // 注意：必须在 <form> 内部的子组件中使用
   return (
-    <button disabled={pending}>
-      {pending ? 'Submitting...' : 'Submit'}
-    </button>
-  );
+    <button disabled={pending}>{pending ? 'Submitting...' : 'Submit'}</button>
+  )
 }
 
 // ❌ useFormStatus 在 form 同级组件中调用——不工作
 function BadForm() {
-  const { pending } = useFormStatus();  // 这里无法获取状态！
+  const { pending } = useFormStatus() // 这里无法获取状态！
   return (
     <form action={action}>
       <button disabled={pending}>Submit</button>
     </form>
-  );
+  )
 }
 
 // ✅ useFormStatus 必须在 form 的子组件中
 function GoodForm() {
   return (
     <form action={action}>
-      <SubmitButton />  {/* useFormStatus 在这里面调用 */}
+      <SubmitButton /> {/* useFormStatus 在这里面调用 */}
     </form>
-  );
+  )
 }
 ```
 
@@ -348,36 +346,36 @@ function GoodForm() {
 ```tsx
 // ❌ 等待服务器响应再更新 UI
 function SlowLike({ postId, likes }) {
-  const [likeCount, setLikeCount] = useState(likes);
-  const [isPending, setIsPending] = useState(false);
+  const [likeCount, setLikeCount] = useState(likes)
+  const [isPending, setIsPending] = useState(false)
 
   const handleLike = async () => {
-    setIsPending(true);
-    const newCount = await likePost(postId);  // 等待...
-    setLikeCount(newCount);
-    setIsPending(false);
-  };
+    setIsPending(true)
+    const newCount = await likePost(postId) // 等待...
+    setLikeCount(newCount)
+    setIsPending(false)
+  }
 }
 
 // ✅ useOptimistic 即时反馈，失败自动回滚
-import { useOptimistic } from 'react';
+import { useOptimistic } from 'react'
 
 function FastLike({ postId, likes }) {
   const [optimisticLikes, addOptimisticLike] = useOptimistic(
     likes,
-    (currentLikes, increment: number) => currentLikes + increment
-  );
+    (currentLikes, increment: number) => currentLikes + increment,
+  )
 
   const handleLike = async () => {
-    addOptimisticLike(1);  // 立即更新 UI
+    addOptimisticLike(1) // 立即更新 UI
     try {
-      await likePost(postId);  // 后台同步
+      await likePost(postId) // 后台同步
     } catch {
       // React 自动回滚到 likes 原值
     }
-  };
+  }
 
-  return <button onClick={handleLike}>{optimisticLikes} likes</button>;
+  return <button onClick={handleLike}>{optimisticLikes} likes</button>
 }
 ```
 
@@ -385,39 +383,39 @@ function FastLike({ postId, likes }) {
 
 ```tsx
 // ❌ 客户端调用 API
-'use client';
+'use client'
 function ClientForm() {
   const handleSubmit = async (formData: FormData) => {
     const res = await fetch('/api/submit', {
       method: 'POST',
       body: formData,
-    });
+    })
     // ...
-  };
+  }
 }
 
 // ✅ Server Action + useActionState
 // actions.ts
-'use server';
+;('use server')
 export async function createPost(prevState: any, formData: FormData) {
-  const title = formData.get('title');
-  await db.posts.create({ title });
-  revalidatePath('/posts');
-  return { success: true };
+  const title = formData.get('title')
+  await db.posts.create({ title })
+  revalidatePath('/posts')
+  return { success: true }
 }
 
 // form.tsx
-'use client';
-import { createPost } from './actions';
+;('use client')
+import { createPost } from './actions'
 
 function PostForm() {
-  const [state, formAction, isPending] = useActionState(createPost, null);
+  const [state, formAction, isPending] = useActionState(createPost, null)
   return (
     <form action={formAction}>
       <input name="title" />
       <SubmitButton />
     </form>
-  );
+  )
 }
 ```
 
@@ -432,24 +430,26 @@ Suspense 和 Streaming 是 React 18+ 的核心特性，在 2025 年的 Next.js 1
 ```tsx
 // ❌ 传统加载状态管理
 function OldComponent() {
-  const [data, setData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    fetchData().then(setData).finally(() => setIsLoading(false));
-  }, []);
+    fetchData()
+      .then(setData)
+      .finally(() => setIsLoading(false))
+  }, [])
 
-  if (isLoading) return <Spinner />;
-  return <DataView data={data} />;
+  if (isLoading) return <Spinner />
+  return <DataView data={data} />
 }
 
 // ✅ Suspense 声明式加载状态
 function NewComponent() {
   return (
     <Suspense fallback={<Spinner />}>
-      <DataView />  {/* 内部使用 use() 或支持 Suspense 的数据获取 */}
+      <DataView /> {/* 内部使用 use() 或支持 Suspense 的数据获取 */}
     </Suspense>
-  );
+  )
 }
 ```
 
@@ -461,27 +461,27 @@ function BadLayout() {
   return (
     <Suspense fallback={<FullPageSpinner />}>
       <Header />
-      <MainContent />  {/* 慢 */}
-      <Sidebar />      {/* 快 */}
+      <MainContent /> {/* 慢 */}
+      <Sidebar /> {/* 快 */}
     </Suspense>
-  );
+  )
 }
 
 // ✅ 独立边界——各部分独立流式传输
 function GoodLayout() {
   return (
     <>
-      <Header />  {/* 立即显示 */}
+      <Header /> {/* 立即显示 */}
       <div className="flex">
         <Suspense fallback={<ContentSkeleton />}>
-          <MainContent />  {/* 独立加载 */}
+          <MainContent /> {/* 独立加载 */}
         </Suspense>
         <Suspense fallback={<SidebarSkeleton />}>
-          <Sidebar />      {/* 独立加载 */}
+          <Sidebar /> {/* 独立加载 */}
         </Suspense>
       </div>
     </>
-  );
+  )
 }
 ```
 
@@ -491,13 +491,13 @@ function GoodLayout() {
 // app/page.tsx - 自动 Streaming
 export default async function Page() {
   // 这个 await 不会阻塞整个页面
-  const data = await fetchSlowData();
-  return <div>{data}</div>;
+  const data = await fetchSlowData()
+  return <div>{data}</div>
 }
 
 // app/loading.tsx - 自动 Suspense 边界
 export default function Loading() {
-  return <Skeleton />;
+  return <Skeleton />
 }
 ```
 
@@ -505,20 +505,22 @@ export default function Loading() {
 
 ```tsx
 // ✅ 在组件中读取 Promise
-import { use } from 'react';
+import { use } from 'react'
 
 function Comments({ commentsPromise }) {
-  const comments = use(commentsPromise);  // 自动触发 Suspense
+  const comments = use(commentsPromise) // 自动触发 Suspense
   return (
     <ul>
-      {comments.map(c => <li key={c.id}>{c.text}</li>)}
+      {comments.map((c) => (
+        <li key={c.id}>{c.text}</li>
+      ))}
     </ul>
-  );
+  )
 }
 
 // 父组件创建 Promise，子组件消费
 function Post({ postId }) {
-  const commentsPromise = fetchComments(postId);  // 不 await
+  const commentsPromise = fetchComments(postId) // 不 await
   return (
     <article>
       <PostContent id={postId} />
@@ -526,7 +528,7 @@ function Post({ postId }) {
         <Comments commentsPromise={commentsPromise} />
       </Suspense>
     </article>
-  );
+  )
 }
 ```
 
@@ -540,19 +542,19 @@ TanStack Query 是 React 生态中最流行的数据获取库，v5 是当前稳�
 
 ```tsx
 // ❌ 不正确的默认配置
-const queryClient = new QueryClient();  // 默认配置可能不适合
+const queryClient = new QueryClient() // 默认配置可能不适合
 
 // ✅ 生产环境推荐配置
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5,  // 5 分钟内数据视为新鲜
-      gcTime: 1000 * 60 * 30,    // 30 分钟后垃圾回收（v5 重命名）
+      staleTime: 1000 * 60 * 5, // 5 分钟内数据视为新鲜
+      gcTime: 1000 * 60 * 30, // 30 分钟后垃圾回收（v5 重命名）
       retry: 3,
-      refetchOnWindowFocus: false,  // 根据需求决定
+      refetchOnWindowFocus: false, // 根据需求决定
     },
   },
-});
+})
 ```
 
 ### queryOptions (v5 新增)
@@ -563,35 +565,35 @@ function Component1() {
   const { data } = useQuery({
     queryKey: ['users', userId],
     queryFn: () => fetchUser(userId),
-  });
+  })
 }
 
 function prefetchUser(queryClient, userId) {
   queryClient.prefetchQuery({
-    queryKey: ['users', userId],  // 重复！
-    queryFn: () => fetchUser(userId),  // 重复！
-  });
+    queryKey: ['users', userId], // 重复！
+    queryFn: () => fetchUser(userId), // 重复！
+  })
 }
 
 // ✅ queryOptions 统一定义，类型安全
-import { queryOptions } from '@tanstack/react-query';
+import { queryOptions } from '@tanstack/react-query'
 
 const userQueryOptions = (userId: string) =>
   queryOptions({
     queryKey: ['users', userId],
     queryFn: () => fetchUser(userId),
-  });
+  })
 
 function Component1({ userId }) {
-  const { data } = useQuery(userQueryOptions(userId));
+  const { data } = useQuery(userQueryOptions(userId))
 }
 
 function prefetchUser(queryClient, userId) {
-  queryClient.prefetchQuery(userQueryOptions(userId));
+  queryClient.prefetchQuery(userQueryOptions(userId))
 }
 
 // getQueryData 也是类型安全的
-const user = queryClient.getQueryData(userQueryOptions(userId).queryKey);
+const user = queryClient.getQueryData(userQueryOptions(userId).queryKey)
 ```
 
 ### 常见陷阱
@@ -602,29 +604,29 @@ useQuery({
   queryKey: ['data'],
   queryFn: fetchData,
   // staleTime 默认为 0，每次组件挂载都会 refetch
-});
+})
 
 // ✅ 设置合理的 staleTime
 useQuery({
   queryKey: ['data'],
   queryFn: fetchData,
-  staleTime: 1000 * 60,  // 1 分钟内不会重新请求
-});
+  staleTime: 1000 * 60, // 1 分钟内不会重新请求
+})
 
 // ❌ 在 queryFn 中使用不稳定的引用
 function BadQuery({ filters }) {
   useQuery({
-    queryKey: ['items'],  // queryKey 没有包含 filters！
-    queryFn: () => fetchItems(filters),  // filters 变化不会触发重新请求
-  });
+    queryKey: ['items'], // queryKey 没有包含 filters！
+    queryFn: () => fetchItems(filters), // filters 变化不会触发重新请求
+  })
 }
 
 // ✅ queryKey 包含所有影响数据的参数
 function GoodQuery({ filters }) {
   useQuery({
-    queryKey: ['items', filters],  // filters 是 queryKey 的一部分
+    queryKey: ['items', filters], // filters 是 queryKey 的一部分
     queryFn: () => fetchItems(filters),
-  });
+  })
 }
 ```
 
@@ -634,13 +636,13 @@ function GoodQuery({ filters }) {
 
 #### useSuspenseQuery 的限制
 
-| 特性 | useQuery | useSuspenseQuery |
-|------|----------|------------------|
-| `enabled` 选项 | ✅ 支持 | ❌ 不支持 |
-| `placeholderData` | ✅ 支持 | ❌ 不支持 |
-| `data` 类型 | `T \| undefined` | `T`（保证有值）|
-| 错误处理 | `error` 属性 | 抛出到 Error Boundary |
-| 加载状态 | `isLoading` 属性 | 挂起到 Suspense |
+| 特性              | useQuery         | useSuspenseQuery      |
+| ----------------- | ---------------- | --------------------- |
+| `enabled` 选项    | ✅ 支持          | ❌ 不支持             |
+| `placeholderData` | ✅ 支持          | ❌ 不支持             |
+| `data` 类型       | `T \| undefined` | `T`（保证有值）       |
+| 错误处理          | `error` 属性     | 抛出到 Error Boundary |
+| 加载状态          | `isLoading` 属性 | 挂起到 Suspense       |
 
 #### 不支持 enabled 的替代方案
 
@@ -650,8 +652,8 @@ function BadSuspenseQuery({ userId }) {
   const { data } = useSuspenseQuery({
     queryKey: ['user', userId],
     queryFn: () => fetchUser(userId),
-    enabled: !!userId,  // useSuspenseQuery 不支持 enabled！
-  });
+    enabled: !!userId, // useSuspenseQuery 不支持 enabled！
+  })
 }
 
 // ✅ 组件组合实现条件渲染
@@ -660,17 +662,17 @@ function GoodSuspenseQuery({ userId }) {
   const { data } = useSuspenseQuery({
     queryKey: ['user', userId],
     queryFn: () => fetchUser(userId),
-  });
-  return <UserProfile user={data} />;
+  })
+  return <UserProfile user={data} />
 }
 
 function Parent({ userId }) {
-  if (!userId) return <NoUserSelected />;
+  if (!userId) return <NoUserSelected />
   return (
     <Suspense fallback={<UserSkeleton />}>
       <GoodSuspenseQuery userId={userId} />
     </Suspense>
-  );
+  )
 }
 ```
 
@@ -726,9 +728,9 @@ function MultipleQueries({ userId }) {
       { queryKey: ['user', userId], queryFn: () => fetchUser(userId) },
       { queryKey: ['posts', userId], queryFn: () => fetchPosts(userId) },
     ],
-  });
+  })
   // 两个查询并行执行，都完成后组件渲染
-  return <Profile user={userQuery.data} posts={postsQuery.data} />;
+  return <Profile user={userQuery.data} posts={postsQuery.data} />
 }
 ```
 
@@ -739,36 +741,38 @@ function MultipleQueries({ userId }) {
 const mutation = useMutation({
   mutationFn: updateTodo,
   onMutate: async (newTodo) => {
-    await queryClient.cancelQueries({ queryKey: ['todos'] });
-    const previousTodos = queryClient.getQueryData(['todos']);
-    queryClient.setQueryData(['todos'], (old) => [...old, newTodo]);
-    return { previousTodos };
+    await queryClient.cancelQueries({ queryKey: ['todos'] })
+    const previousTodos = queryClient.getQueryData(['todos'])
+    queryClient.setQueryData(['todos'], (old) => [...old, newTodo])
+    return { previousTodos }
   },
   onError: (err, newTodo, context) => {
-    queryClient.setQueryData(['todos'], context.previousTodos);
+    queryClient.setQueryData(['todos'], context.previousTodos)
   },
   onSettled: () => {
-    queryClient.invalidateQueries({ queryKey: ['todos'] });
+    queryClient.invalidateQueries({ queryKey: ['todos'] })
   },
-});
+})
 
 // ✅ v5 简化：使用 variables 进行乐观 UI
 function TodoList() {
-  const { data: todos } = useQuery(todosQueryOptions);
+  const { data: todos } = useQuery(todosQueryOptions)
   const { mutate, variables, isPending } = useMutation({
     mutationFn: addTodo,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todos'] });
+      queryClient.invalidateQueries({ queryKey: ['todos'] })
     },
-  });
+  })
 
   return (
     <ul>
-      {todos?.map(todo => <TodoItem key={todo.id} todo={todo} />)}
+      {todos?.map((todo) => (
+        <TodoItem key={todo.id} todo={todo} />
+      ))}
       {/* 乐观显示正在添加的 todo */}
       {isPending && <TodoItem todo={variables} isOptimistic />}
     </ul>
-  );
+  )
 }
 ```
 
@@ -867,5 +871,5 @@ if (isLoading) return <Spinner />;  // 首次加载中
 - [ ] 使用 @testing-library/react
 - [ ] 用 screen 查询元素
 - [ ] 用 userEvent 代替 fireEvent
-- [ ] 优先使用 *ByRole 查询
+- [ ] 优先使用 \*ByRole 查询
 - [ ] 测试行为而非实现细节

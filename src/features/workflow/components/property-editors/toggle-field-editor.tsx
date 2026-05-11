@@ -1,7 +1,11 @@
 import { FieldLabel } from './field-label'
 import type { PropertyEditorProps } from './property-editor'
 
-export function ToggleFieldEditor({ schema, value, onChange }: PropertyEditorProps) {
+export function ToggleFieldEditor({
+  schema,
+  value,
+  onChange,
+}: PropertyEditorProps) {
   const checked = Boolean(value ?? schema.defaultValue ?? false)
 
   return (

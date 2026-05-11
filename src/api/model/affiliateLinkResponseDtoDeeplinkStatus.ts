@@ -6,12 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
-export type AffiliateLinkResponseDtoDeeplinkStatus = typeof AffiliateLinkResponseDtoDeeplinkStatus[keyof typeof AffiliateLinkResponseDtoDeeplinkStatus];
-
+export type AffiliateLinkResponseDtoDeeplinkStatus =
+  (typeof AffiliateLinkResponseDtoDeeplinkStatus)[keyof typeof AffiliateLinkResponseDtoDeeplinkStatus]
 
 export const AffiliateLinkResponseDtoDeeplinkStatus = {
   valid: 'valid',
   broken: 'broken',
   pending: 'pending',
   expired: 'expired',
-} as const;
+} as const

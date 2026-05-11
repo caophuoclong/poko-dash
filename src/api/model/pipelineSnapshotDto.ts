@@ -7,10 +7,10 @@
  */
 
 export interface PipelineSnapshotDto {
-  draftSeeds: number;
-  approvedSeedsWithoutPosts: number;
-  seedsWithProductsButNoPosts: number;
-  scheduledPosts: number;
-  failedGenerations: number;
-  failedPublishes: number;
+  draftSeeds: number
+  approvedSeedsWithoutPosts: number
+  seedsWithProductsButNoPosts: number
+  scheduledPosts: number
+  failedGenerations: number
+  failedPublishes: number
 }

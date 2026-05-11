@@ -9,4 +9,4 @@
 /**
  * Coupon code for this link
  */
-export type UpdateAffiliateLinkDtoCouponCode = { [key: string]: unknown };
+export type UpdateAffiliateLinkDtoCouponCode = { [key: string]: unknown }

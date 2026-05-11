@@ -50,7 +50,10 @@ export interface PlatformTargetConfig {
 
 export const PUBLICATION_STATUS_META: Record<
   PublicationStatus,
-  { label: string; tone: 'neutral' | 'blue' | 'green' | 'red' | 'orange' | 'yellow' }
+  {
+    label: string
+    tone: 'neutral' | 'blue' | 'green' | 'red' | 'orange' | 'yellow'
+  }
 > = {
   pending: { label: 'Chờ xử lý', tone: 'neutral' },
   scheduled: { label: 'Đã lên lịch', tone: 'blue' },
@@ -64,12 +67,30 @@ export const PLATFORM_META: Record<
   PublicationPlatform,
   { label: string; colorClass: string }
 > = {
-  facebook: { label: 'Facebook', colorClass: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
-  tiktok: { label: 'TikTok', colorClass: 'bg-pink-500/10 text-pink-400 border-pink-500/20' },
-  instagram: { label: 'Instagram', colorClass: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
-  youtube: { label: 'YouTube', colorClass: 'bg-red-500/10 text-red-400 border-red-500/20' },
-  twitter: { label: 'Twitter', colorClass: 'bg-sky-500/10 text-sky-400 border-sky-500/20' },
-  blog: { label: 'Blog', colorClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' },
+  facebook: {
+    label: 'Facebook',
+    colorClass: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  },
+  tiktok: {
+    label: 'TikTok',
+    colorClass: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
+  },
+  instagram: {
+    label: 'Instagram',
+    colorClass: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+  },
+  youtube: {
+    label: 'YouTube',
+    colorClass: 'bg-red-500/10 text-red-400 border-red-500/20',
+  },
+  twitter: {
+    label: 'Twitter',
+    colorClass: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
+  },
+  blog: {
+    label: 'Blog',
+    colorClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  },
 }
 
 export function getCompositeStatus(
@@ -93,7 +114,10 @@ export function getCompositeStatus(
 
 export const COMPOSITE_STATUS_META: Record<
   PostCompositeStatus,
-  { label: string; tone: 'neutral' | 'blue' | 'green' | 'red' | 'orange' | 'yellow' }
+  {
+    label: string
+    tone: 'neutral' | 'blue' | 'green' | 'red' | 'orange' | 'yellow'
+  }
 > = {
   draft: { label: 'Nháp', tone: 'neutral' },
   scheduled: { label: 'Đã lên lịch', tone: 'blue' },

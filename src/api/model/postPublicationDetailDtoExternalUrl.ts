@@ -9,4 +9,6 @@
 /**
  * @nullable
  */
-export type PostPublicationDetailDtoExternalUrl = { [key: string]: unknown } | null;
+export type PostPublicationDetailDtoExternalUrl = {
+  [key: string]: unknown
+} | null

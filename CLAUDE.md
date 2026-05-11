@@ -97,6 +97,7 @@ src/
 ### Feature-Based Organization
 
 Features are organized by domain (workflow, contents, posts, etc.). Each feature module contains:
+
 - `components/` - Feature-specific React components
 - `hooks/` - Feature-specific hooks
 - `stores/` - Zustand stores for local state
@@ -120,6 +121,7 @@ The workflow feature (`src/features/workflow/`) is the heart of the application:
 - **Property Editors**: Specialized editors for different data types (code, JSON, key-value, assignments, conditions, URLs, cron expressions)
 
 Key files:
+
 - `node-registry.utils.ts` - Node definition utilities and validation
 - `types.ts` - Core workflow types (WorkflowNodeData, WorkflowDetail, etc.)
 - `stores/canvas-store.ts` - Canvas state management
@@ -130,6 +132,7 @@ Key files:
 ### API Integration
 
 API client is auto-generated from `openapi.json` using Orval:
+
 - Generated client uses TanStack Query (React Query) hooks
 - Custom fetch wrapper in `src/api/custom-fetch.ts` handles base URL resolution
 - Backend URL configured via `BACKEND_URL` environment variable
@@ -138,6 +141,7 @@ API client is auto-generated from `openapi.json` using Orval:
 ### Routing
 
 TanStack Router with file-based routing:
+
 - Routes defined in `src/routes/`
 - Route tree auto-generated in `src/routeTree.gen.ts`
 - SSR integration with TanStack Query via `setupRouterSsrQueryIntegration`
@@ -152,6 +156,7 @@ TanStack Router with file-based routing:
 ## Path Aliases
 
 Two path aliases are configured:
+
 - `#/*` → `./src/*` (package.json imports)
 - `@/*` → `./src/*` (TypeScript paths)
 
@@ -168,6 +173,7 @@ Components are added to `src/components/ui/` and configured via `components.json
 ## Environment Variables
 
 Create `.env` file (see `.env` for example):
+
 ```bash
 BACKEND_URL=http://localhost:3000
 ```
@@ -190,6 +196,7 @@ For production (Cloudflare), set `BACKEND_URL` in `wrangler.jsonc` under `vars`.
 ## Deployment
 
 Deploys to Cloudflare Pages via Wrangler:
+
 ```bash
 pnpm deploy
 ```
@@ -207,6 +214,7 @@ Builds are SSR-enabled and run on Cloudflare Workers.
 - Tiptap is used for rich text editing in prompts and descriptions
 
 <!-- code-review-graph MCP tools -->
+
 ## MCP Tools: code-review-graph
 
 **IMPORTANT: This project has a knowledge graph. ALWAYS use the
@@ -227,16 +235,16 @@ Fall back to Grep/Glob/Read **only** when the graph doesn't cover what you need.
 
 ### Key Tools
 
-| Tool | Use when |
-| ------ | ---------- |
-| `detect_changes` | Reviewing code changes — gives risk-scored analysis |
-| `get_review_context` | Need source snippets for review — token-efficient |
-| `get_impact_radius` | Understanding blast radius of a change |
-| `get_affected_flows` | Finding which execution paths are impacted |
-| `query_graph` | Tracing callers, callees, imports, tests, dependencies |
-| `semantic_search_nodes` | Finding functions/classes by name or keyword |
-| `get_architecture_overview` | Understanding high-level codebase structure |
-| `refactor_tool` | Planning renames, finding dead code |
+| Tool                        | Use when                                               |
+| --------------------------- | ------------------------------------------------------ |
+| `detect_changes`            | Reviewing code changes — gives risk-scored analysis    |
+| `get_review_context`        | Need source snippets for review — token-efficient      |
+| `get_impact_radius`         | Understanding blast radius of a change                 |
+| `get_affected_flows`        | Finding which execution paths are impacted             |
+| `query_graph`               | Tracing callers, callees, imports, tests, dependencies |
+| `semantic_search_nodes`     | Finding functions/classes by name or keyword           |
+| `get_architecture_overview` | Understanding high-level codebase structure            |
+| `refactor_tool`             | Planning renames, finding dead code                    |
 
 ### Workflow
 

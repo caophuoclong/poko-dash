@@ -7,10 +7,10 @@
  */
 
 export interface WorkflowRunDto {
-  id: string;
-  workflow_id: string;
-  status: string;
-  started_at: string;
-  finished_at?: string;
-  triggered_by?: string;
+  id: string
+  workflow_id: string
+  status: string
+  started_at: string
+  finished_at?: string
+  triggered_by?: string
 }

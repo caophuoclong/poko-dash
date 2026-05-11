@@ -8,9 +8,9 @@
 
 export interface RetryDto {
   /** If false, engine ignores maxRetries */
-  safeToRetry: boolean;
+  safeToRetry: boolean
   /** Max retries */
-  maxRetries?: number;
+  maxRetries?: number
   /** Initial backoff in ms */
-  backoffMs?: number;
+  backoffMs?: number
 }

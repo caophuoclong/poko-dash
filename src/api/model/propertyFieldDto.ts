@@ -5,42 +5,42 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { DisplayWhenDto } from './displayWhenDto';
-import type { PropertyFieldDtoDefault } from './propertyFieldDtoDefault';
-import type { PropertyFieldDtoItems } from './propertyFieldDtoItems';
-import type { PropertyFieldDtoType } from './propertyFieldDtoType';
-import type { PropertyFieldDtoValidation } from './propertyFieldDtoValidation';
-import type { ShowWhenDto } from './showWhenDto';
+import type { DisplayWhenDto } from './displayWhenDto'
+import type { PropertyFieldDtoDefault } from './propertyFieldDtoDefault'
+import type { PropertyFieldDtoItems } from './propertyFieldDtoItems'
+import type { PropertyFieldDtoType } from './propertyFieldDtoType'
+import type { PropertyFieldDtoValidation } from './propertyFieldDtoValidation'
+import type { ShowWhenDto } from './showWhenDto'
 
 export interface PropertyFieldDto {
   /** Config key name */
-  key: string;
+  key: string
   /** UI label */
-  label: string;
+  label: string
   /** Input widget type */
-  type: PropertyFieldDtoType;
+  type: PropertyFieldDtoType
   /** Whether this field is required */
-  required?: boolean;
+  required?: boolean
   /** Helper text */
-  description?: string;
+  description?: string
   /** Placeholder text */
-  placeholder?: string;
+  placeholder?: string
   /** Default value */
-  default?: PropertyFieldDtoDefault;
+  default?: PropertyFieldDtoDefault
   /** Options for select/multiselect types */
-  options?: string[];
+  options?: string[]
   /** JSON Schema for array item shape when type=array */
-  items?: PropertyFieldDtoItems;
+  items?: PropertyFieldDtoItems
   /** JSON Schema fragment for save-time validation */
-  validation?: PropertyFieldDtoValidation;
+  validation?: PropertyFieldDtoValidation
   /** Conditional visibility based on another field value */
-  showWhen?: ShowWhenDto;
+  showWhen?: ShowWhenDto
   /** Legacy conditional visibility (deprecated, use showWhen) */
-  displayWhen?: DisplayWhenDto;
+  displayWhen?: DisplayWhenDto
   /** Min value for number type */
-  min?: number;
+  min?: number
   /** Max value for number type */
-  max?: number;
+  max?: number
   /** Language hint for code editor */
-  language?: string;
+  language?: string
 }

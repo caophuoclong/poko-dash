@@ -6,8 +6,8 @@
  * OpenAPI spec version: 1.0
  */
 
-export type ScheduledJobResponseDtoStatus = typeof ScheduledJobResponseDtoStatus[keyof typeof ScheduledJobResponseDtoStatus];
-
+export type ScheduledJobResponseDtoStatus =
+  (typeof ScheduledJobResponseDtoStatus)[keyof typeof ScheduledJobResponseDtoStatus]
 
 export const ScheduledJobResponseDtoStatus = {
   pending: 'pending',
@@ -15,4 +15,4 @@ export const ScheduledJobResponseDtoStatus = {
   published: 'published',
   failed: 'failed',
   cancelled: 'cancelled',
-} as const;
+} as const

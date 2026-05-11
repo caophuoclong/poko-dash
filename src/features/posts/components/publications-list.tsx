@@ -1,8 +1,5 @@
 import type { PublicationRecord } from '../types/publication'
-import {
-  PUBLICATION_STATUS_META,
-  PLATFORM_META,
-} from '../types/publication'
+import { PUBLICATION_STATUS_META, PLATFORM_META } from '../types/publication'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
 import { useRetryPublication } from '../hooks/use-publications'

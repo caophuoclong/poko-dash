@@ -9,4 +9,6 @@
 /**
  * @nullable
  */
-export type PostPublicationDetailDtoErrorMessage = { [key: string]: unknown } | null;
+export type PostPublicationDetailDtoErrorMessage = {
+  [key: string]: unknown
+} | null

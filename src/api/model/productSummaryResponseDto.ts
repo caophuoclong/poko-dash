@@ -7,17 +7,17 @@
  */
 
 export interface ProductSummaryResponseDto {
-  productId: string;
-  canonicalTitle: string;
-  brand?: string;
-  category: string;
-  imageCover?: string;
-  priceCurrent?: string;
-  priceSale?: string;
-  rating?: number;
-  dealScore: number;
-  publishScore: number;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
+  productId: string
+  canonicalTitle: string
+  brand?: string
+  category: string
+  imageCover?: string
+  priceCurrent?: string
+  priceSale?: string
+  rating?: number
+  dealScore: number
+  publishScore: number
+  status: string
+  createdAt: string
+  updatedAt: string
 }

@@ -5,31 +5,31 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { CreateContentPostDtoApprovalStatus } from './createContentPostDtoApprovalStatus';
-import type { CreateContentPostDtoContentType } from './createContentPostDtoContentType';
-import type { CreateContentPostDtoStatus } from './createContentPostDtoStatus';
+import type { CreateContentPostDtoApprovalStatus } from './createContentPostDtoApprovalStatus'
+import type { CreateContentPostDtoContentType } from './createContentPostDtoContentType'
+import type { CreateContentPostDtoStatus } from './createContentPostDtoStatus'
 
 export interface CreateContentPostDto {
   /** Content Idea UUID */
-  ideaId: string;
+  ideaId: string
   /** Primary Product UUID */
-  primaryProductId: string;
+  primaryProductId: string
   /** Content type */
-  contentType: CreateContentPostDtoContentType;
+  contentType: CreateContentPostDtoContentType
   /** Platform identifier */
-  platform: string;
+  platform: string
   /** Post title */
-  title: string;
+  title: string
   /** Post body/content */
-  body: string;
+  body: string
   /** Hashtags for the post */
-  hashtags?: string[];
+  hashtags?: string[]
   /** Content status */
-  status?: CreateContentPostDtoStatus;
+  status?: CreateContentPostDtoStatus
   /** Approval status */
-  approvalStatus?: CreateContentPostDtoApprovalStatus;
+  approvalStatus?: CreateContentPostDtoApprovalStatus
   /** Generation source identifier */
-  generationSource?: string;
+  generationSource?: string
   /** AI model used for generation */
-  generationModel?: string;
+  generationModel?: string
 }

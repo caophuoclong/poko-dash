@@ -4,8 +4,9 @@
     "**/*.tsx",
     "eslint.config.js",
     "prettier.config.js",
-    "vite.config.js"
-, "src/features/workflow/node-types.old.abcd"  ],
+    "vite.config.js",
+    "src/features/workflow/node-types.old.abcd"
+  ],
 
   "compilerOptions": {
     "target": "ES2022",

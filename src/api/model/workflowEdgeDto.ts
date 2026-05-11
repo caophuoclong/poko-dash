@@ -5,15 +5,15 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { WorkflowEdgeDtoStyle } from './workflowEdgeDtoStyle';
+import type { WorkflowEdgeDtoStyle } from './workflowEdgeDtoStyle'
 
 export interface WorkflowEdgeDto {
-  id: string;
-  source_node_id: string;
-  target_node_id: string;
-  source_handle?: string;
-  target_handle?: string;
-  type: string;
-  edge_type?: string;
-  style?: WorkflowEdgeDtoStyle;
+  id: string
+  source_node_id: string
+  target_node_id: string
+  source_handle?: string
+  target_handle?: string
+  type: string
+  edge_type?: string
+  style?: WorkflowEdgeDtoStyle
 }

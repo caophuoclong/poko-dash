@@ -22,7 +22,12 @@ const LANG_MAP: Record<string, string> = {
   sql: 'sql',
 }
 
-export function CodeFieldEditor({ schema, value, onChange, availableVars }: PropertyEditorProps) {
+export function CodeFieldEditor({
+  schema,
+  value,
+  onChange,
+  availableVars,
+}: PropertyEditorProps) {
   const codeSchema = schema as unknown as CodeSchema
   const language = codeSchema.language ?? 'javascript'
   const codeValue = typeof value === 'string' ? value : ''
@@ -38,7 +43,10 @@ export function CodeFieldEditor({ schema, value, onChange, availableVars }: Prop
       monaco?.editor?.setTheme(isDark ? 'poko-dark' : 'poko-light')
     })
 
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
     return () => observer.disconnect()
   }, [])
 
@@ -74,45 +82,52 @@ export function CodeFieldEditor({ schema, value, onChange, availableVars }: Prop
 
       if (!availableVars || availableVars.length === 0) return
 
-      completionRef.current = monaco.languages.registerCompletionItemProvider(language, {
-        triggerCharacters: ['{', '.'],
-        provideCompletionItems(model: any, position: any) {
-          const textUntil = model.getValueInRange({
-            startLineNumber: position.lineNumber,
-            startColumn: 1,
-            endLineNumber: position.lineNumber,
-            endColumn: position.column,
-          })
+      completionRef.current = monaco.languages.registerCompletionItemProvider(
+        language,
+        {
+          triggerCharacters: ['{', '.'],
+          provideCompletionItems(model: any, position: any) {
+            const textUntil = model.getValueInRange({
+              startLineNumber: position.lineNumber,
+              startColumn: 1,
+              endLineNumber: position.lineNumber,
+              endColumn: position.column,
+            })
 
-          // Only trigger inside {{ or after {{ prefix
-          const match = textUntil.match(/\{\{([a-zA-Z_$][a-zA-Z0-9_.$]*)$/)
-          if (!match && !textUntil.endsWith('{{')) return { suggestions: [] }
+            // Only trigger inside {{ or after {{ prefix
+            const match = textUntil.match(/\{\{([a-zA-Z_$][a-zA-Z0-9_.$]*)$/)
+            if (!match && !textUntil.endsWith('{{')) return { suggestions: [] }
 
-          const prefix = match ? match[1] : ''
-          const word = model.getWordUntilPosition(position)
-          const range = {
-            startLineNumber: position.lineNumber,
-            endLineNumber: position.lineNumber,
-            startColumn: word.startColumn,
-            endColumn: word.endColumn,
-          }
+            const prefix = match ? match[1] : ''
+            const word = model.getWordUntilPosition(position)
+            const range = {
+              startLineNumber: position.lineNumber,
+              endLineNumber: position.lineNumber,
+              startColumn: word.startColumn,
+              endColumn: word.endColumn,
+            }
 
-          const filtered = prefix
-            ? availableVars.filter((v) => v.id.startsWith(prefix))
-            : availableVars
+            const filtered = prefix
+              ? availableVars.filter((v) => v.id.startsWith(prefix))
+              : availableVars
 
-          return {
-            suggestions: filtered.map((v) => ({
-              label: v.id,
-              kind: monaco.languages.CompletionItemKind.Variable,
-              detail: v.description,
-              documentation: v.sampleValue ? `Sample: ${v.sampleValue}` : undefined,
-              insertText: textUntil.endsWith('{{') ? `${v.id}}}` : `${v.id.slice(prefix.length)}}}`,
-              range,
-            })),
-          }
+            return {
+              suggestions: filtered.map((v) => ({
+                label: v.id,
+                kind: monaco.languages.CompletionItemKind.Variable,
+                detail: v.description,
+                documentation: v.sampleValue
+                  ? `Sample: ${v.sampleValue}`
+                  : undefined,
+                insertText: textUntil.endsWith('{{')
+                  ? `${v.id}}}`
+                  : `${v.id.slice(prefix.length)}}}`,
+                range,
+              })),
+            }
+          },
         },
-      })
+      )
     },
     [availableVars, language],
   )
@@ -180,11 +195,21 @@ export function CodeFieldEditor({ schema, value, onChange, availableVars }: Prop
                 inherit: true,
                 rules: [],
                 colors: {
-                  'editor.background': styles.getPropertyValue('--t-void').trim(),
-                  'editor.foreground': styles.getPropertyValue('--t-foreground').trim(),
-                  'editorLineNumber.foreground': styles.getPropertyValue('--t-muted-text').trim(),
-                  'editorLineNumber.activeForeground': styles.getPropertyValue('--t-silver').trim(),
-                  'editorCursor.foreground': styles.getPropertyValue('--t-accent-blue').trim(),
+                  'editor.background': styles
+                    .getPropertyValue('--t-void')
+                    .trim(),
+                  'editor.foreground': styles
+                    .getPropertyValue('--t-foreground')
+                    .trim(),
+                  'editorLineNumber.foreground': styles
+                    .getPropertyValue('--t-muted-text')
+                    .trim(),
+                  'editorLineNumber.activeForeground': styles
+                    .getPropertyValue('--t-silver')
+                    .trim(),
+                  'editorCursor.foreground': styles
+                    .getPropertyValue('--t-accent-blue')
+                    .trim(),
                   'editor.selectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}33`,
                   'editor.inactiveSelectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}22`,
                 },
@@ -195,11 +220,21 @@ export function CodeFieldEditor({ schema, value, onChange, availableVars }: Prop
                 inherit: true,
                 rules: [],
                 colors: {
-                  'editor.background': styles.getPropertyValue('--t-void').trim(),
-                  'editor.foreground': styles.getPropertyValue('--t-foreground').trim(),
-                  'editorLineNumber.foreground': styles.getPropertyValue('--t-muted-text').trim(),
-                  'editorLineNumber.activeForeground': styles.getPropertyValue('--t-silver').trim(),
-                  'editorCursor.foreground': styles.getPropertyValue('--t-accent-blue').trim(),
+                  'editor.background': styles
+                    .getPropertyValue('--t-void')
+                    .trim(),
+                  'editor.foreground': styles
+                    .getPropertyValue('--t-foreground')
+                    .trim(),
+                  'editorLineNumber.foreground': styles
+                    .getPropertyValue('--t-muted-text')
+                    .trim(),
+                  'editorLineNumber.activeForeground': styles
+                    .getPropertyValue('--t-silver')
+                    .trim(),
+                  'editorCursor.foreground': styles
+                    .getPropertyValue('--t-accent-blue')
+                    .trim(),
                   'editor.selectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}33`,
                   'editor.inactiveSelectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}22`,
                 },
@@ -210,7 +245,7 @@ export function CodeFieldEditor({ schema, value, onChange, availableVars }: Prop
         </Suspense>
       </div>
       <p className="text-[10px] text-muted-text/60 font-mono">
-        Available: $input — type <code>{'{{'}  </code> for variable suggestions
+        Available: $input — type <code>{'{{'} </code> for variable suggestions
       </p>
       {availableVars && codeValue && (
         <TemplateLint value={codeValue} availableVars={availableVars} />

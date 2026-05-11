@@ -6,4 +6,4 @@
  * OpenAPI spec version: 1.0
  */
 
-export type WorkflowVersionDetailDtoSnapshot = { [key: string]: unknown };
+export type WorkflowVersionDetailDtoSnapshot = { [key: string]: unknown }

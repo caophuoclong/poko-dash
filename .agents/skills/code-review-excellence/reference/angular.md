@@ -25,8 +25,10 @@
   template: `<p>{{ data.name }}</p>`,
 })
 export class UserProfile {
-  data = { name: 'Alice' };
-  changeName() { this.data.name = 'Bob'; } // UI 不会更新！
+  data = { name: 'Alice' }
+  changeName() {
+    this.data.name = 'Bob'
+  } // UI 不会更新！
 }
 
 // ✅ Signal + OnPush = 自动变更检测
@@ -35,8 +37,10 @@ export class UserProfile {
   template: `<p>{{ name() }}</p>`,
 })
 export class UserProfile {
-  name = signal('Alice');
-  changeName() { this.name.set('Bob'); } // 自动触发 CD
+  name = signal('Alice')
+  changeName() {
+    this.name.set('Bob')
+  } // 自动触发 CD
 }
 ```
 
@@ -56,18 +60,18 @@ updateConfig() { this.config = { ...this.config, theme: 'dark' }; }
 ```typescript
 // ❌ effect 用于同步状态——反模式，可能触发额外 CD 周期
 export class CartComponent {
-  total = signal(0);
-  discounted = signal(0);
+  total = signal(0)
+  discounted = signal(0)
 
   constructor() {
-    effect(() => this.discounted.set(this.total() * 0.9));
+    effect(() => this.discounted.set(this.total() * 0.9))
   }
 }
 
 // ✅ computed 用于派生状态——惰性计算，无副作用
 export class CartComponent {
-  total = signal(0);
-  discounted = computed(() => this.total() * 0.9);
+  total = signal(0)
+  discounted = computed(() => this.total() * 0.9)
 }
 ```
 
@@ -76,31 +80,33 @@ export class CartComponent {
 ```typescript
 // ❌ await 之后读取 Signal——依赖未被追踪
 effect(async () => {
-  const data = await fetchUserData();
-  console.log(`Theme: ${theme()}`); // theme() 未被追踪！
-});
+  const data = await fetchUserData()
+  console.log(`Theme: ${theme()}`) // theme() 未被追踪！
+})
 
 // ✅ 在 await 之前同步读取
 effect(async () => {
-  const currentTheme = theme(); // 同步读取，被追踪
-  const data = await fetchUserData();
-  console.log(`Theme: ${currentTheme}`);
-});
+  const currentTheme = theme() // 同步读取，被追踪
+  const data = await fetchUserData()
+  console.log(`Theme: ${currentTheme}`)
+})
 ```
 
 ### effect 只在特定场景使用
 
 ```typescript
 // ❌ 用 effect 同步两个 Signal——永远用 computed
-effect(() => { this.filtered.set(this.items().filter(i => i.active)); });
+effect(() => {
+  this.filtered.set(this.items().filter((i) => i.active))
+})
 
 // ✅ effect 的合理场景：DOM 操作、分析日志、订阅外部源
 effect(() => {
-  const canvas = this.canvasRef.nativeElement;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = this.color();
-  ctx.fillRect(0, 0, this.size(), this.size());
-});
+  const canvas = this.canvasRef.nativeElement
+  const ctx = canvas.getContext('2d')
+  ctx.fillStyle = this.color()
+  ctx.fillRect(0, 0, this.size(), this.size())
+})
 
 // 💡 "There are no situations where effect is good,
 //    only situations where it is appropriate."
@@ -151,30 +157,36 @@ export class UserProfile {}
 
 ```typescript
 // ❌ 裸 subscribe——内存泄漏！组件销毁后仍继续接收数据
-@Component({ /* ... */ })
+@Component({
+  /* ... */
+})
 export class UserProfile implements OnInit {
   ngOnInit() {
-    this.data$.subscribe(data => this.processData(data));
+    this.data$.subscribe((data) => this.processData(data))
   }
 }
 
 // ✅ takeUntilDestroyed——自动在组件销毁时取消（需在构造函数或注入上下文中调用）
-@Component({ /* ... */ })
+@Component({
+  /* ... */
+})
 export class UserProfile {
   constructor() {
-    this.data$.pipe(takeUntilDestroyed()).subscribe(data => {
-      this.processData(data);
-    });
+    this.data$.pipe(takeUntilDestroyed()).subscribe((data) => {
+      this.processData(data)
+    })
   }
 }
 
 // ✅ 在构造函数外使用——传入 DestroyRef
-@Component({ /* ... */ })
+@Component({
+  /* ... */
+})
 export class UserProfile {
-  private destroyRef = inject(DestroyRef);
+  private destroyRef = inject(DestroyRef)
 
   startListening() {
-    this.data$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(/* ... */);
+    this.data$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(/* ... */)
   }
 }
 ```
@@ -190,7 +202,7 @@ export class UserProfile {
 
 // ✅ toSignal——自动取消订阅，可在任何地方使用
 export class UserProfile {
-  data = toSignal(this.data$, { initialValue: null });
+  data = toSignal(this.data$, { initialValue: null })
   // 模板直接用 data()
 }
 ```
@@ -216,15 +228,19 @@ data = toSignal(this.http.get('/api/data'), { initialValue: null });
 ```typescript
 // ❌ Zoneless 下普通属性赋值不触发 CD
 export class UserService {
-  user: User | null = null;
-  loadUser() { this.user = fetchResult; } // 不触发！
+  user: User | null = null
+  loadUser() {
+    this.user = fetchResult
+  } // 不触发！
 }
 
 // ✅ Signal 自动触发 CD
 export class UserService {
-  private _user = signal<User | null>(null);
-  readonly user = this._user.asReadonly();
-  loadUser() { this._user.set(fetchResult); }
+  private _user = signal<User | null>(null)
+  readonly user = this._user.asReadonly()
+  loadUser() {
+    this._user.set(fetchResult)
+  }
 }
 ```
 
@@ -232,31 +248,37 @@ export class UserService {
 
 ```typescript
 // ❌ NgZone.onStable 在 zoneless 中永远不会触发
-ngZone.onStable.subscribe(() => { /* 永远不触发 */ });
+ngZone.onStable.subscribe(() => {
+  /* 永远不触发 */
+})
 
 // ✅ 使用 afterNextRender
-afterNextRender({ write: () => { /* CD 之后执行 */ } });
+afterNextRender({
+  write: () => {
+    /* CD 之后执行 */
+  },
+})
 ```
 
 ### Reactive Forms 变异需要 markForCheck
 
 ```typescript
 // ❌ Reactive Forms 的 setValue/patchValue 在 zoneless 中不自动调度 CD
-this.form.patchValue({ name: 'Alice' }); // UI 可能不更新
+this.form.patchValue({ name: 'Alice' }) // UI 可能不更新
 
 // ✅ 手动标记或通过 Signal 反映
-this.form.patchValue({ name: 'Alice' });
-this.cdr.markForCheck();
+this.form.patchValue({ name: 'Alice' })
+this.cdr.markForCheck()
 ```
 
 ### Zoneless 下有效的 CD 触发器
 
-| 触发器 | 说明 |
-|--------|------|
-| `signal.set()` / `.update()` | Signal 更新自动触发 |
-| `ChangeDetectorRef.markForCheck()` | 手动标记 |
-| `ComponentRef.setInput()` | 输入绑定 |
-| 模板事件监听器回调 | 用户交互 |
+| 触发器                             | 说明                |
+| ---------------------------------- | ------------------- |
+| `signal.set()` / `.update()`       | Signal 更新自动触发 |
+| `ChangeDetectorRef.markForCheck()` | 手动标记            |
+| `ComponentRef.setInput()`          | 输入绑定            |
+| 模板事件监听器回调                 | 用户交互            |
 
 ---
 
@@ -269,8 +291,10 @@ this.cdr.markForCheck();
 template: `<div *ngIf="items.filter(i => i.active).length > 0 && user.role === 'admin'">`
 
 // ✅ 提取为 computed
-filteredItems = computed(() => this.items().filter(i => i.active));
-shouldShow = computed(() => this.filteredItems().length > 0 && this.user().role === 'admin');
+filteredItems = computed(() => this.items().filter((i) => i.active))
+shouldShow = computed(
+  () => this.filteredItems().length > 0 && this.user().role === 'admin',
+)
 template: `@if (shouldShow()) { <div>...</div> }`
 ```
 
@@ -289,12 +313,16 @@ template: `<div [class.active]="isActive" [style.color]="textColor">`
 ```typescript
 // ❂ 模板专用方法暴露为 public
 export class UserProfile {
-  formatName(name: string) { return name.trim(); }
+  formatName(name: string) {
+    return name.trim()
+  }
 }
 
 // ✅ 模板专用成员用 protected
 export class UserProfile {
-  protected formatName(name: string) { return name.trim(); }
+  protected formatName(name: string) {
+    return name.trim()
+  }
 }
 ```
 
@@ -330,11 +358,11 @@ template: `<button (click)="saveUserData()">Save</button>`
 ```typescript
 // ❌ effect 用于状态同步——触发额外 CD，可能无限循环
 effect(() => {
-  this.filteredItems.set(this.items().filter(i => i.active));
-});
+  this.filteredItems.set(this.items().filter((i) => i.active))
+})
 
 // ✅ computed——惰性计算，无副作用，无额外 CD
-filteredItems = computed(() => this.items().filter(i => i.active));
+filteredItems = computed(() => this.items().filter((i) => i.active))
 ```
 
 ### afterRenderEffect 分离读写阶段
@@ -342,16 +370,18 @@ filteredItems = computed(() => this.items().filter(i => i.active));
 ```typescript
 // ❌ 无阶段指定 = mixedReadWrite = 额外 DOM 回流
 afterRenderEffect(() => {
-  const height = el.offsetHeight; // 读
-  el.style.height = height + 10 + 'px'; // 写
-});
+  const height = el.offsetHeight // 读
+  el.style.height = height + 10 + 'px' // 写
+})
 
 // ✅ 分离阶段减少回流
 afterRenderEffect({
   earlyRead: () => el.offsetHeight,
-  write: (height) => { el.style.height = height() + 10 + 'px'; },
+  write: (height) => {
+    el.style.height = height() + 10 + 'px'
+  },
   read: () => verifyLayout(),
-});
+})
 ```
 
 ### inject() 优于构造函数注入
@@ -368,9 +398,9 @@ export class UserService {
 
 // ✅ inject()——更好的类型推断和可读性
 export class UserService {
-  private http = inject(HttpClient);
-  private router = inject(Router);
-  private auth = inject(AuthService);
+  private http = inject(HttpClient)
+  private router = inject(Router)
+  private auth = inject(AuthService)
 }
 ```
 

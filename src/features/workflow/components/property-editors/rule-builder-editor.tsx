@@ -20,7 +20,11 @@ const OPERATOR_OPTIONS = [
   { value: 'not_empty', label: 'is not empty' },
 ]
 
-export function RuleBuilderEditor({ schema, value, onChange }: PropertyEditorProps) {
+export function RuleBuilderEditor({
+  schema,
+  value,
+  onChange,
+}: PropertyEditorProps) {
   const rules: Rule[] = Array.isArray(value) ? value : []
 
   const updateRule = (index: number, partial: Partial<Rule>) => {
@@ -29,11 +33,17 @@ export function RuleBuilderEditor({ schema, value, onChange }: PropertyEditorPro
   }
 
   const addRule = () => {
-    onChange(schema.key, [...rules, { field: '', operator: 'equals', value: '' }])
+    onChange(schema.key, [
+      ...rules,
+      { field: '', operator: 'equals', value: '' },
+    ])
   }
 
   const removeRule = (index: number) => {
-    onChange(schema.key, rules.filter((_, i) => i !== index))
+    onChange(
+      schema.key,
+      rules.filter((_, i) => i !== index),
+    )
   }
 
   return (
@@ -55,7 +65,9 @@ export function RuleBuilderEditor({ schema, value, onChange }: PropertyEditorPro
               className="h-7 px-1.5 rounded-md border border-frost bg-void text-[11px] text-near-white focus:outline-none"
             >
               {OPERATOR_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>{o.label}</option>
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
               ))}
             </select>
             <input

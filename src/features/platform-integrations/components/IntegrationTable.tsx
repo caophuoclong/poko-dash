@@ -2,10 +2,11 @@ import { useState, useMemo } from 'react'
 import {
   useReactTable,
   getCoreRowModel,
-  getSortedRowModel,
-  type ColumnDef,
-  type SortingState,
+  getSortedRowModel
+  
+  
 } from '@tanstack/react-table'
+import type {ColumnDef, SortingState} from '@tanstack/react-table';
 import { Button } from '#/components/ui/button'
 import { CommonTable } from '#/components/table/common-table'
 import { IntegrationStatusBadge } from './IntegrationStatusBadge'
@@ -101,8 +102,7 @@ export function IntegrationTable({
         header: 'Last checked',
         cell: ({ getValue }) => {
           const value = getValue<string | undefined>()
-          if (!value)
-            return <span className="text-xs text-muted-text">—</span>
+          if (!value) return <span className="text-xs text-muted-text">—</span>
           return (
             <span className="text-xs text-muted-text">
               {new Date(value).toLocaleDateString('en-US', {

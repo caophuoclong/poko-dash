@@ -7,5 +7,5 @@
  */
 
 export type ContentPostsControllerFindByIdParams = {
-include: string;
-};
+  include: string
+}

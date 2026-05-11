@@ -9,8 +9,8 @@
 /**
  * Edge rendering type
  */
-export type PortDtoEdgeType = typeof PortDtoEdgeType[keyof typeof PortDtoEdgeType];
-
+export type PortDtoEdgeType =
+  (typeof PortDtoEdgeType)[keyof typeof PortDtoEdgeType]
 
 export const PortDtoEdgeType = {
   main: 'main',
@@ -18,4 +18,4 @@ export const PortDtoEdgeType = {
   condition_true: 'condition_true',
   condition_false: 'condition_false',
   reference: 'reference',
-} as const;
+} as const

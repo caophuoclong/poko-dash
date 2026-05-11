@@ -9,4 +9,4 @@
 /**
  * Execution config (discriminated by mode)
  */
-export type NodeDefinitionDtoExecution = { [key: string]: unknown };
+export type NodeDefinitionDtoExecution = { [key: string]: unknown }

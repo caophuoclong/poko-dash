@@ -9,11 +9,11 @@
 /**
  * Execution mode
  */
-export type ExecuteWorkflowDtoMode = typeof ExecuteWorkflowDtoMode[keyof typeof ExecuteWorkflowDtoMode];
-
+export type ExecuteWorkflowDtoMode =
+  (typeof ExecuteWorkflowDtoMode)[keyof typeof ExecuteWorkflowDtoMode]
 
 export const ExecuteWorkflowDtoMode = {
   full: 'full',
   'to-node': 'to-node',
   'single-node': 'single-node',
-} as const;
+} as const

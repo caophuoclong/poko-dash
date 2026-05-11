@@ -12,7 +12,7 @@ import { CommonTable } from '@/components/table'
 import { FormProvider, useForm } from 'react-hook-form'
 import Header from './Header'
 import { getColumns } from '../constants/columns-defined'
-import type { AutocompleteOption } from '@/components/ui/autocomplete'
+import type { ComboboxOption } from '@/components/ui/combobox-utils'
 import type {
   ContentIdeaEntity,
   ContentSchemaFormData,
@@ -143,7 +143,7 @@ export default function ContentPage({
   const angels = useMemo(() => {
     return Array.from(new Set(ideas.map((idea) => idea.angle)))
       .filter(Boolean)
-      .map((angle) => ({ value: angle, label: angle })) as AutocompleteOption[]
+      .map((angle) => ({ value: angle, label: angle })) as ComboboxOption[]
   }, [ideas])
   const ideaTable = useReactTable({
     data: ideas,

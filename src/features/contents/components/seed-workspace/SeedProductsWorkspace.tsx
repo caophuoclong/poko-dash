@@ -7,12 +7,28 @@ import {
   Clock,
   AlertCircle,
 } from 'lucide-react'
+import { useRef, useState } from 'react'
 import { Controller } from 'react-hook-form'
 import type { Control } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Autocomplete } from '@/components/ui/autocomplete'
-import type { AutocompleteOption } from '@/components/ui/autocomplete'
+import {
+  Combobox,
+  ComboboxChips,
+  ComboboxChip,
+  ComboboxChipsInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxCollection,
+  ComboboxItem,
+  ComboboxEmpty,
+  useComboboxAnchor,
+} from '@/components/ui/combobox'
+import type { ComboboxOption } from '@/components/ui/combobox-utils'
+import {
+  filterOptionsByLabel,
+  sortSelectedFirst,
+} from '@/components/ui/combobox-utils'
 import { EmptyState, emptyStatePresets } from '@/components/ui/empty-state'
 import { cn } from '#/shared/utils'
 import type { ContentSchemaFormData } from '../../schemas/content.schema'
@@ -55,7 +71,7 @@ export function SeedProductsWorkspace({
   canGenerate = false,
   isApproved = false,
 }: SeedProductsWorkspaceProps) {
-  const productOptions: AutocompleteOption[] = allProducts.map((p) => ({
+  const productOptions: ComboboxOption[] = allProducts.map((p) => ({
     value: p.productId,
     label: p.canonicalTitle,
   }))
@@ -146,24 +162,89 @@ export function SeedProductsWorkspace({
             <Controller
               control={control}
               name="ideaProducts"
-              render={({ field }) => (
-                <Autocomplete
-                  options={productOptions}
-                  value={field.value ?? []}
-                  onChange={field.onChange}
-                  placeholder={
-                    linkedProducts.length === 0
-                      ? 'Select products to link...'
-                      : 'Add more products...'
-                  }
-                  multiple
-                  emitValue="raw"
-                  sortSelectedFirst
-                  truncateChipLabel
-                  limitTags={1}
-                  className="flex-1"
-                />
-              )}
+              render={({ field }) => {
+                const anchorRef = useComboboxAnchor()
+                const [cbOpen, setCbOpen] = useState(false)
+                const [inputValue, setInputValue] = useState('')
+                const preventCloseRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+                const selectedOpts = (field.value ?? [])
+                  .map((v: string) => productOptions.find((o) => o.value === v))
+                  .filter(Boolean) as ComboboxOption[]
+                const filtered = sortSelectedFirst(
+                  filterOptionsByLabel(productOptions, inputValue),
+                  selectedOpts,
+                )
+
+                // limitTags={1}
+                const displayItems = selectedOpts.slice(0, 1)
+                const hiddenCount = Math.max(0, selectedOpts.length - 1)
+
+                return (
+                  <Combobox
+                    multiple
+                    value={selectedOpts}
+                    onValueChange={(items) => {
+                      const raw = (items as ComboboxOption[]).map((o) => o.value)
+                      field.onChange(raw)
+                      if (preventCloseRef.current)
+                        clearTimeout(preventCloseRef.current)
+                      preventCloseRef.current = setTimeout(() => {
+                        preventCloseRef.current = null
+                      }, 50)
+                    }}
+                    inputValue={inputValue}
+                    onInputValueChange={setInputValue}
+                    open={cbOpen}
+                    onOpenChange={(next) => {
+                      if (!next && preventCloseRef.current) setCbOpen(true)
+                      else setCbOpen(next)
+                    }}
+                    items={filtered}
+                    itemToStringLabel={(item) => item.label}
+                    isItemEqualToValue={(item, value) =>
+                      item?.value === value?.value
+                    }
+                  >
+                    <div ref={anchorRef}>
+                      <ComboboxChips className="flex-1">
+                        {displayItems.map((item) => (
+                          <ComboboxChip key={String(item.value)}>
+                            <span
+                              className="min-w-0 truncate"
+                              title={item.label}
+                            >
+                              {item.label}
+                            </span>
+                          </ComboboxChip>
+                        ))}
+                        {hiddenCount > 0 && (
+                          <div className="inline-flex items-center justify-center gap-1 rounded-sm bg-muted px-1.5 text-xs font-medium text-foreground">
+                            +{hiddenCount}
+                          </div>
+                        )}
+                        <ComboboxChipsInput
+                          placeholder={
+                            linkedProducts.length === 0
+                              ? 'Select products to link...'
+                              : 'Add more products...'
+                          }
+                        />
+                      </ComboboxChips>
+                    </div>
+                    <ComboboxContent anchor={anchorRef}>
+                      <ComboboxList>
+                        <ComboboxCollection>
+                          {(item) => (
+                            <ComboboxItem value={item}>{item.label}</ComboboxItem>
+                          )}
+                        </ComboboxCollection>
+                        <ComboboxEmpty>No results found</ComboboxEmpty>
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
+                )
+              }}
             />
           </div>
         )}

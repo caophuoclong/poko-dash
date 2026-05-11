@@ -5,10 +5,10 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { ContentPostSummaryDto } from './contentPostSummaryDto';
-import type { PaginationMetaDto } from './paginationMetaDto';
+import type { ContentPostSummaryDto } from './contentPostSummaryDto'
+import type { PaginationMetaDto } from './paginationMetaDto'
 
 export interface PaginatedContentPostsResponseDto {
-  data: ContentPostSummaryDto[];
-  pagination: PaginationMetaDto;
+  data: ContentPostSummaryDto[]
+  pagination: PaginationMetaDto
 }

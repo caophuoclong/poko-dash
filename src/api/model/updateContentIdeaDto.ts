@@ -5,35 +5,35 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { UpdateContentIdeaDtoAngle } from './updateContentIdeaDtoAngle';
-import type { UpdateContentIdeaDtoIdeaType } from './updateContentIdeaDtoIdeaType';
-import type { UpdateContentIdeaDtoOwner } from './updateContentIdeaDtoOwner';
-import type { UpdateContentIdeaDtoStatus } from './updateContentIdeaDtoStatus';
-import type { UpdateContentIdeaDtoTargetPlatform } from './updateContentIdeaDtoTargetPlatform';
+import type { UpdateContentIdeaDtoAngle } from './updateContentIdeaDtoAngle'
+import type { UpdateContentIdeaDtoIdeaType } from './updateContentIdeaDtoIdeaType'
+import type { UpdateContentIdeaDtoOwner } from './updateContentIdeaDtoOwner'
+import type { UpdateContentIdeaDtoStatus } from './updateContentIdeaDtoStatus'
+import type { UpdateContentIdeaDtoTargetPlatform } from './updateContentIdeaDtoTargetPlatform'
 
 export interface UpdateContentIdeaDto {
   /** Type of content idea */
-  ideaType?: UpdateContentIdeaDtoIdeaType;
+  ideaType?: UpdateContentIdeaDtoIdeaType
   /** Category */
-  category?: string;
+  category?: string
   /** Target platform */
-  targetPlatform?: UpdateContentIdeaDtoTargetPlatform;
+  targetPlatform?: UpdateContentIdeaDtoTargetPlatform
   /** Main title/hook */
-  hook?: string;
+  hook?: string
   /** Content angle */
-  angle?: UpdateContentIdeaDtoAngle;
+  angle?: UpdateContentIdeaDtoAngle
   /** Associated product UUIDs (replaces all) */
-  ideaProducts?: string[];
+  ideaProducts?: string[]
   /** Reference URLs */
-  sourceRefs?: string[];
+  sourceRefs?: string[]
   /**
-     * Priority (1-10)
-     * @minimum 1
-     * @maximum 10
-     */
-  priority?: number;
+   * Priority (1-10)
+   * @minimum 1
+   * @maximum 10
+   */
+  priority?: number
   /** Idea status */
-  status?: UpdateContentIdeaDtoStatus;
+  status?: UpdateContentIdeaDtoStatus
   /** Owner identifier */
-  owner?: UpdateContentIdeaDtoOwner;
+  owner?: UpdateContentIdeaDtoOwner
 }

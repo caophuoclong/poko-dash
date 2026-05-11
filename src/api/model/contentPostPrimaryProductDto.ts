@@ -7,7 +7,7 @@
  */
 
 export interface ContentPostPrimaryProductDto {
-  productId: string;
-  canonicalTitle: string;
-  imageCover?: string;
+  productId: string
+  canonicalTitle: string
+  imageCover?: string
 }

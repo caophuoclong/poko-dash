@@ -16,7 +16,7 @@
 
 Screenshots show **four pages with empty states** (posts list, prompts, workflows, schedule). This is a critical onboarding failure:
 
-- Every empty state should answer: *What is this? Why should I care? What do I do first?*
+- Every empty state should answer: _What is this? Why should I care? What do I do first?_
 - Current empty states appear to be unstyled fallbacks — no illustration, no value proposition, no CTA hierarchy.
 - Recommendation: design a single `<EmptyState>` primitive with `title`, `description`, `illustration` (optional), and `primaryAction` + `secondaryAction` slots. Use it everywhere.
 
@@ -95,32 +95,35 @@ The token architecture in `src/styles.css` is **well-structured** — separate `
 
 ### Priority Matrix
 
-| Priority | Area | Effort | Impact |
-|----------|------|--------|--------|
-| P0 | Empty state system | 2 days | Onboarding conversion |
-| P0 | Fix typography (font mismatch) | 1 hour | Visual polish |
-| P0 | Page header consistency | 2 days | Navigation clarity |
-| P1 | Token consolidation | 2 days | Maintainability |
-| P1 | IA restructuring (group create actions) | 3 days | Operator efficiency |
-| P1 | Skeleton loaders | 2 days | Perceived performance |
-| P2 | Language consistency (i18n strategy) | 3 days | Professionalism |
-| P2 | Micro-interactions & transitions | 3 days | Premium feel |
-| P2 | Light theme audit & fixes | 2 days | Accessibility |
-| P3 | Bulk actions in list views | 3 days | Power-user efficiency |
-| P3 | Command palette (cmd+k) | 3 days | Keyboard navigation |
+| Priority | Area                                    | Effort | Impact                |
+| -------- | --------------------------------------- | ------ | --------------------- |
+| P0       | Empty state system                      | 2 days | Onboarding conversion |
+| P0       | Fix typography (font mismatch)          | 1 hour | Visual polish         |
+| P0       | Page header consistency                 | 2 days | Navigation clarity    |
+| P1       | Token consolidation                     | 2 days | Maintainability       |
+| P1       | IA restructuring (group create actions) | 3 days | Operator efficiency   |
+| P1       | Skeleton loaders                        | 2 days | Perceived performance |
+| P2       | Language consistency (i18n strategy)    | 3 days | Professionalism       |
+| P2       | Micro-interactions & transitions        | 3 days | Premium feel          |
+| P2       | Light theme audit & fixes               | 2 days | Accessibility         |
+| P3       | Bulk actions in list views              | 3 days | Power-user efficiency |
+| P3       | Command palette (cmd+k)                 | 3 days | Keyboard navigation   |
 
 ### P0 Breakdown
 
 **1. Empty State System**
+
 - Create `<EmptyState>` component in `src/components/ui/`
 - Props: `icon?`, `title`, `description`, `primaryAction` (label + onClick), `secondaryAction?`
 - Variants: `default` (create-first), `no-results` (filter yielded nothing), `error` (something broke)
 - Apply to: posts list, prompts, workflows, schedule, products
 
 **2. Typography Fix**
+
 - Align `@import` fonts with `@theme inline` font stacks — either switch the import to Syne + Inter, or update the tokens to Fraunces + Manrope. Recommend Syne (display) + Inter (body) as they're more established for SaaS.
 
 **3. Page Header Consistency**
+
 - Enforce `PageHeaderSlot` usage on all `/dash/*` routes
 - Header should include: page title, breadcrumb (optional), primary action button
 - This gives every page a consistent top zone and a predictable place for the main CTA
@@ -128,15 +131,18 @@ The token architecture in `src/styles.css` is **well-structured** — separate `
 ### P1 Breakdown
 
 **4. Token Consolidation**
+
 - Merge accent color variants: keep one base accent per semantic color (orange, green, red, blue, purple) and derive dim/border via opacity in Tailwind config
 - Remove unused `--sidebar*` (non-t-prefixed) tokens from `:root` and `.dark`
 
 **5. IA Restructuring**
+
 - Group "Bài viết", "Nội dung", "Prompts" under a single expandable "Sáng tạo" (Create) section
 - Move "Integrations" and "Settings" to a bottom group (setup/admin tier)
 - Add a persistent "Tạo bài viết mới" button at the top of the sidebar or as a command bar
 
 **6. Skeleton Loaders**
+
 - Add `<Skeleton>` from shadcn if not already present
 - Create loading variants for: table rows, card grids, form fields, workflow canvas
 

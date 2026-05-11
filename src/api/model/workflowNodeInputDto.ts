@@ -5,29 +5,29 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { WorkflowNodeInputDtoConfig } from './workflowNodeInputDtoConfig';
-import type { WorkflowNodeInputDtoPinData } from './workflowNodeInputDtoPinData';
+import type { WorkflowNodeInputDtoConfig } from './workflowNodeInputDtoConfig'
+import type { WorkflowNodeInputDtoPinData } from './workflowNodeInputDtoPinData'
 
 export interface WorkflowNodeInputDto {
-  xyflow_id: string;
-  type: string;
-  node_type_id: string;
-  position_x: number;
-  position_y: number;
-  title?: string;
-  subtitle?: string;
-  icon?: string;
-  config?: WorkflowNodeInputDtoConfig;
+  xyflow_id: string
+  type: string
+  node_type_id: string
+  position_x: number
+  position_y: number
+  title?: string
+  subtitle?: string
+  icon?: string
+  config?: WorkflowNodeInputDtoConfig
   /** Skip node during execution but keep in graph */
-  disabled?: boolean;
+  disabled?: boolean
   /** Per-node sticky note */
-  notes?: string;
+  notes?: string
   /** On error: route to error port instead of stopping workflow */
-  continueOnFail?: boolean;
+  continueOnFail?: boolean
   /** Retry this node on failure */
-  retryOnFail?: boolean;
+  retryOnFail?: boolean
   /** How many times (1-5), only used if retryOnFail=true */
-  retryCount?: number;
+  retryCount?: number
   /** Override this node's output (for debugging) */
-  pinData?: WorkflowNodeInputDtoPinData;
+  pinData?: WorkflowNodeInputDtoPinData
 }

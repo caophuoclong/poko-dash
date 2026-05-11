@@ -9,4 +9,4 @@
 /**
  * Commission rate percentage (0-100)
  */
-export type UpdateAffiliateLinkDtoCommissionRate = { [key: string]: unknown };
+export type UpdateAffiliateLinkDtoCommissionRate = { [key: string]: unknown }

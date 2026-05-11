@@ -34,7 +34,7 @@ count.value++
 const state = reactive({
   user: null,
   loading: false,
-  error: null
+  error: null,
 })
 
 // reactive 直接访问
@@ -55,13 +55,13 @@ const error = ref<Error | null>(null)
 <!-- ❌ 解构 reactive 会丢失响应性 -->
 <script setup lang="ts">
 const state = reactive({ count: 0, name: 'Vue' })
-const { count, name } = state  // 丢失响应性！
+const { count, name } = state // 丢失响应性！
 </script>
 
 <!-- ✅ 使用 toRefs 保持响应性 -->
 <script setup lang="ts">
 const state = reactive({ count: 0, name: 'Vue' })
-const { count, name } = toRefs(state)  // 保持响应性
+const { count, name } = toRefs(state) // 保持响应性
 // 或者直接使用 ref
 const count = ref(0)
 const name = ref('Vue')
@@ -74,8 +74,8 @@ const name = ref('Vue')
 <!-- ❌ computed 中产生副作用 -->
 <script setup lang="ts">
 const fullName = computed(() => {
-  console.log('Computing...')  // 副作用！
-  otherRef.value = 'changed'   // 修改其他状态！
+  console.log('Computing...') // 副作用！
+  otherRef.value = 'changed' // 修改其他状态！
   return `${firstName.value} ${lastName.value}`
 })
 </script>
@@ -97,7 +97,7 @@ watch(fullName, (name) => {
 ```vue
 <!-- ❌ 大型对象使用 ref 会深度转换 -->
 <script setup lang="ts">
-const largeData = ref(hugeNestedObject)  // 深度响应式，性能开销大
+const largeData = ref(hugeNestedObject) // 深度响应式，性能开销大
 </script>
 
 <!-- ✅ 使用 shallowRef 避免深度转换 -->
@@ -106,7 +106,7 @@ const largeData = shallowRef(hugeNestedObject)
 
 // 整体替换才会触发更新
 function updateData(newData) {
-  largeData.value = newData  // ✅ 触发更新
+  largeData.value = newData // ✅ 触发更新
 }
 
 // ❌ 修改嵌套属性不会触发更新
@@ -129,7 +129,7 @@ triggerRef(largeData)
 <!-- ❌ 直接修改 props -->
 <script setup lang="ts">
 const props = defineProps<{ user: User }>()
-props.user.name = 'New Name'  // 永远不要直接修改 props！
+props.user.name = 'New Name' // 永远不要直接修改 props！
 </script>
 
 <!-- ✅ 使用 emit 通知父组件更新 -->
@@ -147,7 +147,7 @@ const updateName = (name: string) => emit('update', name)
 ```vue
 <!-- ❌ defineProps 缺少类型声明 -->
 <script setup lang="ts">
-const props = defineProps(['title', 'count'])  // 无类型检查
+const props = defineProps(['title', 'count']) // 无类型检查
 </script>
 
 <!-- ✅ 使用类型声明 + withDefaults -->
@@ -159,7 +159,7 @@ interface Props {
 }
 const props = withDefaults(defineProps<Props>(), {
   count: 0,
-  items: () => []  // 对象/数组默认值需要工厂函数
+  items: () => [], // 对象/数组默认值需要工厂函数
 })
 </script>
 ```
@@ -169,8 +169,8 @@ const props = withDefaults(defineProps<Props>(), {
 ```vue
 <!-- ❌ defineEmits 缺少类型 -->
 <script setup lang="ts">
-const emit = defineEmits(['update', 'delete'])  // 无类型检查
-emit('update', someValue)  // 参数类型不安全
+const emit = defineEmits(['update', 'delete']) // 无类型检查
+emit('update', someValue) // 参数类型不安全
 </script>
 
 <!-- ✅ 完整的类型定义 -->
@@ -182,8 +182,8 @@ const emit = defineEmits<{
 }>()
 
 // 现在有完整的类型检查
-emit('update', 1, 'new value')  // ✅
-emit('update', 'wrong')  // ❌ TypeScript 报错
+emit('update', 1, 'new value') // ✅
+emit('update', 'wrong') // ❌ TypeScript 报错
 </script>
 ```
 
@@ -209,9 +209,12 @@ const { count, name = 'default' } = defineProps<{
 
 // count 和 name 自动保持响应性！
 // 可以直接在模板和 watch 中使用
-watch(() => count, (newCount) => {
-  console.log('Count changed:', newCount)
-})
+watch(
+  () => count,
+  (newCount) => {
+    console.log('Count changed:', newCount)
+  },
+)
 </script>
 
 <!-- ✅ 配合默认值使用 -->
@@ -219,7 +222,7 @@ watch(() => count, (newCount) => {
 const {
   title,
   count = 0,
-  items = () => []  // 函数作为默认值（对象/数组）
+  items = () => [], // 函数作为默认值（对象/数组）
 } = defineProps<{
   title: string
   count?: number
@@ -239,7 +242,7 @@ const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
 // 需要 computed 来双向绑定
 const value = computed({
   get: () => props.modelValue,
-  set: (val) => emit('update:modelValue', val)
+  set: (val) => emit('update:modelValue', val),
 })
 </script>
 
@@ -249,7 +252,7 @@ const value = computed({
 const model = defineModel<string>()
 
 // 直接使用
-model.value = 'new value'  // 自动 emit
+model.value = 'new value' // 自动 emit
 </script>
 <template>
   <input v-model="model" />
@@ -263,7 +266,7 @@ const title = defineModel<string>('title')
 // 带默认值和选项
 const count = defineModel<number>('count', {
   default: 0,
-  required: false
+  required: false,
 })
 </script>
 
@@ -324,14 +327,14 @@ const dynamicInput = useTemplateRef<HTMLInputElement>(refKey)
 ```vue
 <!-- ❌ 手动生成 ID 可能冲突 -->
 <script setup lang="ts">
-const id = `input-${Math.random()}`  // SSR 不一致！
+const id = `input-${Math.random()}` // SSR 不一致！
 </script>
 
 <!-- ✅ useId：SSR 安全的唯一 ID -->
 <script setup lang="ts">
 import { useId } from 'vue'
 
-const id = useId()  // 例如：'v-0'
+const id = useId() // 例如：'v-0'
 </script>
 <template>
   <label :for="id">Name</label>
@@ -345,10 +348,7 @@ const errorId = useId()
 </script>
 <template>
   <label :for="inputId">Email</label>
-  <input
-    :id="inputId"
-    :aria-describedby="errorId"
-  />
+  <input :id="inputId" :aria-describedby="errorId" />
   <span :id="errorId" class="error">{{ error }}</span>
 </template>
 ```
@@ -416,7 +416,7 @@ watch(
   () => props.userId,
   async (userId) => {
     user.value = await fetchUser(userId)
-  }
+  },
 )
 
 // ✅ watchEffect：自动收集依赖，立即执行
@@ -440,7 +440,7 @@ watchEffect(async () => {
 watch(searchQuery, async (query) => {
   const controller = new AbortController()
   const data = await fetch(`/api/search?q=${query}`, {
-    signal: controller.signal
+    signal: controller.signal,
   })
   results.value = await data.json()
   // 如果 query 快速变化，旧请求不会被取消！
@@ -451,11 +451,11 @@ watch(searchQuery, async (query) => {
 <script setup lang="ts">
 watch(searchQuery, async (query, _, onCleanup) => {
   const controller = new AbortController()
-  onCleanup(() => controller.abort())  // 取消旧请求
+  onCleanup(() => controller.abort()) // 取消旧请求
 
   try {
     const data = await fetch(`/api/search?q=${query}`, {
-      signal: controller.signal
+      signal: controller.signal,
     })
     results.value = await data.json()
   } catch (e) {
@@ -475,7 +475,7 @@ watch(
   async (id) => {
     user.value = await fetchUser(id)
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 // ✅ deep：深度监听（性能开销大，谨慎使用）
@@ -484,7 +484,7 @@ watch(
   (newState) => {
     console.log('State changed deeply')
   },
-  { deep: true }
+  { deep: true },
 )
 
 // ✅ flush: 'post'：DOM 更新后执行
@@ -494,7 +494,7 @@ watch(
     // 可以安全访问更新后的 DOM
     // nextTick 不再需要
   },
-  { flush: 'post' }
+  { flush: 'post' },
 )
 
 // ✅ once: true (Vue 3.4+)：只执行一次
@@ -503,7 +503,7 @@ watch(
   (value) => {
     console.log('只会执行一次:', value)
   },
-  { once: true }
+  { once: true },
 )
 </script>
 ```
@@ -513,19 +513,18 @@ watch(
 ```vue
 <script setup lang="ts">
 // ✅ 监听多个 ref
-watch(
-  [firstName, lastName],
-  ([newFirst, newLast], [oldFirst, oldLast]) => {
-    console.log(`Name changed from ${oldFirst} ${oldLast} to ${newFirst} ${newLast}`)
-  }
-)
+watch([firstName, lastName], ([newFirst, newLast], [oldFirst, oldLast]) => {
+  console.log(
+    `Name changed from ${oldFirst} ${oldLast} to ${newFirst} ${newLast}`,
+  )
+})
 
 // ✅ 监听 reactive 对象的特定属性
 watch(
   () => [state.count, state.name],
   ([count, name]) => {
     console.log(`count: ${count}, name: ${name}`)
-  }
+  },
 )
 </script>
 ```
@@ -553,7 +552,10 @@ watch(
 
 <!-- ✅ 复合 key（当没有唯一 ID 时）-->
 <template>
-  <li v-for="(item, index) in items" :key="`${item.name}-${item.type}-${index}`">
+  <li
+    v-for="(item, index) in items"
+    :key="`${item.name}-${item.type}-${index}`"
+  >
     {{ item.name }}
   </li>
 </template>
@@ -571,9 +573,7 @@ watch(
 
 <!-- ✅ 使用 computed 过滤 -->
 <script setup lang="ts">
-const activeUsers = computed(() =>
-  users.value.filter(user => user.active)
-)
+const activeUsers = computed(() => users.value.filter((user) => user.active))
 </script>
 <template>
   <li v-for="user in activeUsers" :key="user.id">
@@ -596,7 +596,12 @@ const activeUsers = computed(() =>
 ```vue
 <!-- ❌ 内联复杂逻辑 -->
 <template>
-  <button @click="items = items.filter(i => i.id !== item.id); count--">
+  <button
+    @click="
+      items = items.filter((i) => i.id !== item.id)
+      count--
+    "
+  >
     Delete
   </button>
 </template>
@@ -604,7 +609,7 @@ const activeUsers = computed(() =>
 <!-- ✅ 使用方法 -->
 <script setup lang="ts">
 const deleteItem = (id: number) => {
-  items.value = items.value.filter(i => i.id !== id)
+  items.value = items.value.filter((i) => i.id !== id)
   count.value--
 }
 </script>
@@ -641,14 +646,14 @@ export function useCounter(initialValue = 0) {
 
   const increment = () => count.value++
   const decrement = () => count.value--
-  const reset = () => count.value = initialValue
+  const reset = () => (count.value = initialValue)
 
   // 返回响应式引用和方法
   return {
-    count: readonly(count),  // 只读防止外部修改
+    count: readonly(count), // 只读防止外部修改
     increment,
     decrement,
-    reset
+    reset,
   }
 }
 
@@ -656,7 +661,7 @@ export function useCounter(initialValue = 0) {
 export function useBadCounter() {
   const count = ref(0)
   return {
-    count: count.value  // ❌ 丢失响应性！
+    count: count.value, // ❌ 丢失响应性！
   }
 }
 ```
@@ -667,20 +672,20 @@ export function useBadCounter() {
 <!-- ❌ 传递 props 到 composable 丢失响应性 -->
 <script setup lang="ts">
 const props = defineProps<{ userId: string }>()
-const { user } = useUser(props.userId)  // 丢失响应性！
+const { user } = useUser(props.userId) // 丢失响应性！
 </script>
 
 <!-- ✅ 使用 toRef 或 computed 保持响应性 -->
 <script setup lang="ts">
 const props = defineProps<{ userId: string }>()
 const userIdRef = toRef(props, 'userId')
-const { user } = useUser(userIdRef)  // 保持响应性
+const { user } = useUser(userIdRef) // 保持响应性
 // 或使用 computed
 const { user } = useUser(computed(() => props.userId))
 
 // ✅ Vue 3.5+：直接解构使用
 const { userId } = defineProps<{ userId: string }>()
-const { user } = useUser(() => userId)  // getter 函数
+const { user } = useUser(() => userId) // getter 函数
 </script>
 ```
 
@@ -712,7 +717,7 @@ export function useFetch<T>(url: MaybeRefOrGetter<string>) {
 
   // 响应式 URL 时自动重新获取
   watchEffect(() => {
-    toValue(url)  // 追踪依赖
+    toValue(url) // 追踪依赖
     execute()
   })
 
@@ -720,7 +725,7 @@ export function useFetch<T>(url: MaybeRefOrGetter<string>) {
     data: readonly(data),
     error: readonly(error),
     loading: readonly(loading),
-    refetch: execute
+    refetch: execute,
   }
 }
 
@@ -735,7 +740,7 @@ const { data, loading, error, refetch } = useFetch<User[]>('/api/users')
 export function useEventListener(
   target: MaybeRefOrGetter<EventTarget>,
   event: string,
-  handler: EventListener
+  handler: EventListener,
 ) {
   // 组件挂载后添加
   onMounted(() => {
@@ -755,14 +760,20 @@ export function useFeature() {
   scope.run(() => {
     // 所有响应式效果都在这个 scope 内
     const state = ref(0)
-    watch(state, () => { /* ... */ })
-    watchEffect(() => { /* ... */ })
+    watch(state, () => {
+      /* ... */
+    })
+    watchEffect(() => {
+      /* ... */
+    })
   })
 
   // 清理所有效果
   onUnmounted(() => scope.stop())
 
-  return { /* ... */ }
+  return {
+    /* ... */
+  }
 }
 ```
 
@@ -783,11 +794,7 @@ export function useFeature() {
 
 <!-- ✅ 配合 v-for 使用 -->
 <template>
-  <div
-    v-for="item in list"
-    :key="item.id"
-    v-memo="[item.name, item.status]"
-  >
+  <div v-for="item in list" :key="item.id" v-memo="[item.name, item.status]">
     <!-- 只有 name 或 status 变化时重新渲染 -->
   </div>
 </template>
@@ -800,8 +807,8 @@ export function useFeature() {
 import { defineAsyncComponent } from 'vue'
 
 // ✅ 懒加载组件
-const HeavyChart = defineAsyncComponent(() =>
-  import('./components/HeavyChart.vue')
+const HeavyChart = defineAsyncComponent(
+  () => import('./components/HeavyChart.vue'),
 )
 
 // ✅ 带加载和错误状态
@@ -809,8 +816,8 @@ const AsyncModal = defineAsyncComponent({
   loader: () => import('./components/Modal.vue'),
   loadingComponent: LoadingSpinner,
   errorComponent: ErrorDisplay,
-  delay: 200,  // 延迟显示 loading（避免闪烁）
-  timeout: 3000  // 超时时间
+  delay: 200, // 延迟显示 loading（避免闪烁）
+  timeout: 3000, // 超时时间
 })
 </script>
 ```
@@ -856,10 +863,9 @@ onDeactivated(() => {
 <script setup lang="ts">
 import { useVirtualList } from '@vueuse/core'
 
-const { list, containerProps, wrapperProps } = useVirtualList(
-  items,
-  { itemHeight: 50 }
-)
+const { list, containerProps, wrapperProps } = useVirtualList(items, {
+  itemHeight: 50,
+})
 </script>
 <template>
   <div v-bind="containerProps" style="height: 400px; overflow: auto">
@@ -877,6 +883,7 @@ const { list, containerProps, wrapperProps } = useVirtualList(
 ## Review Checklist
 
 ### 响应性系统
+
 - [ ] ref 用于基本类型，reactive 用于对象（或统一用 ref）
 - [ ] 没有解构 reactive 对象（或使用了 toRefs）
 - [ ] props 传递给 composable 时保持了响应性
@@ -884,6 +891,7 @@ const { list, containerProps, wrapperProps } = useVirtualList(
 - [ ] computed 中没有副作用
 
 ### Props & Emits
+
 - [ ] defineProps 使用 TypeScript 类型声明
 - [ ] 复杂默认值使用 withDefaults + 工厂函数
 - [ ] defineEmits 有完整的类型定义
@@ -891,12 +899,14 @@ const { list, containerProps, wrapperProps } = useVirtualList(
 - [ ] 考虑使用 defineModel 简化 v-model（Vue 3.4+）
 
 ### Vue 3.5 新特性（如适用）
+
 - [ ] 使用 Reactive Props Destructure 简化 props 访问
 - [ ] 使用 useTemplateRef 替代 ref 属性
 - [ ] 表单使用 useId 生成 SSR 安全的 ID
 - [ ] 使用 onWatcherCleanup 处理复杂清理逻辑
 
 ### Watchers
+
 - [ ] watch/watchEffect 有适当的清理函数
 - [ ] 异步 watch 处理了竞态条件
 - [ ] flush: 'post' 用于 DOM 操作的 watcher
@@ -904,12 +914,14 @@ const { list, containerProps, wrapperProps } = useVirtualList(
 - [ ] 考虑 once: true 用于一次性监听
 
 ### 模板
+
 - [ ] v-for 使用唯一且稳定的 key
 - [ ] v-if 和 v-for 没有在同一元素上
 - [ ] 事件处理使用方法而非内联复杂逻辑
 - [ ] 大型列表使用虚拟滚动
 
 ### Composables
+
 - [ ] 相关逻辑提取到 composables
 - [ ] composables 返回响应式引用（不是 .value）
 - [ ] 纯函数不要包装成 composable
@@ -917,6 +929,7 @@ const { list, containerProps, wrapperProps } = useVirtualList(
 - [ ] 使用 effectScope 管理复杂副作用
 
 ### 性能
+
 - [ ] 大型组件拆分为小组件
 - [ ] 使用 defineAsyncComponent 懒加载
 - [ ] 避免不必要的响应式转换

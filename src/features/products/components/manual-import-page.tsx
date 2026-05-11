@@ -221,22 +221,22 @@ function ManualImportInner() {
     eyebrow: 'Sản phẩm',
     backHref: '/dash/products',
     backLabel: 'Sản phẩm',
-    actions: affiliateUrl || jsonText ? (
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={reset}
-        className="gap-1.5 text-muted-text"
-      >
-        <RotateCcw size={13} />
-        Reset
-      </Button>
-    ) : undefined,
+    actions:
+      affiliateUrl || jsonText ? (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={reset}
+          className="gap-1.5 text-muted-text"
+        >
+          <RotateCcw size={13} />
+          Reset
+        </Button>
+      ) : undefined,
   })
 
   return (
     <div className="max-w-2xl">
-
       <div className="mb-5">
         <StepList step={step} />
       </div>

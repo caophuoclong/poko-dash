@@ -9,4 +9,4 @@
 /**
  * Whether the link is active
  */
-export type UpdateAffiliateLinkDtoActive = { [key: string]: unknown };
+export type UpdateAffiliateLinkDtoActive = { [key: string]: unknown }

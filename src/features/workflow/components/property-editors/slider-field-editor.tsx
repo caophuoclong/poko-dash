@@ -1,7 +1,11 @@
 import { FieldLabel } from './field-label'
 import type { PropertyEditorProps } from './property-editor'
 
-export function SliderFieldEditor({ schema, value, onChange }: PropertyEditorProps) {
+export function SliderFieldEditor({
+  schema,
+  value,
+  onChange,
+}: PropertyEditorProps) {
   const num = Number(value ?? schema.defaultValue ?? schema.min ?? 0)
   const min = schema.min ?? 0
   const max = schema.max ?? 100
@@ -10,7 +14,9 @@ export function SliderFieldEditor({ schema, value, onChange }: PropertyEditorPro
     <div className="space-y-1">
       <div className="flex items-center justify-between">
         <FieldLabel required={schema.required}>{schema.label}</FieldLabel>
-        <span className="text-[12px] font-medium text-near-white tabular-nums">{num}</span>
+        <span className="text-[12px] font-medium text-near-white tabular-nums">
+          {num}
+        </span>
       </div>
       <input
         type="range"

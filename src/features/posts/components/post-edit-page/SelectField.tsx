@@ -1,5 +1,6 @@
 import { Controller } from 'react-hook-form'
-import type { Control } from 'react-hook-form'
+import type { Control, Path } from 'react-hook-form'
+import { ChevronDown } from 'lucide-react'
 
 interface SelectOption {
   value: string
@@ -22,25 +23,31 @@ export default function SelectField<
     <div>
       <label
         htmlFor={name as string}
-        className="block text-sm text-near-white mb-2 font-medium"
+        className="block text-[11px] font-medium uppercase tracking-wider text-[var(--color-muted)] mb-1.5"
       >
         {label}
       </label>
       <Controller
-        name={name}
+        name={name as Path<T>}
         control={control}
         render={({ field }) => (
-          <select
-            id={name as string}
-            {...field}
-            className="w-full bg-surface-2 border border-frost rounded-lg px-4 py-2.5 text-sm text-near-white focus:outline-none focus:ring-2 focus:ring-accent-blue appearance-none"
-          >
-            {options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              id={name as string}
+              {...field}
+              className="w-full appearance-none bg-[var(--color-surface-2)] border border-[var(--color-hairline)] rounded-[var(--radius-sm)] px-3 py-2 pr-8 text-sm text-[var(--color-ink)] hover:border-[var(--color-frost-hover)] focus:outline-none focus:border-[var(--color-frost-hover)] focus:ring-1 focus:ring-[var(--color-frost-hover)] transition-colors cursor-pointer"
+            >
+              {options.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              size={14}
+              className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-muted)]"
+            />
+          </div>
         )}
       />
     </div>

@@ -119,7 +119,7 @@ export default function TiptapToolbar({ editor }: TiptapToolbarProps) {
       <ToolbarButton
         onClick={addLink}
         isActive={editor.isActive('link')}
-        title="Thêm link"
+        title="Insert link"
       >
         <LinkIcon size={16} />
       </ToolbarButton>

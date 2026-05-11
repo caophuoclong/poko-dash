@@ -9,8 +9,8 @@
 /**
  * Content status
  */
-export type PatchContentPostDtoStatus = typeof PatchContentPostDtoStatus[keyof typeof PatchContentPostDtoStatus];
-
+export type PatchContentPostDtoStatus =
+  (typeof PatchContentPostDtoStatus)[keyof typeof PatchContentPostDtoStatus]
 
 export const PatchContentPostDtoStatus = {
   draft: 'draft',
@@ -18,4 +18,4 @@ export const PatchContentPostDtoStatus = {
   queued: 'queued',
   published: 'published',
   archived: 'archived',
-} as const;
+} as const

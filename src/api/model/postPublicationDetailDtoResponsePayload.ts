@@ -9,4 +9,6 @@
 /**
  * @nullable
  */
-export type PostPublicationDetailDtoResponsePayload = { [key: string]: unknown } | null;
+export type PostPublicationDetailDtoResponsePayload = {
+  [key: string]: unknown
+} | null

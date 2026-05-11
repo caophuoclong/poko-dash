@@ -1,5 +1,13 @@
 import { useMemo } from 'react'
-import { Bell, Check, Eye, Info, AlertTriangle, AlertCircle, CheckCircle2 } from 'lucide-react'
+import {
+  Bell,
+  Check,
+  Eye,
+  Info,
+  AlertTriangle,
+  AlertCircle,
+  CheckCircle2,
+} from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
 import {
   Sheet,
@@ -30,12 +38,20 @@ interface NotificationSheetProps {
   onOpenChange: (open: boolean) => void
 }
 
-export function NotificationSheet({ open, onOpenChange }: NotificationSheetProps) {
+export function NotificationSheet({
+  open,
+  onOpenChange,
+}: NotificationSheetProps) {
   const navigate = useNavigate()
-  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotificationStore()
+  const { notifications, unreadCount, markAsRead, markAllAsRead } =
+    useNotificationStore()
 
   const sorted = useMemo(
-    () => [...notifications].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    () =>
+      [...notifications].sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      ),
     [notifications],
   )
 
@@ -103,10 +119,14 @@ export function NotificationSheet({ open, onOpenChange }: NotificationSheetProps
                       <div
                         className={cn(
                           'w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5',
-                          sev.tone === 'green' && 'bg-accent-green-dim text-accent-green',
-                          sev.tone === 'yellow' && 'bg-accent-yellow/10 text-accent-yellow',
-                          sev.tone === 'orange' && 'bg-accent-red/10 text-accent-red',
-                          sev.tone === 'neutral' && 'bg-accent-blue-dim text-accent-blue',
+                          sev.tone === 'green' &&
+                            'bg-accent-green-dim text-accent-green',
+                          sev.tone === 'yellow' &&
+                            'bg-accent-yellow/10 text-accent-yellow',
+                          sev.tone === 'orange' &&
+                            'bg-accent-red/10 text-accent-red',
+                          sev.tone === 'neutral' &&
+                            'bg-accent-blue-dim text-accent-blue',
                         )}
                       >
                         {sev.icon}

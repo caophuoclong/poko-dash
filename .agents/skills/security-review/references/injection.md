@@ -26,7 +26,7 @@ cursor.execute("SELECT * FROM users WHERE username = %s", (user_input,))
 
 ```javascript
 // SAFE: Parameterized query (node-postgres)
-const result = await client.query('SELECT * FROM users WHERE id = $1', [userId]);
+const result = await client.query('SELECT * FROM users WHERE id = $1', [userId])
 ```
 
 **2. Stored Procedures**
@@ -67,15 +67,16 @@ query = "SELECT * FROM users WHERE name = '{}'".format(user_input)
 
 ```javascript
 // VULNERABLE: Template literal
-const query = `SELECT * FROM users WHERE id = ${userId}`;
+const query = `SELECT * FROM users WHERE id = ${userId}`
 
 // VULNERABLE: String concatenation
-const query = "SELECT * FROM users WHERE name = '" + userName + "'";
+const query = "SELECT * FROM users WHERE name = '" + userName + "'"
 ```
 
 ### ORM Safety Considerations
 
 **Django ORM**
+
 ```python
 # SAFE: ORM methods
 User.objects.filter(username=user_input)
@@ -88,6 +89,7 @@ User.objects.extra(where=[f"name = '{user_input}'"])
 ```
 
 **SQLAlchemy**
+
 ```python
 # SAFE: ORM methods
 session.query(User).filter(User.name == user_input)
@@ -104,16 +106,17 @@ session.execute(text(f"SELECT * FROM users WHERE name = '{user_input}'"))
 
 ```javascript
 // VULNERABLE: User-controlled query operators
-db.users.find({ username: req.body.username, password: req.body.password });
+db.users.find({ username: req.body.username, password: req.body.password })
 // Attack: { "username": "admin", "password": { "$gt": "" } }
 
 // SAFE: Explicit type checking
-const username = String(req.body.username);
-const password = String(req.body.password);
-db.users.find({ username: username, password: password });
+const username = String(req.body.username)
+const password = String(req.body.password)
+db.users.find({ username: username, password: password })
 ```
 
 **Dangerous Operators**
+
 - `$where` - Allows JavaScript execution
 - `$regex` - Can be used for ReDoS
 - `$gt`, `$ne`, `$in` - Query manipulation when user-controlled
@@ -165,13 +168,13 @@ Block or escape: `& | ; $ > < \ ! ' " ( ) { } [ ] \n \r`
 
 ### Language-Specific Dangerous Functions
 
-| Language | Dangerous Functions |
-|----------|-------------------|
-| Python | `os.system()`, `subprocess.run(shell=True)`, `os.popen()`, `eval()`, `exec()` |
-| JavaScript | `child_process.exec()`, `eval()` |
-| PHP | `exec()`, `shell_exec()`, `system()`, `passthru()`, backticks |
-| Ruby | `system()`, `exec()`, backticks, `%x{}` |
-| Java | `Runtime.exec()`, `ProcessBuilder` with shell |
+| Language   | Dangerous Functions                                                           |
+| ---------- | ----------------------------------------------------------------------------- |
+| Python     | `os.system()`, `subprocess.run(shell=True)`, `os.popen()`, `eval()`, `exec()` |
+| JavaScript | `child_process.exec()`, `eval()`                                              |
+| PHP        | `exec()`, `shell_exec()`, `system()`, `passthru()`, backticks                 |
+| Ruby       | `system()`, `exec()`, backticks, `%x{}`                                       |
+| Java       | `Runtime.exec()`, `ProcessBuilder` with shell                                 |
 
 ---
 
@@ -186,6 +189,7 @@ String filter = "(&(uid=" + safeName + ")(userPassword=" + safePassword + "))";
 ```
 
 **Characters to Escape in LDAP**
+
 - Filter context: `* ( ) \ NUL`
 - DN context: `\ # + < > ; " = /`
 
@@ -205,6 +209,7 @@ template.render(name=user_input)
 ```
 
 **Detection Payloads**
+
 - Jinja2: `{{7*7}}` → `49`
 - FreeMarker: `${7*7}` → `49`
 - Thymeleaf: `[[${7*7}]]` → `49`

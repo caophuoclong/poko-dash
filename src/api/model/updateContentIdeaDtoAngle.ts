@@ -9,4 +9,4 @@
 /**
  * Content angle
  */
-export type UpdateContentIdeaDtoAngle = { [key: string]: unknown };
+export type UpdateContentIdeaDtoAngle = { [key: string]: unknown }

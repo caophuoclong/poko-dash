@@ -24,7 +24,9 @@ export function WorkflowVariablesPanel({
   onClose,
 }: WorkflowVariablesPanelProps) {
   const [editingRow, setEditingRow] = useState<EditingRow | null>(null)
-  const [newRow, setNewRow] = useState<Omit<WorkflowVariable, 'key'> & { key: string } | null>(null)
+  const [newRow, setNewRow] = useState<
+    (Omit<WorkflowVariable, 'key'> & { key: string }) | null
+  >(null)
 
   const existingKeys = variables.map((v) => v.key)
 
@@ -38,7 +40,10 @@ export function WorkflowVariablesPanel({
     const validation = validateWorkflowVariableKey(newRow.key, existingKeys)
     if (!validation.valid) return
 
-    onChange([...variables, { key: newRow.key, value: newRow.value, description: newRow.description }])
+    onChange([
+      ...variables,
+      { key: newRow.key, value: newRow.value, description: newRow.description },
+    ])
     setNewRow(null)
   }, [newRow, existingKeys, variables, onChange])
 
@@ -46,16 +51,28 @@ export function WorkflowVariablesPanel({
     setNewRow(null)
   }, [])
 
-  const handleEdit = useCallback((index: number) => {
-    const v = variables[index]
-    setEditingRow({ index, key: v.key, value: v.value, description: v.description || '' })
-    setNewRow(null)
-  }, [variables])
+  const handleEdit = useCallback(
+    (index: number) => {
+      const v = variables[index]
+      setEditingRow({
+        index,
+        key: v.key,
+        value: v.value,
+        description: v.description || '',
+      })
+      setNewRow(null)
+    },
+    [variables],
+  )
 
   const handleSaveEdit = useCallback(() => {
     if (!editingRow) return
     const currentKey = variables[editingRow.index].key
-    const validation = validateWorkflowVariableKey(editingRow.key, existingKeys, currentKey)
+    const validation = validateWorkflowVariableKey(
+      editingRow.key,
+      existingKeys,
+      currentKey,
+    )
     if (!validation.valid) return
 
     const updated = [...variables]
@@ -72,15 +89,22 @@ export function WorkflowVariablesPanel({
     setEditingRow(null)
   }, [])
 
-  const handleDelete = useCallback((index: number) => {
-    onChange(variables.filter((_, i) => i !== index))
-  }, [variables, onChange])
+  const handleDelete = useCallback(
+    (index: number) => {
+      onChange(variables.filter((_, i) => i !== index))
+    },
+    [variables, onChange],
+  )
 
   const newRowValidation = newRow
     ? validateWorkflowVariableKey(newRow.key, existingKeys)
     : null
   const editRowValidation = editingRow
-    ? validateWorkflowVariableKey(editingRow.key, existingKeys, variables[editingRow.index].key)
+    ? validateWorkflowVariableKey(
+        editingRow.key,
+        existingKeys,
+        variables[editingRow.index].key,
+      )
     : null
 
   return (
@@ -89,7 +113,9 @@ export function WorkflowVariablesPanel({
       <div className="flex items-center justify-between px-4 py-3 border-b border-frost shrink-0">
         <div className="flex items-center gap-2">
           <Variable size={16} className="text-accent-blue" />
-          <h2 className="text-[13px] font-semibold text-near-white">Workflow Variables</h2>
+          <h2 className="text-[13px] font-semibold text-near-white">
+            Workflow Variables
+          </h2>
         </div>
         <button
           onClick={onClose}
@@ -102,7 +128,10 @@ export function WorkflowVariablesPanel({
       {/* Usage hint */}
       <div className="px-4 py-2 bg-accent-blue/5 border-b border-accent-blue/10 shrink-0">
         <p className="text-[11px] text-accent-blue leading-relaxed">
-          Variables defined here are available in all nodes as <code className="px-1 py-0.5 rounded bg-accent-blue/10 font-mono">{'{{var.KEY}}'}</code>
+          Variables defined here are available in all nodes as{' '}
+          <code className="px-1 py-0.5 rounded bg-accent-blue/10 font-mono">
+            {'{{var.KEY}}'}
+          </code>
         </p>
       </div>
 
@@ -114,7 +143,10 @@ export function WorkflowVariablesPanel({
             const isEditing = editingRow?.index === i
             if (isEditing) {
               return (
-                <div key={i} className="p-3 rounded-lg border border-accent-blue bg-accent-blue/5">
+                <div
+                  key={i}
+                  className="p-3 rounded-lg border border-accent-blue bg-accent-blue/5"
+                >
                   <div className="space-y-2">
                     <div>
                       <label className="block text-[10px] font-medium text-muted-text mb-1">
@@ -123,47 +155,71 @@ export function WorkflowVariablesPanel({
                       <input
                         type="text"
                         value={editingRow.key}
-                        onChange={(e) => setEditingRow({ ...editingRow, key: e.target.value })}
+                        onChange={(e) =>
+                          setEditingRow({ ...editingRow, key: e.target.value })
+                        }
                         placeholder="MY_VARIABLE"
                         className="w-full h-7 px-2 rounded border border-frost bg-void text-[12px] font-mono text-near-white placeholder:text-muted-text/50 focus:outline-none focus:ring-1 focus:ring-accent-blue/30"
                       />
-                      {editRowValidation && editRowValidation.errors.length > 0 && (
-                        <div className="mt-1 space-y-0.5">
-                          {editRowValidation.errors.map((err, idx) => (
-                            <p key={idx} className="text-[10px] text-accent-red flex items-center gap-1">
-                              <AlertCircle size={10} />
-                              {err}
-                            </p>
-                          ))}
-                        </div>
-                      )}
-                      {editRowValidation && editRowValidation.warnings.length > 0 && (
-                        <div className="mt-1 space-y-0.5">
-                          {editRowValidation.warnings.map((warn, idx) => (
-                            <p key={idx} className="text-[10px] text-accent-yellow flex items-center gap-1">
-                              <AlertCircle size={10} />
-                              {warn}
-                            </p>
-                          ))}
-                        </div>
-                      )}
+                      {editRowValidation &&
+                        editRowValidation.errors.length > 0 && (
+                          <div className="mt-1 space-y-0.5">
+                            {editRowValidation.errors.map((err, idx) => (
+                              <p
+                                key={idx}
+                                className="text-[10px] text-accent-red flex items-center gap-1"
+                              >
+                                <AlertCircle size={10} />
+                                {err}
+                              </p>
+                            ))}
+                          </div>
+                        )}
+                      {editRowValidation &&
+                        editRowValidation.warnings.length > 0 && (
+                          <div className="mt-1 space-y-0.5">
+                            {editRowValidation.warnings.map((warn, idx) => (
+                              <p
+                                key={idx}
+                                className="text-[10px] text-accent-yellow flex items-center gap-1"
+                              >
+                                <AlertCircle size={10} />
+                                {warn}
+                              </p>
+                            ))}
+                          </div>
+                        )}
                     </div>
                     <div>
-                      <label className="block text-[10px] font-medium text-muted-text mb-1">Value</label>
+                      <label className="block text-[10px] font-medium text-muted-text mb-1">
+                        Value
+                      </label>
                       <input
                         type="text"
                         value={editingRow.value}
-                        onChange={(e) => setEditingRow({ ...editingRow, value: e.target.value })}
+                        onChange={(e) =>
+                          setEditingRow({
+                            ...editingRow,
+                            value: e.target.value,
+                          })
+                        }
                         placeholder="Value"
                         className="w-full h-7 px-2 rounded border border-frost bg-void text-[12px] text-near-white placeholder:text-muted-text/50 focus:outline-none focus:ring-1 focus:ring-accent-blue/30"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-medium text-muted-text mb-1">Description</label>
+                      <label className="block text-[10px] font-medium text-muted-text mb-1">
+                        Description
+                      </label>
                       <input
                         type="text"
                         value={editingRow.description}
-                        onChange={(e) => setEditingRow({ ...editingRow, description: e.target.value })}
+                        onChange={(e) =>
+                          setEditingRow({
+                            ...editingRow,
+                            description: e.target.value,
+                          })
+                        }
                         placeholder="Optional description"
                         className="w-full h-7 px-2 rounded border border-frost bg-void text-[12px] text-near-white placeholder:text-muted-text/50 focus:outline-none focus:ring-1 focus:ring-accent-blue/30"
                       />
@@ -177,7 +233,11 @@ export function WorkflowVariablesPanel({
                       >
                         Save
                       </Button>
-                      <Button size="xs" variant="ghost" onClick={handleCancelEdit}>
+                      <Button
+                        size="xs"
+                        variant="ghost"
+                        onClick={handleCancelEdit}
+                      >
                         Cancel
                       </Button>
                     </div>
@@ -199,10 +259,14 @@ export function WorkflowVariablesPanel({
                       </code>
                     </div>
                     <p className="text-[11px] text-near-white truncate mb-1">
-                      {v.value || <span className="text-muted-text italic">(empty)</span>}
+                      {v.value || (
+                        <span className="text-muted-text italic">(empty)</span>
+                      )}
                     </p>
                     {v.description && (
-                      <p className="text-[10px] text-muted-text">{v.description}</p>
+                      <p className="text-[10px] text-muted-text">
+                        {v.description}
+                      </p>
                     )}
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -237,7 +301,9 @@ export function WorkflowVariablesPanel({
                   <input
                     type="text"
                     value={newRow.key}
-                    onChange={(e) => setNewRow({ ...newRow, key: e.target.value })}
+                    onChange={(e) =>
+                      setNewRow({ ...newRow, key: e.target.value })
+                    }
                     placeholder="MY_VARIABLE"
                     autoFocus
                     className="w-full h-7 px-2 rounded border border-frost bg-void text-[12px] font-mono text-near-white placeholder:text-muted-text/50 focus:outline-none focus:ring-1 focus:ring-accent-green/30"
@@ -245,7 +311,10 @@ export function WorkflowVariablesPanel({
                   {newRowValidation && newRowValidation.errors.length > 0 && (
                     <div className="mt-1 space-y-0.5">
                       {newRowValidation.errors.map((err, idx) => (
-                        <p key={idx} className="text-[10px] text-accent-red flex items-center gap-1">
+                        <p
+                          key={idx}
+                          className="text-[10px] text-accent-red flex items-center gap-1"
+                        >
                           <AlertCircle size={10} />
                           {err}
                         </p>
@@ -255,7 +324,10 @@ export function WorkflowVariablesPanel({
                   {newRowValidation && newRowValidation.warnings.length > 0 && (
                     <div className="mt-1 space-y-0.5">
                       {newRowValidation.warnings.map((warn, idx) => (
-                        <p key={idx} className="text-[10px] text-accent-yellow flex items-center gap-1">
+                        <p
+                          key={idx}
+                          className="text-[10px] text-accent-yellow flex items-center gap-1"
+                        >
                           <AlertCircle size={10} />
                           {warn}
                         </p>
@@ -264,21 +336,29 @@ export function WorkflowVariablesPanel({
                   )}
                 </div>
                 <div>
-                  <label className="block text-[10px] font-medium text-muted-text mb-1">Value</label>
+                  <label className="block text-[10px] font-medium text-muted-text mb-1">
+                    Value
+                  </label>
                   <input
                     type="text"
                     value={newRow.value}
-                    onChange={(e) => setNewRow({ ...newRow, value: e.target.value })}
+                    onChange={(e) =>
+                      setNewRow({ ...newRow, value: e.target.value })
+                    }
                     placeholder="Value"
                     className="w-full h-7 px-2 rounded border border-frost bg-void text-[12px] text-near-white placeholder:text-muted-text/50 focus:outline-none focus:ring-1 focus:ring-accent-green/30"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-medium text-muted-text mb-1">Description</label>
+                  <label className="block text-[10px] font-medium text-muted-text mb-1">
+                    Description
+                  </label>
                   <input
                     type="text"
                     value={newRow.description}
-                    onChange={(e) => setNewRow({ ...newRow, description: e.target.value })}
+                    onChange={(e) =>
+                      setNewRow({ ...newRow, description: e.target.value })
+                    }
                     placeholder="Optional description"
                     className="w-full h-7 px-2 rounded border border-frost bg-void text-[12px] text-near-white placeholder:text-muted-text/50 focus:outline-none focus:ring-1 focus:ring-accent-green/30"
                   />
@@ -318,7 +398,9 @@ export function WorkflowVariablesPanel({
           {variables.length === 0 && !newRow && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <Variable size={32} className="text-muted-text/30 mb-3" />
-              <p className="text-[12px] text-muted-text mb-1">No variables defined yet</p>
+              <p className="text-[12px] text-muted-text mb-1">
+                No variables defined yet
+              </p>
               <p className="text-[11px] text-muted-text/70 max-w-[280px]">
                 Add workflow-level variables to reuse values across all nodes
               </p>

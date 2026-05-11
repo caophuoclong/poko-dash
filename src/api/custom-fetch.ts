@@ -15,8 +15,6 @@ export const customFetch = async <T>(
   if (!res.ok) {
     throw new Error(`API error: ${res.status} ${res.statusText}`)
   }
-  const body = [204, 205, 304].includes(res.status)
-    ? null
-    : await res.text()
+  const body = [204, 205, 304].includes(res.status) ? null : await res.text()
   return (body ? JSON.parse(body) : undefined) as T
 }

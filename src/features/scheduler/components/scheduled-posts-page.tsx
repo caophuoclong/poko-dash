@@ -7,7 +7,6 @@ import { transformScheduledJobsToEvents } from '../services/calendar.service'
 import { usePageHeader } from '#/components/ui/page-header-context'
 import type { ContentPostParsed } from '#/features/posts'
 
-
 function ScheduledPostsPageInner() {
   const { data, isLoading } = useContentPosts()
   const allPosts = data?.data ?? []
@@ -47,7 +46,6 @@ function ScheduledPostsPageInner() {
 
   return (
     <div className="max-w-full">
-
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
         <div className="bg-surface border border-frost rounded-xl px-4 py-3">
           <div className="text-xs uppercase tracking-wide text-muted-text">

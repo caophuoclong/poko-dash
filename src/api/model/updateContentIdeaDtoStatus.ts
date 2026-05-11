@@ -9,8 +9,8 @@
 /**
  * Idea status
  */
-export type UpdateContentIdeaDtoStatus = typeof UpdateContentIdeaDtoStatus[keyof typeof UpdateContentIdeaDtoStatus];
-
+export type UpdateContentIdeaDtoStatus =
+  (typeof UpdateContentIdeaDtoStatus)[keyof typeof UpdateContentIdeaDtoStatus]
 
 export const UpdateContentIdeaDtoStatus = {
   draft: 'draft',
@@ -18,4 +18,4 @@ export const UpdateContentIdeaDtoStatus = {
   queued: 'queued',
   produced: 'produced',
   rejected: 'rejected',
-} as const;
+} as const

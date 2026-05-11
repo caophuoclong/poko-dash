@@ -2,9 +2,10 @@ import { memo, useCallback, useEffect, useLayoutEffect, useRef } from 'react'
 import {
   Handle,
   Position,
-  useUpdateNodeInternals,
-  type NodeProps,
+  useUpdateNodeInternals
+  
 } from '@xyflow/react'
+import type {NodeProps} from '@xyflow/react';
 import { Loader2, CheckCircle2, XCircle, Copy } from 'lucide-react'
 import { cn } from '#/shared/utils'
 import type { NodeExecutionData, WorkflowNodeData } from '../../types'
@@ -19,17 +20,15 @@ import { CATEGORY_CONFIG } from '../../stores/node-registry/constants'
 import { useExecutionStore } from '../../stores/execution-store/useExecutionStore'
 import { PortDot } from './PortDot'
 
-
-
 function WorkflowNode({ data, selected, id }: NodeProps) {
   const nodeData = data as unknown as WorkflowNodeData
   const Icon = nodeData.icon ? ICON_MAP[nodeData.icon] : null
   const status = nodeData.status ? statusConfig[nodeData.status] : null
-    const definitionStore = useNodeRegistryStore()
+  const definitionStore = useNodeRegistryStore()
 
-    const def = definitionStore.getNodeDefinition(nodeData.nodeTypeId || '')
-    const catConfig = def ? CATEGORY_CONFIG[def.identity.category] : null
-    const nodeColor = def ? def.ui.color : undefined
+  const def = definitionStore.getNodeDefinition(nodeData.nodeTypeId || '')
+  const catConfig = def ? CATEGORY_CONFIG[def.identity.category] : null
+  const nodeColor = def ? def.ui.color : undefined
   const colorStyles = nodeColor ? NODE_COLOR_MAP[nodeColor] : null
   const updateNodeInternals = useUpdateNodeInternals()
   const executionsStore = useExecutionStore()
@@ -54,7 +53,7 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver(() => updateNodeInternals(id))
-    const el = document.querySelector(`[data-id="${id}"]`) as HTMLElement | null
+    const el = document.querySelector(`[data-id="${id}"]`)
     if (el) resizeObserver.observe(el)
     return () => resizeObserver.disconnect()
   }, [id, updateNodeInternals])
@@ -66,7 +65,7 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
     def && nodeData.config
       ? definitionStore.getNodeSummaryData(
           def.identity.typeId,
-          nodeData.config as Record<string, unknown>,
+          nodeData.config,
         )
       : null
   const hasMultiPort = inputs.length > 1 || outputs.length > 1

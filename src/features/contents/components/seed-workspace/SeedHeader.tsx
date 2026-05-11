@@ -178,10 +178,7 @@ export function SeedHeader({
             <DropdownMenuContent align="end">
               <DropdownMenuItem>Duplicate seed</DropdownMenuItem>
               <DropdownMenuItem>Export settings</DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={onDelete}
-                className="text-accent-red"
-              >
+              <DropdownMenuItem onClick={onDelete} className="text-accent-red">
                 Delete seed
               </DropdownMenuItem>
             </DropdownMenuContent>

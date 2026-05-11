@@ -19,7 +19,10 @@ type CanvasEdgeData = {
   logicalType?: LogicalEdgeType
 }
 
-function getLogicalType(edge: Edge): { type: LogicalEdgeType; edge_type?: WorkflowEdgeInputDtoEdgeType } {
+function getLogicalType(edge: Edge): {
+  type: LogicalEdgeType
+  edge_type?: WorkflowEdgeInputDtoEdgeType
+} {
   const data = (edge.data ?? {}) as CanvasEdgeData
   const marker = data.edgeType
   const sourceHandle = edge.sourceHandle ?? ''
@@ -30,15 +33,21 @@ function getLogicalType(edge: Edge): { type: LogicalEdgeType; edge_type?: Workfl
   if (sourceHandle === 'default') return { type: 'switch_default' }
   if (sourceHandle.startsWith('case_')) return { type: 'switch_case' }
 
-  if (marker === 'error' || sourceHandle === 'error') return { type: 'error', edge_type: 'error' }
+  if (marker === 'error' || sourceHandle === 'error')
+    return { type: 'error', edge_type: 'error' }
 
   return { type: 'main', edge_type: 'main' }
 }
 
-function getCanvasEdgeType(type?: string, edgeType?: string, sourceHandle?: string): string | undefined {
+function getCanvasEdgeType(
+  type?: string,
+  edgeType?: string,
+  sourceHandle?: string,
+): string | undefined {
   if (type === 'true') return 'condition_true'
   if (type === 'false') return 'condition_false'
-  if (type === 'error' || edgeType === 'error' || sourceHandle === 'error') return 'error'
+  if (type === 'error' || edgeType === 'error' || sourceHandle === 'error')
+    return 'error'
   return edgeType
 }
 

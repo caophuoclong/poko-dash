@@ -135,7 +135,8 @@ export function getProductActionLabel(
   state: GenerationState,
   generatingProductIds: string[],
 ): string {
-  if (isProductGenerating(productId, generatingProductIds)) return 'Generating...'
+  if (isProductGenerating(productId, generatingProductIds))
+    return 'Generating...'
   if (isProductGenerated(productId, state)) {
     return state.canRegenerate ? 'Regenerate' : 'View posts'
   }

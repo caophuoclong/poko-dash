@@ -5,24 +5,24 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { ConfigDto } from './configDto';
-import type { IdentityDto } from './identityDto';
-import type { IODto } from './iODto';
-import type { LimitsDto } from './limitsDto';
-import type { RetryDto } from './retryDto';
-import type { SecurityDto } from './securityDto';
-import type { UIDto } from './uIDto';
-import type { UpsertNodeDefinitionBodyDtoExecution } from './upsertNodeDefinitionBodyDtoExecution';
+import type { ConfigDto } from './configDto'
+import type { IdentityDto } from './identityDto'
+import type { IODto } from './iODto'
+import type { LimitsDto } from './limitsDto'
+import type { RetryDto } from './retryDto'
+import type { SecurityDto } from './securityDto'
+import type { UIDto } from './uIDto'
+import type { UpsertNodeDefinitionBodyDtoExecution } from './upsertNodeDefinitionBodyDtoExecution'
 
 export interface UpsertNodeDefinitionBodyDto {
-  identity: IdentityDto;
-  io: IODto;
+  identity: IdentityDto
+  io: IODto
   /** Execution config (discriminated by mode) */
-  execution: UpsertNodeDefinitionBodyDtoExecution;
-  config: ConfigDto;
-  limits: LimitsDto;
-  retry: RetryDto;
-  ui: UIDto;
-  security?: SecurityDto;
-  builtIn?: boolean;
+  execution: UpsertNodeDefinitionBodyDtoExecution
+  config: ConfigDto
+  limits: LimitsDto
+  retry: RetryDto
+  ui: UIDto
+  security?: SecurityDto
+  builtIn?: boolean
 }

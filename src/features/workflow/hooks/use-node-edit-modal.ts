@@ -5,9 +5,10 @@ import { buildVariableList } from '../utils/variable-system-utils'
 import { ICON_MAP } from '../components/nodes/workflow-node.constants'
 import type { LucideIcon } from 'lucide-react'
 import {
-  getNodeDefinition,
-  type ValidationError,
+  getNodeDefinition
+  
 } from '../stores/node-registry/use-node-registry.store'
+import type {ValidationError} from '../stores/node-registry/use-node-registry.store';
 import { CATEGORY_CONFIG } from '../stores/node-registry/constants'
 
 interface UseNodeEditModalProps {
@@ -30,7 +31,9 @@ export function useNodeEditModal({
   onNodeDataUpdate,
 }: UseNodeEditModalProps) {
   const def = getNodeDefinition(data.nodeTypeId ?? '')
-  const [activeTab, setActiveTab] = useState<'properties' | 'validation'>('properties')
+  const [activeTab, setActiveTab] = useState<'properties' | 'validation'>(
+    'properties',
+  )
 
   const [localProps, setLocalProps] = useState<Record<string, unknown>>(() => ({
     ...def?.config.defaultProps,
@@ -47,7 +50,7 @@ export function useNodeEditModal({
 
   const errors: ValidationError[] = useMemo(() => {
     if (!def) return []
-    return def.validate(localProps as never)
+    return def.validate(localProps)
   }, [def, localProps])
 
   const errorCount = errors.filter((e) => e.severity === 'error').length
@@ -87,7 +90,15 @@ export function useNodeEditModal({
     handleTitleBlur()
     handleSubtitleBlur()
     onClose()
-  }, [nodeId, title, subtitle, onNodeDataUpdate, onClose, handleTitleBlur, handleSubtitleBlur])
+  }, [
+    nodeId,
+    title,
+    subtitle,
+    onNodeDataUpdate,
+    onClose,
+    handleTitleBlur,
+    handleSubtitleBlur,
+  ])
 
   const catConfig = def ? CATEGORY_CONFIG[def.identity?.category] : null
   const Icon: LucideIcon | undefined = def
@@ -95,21 +106,39 @@ export function useNodeEditModal({
     : undefined
 
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
-  const dragState = useRef<{ startX: number; startY: number; offsetX: number; offsetY: number } | null>(null)
+  const dragState = useRef<{
+    startX: number
+    startY: number
+    offsetX: number
+    offsetY: number
+  } | null>(null)
 
-  const handleDragStart = useCallback((e: React.MouseEvent) => {
-    e.preventDefault()
-    dragState.current = { startX: e.clientX, startY: e.clientY, offsetX: dragOffset.x, offsetY: dragOffset.y }
-  }, [dragOffset])
+  const handleDragStart = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault()
+      dragState.current = {
+        startX: e.clientX,
+        startY: e.clientY,
+        offsetX: dragOffset.x,
+        offsetY: dragOffset.y,
+      }
+    },
+    [dragOffset],
+  )
 
   useEffect(() => {
     const handleDragMove = (e: MouseEvent) => {
       if (!dragState.current) return
       const dx = e.clientX - dragState.current.startX
       const dy = e.clientY - dragState.current.startY
-      setDragOffset({ x: dragState.current.offsetX + dx, y: dragState.current.offsetY + dy })
+      setDragOffset({
+        x: dragState.current.offsetX + dx,
+        y: dragState.current.offsetY + dy,
+      })
     }
-    const handleDragEnd = () => { dragState.current = null }
+    const handleDragEnd = () => {
+      dragState.current = null
+    }
     document.addEventListener('mousemove', handleDragMove)
     document.addEventListener('mouseup', handleDragEnd)
     return () => {

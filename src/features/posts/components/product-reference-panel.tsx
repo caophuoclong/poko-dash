@@ -1,5 +1,22 @@
-import { Autocomplete } from '#/components/ui/autocomplete'
-import type { AutocompleteOption } from '#/components/ui/autocomplete'
+import { useRef, useState } from 'react'
+import {
+  Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
+  ComboboxCollection,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  useComboboxAnchor,
+} from '#/components/ui/combobox'
+import type { ComboboxOption } from '#/components/ui/combobox-utils'
+import {
+  filterOptionsByLabel,
+  sortSelectedFirst,
+} from '#/components/ui/combobox-utils'
 import { useProducts } from '@/features/products/hooks/use-products'
 
 interface ProductReferencePanelProps {
@@ -7,6 +24,54 @@ interface ProductReferencePanelProps {
   supportingProductIds?: string[]
   onPrimaryProductChange: (productId: string) => void
   onSupportingProductsChange: (productIds: string[]) => void
+}
+
+function SingleProductSelect({
+  options,
+  selectedValue,
+  onChange,
+  placeholder,
+  disabled,
+}: {
+  options: ComboboxOption[]
+  selectedValue?: string
+  onChange: (value: string | undefined) => void
+  placeholder: string
+  disabled?: boolean
+}) {
+  const [open, setOpen] = useState(false)
+  const [inputValue, setInputValue] = useState('')
+  const selectedOption = options.find((o) => o.value === selectedValue) ?? null
+  const filtered = filterOptionsByLabel(options, inputValue)
+
+  return (
+    <Combobox
+      multiple={false}
+      value={selectedOption}
+      onValueChange={(option) => onChange(option?.value)}
+      inputValue={inputValue}
+      onInputValueChange={setInputValue}
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next)
+        if (!next) setInputValue(selectedOption?.label ?? '')
+      }}
+      items={filtered}
+      itemToStringLabel={(item) => item.label}
+      isItemEqualToValue={(item, value) => item?.value === value?.value}
+      disabled={disabled}
+    >
+      <ComboboxInput placeholder={placeholder} showClear disabled={disabled} />
+      <ComboboxContent>
+        <ComboboxList>
+          <ComboboxCollection>
+            {(item) => <ComboboxItem value={item}>{item.label}</ComboboxItem>}
+          </ComboboxCollection>
+          <ComboboxEmpty>No results found</ComboboxEmpty>
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
+  )
 }
 
 export default function ProductReferencePanel({
@@ -17,11 +82,27 @@ export default function ProductReferencePanel({
 }: ProductReferencePanelProps) {
   const { data: products, isLoading } = useProducts()
 
-  const availableProducts: AutocompleteOption[] =
+  const availableProducts: ComboboxOption[] =
     products?.map((p) => ({
       value: p.productId,
       label: p.canonicalTitle,
     })) ?? []
+
+  const anchorRef = useComboboxAnchor()
+  const [open, setOpen] = useState(false)
+  const [inputValue, setInputValue] = useState('')
+  const preventCloseRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const selectedSupporting = supportingProductIds
+    .map((v) => availableProducts.find((o) => o.value === v))
+    .filter(Boolean) as ComboboxOption[]
+  const filteredSupporting = sortSelectedFirst(
+    filterOptionsByLabel(availableProducts, inputValue),
+    selectedSupporting,
+  )
+
+  const displayItems = selectedSupporting.slice(0, 2)
+  const hiddenCount = Math.max(0, selectedSupporting.length - 2)
 
   return (
     <div className="space-y-3">
@@ -29,12 +110,11 @@ export default function ProductReferencePanel({
         <label className="block text-sm text-near-white mb-2 font-medium">
           Sản phẩm chính
         </label>
-        <Autocomplete
+        <SingleProductSelect
           options={availableProducts}
-          value={primaryProductId ?? null}
+          selectedValue={primaryProductId}
           onChange={(value) => value && onPrimaryProductChange(value)}
           placeholder="Chọn sản phẩm chính"
-          emitValue="raw"
           disabled={isLoading}
         />
       </div>
@@ -43,18 +123,55 @@ export default function ProductReferencePanel({
         <label className="block text-sm text-near-white mb-2 font-medium">
           Sản phẩm hỗ trợ
         </label>
-        <Autocomplete
-          options={availableProducts}
-          value={supportingProductIds}
-          onChange={(options) => onSupportingProductsChange(options)}
-          placeholder="Chọn sản phẩm hỗ trợ"
-          limitTags={2}
+        <Combobox
           multiple
-          sortSelectedFirst={true}
-          truncateChipLabel={true}
-          emitValue="raw"
+          value={selectedSupporting}
+          onValueChange={(items) => {
+            const raw = (items as ComboboxOption[]).map((o) => o.value)
+            onSupportingProductsChange(raw)
+            if (preventCloseRef.current) clearTimeout(preventCloseRef.current)
+            preventCloseRef.current = setTimeout(() => {
+              preventCloseRef.current = null
+            }, 50)
+          }}
+          inputValue={inputValue}
+          onInputValueChange={setInputValue}
+          open={open}
+          onOpenChange={(next) => {
+            if (!next && preventCloseRef.current) setOpen(true)
+            else setOpen(next)
+          }}
+          items={filteredSupporting}
+          itemToStringLabel={(item) => item.label}
+          isItemEqualToValue={(item, value) => item?.value === value?.value}
           disabled={isLoading}
-        />
+        >
+          <div ref={anchorRef}>
+            <ComboboxChips>
+              {displayItems.map((item) => (
+                <ComboboxChip key={String(item.value)}>
+                  <span className="min-w-0 truncate" title={item.label}>
+                    {item.label}
+                  </span>
+                </ComboboxChip>
+              ))}
+              {hiddenCount > 0 && (
+                <div className="inline-flex items-center justify-center gap-1 rounded-sm bg-muted px-1.5 text-xs font-medium text-foreground">
+                  +{hiddenCount}
+                </div>
+              )}
+              <ComboboxChipsInput placeholder="Chọn sản phẩm hỗ trợ" />
+            </ComboboxChips>
+          </div>
+          <ComboboxContent anchor={anchorRef}>
+            <ComboboxList>
+              <ComboboxCollection>
+                {(item) => <ComboboxItem value={item}>{item.label}</ComboboxItem>}
+              </ComboboxCollection>
+              <ComboboxEmpty>No results found</ComboboxEmpty>
+            </ComboboxList>
+          </ComboboxContent>
+        </Combobox>
 
         {supportingProductIds.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-2">

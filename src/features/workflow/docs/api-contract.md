@@ -20,14 +20,14 @@ Used in list views. Lightweight representation.
 
 ```typescript
 interface WorkflowSummary {
-  id: string           // UUID v4
-  name: string         // Max 100 chars
-  description: string  // Max 500 chars
+  id: string // UUID v4
+  name: string // Max 100 chars
+  description: string // Max 500 chars
   status: 'draft' | 'active' | 'paused' | 'archived'
-  nodeCount: number    // Computed server-side
-  lastRunAt?: string   // ISO 8601, null if never run
-  createdAt: string    // ISO 8601
-  updatedAt: string    // ISO 8601
+  nodeCount: number // Computed server-side
+  lastRunAt?: string // ISO 8601, null if never run
+  createdAt: string // ISO 8601
+  updatedAt: string // ISO 8601
 }
 ```
 
@@ -49,28 +49,28 @@ interface WorkflowDetail {
 
 interface WorkflowNode {
   id: string
-  type: string              // e.g. 'workflow-node'
+  type: string // e.g. 'workflow-node'
   position: { x: number; y: number }
   data: WorkflowNodeData
 }
 
 interface WorkflowNodeData {
-  title: string             // Display label
-  subtitle?: string         // Helper text
-  icon?: string             // Lucide icon name
+  title: string // Display label
+  subtitle?: string // Helper text
+  icon?: string // Lucide icon name
   status?: 'active' | 'pending' | 'completed' | 'error'
   metrics?: { label: string; value: string }[]
-  config?: Record<string, unknown>  // Node-type-specific configuration
+  config?: Record<string, unknown> // Node-type-specific configuration
 }
 
 interface WorkflowEdge {
   id: string
-  source: string            // Source node ID
-  target: string            // Target node ID
-  type?: string             // 'smoothstep' | 'straight' | 'bezier'
+  source: string // Source node ID
+  target: string // Target node ID
+  type?: string // 'smoothstep' | 'straight' | 'bezier'
   animated?: boolean
   style?: {
-    stroke?: string         // CSS color
+    stroke?: string // CSS color
     strokeWidth?: number
   }
   label?: string
@@ -83,10 +83,10 @@ Static catalog of available node types. Read-only, not user-editable.
 
 ```typescript
 interface NodeTypeDefinition {
-  type: string              // Internal type key
-  label: string             // Display name
-  description: string       // What this node does
-  icon: string              // Lucide icon name
+  type: string // Internal type key
+  label: string // Display name
+  description: string // What this node does
+  icon: string // Lucide icon name
   category: 'trigger' | 'action' | 'condition' | 'output'
   defaultData: WorkflowNodeData
 }
@@ -103,7 +103,7 @@ interface WorkflowRun {
   status: 'running' | 'completed' | 'failed'
   startedAt: string
   completedAt?: string
-  nodeResults: Record<string, NodeRunResult>  // Keyed by node ID
+  nodeResults: Record<string, NodeRunResult> // Keyed by node ID
 }
 
 interface NodeRunResult {
@@ -126,15 +126,16 @@ GET /api/v1/workflows
 ```
 
 **Query Params:**
-| Param     | Type   | Default  | Description                  |
+| Param | Type | Default | Description |
 |-----------|--------|----------|------------------------------|
-| `status`  | string | —        | Filter: draft, active, paused, archived |
-| `search`  | string | —        | Search in name & description |
-| `page`    | number | 1        | Page number (1-indexed)      |
-| `limit`   | number | 20       | Items per page (max 100)     |
-| `sort`    | string | -updatedAt | Sort field + direction: `name`, `-updatedAt`, `createdAt` |
+| `status` | string | — | Filter: draft, active, paused, archived |
+| `search` | string | — | Search in name & description |
+| `page` | number | 1 | Page number (1-indexed) |
+| `limit` | number | 20 | Items per page (max 100) |
+| `sort` | string | -updatedAt | Sort field + direction: `name`, `-updatedAt`, `createdAt` |
 
 **Response:**
+
 ```json
 {
   "data": [ WorkflowSummary, ... ],
@@ -162,6 +163,7 @@ POST /api/v1/workflows
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "string (required)",
@@ -204,6 +206,7 @@ POST /api/v1/workflows/:workflowId/run
 Triggers execution. Only valid for `active` workflows.
 
 **Response:**
+
 ```json
 {
   "runId": "uuid",
@@ -211,6 +214,7 @@ Triggers execution. Only valid for `active` workflows.
   "startedAt": "ISO 8601"
 }
 ```
+
 HTTP 202 Accepted
 
 ### 7. Get Workflow Runs
@@ -220,12 +224,13 @@ GET /api/v1/workflows/:workflowId/runs
 ```
 
 **Query Params:**
-| Param   | Description |
+| Param | Description |
 |---------|-------------|
-| `page`  | Default 1   |
-| `limit` | Default 20  |
+| `page` | Default 1 |
+| `limit` | Default 20 |
 
 **Response:**
+
 ```json
 {
   "data": [ WorkflowRun, ... ],
@@ -261,6 +266,7 @@ GET /api/v1/workflows/node-types
 Returns the static catalog of available node types.
 
 **Response:**
+
 ```json
 {
   "data": [ NodeTypeDefinition, ... ]
@@ -284,12 +290,12 @@ All errors follow a consistent format:
 ```
 
 **Common Error Codes:**
-| Code                    | HTTP  | Description                    |
+| Code | HTTP | Description |
 |-------------------------|-------|--------------------------------|
-| `WORKFLOW_NOT_FOUND`    | 404   | Workflow ID doesn't exist      |
-| `VALIDATION_ERROR`      | 422   | Request body validation failed |
-| `INVALID_STATE`         | 409   | Cannot perform action in current state (e.g., run a paused workflow) |
-| `RATE_LIMITED`          | 429   | Too many requests              |
+| `WORKFLOW_NOT_FOUND` | 404 | Workflow ID doesn't exist |
+| `VALIDATION_ERROR` | 422 | Request body validation failed |
+| `INVALID_STATE` | 409 | Cannot perform action in current state (e.g., run a paused workflow) |
+| `RATE_LIMITED` | 429 | Too many requests |
 
 ---
 
@@ -313,11 +319,11 @@ The frontend uses a **local-first optimistic** approach:
 ```typescript
 // Suggested query key structure
 const workflowKeys = {
-  all:    ['workflows'],
-  list:   (filters) => ['workflows', 'list', filters],
-  detail: (id)     => ['workflows', 'detail', id],
-  runs:   (id)     => ['workflows', 'runs', id],
-  nodeTypes:       ['workflows', 'node-types'],
+  all: ['workflows'],
+  list: (filters) => ['workflows', 'list', filters],
+  detail: (id) => ['workflows', 'detail', id],
+  runs: (id) => ['workflows', 'runs', id],
+  nodeTypes: ['workflows', 'node-types'],
 }
 ```
 

@@ -7,7 +7,7 @@
  */
 
 export interface BreakdownRowDto {
-  dimension: string;
-  value: number;
-  share?: number;
+  dimension: string
+  value: number
+  share?: number
 }

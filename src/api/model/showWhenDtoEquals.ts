@@ -9,4 +9,4 @@
 /**
  * Expected value
  */
-export type ShowWhenDtoEquals = { [key: string]: unknown };
+export type ShowWhenDtoEquals = { [key: string]: unknown }

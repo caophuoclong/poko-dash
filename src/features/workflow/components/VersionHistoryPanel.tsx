@@ -59,8 +59,7 @@ export function VersionHistoryPanel({
   }, [])
 
   const sorted = useMemo(
-    () =>
-      [...versions].sort((a, b) => b.versionNumber - a.versionNumber),
+    () => [...versions].sort((a, b) => b.versionNumber - a.versionNumber),
     [versions],
   )
 

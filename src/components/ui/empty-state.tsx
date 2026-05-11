@@ -74,7 +74,9 @@ function PageEmptyState({
           {title}
         </p>
         {description ? (
-          <p className="text-sm leading-relaxed text-[var(--color-muted)]">{description}</p>
+          <p className="text-sm leading-relaxed text-[var(--color-muted)]">
+            {description}
+          </p>
         ) : null}
       </div>
 
@@ -85,7 +87,9 @@ function PageEmptyState({
         </div>
       ) : null}
 
-      {note ? <p className="relative text-xs text-[var(--color-muted)]">{note}</p> : null}
+      {note ? (
+        <p className="relative text-xs text-[var(--color-muted)]">{note}</p>
+      ) : null}
     </div>
   )
 }
@@ -134,7 +138,9 @@ function CardEmptyState({
         </div>
       ) : null}
 
-      {note ? <p className="text-xs text-[var(--color-muted)]">{note}</p> : null}
+      {note ? (
+        <p className="text-xs text-[var(--color-muted)]">{note}</p>
+      ) : null}
     </div>
   )
 }
@@ -175,7 +181,9 @@ function NoResultsEmptyState({
       </div>
 
       {primaryAction ? <div>{primaryAction}</div> : null}
-      {note ? <p className="text-xs text-[var(--color-muted)]">{note}</p> : null}
+      {note ? (
+        <p className="text-xs text-[var(--color-muted)]">{note}</p>
+      ) : null}
     </div>
   )
 }

@@ -7,6 +7,6 @@
  */
 
 export interface UpdateIdeaResponseDto {
-  ok: boolean;
-  message: string;
+  ok: boolean
+  message: string
 }

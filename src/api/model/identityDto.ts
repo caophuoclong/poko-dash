@@ -5,30 +5,30 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { IdentityDtoCategory } from './identityDtoCategory';
-import type { IdentityDtoKind } from './identityDtoKind';
+import type { IdentityDtoCategory } from './identityDtoCategory'
+import type { IdentityDtoKind } from './identityDtoKind'
 
 export interface IdentityDto {
   /** Immutable node type identifier (namespace.name) */
-  typeId: string;
+  typeId: string
   /** Schema version */
-  version: number;
+  version: number
   /** Node execution kind */
-  kind: IdentityDtoKind;
+  kind: IdentityDtoKind
   /** UI grouping category */
-  category: IdentityDtoCategory;
+  category: IdentityDtoCategory
   /** Display name on canvas */
-  title: string;
+  title: string
   /** Tooltip text in palette */
-  description: string;
+  description: string
   /** Icon key from design system */
-  icon?: string;
+  icon?: string
   /** Search keywords for palette */
-  tags?: string[];
+  tags?: string[]
   /** If true, hidden from palette but still executable */
-  deprecated?: boolean;
+  deprecated?: boolean
   /** Successor node typeId when deprecated=true */
-  replacementTypeId?: string;
+  replacementTypeId?: string
   /** If true, only available as agent tool, not in main palette */
-  supportingOnly?: boolean;
+  supportingOnly?: boolean
 }

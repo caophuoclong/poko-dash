@@ -7,5 +7,5 @@
  */
 
 export interface DeletePromptResponseDto {
-  message: string;
+  message: string
 }

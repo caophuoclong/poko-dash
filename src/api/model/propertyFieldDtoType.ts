@@ -9,8 +9,8 @@
 /**
  * Input widget type
  */
-export type PropertyFieldDtoType = typeof PropertyFieldDtoType[keyof typeof PropertyFieldDtoType];
-
+export type PropertyFieldDtoType =
+  (typeof PropertyFieldDtoType)[keyof typeof PropertyFieldDtoType]
 
 export const PropertyFieldDtoType = {
   string: 'string',
@@ -29,4 +29,4 @@ export const PropertyFieldDtoType = {
   conditions: 'conditions',
   assignments: 'assignments',
   keyValue: 'keyValue',
-} as const;
+} as const

@@ -5,21 +5,21 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { PortDtoDataType } from './portDtoDataType';
-import type { PortDtoEdgeType } from './portDtoEdgeType';
-import type { PortDtoSchema } from './portDtoSchema';
+import type { PortDtoDataType } from './portDtoDataType'
+import type { PortDtoEdgeType } from './portDtoEdgeType'
+import type { PortDtoSchema } from './portDtoSchema'
 
 export interface PortDto {
   /** Port identifier used in edge routing */
-  id: string;
+  id: string
   /** Display label on canvas */
-  label: string;
+  label: string
   /** Typed data format */
-  dataType: PortDtoDataType;
+  dataType: PortDtoDataType
   /** If true, connection is required */
-  required?: boolean;
+  required?: boolean
   /** Edge rendering type */
-  edgeType: PortDtoEdgeType;
+  edgeType: PortDtoEdgeType
   /** Optional JSON Schema for deep runtime data validation */
-  schema?: PortDtoSchema;
+  schema?: PortDtoSchema
 }

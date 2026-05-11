@@ -47,10 +47,10 @@ export function useCreateContentIdea() {
   return {
     ...rest,
     mutate: (variables: any, options?: any) =>
-      origMutate({ data: variables } as any, options),
+      origMutate({ data: variables }, options),
     mutateAsync: (variables: any, options?: any) =>
-      origMutateAsync({ data: variables } as any, options),
-  } as UseMutationResult<any, any, any>
+      origMutateAsync({ data: variables }, options),
+  }
 }
 
 export function useUpdateContentIdea() {
@@ -69,15 +69,15 @@ export function useUpdateContentIdea() {
     ...rest,
     mutate: (variables: any, options?: any) =>
       origMutate(
-        { ideaId: variables.ideaId, data: variables.data } as any,
+        { ideaId: variables.ideaId, data: variables.data },
         options,
       ),
     mutateAsync: (variables: any, options?: any) =>
       origMutateAsync(
-        { ideaId: variables.ideaId, data: variables.data } as any,
+        { ideaId: variables.ideaId, data: variables.data },
         options,
       ),
-  } as UseMutationResult<any, any, any>
+  }
 }
 
 export function useGenerateContentIdeas() {
@@ -95,10 +95,10 @@ export function useGenerateContentIdeas() {
   return {
     ...rest,
     mutate: (variables: any, options?: any) =>
-      origMutate({ data: variables } as any, options),
+      origMutate({ data: variables }, options),
     mutateAsync: (variables: any, options?: any) =>
-      origMutateAsync({ data: variables } as any, options),
-  } as UseMutationResult<any, any, any>
+      origMutateAsync({ data: variables }, options),
+  }
 }
 
 export function useDeleteContentIdea() {

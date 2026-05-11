@@ -1,9 +1,9 @@
 export const statusOptions = [
-  { value: 'draft', label: 'Nháp' },
-  { value: 'approved', label: 'Đã duyệt' },
-  { value: 'queued', label: 'Trong hàng đợi' },
-  { value: 'published', label: 'Đã đăng' },
-  { value: 'archived', label: 'Lưu trữ' },
+  { value: 'draft', label: 'Draft' },
+  { value: 'approved', label: 'Approved' },
+  { value: 'queued', label: 'Scheduled' },
+  { value: 'published', label: 'Published' },
+  { value: 'archived', label: 'Archived' },
 ]
 
 export const platformOptions = [
@@ -16,9 +16,9 @@ export const platformOptions = [
 
 export const contentTypeOptions = [
   { value: 'review', label: 'Review' },
-  { value: 'comparison', label: 'So sánh' },
-  { value: 'roundup', label: 'Tổng hợp' },
-  { value: 'tutorial', label: 'Hướng dẫn' },
+  { value: 'comparison', label: 'Comparison' },
+  { value: 'roundup', label: 'Roundup' },
+  { value: 'tutorial', label: 'Tutorial' },
   { value: 'deal', label: 'Deal' },
-  { value: 'trending', label: 'Xu hướng' },
+  { value: 'trending', label: 'Trending' },
 ]

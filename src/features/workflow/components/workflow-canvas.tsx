@@ -39,7 +39,10 @@ interface WorkflowCanvasProps {
   onNodeDoubleClick: (nodeId: string) => void
   onPaneClick: () => void
   workflowId: string
-  rfInstanceRef?: React.MutableRefObject<ReactFlowInstance<Node<WorkflowNodeData>, Edge> | null>
+  rfInstanceRef?: React.MutableRefObject<ReactFlowInstance<
+    Node<WorkflowNodeData>,
+    Edge
+  > | null>
 }
 
 export function WorkflowCanvas({

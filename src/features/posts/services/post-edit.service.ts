@@ -20,7 +20,7 @@ export class PostEditService {
     if (data.publishMode === 'schedule' && data.scheduledAt) {
       const scheduledAt = new Date(data.scheduledAt).toISOString()
       const existingJobsRes = await schedulerControllerList()
-      const existingJob = ((existingJobsRes.data as unknown) as any[])?.find(
+      const existingJob = (existingJobsRes.data as unknown as any[])?.find(
         (j: any) => j.postId === postId,
       )
       if (existingJob) {

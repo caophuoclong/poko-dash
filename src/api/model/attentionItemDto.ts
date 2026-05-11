@@ -5,11 +5,11 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { AttentionItemDtoType } from './attentionItemDtoType';
+import type { AttentionItemDtoType } from './attentionItemDtoType'
 
 export interface AttentionItemDto {
-  type: AttentionItemDtoType;
-  label: string;
-  count: number;
-  sampleIds?: string[];
+  type: AttentionItemDtoType
+  label: string
+  count: number
+  sampleIds?: string[]
 }

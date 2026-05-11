@@ -14,7 +14,7 @@ export function IntegrationStatusBadge({
 }: IntegrationStatusBadgeProps) {
   const meta = INTEGRATION_STATUS_META[status] ?? {
     label: status,
-    tone: 'neutral' as BadgeTone,
+    tone: 'neutral',
   }
 
   return (

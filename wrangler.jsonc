@@ -6,6 +6,6 @@
   "main": "@tanstack/react-start/server-entry",
   "vars": {
     // Set the backend API URL for production
-    "BACKEND_URL": "https://your-backend-api.example.com"
-  }
+    "BACKEND_URL": "https://your-backend-api.example.com",
+  },
 }

@@ -6,10 +6,10 @@
  * OpenAPI spec version: 1.0
  */
 
-export type ContentIdeasControllerListPaginatedSortOrder = typeof ContentIdeasControllerListPaginatedSortOrder[keyof typeof ContentIdeasControllerListPaginatedSortOrder];
-
+export type ContentIdeasControllerListPaginatedSortOrder =
+  (typeof ContentIdeasControllerListPaginatedSortOrder)[keyof typeof ContentIdeasControllerListPaginatedSortOrder]
 
 export const ContentIdeasControllerListPaginatedSortOrder = {
   asc: 'asc',
   desc: 'desc',
-} as const;
+} as const

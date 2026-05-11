@@ -5,28 +5,28 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { ContentIdeasControllerListPaginatedSortBy } from './contentIdeasControllerListPaginatedSortBy';
-import type { ContentIdeasControllerListPaginatedSortOrder } from './contentIdeasControllerListPaginatedSortOrder';
+import type { ContentIdeasControllerListPaginatedSortBy } from './contentIdeasControllerListPaginatedSortBy'
+import type { ContentIdeasControllerListPaginatedSortOrder } from './contentIdeasControllerListPaginatedSortOrder'
 
 export type ContentIdeasControllerListPaginatedParams = {
-/**
- * Page number (default: 1)
- */
-page?: number;
-/**
- * Items per page (default: 20, max: 100)
- */
-page_size?: number;
-/**
- * Search across hook, angle, category
- */
-search?: string;
-/**
- * Sort column
- */
-sort_by?: ContentIdeasControllerListPaginatedSortBy;
-/**
- * Sort direction
- */
-sort_order?: ContentIdeasControllerListPaginatedSortOrder;
-};
+  /**
+   * Page number (default: 1)
+   */
+  page?: number
+  /**
+   * Items per page (default: 20, max: 100)
+   */
+  page_size?: number
+  /**
+   * Search across hook, angle, category
+   */
+  search?: string
+  /**
+   * Sort column
+   */
+  sort_by?: ContentIdeasControllerListPaginatedSortBy
+  /**
+   * Sort direction
+   */
+  sort_order?: ContentIdeasControllerListPaginatedSortOrder
+}

@@ -7,30 +7,30 @@
  */
 
 export interface ContentIdeaResponseDto {
-  ideaId: string;
+  ideaId: string
   /** Type of content idea */
-  ideaType: string;
-  category: string;
+  ideaType: string
+  category: string
   /** Target platform */
-  targetPlatform: string;
+  targetPlatform: string
   /** Main title/hook */
-  hook: string;
+  hook: string
   /** Content angle */
-  angle?: string;
+  angle?: string
   /** Reference URLs */
-  sourceRefs: string[];
+  sourceRefs: string[]
   /**
-     * @minimum 1
-     * @maximum 10
-     */
-  priority: number;
+   * @minimum 1
+   * @maximum 10
+   */
+  priority: number
   /** Idea status */
-  status: string;
-  owner?: string;
-  createdAt: string;
-  updatedAt: string;
+  status: string
+  owner?: string
+  createdAt: string
+  updatedAt: string
   /** Associated product UUIDs */
-  ideaProducts?: string[];
+  ideaProducts?: string[]
   /** IDs of posts generated from this idea */
-  postIds?: string[];
+  postIds?: string[]
 }

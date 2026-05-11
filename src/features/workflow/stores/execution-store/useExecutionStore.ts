@@ -2,7 +2,11 @@ import { create } from 'zustand'
 import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../../types'
 import { createInitialExecutionState } from './utils/types'
-import type { ExecutionMode, ExecutionLog, ValidationBlock } from './utils/types'
+import type {
+  ExecutionMode,
+  ExecutionLog,
+  ValidationBlock,
+} from './utils/types'
 import { computeExecutionPath } from './utils/graph'
 import { validateExecutionPath, canExecuteSingleNode } from './utils/validation'
 

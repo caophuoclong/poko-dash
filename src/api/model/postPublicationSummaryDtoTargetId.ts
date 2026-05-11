@@ -9,4 +9,6 @@
 /**
  * @nullable
  */
-export type PostPublicationSummaryDtoTargetId = { [key: string]: unknown } | null;
+export type PostPublicationSummaryDtoTargetId = {
+  [key: string]: unknown
+} | null

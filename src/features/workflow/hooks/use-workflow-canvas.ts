@@ -1,15 +1,16 @@
 import { useCallback, useRef, useMemo, useEffect } from 'react'
 import {
-  type Node,
-  type Edge,
-  type OnNodesChange,
-  type OnEdgesChange,
-  type Connection,
-  type OnSelectionChangeParams,
-  type ReactFlowInstance,
+  
+  
+  
+  
+  
+  
+  
   applyNodeChanges,
-  applyEdgeChanges,
+  applyEdgeChanges
 } from '@xyflow/react'
+import type {Node, Edge, OnNodesChange, OnEdgesChange, Connection, OnSelectionChangeParams, ReactFlowInstance} from '@xyflow/react';
 import type { WorkflowNodeData } from '../types'
 
 import type { EdgeStyle } from '../components/edges/workflow-edge'
@@ -91,7 +92,7 @@ export function useWorkflowCanvasLogic({
   }, [edges, running, executionPath, completedNodeIds])
 
   const getNodeColor = useCallback((node: Node<WorkflowNodeData>) => {
-    const data = node.data as WorkflowNodeData
+    const data = node.data
     if (data.nodeTypeId) {
       const def = getNodeDefinition(data.nodeTypeId)
       if (def) {
@@ -116,7 +117,7 @@ export function useWorkflowCanvasLogic({
   const handleNodesChange: OnNodesChange<Node<WorkflowNodeData>> = useCallback(
     (changes) => {
       const updated = applyNodeChanges(changes, nodes)
-      onNodesChange(updated as Node<WorkflowNodeData>[])
+      onNodesChange(updated)
     },
     [nodes, onNodesChange],
   )
@@ -141,7 +142,8 @@ export function useWorkflowCanvasLogic({
           targetHandle: connection.targetHandle ?? edge.targetHandle,
           data: {
             ...(edge.data as Record<string, unknown>),
-            style: ((edge.data as { style?: EdgeStyle } | undefined)?.style ?? 'auto') as EdgeStyle,
+            style: ((edge.data)?.style ??
+              'auto'),
           },
         }
       })
@@ -159,10 +161,10 @@ export function useWorkflowCanvasLogic({
           id: `e-${connection.source}-${connection.target}-${Date.now()}`,
           type: 'workflow-edge',
           data: {
-            style: 'auto' as EdgeStyle,
+            style: 'auto',
           },
           style: { stroke: 'var(--t-frost)', strokeWidth: 1.5 },
-        } as Edge,
+        },
       ])
     },
     [edges, onEdgesChange],
@@ -215,11 +217,17 @@ export function useWorkflowCanvasLogic({
 
   useEffect(() => {
     const handleEdgeStyleChange = (e: Event) => {
-      const { edgeId, style } = (e as CustomEvent).detail as { edgeId: string; style: EdgeStyle }
+      const { edgeId, style } = (e as CustomEvent).detail as {
+        edgeId: string
+        style: EdgeStyle
+      }
       onEdgesChange(
         edges.map((edge) =>
           edge.id === edgeId
-            ? { ...edge, data: { ...(edge.data as Record<string, unknown>), style } }
+            ? {
+                ...edge,
+                data: { ...(edge.data as Record<string, unknown>), style },
+              }
             : edge,
         ),
       )
@@ -230,7 +238,10 @@ export function useWorkflowCanvasLogic({
       onEdgesChange(edges.filter((edge) => edge.id !== edgeId))
     }
 
-    document.addEventListener('workflow-edge-style-change', handleEdgeStyleChange)
+    document.addEventListener(
+      'workflow-edge-style-change',
+      handleEdgeStyleChange,
+    )
     document.addEventListener('workflow-edge-delete', handleEdgeDelete)
 
     const handleNodeDuplicate = (e: Event) => {
@@ -243,14 +254,23 @@ export function useWorkflowCanvasLogic({
         position: { x: node.position.x + 32, y: node.position.y + 32 },
         selected: false,
       }
-      onNodesChange([...nodes.map((n) => ({ ...n, selected: false })), { ...copy, selected: true }])
+      onNodesChange([
+        ...nodes.map((n) => ({ ...n, selected: false })),
+        { ...copy, selected: true },
+      ])
     }
 
     document.addEventListener('workflow-node-duplicate', handleNodeDuplicate)
     return () => {
-      document.removeEventListener('workflow-edge-style-change', handleEdgeStyleChange)
+      document.removeEventListener(
+        'workflow-edge-style-change',
+        handleEdgeStyleChange,
+      )
       document.removeEventListener('workflow-edge-delete', handleEdgeDelete)
-      document.removeEventListener('workflow-node-duplicate', handleNodeDuplicate)
+      document.removeEventListener(
+        'workflow-node-duplicate',
+        handleNodeDuplicate,
+      )
     }
   }, [edges, onEdgesChange])
 

@@ -5,13 +5,13 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { GenerateContentPostsDtoContentType } from './generateContentPostsDtoContentType';
+import type { GenerateContentPostsDtoContentType } from './generateContentPostsDtoContentType'
 
 export interface GenerateContentPostsDto {
   /** Product UUIDs to generate posts for */
-  productIds: string[];
+  productIds: string[]
   /** Content type */
-  contentType: GenerateContentPostsDtoContentType;
+  contentType: GenerateContentPostsDtoContentType
   /** Platform identifier */
-  platform: string;
+  platform: string
 }

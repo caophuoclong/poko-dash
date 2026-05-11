@@ -1,8 +1,17 @@
 import { FieldLabel } from './field-label'
 import type { PropertyEditorProps } from './property-editor'
 
-export function FieldPickerEditor({ schema, value, onChange }: PropertyEditorProps) {
-  if (schema.type === 'field-picker' && typeof value === 'object' && value !== null && !Array.isArray(value)) {
+export function FieldPickerEditor({
+  schema,
+  value,
+  onChange,
+}: PropertyEditorProps) {
+  if (
+    schema.type === 'field-picker' &&
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value)
+  ) {
     return (
       <div className="space-y-1">
         <FieldLabel required={schema.required}>{schema.label}</FieldLabel>
@@ -25,7 +34,8 @@ export function FieldPickerEditor({ schema, value, onChange }: PropertyEditorPro
         )}
         {schema.exampleValue && (
           <p className="text-[10px] text-muted-text/70">
-            Example: <code className="text-accent-blue">{schema.exampleValue}</code>
+            Example:{' '}
+            <code className="text-accent-blue">{schema.exampleValue}</code>
           </p>
         )}
       </div>

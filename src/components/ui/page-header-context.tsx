@@ -4,9 +4,10 @@ import {
   useState,
   useLayoutEffect,
   useRef,
-  useMemo,
-  type ReactNode,
+  useMemo
+  
 } from 'react'
+import type {ReactNode} from 'react';
 import { ChevronLeft } from 'lucide-react'
 
 export interface PageHeaderConfig {
@@ -60,7 +61,9 @@ interface PageHeaderContextValue {
   setConfig: (config: PageHeaderConfig | null) => void
 }
 
-export const PageHeaderContext = createContext<PageHeaderContextValue | null>(null)
+export const PageHeaderContext = createContext<PageHeaderContextValue | null>(
+  null,
+)
 
 export function PageHeaderProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<PageHeaderConfig | null>(null)

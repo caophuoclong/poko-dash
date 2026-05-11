@@ -9,4 +9,4 @@
 /**
  * Full response payload from the platform API
  */
-export type RecordPublishSuccessDtoResponsePayload = { [key: string]: unknown };
+export type RecordPublishSuccessDtoResponsePayload = { [key: string]: unknown }

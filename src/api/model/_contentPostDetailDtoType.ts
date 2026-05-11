@@ -6,9 +6,9 @@
  * OpenAPI spec version: 1.0
  */
 
-export type _ContentPostDetailDtoType = typeof _ContentPostDetailDtoType[keyof typeof _ContentPostDetailDtoType];
-
+export type _ContentPostDetailDtoType =
+  (typeof _ContentPostDetailDtoType)[keyof typeof _ContentPostDetailDtoType]
 
 export const _ContentPostDetailDtoType = {
   detail: 'detail',
-} as const;
+} as const

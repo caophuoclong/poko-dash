@@ -27,7 +27,7 @@ export class UsersController {
 
   @Get()
   findAll() {
-    return this.prisma.user.findMany();
+    return this.prisma.user.findMany()
   }
 }
 
@@ -38,7 +38,7 @@ export class UsersController {
 
   @Get()
   findAll() {
-    return this.usersService.findAll();
+    return this.usersService.findAll()
   }
 }
 
@@ -47,7 +47,7 @@ export class UsersService {
   constructor(private readonly usersRepo: UsersRepository) {}
 
   findAll() {
-    return this.usersRepo.findAll();
+    return this.usersRepo.findAll()
   }
 }
 ```
@@ -98,7 +98,9 @@ export class CreateOrderService {
     private readonly paymentsService: PaymentsService,
   ) {}
 
-  async execute(dto: CreateOrderDto) { /* ... */ }
+  async execute(dto: CreateOrderDto) {
+    /* ... */
+  }
 }
 ```
 
@@ -159,7 +161,7 @@ src/
 
 ```typescript
 // ❌ Domain Entity 依赖 NestJS——不可独立测试
-import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class User {
@@ -171,7 +173,7 @@ export class User {
   private constructor(private readonly email: string) {}
 
   static create(email: string): User {
-    return new User(email);
+    return new User(email)
   }
 }
 ```
@@ -195,14 +197,14 @@ export class OrderOwnershipGuard implements CanActivate {
   constructor(private readonly prisma: PrismaService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest();
+    const req = context.switchToHttp().getRequest()
     const order = await this.prisma.order.findUnique({
       where: { id: req.params.id },
-    });
+    })
     if (order.userId !== req.user.id) {
-      return false; // 数据获取 + 业务规则判断都在 Guard 里
+      return false // 数据获取 + 业务规则判断都在 Guard 里
     }
-    return true;
+    return true
   }
 }
 
@@ -215,10 +217,10 @@ export class RolesGuard implements CanActivate {
     const requiredRoles = this.reflector.getAllAndOverride<string[]>('roles', [
       context.getHandler(),
       context.getClass(),
-    ]);
-    if (!requiredRoles) return true;
-    const { user } = context.switchToHttp().getRequest();
-    return requiredRoles.some((role) => user.roles?.includes(role));
+    ])
+    if (!requiredRoles) return true
+    const { user } = context.switchToHttp().getRequest()
+    return requiredRoles.some((role) => user.roles?.includes(role))
   }
 }
 ```
@@ -231,7 +233,7 @@ export class RolesGuard implements CanActivate {
 export class PricingInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler) {
     // 计算折扣——这不是横切关注点！
-    return next.handle().pipe(map(data => applyDiscount(data)));
+    return next.handle().pipe(map((data) => applyDiscount(data)))
   }
 }
 
@@ -239,11 +241,15 @@ export class PricingInterceptor implements NestInterceptor {
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler) {
-    const now = Date.now();
-    const req = context.switchToHttp().getRequest();
-    return next.handle().pipe(
-      tap(() => console.log(`${req.method} ${req.url} - ${Date.now() - now}ms`)),
-    );
+    const now = Date.now()
+    const req = context.switchToHttp().getRequest()
+    return next
+      .handle()
+      .pipe(
+        tap(() =>
+          console.log(`${req.method} ${req.url} - ${Date.now() - now}ms`),
+        ),
+      )
   }
 }
 ```
@@ -253,21 +259,21 @@ export class LoggingInterceptor implements NestInterceptor {
 ```typescript
 // ❌ 没有 whitelist——请求体中的额外属性直接传入
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+  const app = await NestFactory.create(AppModule)
+  await app.listen(3000)
 }
 
 // ✅ 全局 ValidationPipe + whitelist 过滤未知属性
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule)
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
     }),
-  );
-  await app.listen(3000);
+  )
+  await app.listen(3000)
 }
 ```
 
@@ -281,21 +287,21 @@ async function bootstrap() {
 // ❌ 只有 @ValidateNested——嵌套对象验证被静默跳过！
 export class CreateOrderDto {
   @ValidateNested()
-  shipping: AddressDto;
+  shipping: AddressDto
 }
 
 // ✅ @ValidateNested + @Type 配对使用
-import { Type } from 'class-transformer';
+import { Type } from 'class-transformer'
 
 export class CreateOrderDto {
   @ValidateNested()
   @Type(() => AddressDto)
-  shipping: AddressDto;
+  shipping: AddressDto
 
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => OrderItemDto)
-  items: OrderItemDto[];
+  items: OrderItemDto[]
 }
 ```
 
@@ -346,7 +352,7 @@ update(@Body() dto: UpdateUserDto) { /* all fields optional */ }
 export class UpdateOrderDto {
   @ValidateNested()
   @Type(() => AddressDto)
-  shipping?: AddressDto; // undefined 时仍尝试验证
+  shipping?: AddressDto // undefined 时仍尝试验证
 }
 
 // ✅ @IsOptional + @ValidateNested + @Type
@@ -354,7 +360,7 @@ export class UpdateOrderDto {
   @IsOptional()
   @ValidateNested()
   @Type(() => AddressDto)
-  shipping?: AddressDto;
+  shipping?: AddressDto
 }
 ```
 
@@ -388,14 +394,14 @@ async findOne(id: string): Promise<User> {
 
 ```typescript
 // ❌ 手动构造 HTTP 响应
-throw new HttpException('Bad request', 400);
+throw new HttpException('Bad request', 400)
 
 // ✅ 使用语义化的内置异常
-throw new BadRequestException('Invalid email format');
-throw new NotFoundException('User not found');
-throw new ConflictException('Email already taken');
-throw new ForbiddenException('Insufficient permissions');
-throw new UnauthorizedException('Invalid credentials');
+throw new BadRequestException('Invalid email format')
+throw new NotFoundException('User not found')
+throw new ConflictException('Email already taken')
+throw new ForbiddenException('Insufficient permissions')
+throw new UnauthorizedException('Invalid credentials')
 ```
 
 ### 自定义异常过滤器
@@ -404,25 +410,28 @@ throw new UnauthorizedException('Invalid credentials');
 // ✅ 全局异常过滤器——统一响应格式
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  private readonly logger = new Logger(AllExceptionsFilter.name);
+  private readonly logger = new Logger(AllExceptionsFilter.name)
 
   catch(exception: unknown, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse();
-    const request = ctx.getRequest();
+    const ctx = host.switchToHttp()
+    const response = ctx.getResponse()
+    const request = ctx.getRequest()
 
     const status =
       exception instanceof HttpException
         ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+        : HttpStatus.INTERNAL_SERVER_ERROR
 
-    this.logger.error(`${request.method} ${request.url} - ${status}`, exception instanceof Error ? exception.stack : '');
+    this.logger.error(
+      `${request.method} ${request.url} - ${status}`,
+      exception instanceof Error ? exception.stack : '',
+    )
 
     response.status(status).json({
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
-    });
+    })
   }
 }
 ```
@@ -479,61 +488,61 @@ export class OrdersModule {}
 ```typescript
 // ✅ 无需 NestFactory——直接 new
 describe('CreateUserHandler', () => {
-  let handler: CreateUserHandler;
-  let repo: InMemoryUserRepository;
+  let handler: CreateUserHandler
+  let repo: InMemoryUserRepository
 
   beforeEach(() => {
-    repo = new InMemoryUserRepository();
-    handler = new CreateUserHandler(repo);
-  });
+    repo = new InMemoryUserRepository()
+    handler = new CreateUserHandler(repo)
+  })
 
   it('creates a user', async () => {
     const id = await handler.execute(
       new CreateUserCommand('user@example.com', 'Alice'),
-    );
-    expect(id).toBeDefined();
-  });
+    )
+    expect(id).toBeDefined()
+  })
 
   it('rejects duplicate email', async () => {
-    await handler.execute(new CreateUserCommand('user@example.com', 'Alice'));
+    await handler.execute(new CreateUserCommand('user@example.com', 'Alice'))
     await expect(
       handler.execute(new CreateUserCommand('user@example.com', 'Bob')),
-    ).rejects.toThrow('already exists');
-  });
-});
+    ).rejects.toThrow('already exists')
+  })
+})
 ```
 
 ### E2E 测试应配置与生产一致的 Pipes
 
 ```typescript
 describe('UsersController (e2e)', () => {
-  let app: INestApplication;
+  let app: INestApplication
 
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    }).compile()
 
-    app = moduleFixture.createNestApplication();
+    app = moduleFixture.createNestApplication()
     // 必须与 main.ts 中相同的全局配置
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-    await app.init();
-  });
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
+    await app.init()
+  })
 
   it('/POST users - valid', () => {
     return request(app.getHttpServer())
       .post('/users')
       .send({ email: 'test@test.com', name: 'Test' })
-      .expect(201);
-  });
+      .expect(201)
+  })
 
   it('/POST users - extra fields rejected', () => {
     return request(app.getHttpServer())
       .post('/users')
       .send({ email: 'test@test.com', name: 'Test', role: 'admin' })
-      .expect(400);
-  });
-});
+      .expect(400)
+  })
+})
 ```
 
 ---

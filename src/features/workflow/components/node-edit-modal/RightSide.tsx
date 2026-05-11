@@ -10,23 +10,44 @@ import type { PaneHeaderProps } from './types'
 import type { VariableRef } from '../variable-system'
 
 function PaneHeader({
-  side, idx, total, title, subtitle, color, icon: Icon,
+  side,
+  idx,
+  total,
+  title,
+  subtitle,
+  color,
+  icon: Icon,
 }: PaneHeaderProps) {
   return (
     <div className="px-4 py-2.5 border-b border-frost shrink-0 bg-surface-2/30">
       <div className="flex items-center gap-2 min-w-0">
-        <span className="text-[9px] font-mono text-muted-text shrink-0">{idx}/{total}</span>
+        <span className="text-[9px] font-mono text-muted-text shrink-0">
+          {idx}/{total}
+        </span>
         {Icon && (
-          <div className={cn('w-6 h-6 rounded flex items-center justify-center shrink-0', color ?? 'bg-surface-2 text-muted-text')}>
+          <div
+            className={cn(
+              'w-6 h-6 rounded flex items-center justify-center shrink-0',
+              color ?? 'bg-surface-2 text-muted-text',
+            )}
+          >
             <Icon size={12} />
           </div>
         )}
         <div className="min-w-0">
-          <div className="text-[10px] font-mono tracking-wide uppercase text-muted-text/60 leading-none">{side}</div>
-          <div className="text-[12px] font-medium text-near-white truncate leading-tight mt-0.5">{title}</div>
+          <div className="text-[10px] font-mono tracking-wide uppercase text-muted-text/60 leading-none">
+            {side}
+          </div>
+          <div className="text-[12px] font-medium text-near-white truncate leading-tight mt-0.5">
+            {title}
+          </div>
         </div>
       </div>
-      {subtitle && <div className="text-[10px] text-muted-text truncate mt-1 ml-8">{subtitle}</div>}
+      {subtitle && (
+        <div className="text-[10px] text-muted-text truncate mt-1 ml-8">
+          {subtitle}
+        </div>
+      )}
     </div>
   )
 }
@@ -53,7 +74,7 @@ export function RightSide({
   availableVars,
 }: RightSideProps) {
   const nextDef = nextNode
-    ? getNodeDefinition((nextNode.data as WorkflowNodeData).nodeTypeId ?? '')
+    ? getNodeDefinition((nextNode.data).nodeTypeId ?? '')
     : null
   const nextIcon = nextDef ? ICON_MAP[nextDef.identity.icon ?? ''] : undefined
 
@@ -65,7 +86,7 @@ export function RightSide({
         total={3}
         title={
           nextNode
-            ? ((nextNode.data as WorkflowNodeData).title ??
+            ? ((nextNode.data).title ??
               nextDef?.identity.title ??
               'Unknown')
             : 'No downstream'
@@ -83,9 +104,7 @@ export function RightSide({
         <div className="flex items-center justify-center gap-1 px-4 py-1.5 border-b border-frost bg-surface">
           <button
             onClick={() =>
-              setNextIdx(
-                (i) => (i - 1 + nextNodes.length) % nextNodes.length,
-              )
+              setNextIdx((i) => (i - 1 + nextNodes.length) % nextNodes.length)
             }
             className="p-0.5 rounded hover:bg-surface-2 text-muted-text hover:text-near-white"
           >
@@ -105,9 +124,7 @@ export function RightSide({
 
       <div className="flex-1 overflow-y-auto">
         <OutputPreviewPanel
-          nextNodes={
-            [nextNode].filter(Boolean) as Node<WorkflowNodeData>[]
-          }
+          nextNodes={[nextNode].filter(Boolean) as Node<WorkflowNodeData>[]}
           selectedDef={def}
           localProps={localProps}
           variables={availableVars}

@@ -1,7 +1,11 @@
 import { FieldLabel } from './field-label'
 import type { PropertyEditorProps } from './property-editor'
 
-export function SelectFieldEditor({ schema, value, onChange }: PropertyEditorProps) {
+export function SelectFieldEditor({
+  schema,
+  value,
+  onChange,
+}: PropertyEditorProps) {
   return (
     <div className="space-y-1">
       <FieldLabel required={schema.required}>{schema.label}</FieldLabel>

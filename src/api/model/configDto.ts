@@ -5,15 +5,15 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { ConfigDtoDefaultProps } from './configDtoDefaultProps';
-import type { PropertyFieldDto } from './propertyFieldDto';
-import type { SuggestedVariableDto } from './suggestedVariableDto';
+import type { ConfigDtoDefaultProps } from './configDtoDefaultProps'
+import type { PropertyFieldDto } from './propertyFieldDto'
+import type { SuggestedVariableDto } from './suggestedVariableDto'
 
 export interface ConfigDto {
   /** Ordered list of inspector panel fields */
-  propertySchema: PropertyFieldDto[];
+  propertySchema: PropertyFieldDto[]
   /** Default configuration values */
-  defaultProps: ConfigDtoDefaultProps;
+  defaultProps: ConfigDtoDefaultProps
   /** Variable suggestions for this node type */
-  suggestedVariables?: SuggestedVariableDto[];
+  suggestedVariables?: SuggestedVariableDto[]
 }

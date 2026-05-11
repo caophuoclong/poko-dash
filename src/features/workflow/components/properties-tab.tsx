@@ -1,7 +1,11 @@
 import { Info, Trash2 } from 'lucide-react'
 import { cn } from '#/shared/utils'
 import { Button } from '#/components/ui/button'
-import { resolvePropertySchema, resolveInputs, resolveOutputs } from '../node-registry.utils'
+import {
+  resolvePropertySchema,
+  resolveInputs,
+  resolveOutputs,
+} from '../node-registry.utils'
 import { PropertyEditor } from './property-editors/property-editor'
 import type { VariableRef } from '../utils/variable-system-utils'
 import type {
@@ -29,9 +33,21 @@ interface PropertiesTabProps {
 }
 
 export function PropertiesTab({
-  def, title, subtitle, localProps, errors, position, nodeId, nodeTypeId,
+  def,
+  title,
+  subtitle,
+  localProps,
+  errors,
+  position,
+  nodeId,
+  nodeTypeId,
   availableVars,
-  onTitleChange, onSubtitleChange, onTitleBlur, onSubtitleBlur, onPropChange, onDelete,
+  onTitleChange,
+  onSubtitleChange,
+  onTitleBlur,
+  onSubtitleBlur,
+  onPropChange,
+  onDelete,
 }: PropertiesTabProps) {
   return (
     <div className="space-y-4 max-w-[500px] mx-auto">
@@ -206,11 +222,26 @@ export function PropertiesTab({
   )
 }
 
-function DetailRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+function DetailRow({
+  label,
+  value,
+  mono,
+}: {
+  label: string
+  value: string
+  mono?: boolean
+}) {
   return (
     <div className="flex justify-between text-xs py-0.5">
       <span className="text-muted-text">{label}</span>
-      <span className={cn('text-near-white', mono ? 'font-mono text-[11px]' : 'text-[11px]')}>{value}</span>
+      <span
+        className={cn(
+          'text-near-white',
+          mono ? 'font-mono text-[11px]' : 'text-[11px]',
+        )}
+      >
+        {value}
+      </span>
     </div>
   )
 }

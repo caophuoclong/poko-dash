@@ -6,16 +6,14 @@ export const PROVIDERS: ProviderConfig[] = [
   {
     provider: 'facebook',
     name: 'Facebook',
-    description:
-      'Connect Facebook Pages to publish posts directly from Poko.',
+    description: 'Connect Facebook Pages to publish posts directly from Poko.',
     targetLabelSingular: 'Page',
     targetLabelPlural: 'Pages',
   },
   {
     provider: 'tiktok',
     name: 'TikTok',
-    description:
-      'Connect TikTok accounts to publish content to your profile.',
+    description: 'Connect TikTok accounts to publish content to your profile.',
     targetLabelSingular: 'Account',
     targetLabelPlural: 'Accounts',
   },

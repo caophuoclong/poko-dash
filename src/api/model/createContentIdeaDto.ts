@@ -5,36 +5,36 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { CreateContentIdeaDtoIdeaProductsItem } from './createContentIdeaDtoIdeaProductsItem';
-import type { CreateContentIdeaDtoIdeaType } from './createContentIdeaDtoIdeaType';
-import type { CreateContentIdeaDtoStatus } from './createContentIdeaDtoStatus';
-import type { CreateContentIdeaDtoTargetPlatform } from './createContentIdeaDtoTargetPlatform';
+import type { CreateContentIdeaDtoIdeaProductsItem } from './createContentIdeaDtoIdeaProductsItem'
+import type { CreateContentIdeaDtoIdeaType } from './createContentIdeaDtoIdeaType'
+import type { CreateContentIdeaDtoStatus } from './createContentIdeaDtoStatus'
+import type { CreateContentIdeaDtoTargetPlatform } from './createContentIdeaDtoTargetPlatform'
 
 export interface CreateContentIdeaDto {
   /** Type of content idea */
-  ideaType: CreateContentIdeaDtoIdeaType;
+  ideaType: CreateContentIdeaDtoIdeaType
   /** Category */
-  category: string;
+  category: string
   /** Target platform */
-  targetPlatform: CreateContentIdeaDtoTargetPlatform;
+  targetPlatform: CreateContentIdeaDtoTargetPlatform
   /** Main title/hook */
-  hook: string;
+  hook: string
   /** Content angle */
-  angle?: string;
+  angle?: string
   /** Associated product UUIDs */
-  productIds?: string[];
+  productIds?: string[]
   /** Reference URLs */
-  sourceRefs?: string[];
+  sourceRefs?: string[]
   /**
-     * Priority (1-10)
-     * @minimum 1
-     * @maximum 10
-     */
-  priority?: number;
+   * Priority (1-10)
+   * @minimum 1
+   * @maximum 10
+   */
+  priority?: number
   /** Idea status */
-  status?: CreateContentIdeaDtoStatus;
+  status?: CreateContentIdeaDtoStatus
   /** Owner identifier */
-  owner?: string;
+  owner?: string
   /** Associated products with IDs */
-  ideaProducts?: CreateContentIdeaDtoIdeaProductsItem[];
+  ideaProducts?: CreateContentIdeaDtoIdeaProductsItem[]
 }

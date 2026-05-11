@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo } from 'react'
 import {
   PanelLeftClose,
   Search,
-  type LucideIcon,
+  
   Play,
   Clock,
   ListPlus,
@@ -16,19 +16,21 @@ import {
   BarChart3,
   GitBranch,
   Timer,
-  Bell,
+  Bell
 } from 'lucide-react'
+import type {LucideIcon} from 'lucide-react';
 import { cn } from '#/shared/utils'
 import {
-  useNodeRegistryStore,
-  type NodeDefinition,
+  useNodeRegistryStore
+  
 } from '../stores/node-registry/use-node-registry.store'
+import type {NodeDefinition} from '../stores/node-registry/use-node-registry.store';
 import {
   CATEGORY_CONFIG,
-  CATEGORY_ORDER,
-  type WorkflowNodeCategory,
+  CATEGORY_ORDER
+  
 } from '../stores/node-registry/constants'
-
+import type {WorkflowNodeCategory} from '../stores/node-registry/constants';
 
 const ICON_MAP: Record<string, LucideIcon> = {
   play: Play,
@@ -53,12 +55,16 @@ interface NodePaletteProps {
   onAddNode?: (def: NodeDefinition) => void
 }
 
-export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps) {
+export function NodePalette({
+  collapsed,
+  onToggle,
+  onAddNode,
+}: NodePaletteProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const allDefs = useNodeRegistryStore().allNodeDefinitions
 
   const grouped = useMemo(() => {
-    const g: Record<WorkflowNodeCategory, NodeDefinition[]> = {} as Record<WorkflowNodeCategory, NodeDefinition[]>
+    const g: Record<WorkflowNodeCategory, NodeDefinition[]> = {}
     for (const cat of CATEGORY_ORDER) {
       const nodes = allDefs.filter((d) => d.identity.category === cat)
       g[cat] = nodes
@@ -69,7 +75,7 @@ export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps
   const filteredGroups = useMemo(() => {
     if (!searchQuery.trim()) return grouped
     const q = searchQuery.toLowerCase().trim()
-    const result: Record<WorkflowNodeCategory, NodeDefinition[]> = {} as Record<WorkflowNodeCategory, NodeDefinition[]>
+    const result: Record<WorkflowNodeCategory, NodeDefinition[]> = {}
     for (const cat of CATEGORY_ORDER) {
       const nodes = (grouped[cat] ?? []).filter(
         (d) =>
@@ -102,9 +108,12 @@ export function NodePalette({ collapsed, onToggle, onAddNode }: NodePaletteProps
     [],
   )
 
-  const handleClickAdd = useCallback((def: NodeDefinition) => {
-    onAddNode?.(def)
-  }, [onAddNode])
+  const handleClickAdd = useCallback(
+    (def: NodeDefinition) => {
+      onAddNode?.(def)
+    },
+    [onAddNode],
+  )
 
   const hasResults = Object.values(filteredGroups).some((v) => v.length > 0)
 

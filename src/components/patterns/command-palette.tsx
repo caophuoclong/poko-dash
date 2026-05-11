@@ -28,11 +28,20 @@ function flattenCommands(): CommandItem[] {
           }))
       }
       if (!item.to) return []
-      return [{ id: item.id, label: item.label, to: item.to, section: section.label || 'Workspace' }]
+      return [
+        {
+          id: item.id,
+          label: item.label,
+          to: item.to,
+          section: section.label || 'Workspace',
+        },
+      ]
     }),
   )
 
-  const fromSystem = SYSTEM_ITEMS.filter((item) => item.to && !item.disabled).map((item) => ({
+  const fromSystem = SYSTEM_ITEMS.filter(
+    (item) => item.to && !item.disabled,
+  ).map((item) => ({
     id: item.id,
     label: item.label,
     to: item.to!,
@@ -86,7 +95,9 @@ export function CommandPalette() {
       return
     }
     setTimeout(() => {
-      const input = document.getElementById('command-palette-input') as HTMLInputElement | null
+      const input = document.getElementById(
+        'command-palette-input',
+      ) as HTMLInputElement | null
       input?.focus()
     }, 0)
   }, [open])
@@ -112,7 +123,9 @@ export function CommandPalette() {
             onKeyDown={(e) => {
               if (e.key === 'ArrowDown') {
                 e.preventDefault()
-                setActiveIndex((prev) => Math.min(prev + 1, filtered.length - 1))
+                setActiveIndex((prev) =>
+                  Math.min(prev + 1, filtered.length - 1),
+                )
               }
               if (e.key === 'ArrowUp') {
                 e.preventDefault()
@@ -133,7 +146,9 @@ export function CommandPalette() {
 
         <div className="max-h-[340px] overflow-y-auto p-1.5">
           {filtered.length === 0 ? (
-            <div className="px-2 py-6 text-center text-sm text-[var(--color-muted)]">No matching routes</div>
+            <div className="px-2 py-6 text-center text-sm text-[var(--color-muted)]">
+              No matching routes
+            </div>
           ) : (
             filtered.map((item, index) => (
               <button
@@ -148,9 +163,13 @@ export function CommandPalette() {
               >
                 <div className="min-w-0">
                   <div className="text-sm truncate">{item.label}</div>
-                  <div className="text-[11px] text-[var(--color-muted-soft)] truncate">{item.section} · {item.to}</div>
+                  <div className="text-[11px] text-[var(--color-muted-soft)] truncate">
+                    {item.section} · {item.to}
+                  </div>
                 </div>
-                {index === activeIndex ? <CornerDownLeft size={13} className="shrink-0" /> : null}
+                {index === activeIndex ? (
+                  <CornerDownLeft size={13} className="shrink-0" />
+                ) : null}
               </button>
             ))
           )}

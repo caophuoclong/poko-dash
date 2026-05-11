@@ -7,9 +7,9 @@
  */
 
 export interface UpcomingPostDto {
-  jobId: string;
-  postId: string;
-  platform: string;
-  scheduledAt: string;
-  title?: string;
+  jobId: string
+  postId: string
+  platform: string
+  scheduledAt: string
+  title?: string
 }

@@ -1,23 +1,21 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import {
-  Search,
-  Plus,
-  LayoutGrid,
-  Table as TableIcon,
-  MoreHorizontal,
-  Filter,
-} from 'lucide-react'
-import { usePageHeader } from '@/components/ui/page-header-context'
+import { Search, Plus, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Autocomplete } from '@/components/ui/autocomplete'
+  Combobox,
+  ComboboxInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxCollection,
+  ComboboxItem,
+  ComboboxEmpty,
+} from '@/components/ui/combobox'
+import {
+  filterOptionsByLabel,
+  type ComboboxOption,
+} from '@/components/ui/combobox-utils'
 import { useFilteredList } from '@/shared/hooks/use-filtered-list'
 import { CommonTable } from '@/components/table'
 import { EmptyState, emptyStatePresets } from '@/components/ui/empty-state'
@@ -27,7 +25,6 @@ import {
   getSortedRowModel,
 } from '@tanstack/react-table'
 import type { SortingState } from '@tanstack/react-table'
-import { cn } from '#/shared/utils'
 import type { ContentIdeaEntity } from '../schemas/content.schema'
 import { getSeedsColumns } from '../constants/seeds-columns'
 import type { IdeaGenerationSummary } from '../constants/seeds-columns'
@@ -35,23 +32,15 @@ import {
   useGenerateFromIdea,
   useContentPosts,
 } from '@/features/posts/hooks/use-content-posts'
-import { useUpdateContentIdea, useDeleteContentIdea } from '../hooks/use-content-ideas'
+import {
+  useUpdateContentIdea,
+  useDeleteContentIdea,
+} from '../hooks/use-content-ideas'
 import { useProducts } from '@/features/products/hooks/use-products'
-import { SeedDetailDrawer } from './SeedDetailDrawer'
-import type { AutocompleteOption } from '@/components/ui/autocomplete'
 import type { Product } from '@/features/products/types/product'
 import { contentPostsControllerGenerateFromProducts } from '#/api/client'
 
-type SortOption = 'updated' | 'priority' | 'posts' | 'review'
-
-const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: 'updated', label: 'Updated recently' },
-  { value: 'priority', label: 'Priority' },
-  { value: 'posts', label: 'Most posts generated' },
-  { value: 'review', label: 'Needs review' },
-]
-
-const STATUS_OPTIONS: AutocompleteOption[] = [
+const STATUS_OPTIONS: ComboboxOption[] = [
   { value: 'draft', label: 'Draft' },
   { value: 'approved', label: 'Approved' },
   { value: 'queued', label: 'Queued' },
@@ -59,16 +48,7 @@ const STATUS_OPTIONS: AutocompleteOption[] = [
   { value: 'rejected', label: 'Rejected' },
 ]
 
-const IDEA_TYPE_OPTIONS: AutocompleteOption[] = [
-  { value: 'review', label: 'Review' },
-  { value: 'comparison', label: 'Comparison' },
-  { value: 'roundup', label: 'Roundup' },
-  { value: 'tutorial', label: 'Tutorial' },
-  { value: 'deal', label: 'Deal' },
-  { value: 'trending', label: 'Trending' },
-]
-
-const PLATFORM_OPTIONS: AutocompleteOption[] = [
+const PLATFORM_OPTIONS: ComboboxOption[] = [
   { value: 'facebook', label: 'Facebook' },
   { value: 'tiktok', label: 'TikTok' },
   { value: 'instagram', label: 'Instagram' },
@@ -76,7 +56,7 @@ const PLATFORM_OPTIONS: AutocompleteOption[] = [
   { value: 'blog', label: 'Blog' },
 ]
 
-const CATEGORY_OPTIONS: AutocompleteOption[] = [
+const CATEGORY_OPTIONS: ComboboxOption[] = [
   { value: 'Điện tử', label: 'Điện tử' },
   { value: 'Phụ kiện', label: 'Phụ kiện' },
   { value: 'Gia dụng', label: 'Gia dụng' },
@@ -86,37 +66,74 @@ const CATEGORY_OPTIONS: AutocompleteOption[] = [
   { value: 'uncategorized', label: 'Khác' },
 ]
 
-const PRODUCT_COUNT_OPTIONS: AutocompleteOption[] = [
-  { value: 'none', label: 'No products' },
-  { value: 'single', label: '1 product' },
-  { value: 'multiple', label: '2+ products' },
-]
+function FilterCombobox({
+  options,
+  selectedValue,
+  onChange,
+  placeholder,
+  className,
+}: {
+  options: ComboboxOption[]
+  selectedValue?: string
+  onChange: (value: string | undefined) => void
+  placeholder: string
+  className?: string
+}) {
+  const [open, setOpen] = useState(false)
+  const [inputValue, setInputValue] = useState('')
+  const selectedOption =
+    options.find((o) => o.value === selectedValue) ?? null
+  const filtered = filterOptionsByLabel(options, inputValue)
 
-const OUTPUT_STATUS_OPTIONS: AutocompleteOption[] = [
-  { value: 'produced', label: 'Produced' },
-  { value: 'not-produced', label: 'Not produced' },
-]
-
-type ViewMode = 'table' | 'board'
+  return (
+    <Combobox
+      multiple={false}
+      value={selectedOption}
+      onValueChange={(option) => onChange(option?.value)}
+      inputValue={inputValue}
+      onInputValueChange={setInputValue}
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next)
+        if (!next) setInputValue(selectedOption?.label ?? '')
+      }}
+      items={filtered}
+      itemToStringLabel={(item) => item.label}
+      isItemEqualToValue={(item, value) => item?.value === value?.value}
+    >
+      <ComboboxInput className={className} placeholder={placeholder} showClear />
+      <ComboboxContent>
+        <ComboboxList>
+          <ComboboxCollection>
+            {(item) => <ComboboxItem value={item}>{item.label}</ComboboxItem>}
+          </ComboboxCollection>
+          <ComboboxEmpty>No results found</ComboboxEmpty>
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
+  )
+}
 
 export default function ContentSeedsPage({
   ideas = [],
+  hasNextPage = false,
+  isFetchingNextPage = false,
+  onFetchNextPage,
 }: {
   ideas: ContentIdeaEntity[]
+  hasNextPage?: boolean
+  isFetchingNextPage?: boolean
+  onFetchNextPage?: () => void
 }) {
   const navigate = useNavigate()
   const generateFromIdea = useGenerateFromIdea()
   const updateContentIdea = useUpdateContentIdea()
   const deleteContentIdea = useDeleteContentIdea()
-  const [viewMode, setViewMode] = useState<ViewMode>('table')
   const [sorting, setSorting] = useState<SortingState>([])
-  const [sortOption, setSortOption] = useState<SortOption>('updated')
   const [generatingId, setGeneratingId] = useState<string | null>(null)
-  const [selectedIdea, setSelectedIdea] = useState<ContentIdeaEntity | null>(
-    null,
-  )
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [generatingProductIds, setGeneratingProductIds] = useState<string[]>([])
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
 
   const { data: dataProducts } = useProducts()
   const { data } = useContentPosts()
@@ -186,24 +203,10 @@ export default function ContentSeedsPage({
       filterMap: {
         status: (item: ContentIdeaEntity, value: unknown) =>
           item.status === value,
-        ideaType: (item: ContentIdeaEntity, value: unknown) =>
-          item.ideaType === value,
         targetPlatform: (item: ContentIdeaEntity, value: unknown) =>
           item.targetPlatform === value,
         category: (item: ContentIdeaEntity, value: unknown) =>
           item.category === value,
-        productCount: (item: ContentIdeaEntity, value: unknown) => {
-          const count = item.ideaProducts?.length ?? 0
-          if (value === 'none') return count === 0
-          if (value === 'single') return count === 1
-          if (value === 'multiple') return count > 1
-          return true
-        },
-        outputStatus: (item: ContentIdeaEntity, value: unknown) => {
-          if (value === 'produced') return item.status === 'produced'
-          if (value === 'not-produced') return item.status !== 'produced'
-          return true
-        },
       },
     }),
     [],
@@ -250,19 +253,7 @@ export default function ContentSeedsPage({
     [ideas],
   )
 
-  const handleRowClick = useCallback((idea: ContentIdeaEntity) => {
-    setSelectedIdea(idea)
-    setIsDrawerOpen(true)
-  }, [])
-
-  const handleRowDoubleClick = useCallback(
-    (idea: ContentIdeaEntity) => {
-      navigate({ to: '/dash/content/$ideaId', params: { ideaId: idea.ideaId } })
-    },
-    [navigate],
-  )
-
-  const handleQuickOpen = useCallback(
+  const handleRowClick = useCallback(
     (idea: ContentIdeaEntity) => {
       navigate({ to: '/dash/content/$ideaId', params: { ideaId: idea.ideaId } })
     },
@@ -292,7 +283,7 @@ export default function ContentSeedsPage({
 
   const handleClearFilters = useCallback(() => {
     filteredIdeas.clearFilters()
-  }, [])
+  }, [filteredIdeas])
 
   const handleDelete = useCallback(
     async (ideaId: string) => {
@@ -306,11 +297,30 @@ export default function ContentSeedsPage({
     [deleteContentIdea],
   )
 
-  const getRowClassName = useCallback((idea: ContentIdeaEntity) => {
-    const produced = idea.status === 'produced'
-    if (produced) return '[&>*:not(:last-child)]:opacity-40'
-    return undefined
+  const allVisibleSelected =
+    filteredIdeas.filteredItems.length > 0 &&
+    filteredIdeas.filteredItems.every((idea) => selectedIds.has(idea.ideaId))
+
+  const toggleSelect = useCallback((ideaId: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(ideaId)) next.delete(ideaId)
+      else next.add(ideaId)
+      return next
+    })
   }, [])
+
+  const toggleSelectAllVisible = useCallback(() => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (allVisibleSelected) {
+        filteredIdeas.filteredItems.forEach((idea) => next.delete(idea.ideaId))
+      } else {
+        filteredIdeas.filteredItems.forEach((idea) => next.add(idea.ideaId))
+      }
+      return next
+    })
+  }, [allVisibleSelected, filteredIdeas.filteredItems])
 
   const columns = useMemo(
     () =>
@@ -319,7 +329,7 @@ export default function ContentSeedsPage({
         onGenerateProduct: handleGenerateProduct,
         isGenerating: generatingId,
         generatingProductIds,
-        onOpen: handleQuickOpen,
+        onOpen: handleRowClick,
         onApprove: handleQuickApprove,
         onViewPosts: handleQuickViewPosts,
         onEdit: (ideaId: string) => {
@@ -331,19 +341,27 @@ export default function ContentSeedsPage({
         onDelete: handleDelete,
         productsMap,
         generationSummaries,
+        selectedIds,
+        allSelected: allVisibleSelected,
+        onToggleSelect: toggleSelect,
+        onToggleSelectAll: toggleSelectAllVisible,
       }),
     [
       handleGenerate,
       handleGenerateProduct,
       generatingId,
       generatingProductIds,
-      handleQuickOpen,
+      handleRowClick,
       handleQuickApprove,
       handleQuickViewPosts,
       handleDelete,
       navigate,
       productsMap,
       generationSummaries,
+      selectedIds,
+      allVisibleSelected,
+      toggleSelect,
+      toggleSelectAllVisible,
     ],
   )
 
@@ -359,46 +377,24 @@ export default function ContentSeedsPage({
     getRowId: (row) => row.ideaId,
   })
 
-  usePageHeader({
-    title: 'Content Seeds',
-    subtitle:
-      'Reusable content directions that can generate multiple posts from selected products',
-    actions: (
-      <div className="flex items-center gap-2">
-        <Button
-          size="sm"
-          className="inline-flex items-center gap-1.5"
-          onClick={handleCreateSeed}
-        >
-          <Plus size={16} />
-          New seed
-        </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="inline-flex items-center gap-1.5"
-            >
-              <MoreHorizontal size={16} />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <span>Import ideas</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <span>Bulk actions</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    ),
-  })
+  useEffect(() => {
+    if (!sentinelRef.current || !onFetchNextPage) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          onFetchNextPage()
+        }
+      },
+      { rootMargin: '120px' },
+    )
+
+    observer.observe(sentinelRef.current)
+    return () => observer.disconnect()
+  }, [hasNextPage, isFetchingNextPage, onFetchNextPage])
 
   return (
     <div className="space-y-6">
-
       {ideas.length === 0 ? (
         <EmptyState
           variant="page"
@@ -413,7 +409,7 @@ export default function ContentSeedsPage({
       ) : (
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-3">
-            <div className="relative flex-1 min-w-[200px] max-w-sm">
+            <div className="relative flex-1 min-w-[220px] max-w-sm">
               <Search
                 className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-text"
                 strokeWidth={2}
@@ -426,109 +422,42 @@ export default function ContentSeedsPage({
               />
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-text">Filters:</span>
-            </div>
-
-            <Autocomplete
-              options={STATUS_OPTIONS}
-              value={
-                STATUS_OPTIONS.find(
-                  (s) => s.value === filteredIdeas.activeFilters.status,
-                ) || null
-              }
-              onChange={(option) =>
-                filteredIdeas.setActiveFilters({
-                  ...filteredIdeas.activeFilters,
-                  status: option?.value,
-                })
-              }
-              placeholder="Status"
-              className="w-40"
-            />
-
-            <Autocomplete
-              options={IDEA_TYPE_OPTIONS}
-              value={
-                IDEA_TYPE_OPTIONS.find(
-                  (t) => t.value === filteredIdeas.activeFilters.ideaType,
-                ) || null
-              }
-              onChange={(option) =>
-                filteredIdeas.setActiveFilters({
-                  ...filteredIdeas.activeFilters,
-                  ideaType: option?.value,
-                })
-              }
-              placeholder="Idea type"
-              className="w-40"
-            />
-
-            <Autocomplete
+            <FilterCombobox
               options={PLATFORM_OPTIONS}
-              value={
-                PLATFORM_OPTIONS.find(
-                  (p) => p.value === filteredIdeas.activeFilters.targetPlatform,
-                ) || null
-              }
-              onChange={(option) =>
+              selectedValue={filteredIdeas.activeFilters.targetPlatform}
+              onChange={(value) =>
                 filteredIdeas.setActiveFilters({
                   ...filteredIdeas.activeFilters,
-                  targetPlatform: option?.value,
+                  targetPlatform: value,
                 })
               }
               placeholder="Platform"
               className="w-40"
             />
 
-            <Autocomplete
+            <FilterCombobox
               options={CATEGORY_OPTIONS}
-              value={
-                CATEGORY_OPTIONS.find(
-                  (c) => c.value === filteredIdeas.activeFilters.category,
-                ) || null
-              }
-              onChange={(option) =>
+              selectedValue={filteredIdeas.activeFilters.category}
+              onChange={(value) =>
                 filteredIdeas.setActiveFilters({
                   ...filteredIdeas.activeFilters,
-                  category: option?.value,
+                  category: value,
                 })
               }
               placeholder="Category"
               className="w-40"
             />
 
-            <Autocomplete
-              options={PRODUCT_COUNT_OPTIONS}
-              value={
-                PRODUCT_COUNT_OPTIONS.find(
-                  (p) => p.value === filteredIdeas.activeFilters.productCount,
-                ) || null
-              }
-              onChange={(option) =>
+            <FilterCombobox
+              options={STATUS_OPTIONS}
+              selectedValue={filteredIdeas.activeFilters.status}
+              onChange={(value) =>
                 filteredIdeas.setActiveFilters({
                   ...filteredIdeas.activeFilters,
-                  productCount: option?.value,
+                  status: value,
                 })
               }
-              placeholder="Product count"
-              className="w-40"
-            />
-
-            <Autocomplete
-              options={OUTPUT_STATUS_OPTIONS}
-              value={
-                OUTPUT_STATUS_OPTIONS.find(
-                  (o) => o.value === filteredIdeas.activeFilters.outputStatus,
-                ) || null
-              }
-              onChange={(option) =>
-                filteredIdeas.setActiveFilters({
-                  ...filteredIdeas.activeFilters,
-                  outputStatus: option?.value,
-                })
-              }
-              placeholder="Output status"
+              placeholder="Status"
               className="w-40"
             />
 
@@ -544,114 +473,27 @@ export default function ContentSeedsPage({
             )}
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center border rounded-md p-1">
-                <Button
-                  variant={viewMode === 'table' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('table')}
-                  className={cn(
-                    'h-8 px-2',
-                    viewMode === 'table'
-                      ? 'bg-accent-orange text-accent-on'
-                      : 'text-muted-text',
-                  )}
-                >
-                  <TableIcon size={16} />
-                </Button>
-                <Button
-                  variant={viewMode === 'board' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setViewMode('board')}
-                  className={cn(
-                    'h-8 px-2',
-                    viewMode === 'board'
-                      ? 'bg-accent-orange text-accent-on'
-                      : 'text-muted-text',
-                  )}
-                >
-                  <LayoutGrid size={16} />
-                </Button>
-              </div>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="inline-flex items-center gap-1.5 h-9"
-                  >
-                    <Filter size={14} />
-                    Sort:{' '}
-                    {SORT_OPTIONS.find((o) => o.value === sortOption)?.label}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  {SORT_OPTIONS.map((option) => (
-                    <DropdownMenuItem
-                      key={option.value}
-                      onClick={() => setSortOption(option.value)}
-                      className={cn(
-                        sortOption === option.value &&
-                          'bg-accent-blue/10 text-accent-blue',
-                      )}
-                    >
-                      {option.label}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-
+          <div className="flex items-center justify-end">
             <div className="text-sm text-muted-text">
               {filteredIdeas.filteredItems.length} of {ideas.length} seeds
             </div>
           </div>
 
-          {viewMode === 'table' && (
-            <CommonTable
-              table={ideaTable}
-              minWidth={1200}
-              compact
-              onRowClick={handleRowClick}
-              onRowDoubleClick={handleRowDoubleClick}
-              getRowClassName={getRowClassName}
-            />
-          )}
+          <CommonTable
+            table={ideaTable}
+            minWidth={1200}
+            compact
+            onRowClick={handleRowClick}
+          />
 
-          {viewMode === 'board' && (
-            <div className="p-8 text-center text-muted-text border border-dashed rounded-lg">
-              <LayoutGrid size={48} className="mx-auto mb-4 opacity-50" />
-              <p>Board view coming soon...</p>
+          <div ref={sentinelRef} className="h-2" aria-hidden />
+
+          {isFetchingNextPage && (
+            <div className="flex items-center justify-center py-4 text-muted-text">
+              <Loader2 size={18} className="animate-spin" />
             </div>
           )}
         </div>
-      )}
-
-      <SeedDetailDrawer
-        idea={selectedIdea}
-        isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
-        onGenerate={handleGenerate}
-        onGenerateProduct={handleGenerateProduct}
-        isGenerating={generatingId}
-        generatingProductIds={generatingProductIds}
-        productsMap={productsMap}
-        generationSummary={
-          selectedIdea
-            ? generationSummaries[selectedIdea.ideaId]
-            : undefined
-        }
-        onViewPosts={handleQuickViewPosts}
-        onApprove={handleQuickApprove}
-      />
-
-      {isDrawerOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 transition-opacity"
-          onClick={() => setIsDrawerOpen(false)}
-        />
       )}
     </div>
   )

@@ -8,11 +8,11 @@
 
 export interface LimitsDto {
   /** Execution timeout in ms (0 for resource nodes) */
-  timeoutMs: number;
+  timeoutMs: number
   /** Max input items */
-  maxInputItems?: number;
+  maxInputItems?: number
   /** Max output items */
-  maxOutputItems?: number;
+  maxOutputItems?: number
   /** Memory limit in MB */
-  memoryMB?: number;
+  memoryMB?: number
 }

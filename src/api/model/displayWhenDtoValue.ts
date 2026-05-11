@@ -9,4 +9,4 @@
 /**
  * Expected value
  */
-export type DisplayWhenDtoValue = { [key: string]: unknown };
+export type DisplayWhenDtoValue = { [key: string]: unknown }

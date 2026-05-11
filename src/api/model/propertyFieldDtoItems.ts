@@ -9,4 +9,4 @@
 /**
  * JSON Schema for array item shape when type=array
  */
-export type PropertyFieldDtoItems = { [key: string]: unknown };
+export type PropertyFieldDtoItems = { [key: string]: unknown }

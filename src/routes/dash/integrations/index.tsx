@@ -4,7 +4,8 @@ import { PlatformIntegrationsPage } from '#/features/platform-integrations/compo
 import type { Provider } from '#/features/platform-integrations/types'
 
 function validateSearch(search: Record<string, unknown>) {
-  const provider = typeof search.provider === 'string' ? search.provider : undefined
+  const provider =
+    typeof search.provider === 'string' ? search.provider : undefined
   const code = typeof search.code === 'string' ? search.code : undefined
   const error = typeof search.error === 'string' ? search.error : undefined
 

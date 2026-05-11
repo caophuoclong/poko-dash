@@ -7,5 +7,5 @@
  */
 
 export interface DeleteProductResponseDto {
-  message: string;
+  message: string
 }

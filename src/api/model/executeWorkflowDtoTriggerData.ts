@@ -9,4 +9,4 @@
 /**
  * Trigger data passed to the workflow (accessible as {{ trigger.* }} or {{ input.* }})
  */
-export type ExecuteWorkflowDtoTriggerData = { [key: string]: unknown };
+export type ExecuteWorkflowDtoTriggerData = { [key: string]: unknown }

@@ -6,12 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
-export type ContentIdeasControllerListPaginatedSortBy = typeof ContentIdeasControllerListPaginatedSortBy[keyof typeof ContentIdeasControllerListPaginatedSortBy];
-
+export type ContentIdeasControllerListPaginatedSortBy =
+  (typeof ContentIdeasControllerListPaginatedSortBy)[keyof typeof ContentIdeasControllerListPaginatedSortBy]
 
 export const ContentIdeasControllerListPaginatedSortBy = {
   priority: 'priority',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   status: 'status',
-} as const;
+} as const

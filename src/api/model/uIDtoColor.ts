@@ -9,8 +9,7 @@
 /**
  * Node accent color on canvas
  */
-export type UIDtoColor = typeof UIDtoColor[keyof typeof UIDtoColor];
-
+export type UIDtoColor = (typeof UIDtoColor)[keyof typeof UIDtoColor]
 
 export const UIDtoColor = {
   purple: 'purple',
@@ -22,4 +21,4 @@ export const UIDtoColor = {
   amber: 'amber',
   red: 'red',
   gray: 'gray',
-} as const;
+} as const

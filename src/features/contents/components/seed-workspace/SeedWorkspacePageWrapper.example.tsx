@@ -2,7 +2,10 @@ import { useProducts } from '#/features/products/hooks/use-products'
 import { useGenerateFromIdea } from '#/features/posts/hooks/use-content-posts'
 import { useNavigate } from '@tanstack/react-router'
 import { SeedWorkspacePage } from './SeedWorkspacePage'
-import { useUpdateContentIdea, useDeleteContentIdea } from '../../hooks/use-content-ideas'
+import {
+  useUpdateContentIdea,
+  useDeleteContentIdea,
+} from '../../hooks/use-content-ideas'
 import type { ContentIdeaEntity } from '../../schemas/content.schema'
 
 interface SeedWorkspacePageWrapperProps {

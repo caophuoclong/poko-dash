@@ -6,11 +6,11 @@
  * OpenAPI spec version: 1.0
  */
 
-export type DashboardOverviewResponseDtoRange = typeof DashboardOverviewResponseDtoRange[keyof typeof DashboardOverviewResponseDtoRange];
-
+export type DashboardOverviewResponseDtoRange =
+  (typeof DashboardOverviewResponseDtoRange)[keyof typeof DashboardOverviewResponseDtoRange]
 
 export const DashboardOverviewResponseDtoRange = {
   '7d': '7d',
   '30d': '30d',
   '90d': '90d',
-} as const;
+} as const

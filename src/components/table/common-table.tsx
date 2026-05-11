@@ -31,11 +31,11 @@ export function CommonTable<TData>({
   return (
     <div
       className={cn(
-        'border border-[var(--color-hairline)] rounded-[var(--radius-md)] overflow-hidden bg-[var(--color-canvas)]',
+        'border border-[var(--color-hairline)] rounded-[var(--radius-md)] overflow-hidden bg-[var(--color-canvas)] flex h-full min-h-0 flex-col',
         className,
       )}
     >
-      <div className="overflow-x-auto">
+      <div className="min-h-0 flex-1 overflow-auto">
         <table
           className="w-full table-auto"
           style={{

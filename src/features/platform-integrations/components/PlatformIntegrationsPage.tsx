@@ -1,6 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { usePageHeader } from '#/components/ui/page-header-context'
-import { SectionCard, SectionCardHeader, SectionCardBody } from '#/components/ui/section-card'
+import {
+  SectionCard,
+  SectionCardHeader,
+  SectionCardBody,
+} from '#/components/ui/section-card'
 import { EmptyState, emptyStatePresets } from '#/components/ui/empty-state'
 import {
   usePlatformIntegrations,
@@ -50,11 +54,15 @@ export function PlatformIntegrationsPage({
   const disconnect = useDisconnectIntegration()
 
   const [phase, setPhase] = useState<FlowPhase>('idle')
-  const [connectingProvider, setConnectingProvider] = useState<Provider | null>(null)
+  const [connectingProvider, setConnectingProvider] = useState<Provider | null>(
+    null,
+  )
   const [oauthProvider, setOAuthProvider] = useState<Provider | null>(null)
   const [oauthCode, setOAuthCode] = useState<string | null>(null)
   const [oauthError, setOAuthError] = useState<string | null>(null)
-  const [availableTargets, setAvailableTargets] = useState<AvailableTarget[] | null>(null)
+  const [availableTargets, setAvailableTargets] = useState<
+    AvailableTarget[] | null
+  >(null)
   const [targetsError, setTargetsError] = useState<string | null>(null)
 
   const integrations = useMemo<Integration[]>(
@@ -77,7 +85,10 @@ export function PlatformIntegrationsPage({
   }, [integrations])
 
   useEffect(() => {
-    if (!initialProvider || !PROVIDERS.some((p) => p.provider === initialProvider))
+    if (
+      !initialProvider ||
+      !PROVIDERS.some((p) => p.provider === initialProvider)
+    )
       return
 
     if (initialError) {
@@ -344,8 +355,7 @@ export function PlatformIntegrationsPage({
         targetLabelPlural={providerConfig?.targetLabelPlural ?? 'Targets'}
         targets={availableTargets}
         isLoading={
-          phase === 'target-selection-loading' &&
-          availableTargets === null
+          phase === 'target-selection-loading' && availableTargets === null
         }
         isError={phase === 'target-selection-error'}
         isSubmitting={selectTargets.isPending}

@@ -6,9 +6,9 @@
  * OpenAPI spec version: 1.0
  */
 
-export type _ContentPostSummaryDtoType = typeof _ContentPostSummaryDtoType[keyof typeof _ContentPostSummaryDtoType];
-
+export type _ContentPostSummaryDtoType =
+  (typeof _ContentPostSummaryDtoType)[keyof typeof _ContentPostSummaryDtoType]
 
 export const _ContentPostSummaryDtoType = {
   summary: 'summary',
-} as const;
+} as const

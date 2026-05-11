@@ -94,9 +94,7 @@ export default function PlatformTargetConfigPanel({
   const usedPlatforms = new Set(targets.map((t) => t.platform))
 
   const handleAdd = () => {
-    const nextPlatform = AVAILABLE_PLATFORMS.find(
-      (p) => !usedPlatforms.has(p),
-    )
+    const nextPlatform = AVAILABLE_PLATFORMS.find((p) => !usedPlatforms.has(p))
     if (!nextPlatform) return
 
     onTargetsChange([
@@ -125,9 +123,7 @@ export default function PlatformTargetConfigPanel({
   return (
     <div className="bg-surface border border-frost rounded-2xl p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-near-white">
-          Nền tảng mục tiêu
-        </h3>
+        <h3 className="font-semibold text-near-white">Nền tảng mục tiêu</h3>
         {!allUsed && (
           <Button
             type="button"
@@ -144,9 +140,7 @@ export default function PlatformTargetConfigPanel({
 
       {targets.length === 0 ? (
         <div className="text-center py-6 border border-dashed border-frost rounded-xl">
-          <p className="text-sm text-muted-text mb-3">
-            Chưa thêm nền tảng nào
-          </p>
+          <p className="text-sm text-muted-text mb-3">Chưa thêm nền tảng nào</p>
           <Button
             type="button"
             variant="outline"

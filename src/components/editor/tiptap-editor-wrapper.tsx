@@ -20,7 +20,7 @@ interface TiptapEditorWrapperProps {
 export default function TiptapEditorWrapper({
   value,
   onChange,
-  placeholder = 'Nhập nội dung...',
+  placeholder = 'Write your review here...',
   disabled = false,
   maxLength = 10000,
   outputFormat = 'markdown',

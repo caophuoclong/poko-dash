@@ -9,4 +9,4 @@
 /**
  * Original product URL
  */
-export type UpdateAffiliateLinkDtoOriginalUrl = { [key: string]: unknown };
+export type UpdateAffiliateLinkDtoOriginalUrl = { [key: string]: unknown }

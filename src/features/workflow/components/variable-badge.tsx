@@ -10,7 +10,9 @@ interface VariableBadgeProps {
 export function VariableBadge({ valid, count, hasMixed }: VariableBadgeProps) {
   if (count === 0) return null
   const Icon = valid ? CheckCircle2 : AlertTriangle
-  const tone = valid ? 'bg-accent-green-dim text-accent-green' : 'bg-accent-yellow/10 text-accent-yellow'
+  const tone = valid
+    ? 'bg-accent-green-dim text-accent-green'
+    : 'bg-accent-yellow/10 text-accent-yellow'
   return (
     <span
       className={cn(

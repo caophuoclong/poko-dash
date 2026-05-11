@@ -151,32 +151,32 @@ export function SeedWorkspacePage({
 
   const ideaProducts = watch('ideaProducts') ?? []
 
-  const linkedProducts: LinkedProduct[] = ideaProducts.map(
-    (productId) => {
-      const product = allProducts.find((p) => p.productId === productId)
-      const productPosts = generatedPosts.filter(
-        (p) => p.productId === productId,
-      )
-
-      return {
-        productId,
-        product: product ?? ({ productId, canonicalTitle: 'Unknown Product' } as Product),
-        generatedCount: productPosts.length,
-        status: generatingProductId === productId ? 'generating' : 'none',
-      }
-    },
-  )
-
-  const productOutputGroups: ProductOutputGroup[] = ideaProducts.map((productId) => {
+  const linkedProducts: LinkedProduct[] = ideaProducts.map((productId) => {
     const product = allProducts.find((p) => p.productId === productId)
-    const posts = generatedPosts.filter((p) => p.productId === productId)
+    const productPosts = generatedPosts.filter((p) => p.productId === productId)
 
     return {
       productId,
-      productName: product?.canonicalTitle || 'Unknown Product',
-      posts,
+      product:
+        product ??
+        ({ productId, canonicalTitle: 'Unknown Product' } as Product),
+      generatedCount: productPosts.length,
+      status: generatingProductId === productId ? 'generating' : 'none',
     }
   })
+
+  const productOutputGroups: ProductOutputGroup[] = ideaProducts.map(
+    (productId) => {
+      const product = allProducts.find((p) => p.productId === productId)
+      const posts = generatedPosts.filter((p) => p.productId === productId)
+
+      return {
+        productId,
+        productName: product?.canonicalTitle || 'Unknown Product',
+        posts,
+      }
+    },
+  )
 
   const isApproved = idea.status === IdeaStatus.Approved
   const canGenerate = isApproved && linkedProducts.length > 0

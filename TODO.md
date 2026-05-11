@@ -13,16 +13,16 @@ Framework: React + TanStack Router + shadcn/ui + Tailwind + Zustand
 
 Transform Poko from:
 
-* feature collection dashboard
-* MVP-style tooling interface
-* isolated workflow modules
+- feature collection dashboard
+- MVP-style tooling interface
+- isolated workflow modules
 
 Into:
 
-* AI-powered affiliate content operating system
-* workflow-centric SaaS platform
-* scalable operational dashboard
-* modern premium B2B product
+- AI-powered affiliate content operating system
+- workflow-centric SaaS platform
+- scalable operational dashboard
+- modern premium B2B product
 
 ---
 
@@ -30,39 +30,39 @@ Into:
 
 ## MUST KEEP
 
-* Existing business logic
-* Existing API contracts
-* Zustand stores
-* TanStack Query patterns
-* Feature module boundaries
-* Workflow execution engine
-* Existing routing structure (Phase A/B)
+- Existing business logic
+- Existing API contracts
+- Zustand stores
+- TanStack Query patterns
+- Feature module boundaries
+- Workflow execution engine
+- Existing routing structure (Phase A/B)
 
 ---
 
 ## MUST CHANGE
 
-* Information architecture
-* Navigation hierarchy
-* Visual consistency
-* Empty states
-* Loading states
-* Component standardization
-* Page structure consistency
-* Table UX
-* SaaS operational ergonomics
+- Information architecture
+- Navigation hierarchy
+- Visual consistency
+- Empty states
+- Loading states
+- Component standardization
+- Page structure consistency
+- Table UX
+- SaaS operational ergonomics
 
 ---
 
 ## NEVER DO
 
-* Rewrite backend logic during UI phases
-* Mix feature development with UI refactor
-* Introduce new global state managers
-* Hardcode colors
-* Create duplicate primitives
-* Use arbitrary spacing values
-* Introduce inconsistent interaction patterns
+- Rewrite backend logic during UI phases
+- Mix feature development with UI refactor
+- Introduce new global state managers
+- Hardcode colors
+- Create duplicate primitives
+- Use arbitrary spacing values
+- Introduce inconsistent interaction patterns
 
 ---
 
@@ -111,12 +111,12 @@ Pure primitives only.
 
 Examples:
 
-* button
-* input
-* dialog
-* table
-* tooltip
-* sheet
+- button
+- input
+- dialog
+- table
+- tooltip
+- sheet
 
 NO business logic.
 
@@ -128,13 +128,13 @@ Reusable product patterns.
 
 Examples:
 
-* data-table
-* page-header
-* filter-toolbar
-* empty-state
-* app-sidebar
-* stats-card
-* command-palette
+- data-table
+- page-header
+- filter-toolbar
+- empty-state
+- app-sidebar
+- stats-card
+- command-palette
 
 ---
 
@@ -144,10 +144,10 @@ Domain-specific UI only.
 
 Examples:
 
-* post-editor
-* workflow-node
-* execution-log
-* prompt-template-card
+- post-editor
+- workflow-node
+- execution-log
+- prompt-template-card
 
 ---
 
@@ -184,9 +184,9 @@ max-width: 1600px;
 
 For:
 
-* analytics
-* tables
-* settings
+- analytics
+- tables
+- settings
 
 ---
 
@@ -260,9 +260,9 @@ Workspace
 
 Always visible:
 
-* Create button
-* Search
-* Notifications
+- Create button
+- Search
+- Notifications
 
 ---
 
@@ -270,9 +270,9 @@ Always visible:
 
 Muted:
 
-* settings
-* billing
-* integrations
+- settings
+- billing
+- integrations
 
 ---
 
@@ -280,10 +280,10 @@ Muted:
 
 Must include:
 
-* accent background
-* left border
-* icon emphasis
-* text contrast
+- accent background
+- left border
+- icon emphasis
+- text contrast
 
 ---
 
@@ -387,11 +387,11 @@ FeedbackLayer
 
 Every page MUST support:
 
-* loading
-* empty
-* populated
-* error
-* success
+- loading
+- empty
+- populated
+- error
+- success
 
 ---
 
@@ -428,16 +428,16 @@ Must answer:
 
 ## 8.1 NEVER USE
 
-* fullscreen spinners
-* blank pages
+- fullscreen spinners
+- blank pages
 
 ---
 
 ## 8.2 ALWAYS USE
 
-* skeleton continuity
-* optimistic rendering
-* progressive hydration feel
+- skeleton continuity
+- optimistic rendering
+- progressive hydration feel
 
 ---
 
@@ -462,13 +462,13 @@ StatsSkeleton
 
 Every table supports:
 
-* sorting
-* filtering
-* pagination
-* bulk actions
-* row selection
-* sticky headers
-* keyboard navigation
+- sorting
+- filtering
+- pagination
+- bulk actions
+- row selection
+- sticky headers
+- keyboard navigation
 
 ---
 
@@ -492,8 +492,8 @@ Right:
 
 Support:
 
-* compact
-* default
+- compact
+- default
 
 ---
 
@@ -543,8 +543,8 @@ Bottom Panel
 
 Workflow editor becomes:
 
-* read-only
-* or limited mode
+- read-only
+- or limited mode
 
 No full editing.
 
@@ -562,12 +562,12 @@ No full editing.
 
 ## 11.2 Actions
 
-* navigate routes
-* create posts
-* open workflows
-* search products
-* generate prompts
-* execute automation
+- navigate routes
+- create posts
+- open workflows
+- search products
+- generate prompts
+- execute automation
 
 ---
 
@@ -581,9 +581,9 @@ cmdk
 
 Integrate with:
 
-* TanStack Router
-* recent entities
-* keyboard shortcuts
+- TanStack Router
+- recent entities
+- keyboard shortcuts
 
 ---
 
@@ -607,19 +607,19 @@ Integrate with:
 
 ## 12.2 Animate
 
-* hover states
-* sidebar collapse
-* dialogs
-* dropdowns
-* tab transitions
+- hover states
+- sidebar collapse
+- dialogs
+- dropdowns
+- tab transitions
 
 ---
 
 ## 12.3 NEVER Animate
 
-* table reflow
-* large layout shifts
-* expensive canvas redraws
+- table reflow
+- large layout shifts
+- expensive canvas redraws
 
 ---
 
@@ -627,12 +627,12 @@ Integrate with:
 
 ## 13.1 Mandatory
 
-* focus rings
-* keyboard navigation
-* ARIA labels
-* semantic buttons
-* form labels
-* contrast compliance
+- focus rings
+- keyboard navigation
+- ARIA labels
+- semantic buttons
+- form labels
+- contrast compliance
 
 ---
 
@@ -640,10 +640,10 @@ Integrate with:
 
 All major flows must support:
 
-* tab navigation
-* escape handling
-* enter actions
-* arrow key menus
+- tab navigation
+- escape handling
+- enter actions
+- arrow key menus
 
 ---
 
@@ -665,12 +665,12 @@ xl
 
 Mobile is:
 
-* monitor-first
-* lightweight operations
+- monitor-first
+- lightweight operations
 
 NOT:
 
-* full production environment
+- full production environment
 
 ---
 
@@ -678,9 +678,9 @@ NOT:
 
 Tablet supports:
 
-* analytics
-* scheduling
-* lightweight editing
+- analytics
+- scheduling
+- lightweight editing
 
 ---
 
@@ -690,9 +690,9 @@ Tablet supports:
 
 ### Problems
 
-* weak empty state
-* low operational visibility
-* weak filtering UX
+- weak empty state
+- low operational visibility
+- weak filtering UX
 
 ### Target
 
@@ -700,10 +700,10 @@ Content operations center
 
 ### Required Components
 
-* DataTable
-* FilterToolbar
-* EmptyState
-* BulkActionsBar
+- DataTable
+- FilterToolbar
+- EmptyState
+- BulkActionsBar
 
 Priority: P0
 
@@ -713,8 +713,8 @@ Priority: P0
 
 ### Problems
 
-* isolated editing
-* weak workflow visibility
+- isolated editing
+- weak workflow visibility
 
 ### Target
 
@@ -722,10 +722,10 @@ AI-assisted content editor
 
 ### Required
 
-* StickyToolbar
-* AutosaveIndicator
-* AI Assist Panel
-* Preview Mode
+- StickyToolbar
+- AutosaveIndicator
+- AI Assist Panel
+- Preview Mode
 
 Priority: P1
 
@@ -735,7 +735,7 @@ Priority: P1
 
 ### Problems
 
-* unclear execution visibility
+- unclear execution visibility
 
 ### Target
 
@@ -743,10 +743,10 @@ Automation operations hub
 
 ### Required
 
-* workflow cards
-* execution stats
-* recent runs
-* health indicators
+- workflow cards
+- execution stats
+- recent runs
+- health indicators
 
 Priority: P1
 
@@ -756,8 +756,8 @@ Priority: P1
 
 ### Problems
 
-* prototype feel
-* isolated canvas
+- prototype feel
+- isolated canvas
 
 ### Target
 
@@ -765,10 +765,10 @@ Production workflow system
 
 ### Required
 
-* execution panel
-* logs
-* validation
-* publish states
+- execution panel
+- logs
+- validation
+- publish states
 
 Priority: P1
 
@@ -778,7 +778,7 @@ Priority: P1
 
 ### Problems
 
-* disconnected utility feel
+- disconnected utility feel
 
 ### Target
 
@@ -786,10 +786,10 @@ AI prompt operations library
 
 ### Required
 
-* categories
-* tags
-* usage analytics
-* favorites
+- categories
+- tags
+- usage analytics
+- favorites
 
 Priority: P2
 
@@ -799,7 +799,7 @@ Priority: P2
 
 ### Problems
 
-* passive dashboard feel
+- passive dashboard feel
 
 ### Target
 
@@ -807,10 +807,10 @@ Operational intelligence center
 
 ### Required
 
-* KPI cards
-* trend charts
-* insights feed
-* anomalies
+- KPI cards
+- trend charts
+- insights feed
+- anomalies
 
 Priority: P2
 
@@ -824,11 +824,11 @@ Duration: 1 week
 
 ### Deliverables
 
-* typography fix
-* token cleanup
-* page-header system
-* empty-state system
-* skeleton system
+- typography fix
+- token cleanup
+- page-header system
+- empty-state system
+- skeleton system
 
 ---
 
@@ -838,11 +838,11 @@ Duration: 1 week
 
 ### Deliverables
 
-* sidebar redesign
-* app shell standardization
-* topbar
-* breadcrumbs
-* navigation hierarchy
+- sidebar redesign
+- app shell standardization
+- topbar
+- breadcrumbs
+- navigation hierarchy
 
 ---
 
@@ -852,11 +852,11 @@ Duration: 2 weeks
 
 ### Deliverables
 
-* data-table system
-* workflow operations
-* command palette
-* filter systems
-* bulk actions
+- data-table system
+- workflow operations
+- command palette
+- filter systems
+- bulk actions
 
 ---
 
@@ -866,11 +866,11 @@ Duration: 2 weeks
 
 ### Deliverables
 
-* onboarding
-* notifications
-* execution visibility
-* activity feeds
-* AI recommendations
+- onboarding
+- notifications
+- execution visibility
+- activity feeds
+- AI recommendations
 
 ---
 
@@ -880,11 +880,11 @@ Duration: 1 week
 
 ### Deliverables
 
-* micro-interactions
-* animation polish
-* accessibility audit
-* responsive audit
-* performance tuning
+- micro-interactions
+- animation polish
+- accessibility audit
+- responsive audit
+- performance tuning
 
 ---
 
@@ -905,16 +905,16 @@ feat/workflow-ops
 
 ### Max
 
-* 15 files
-* 600 LOC
+- 15 files
+- 600 LOC
 
 ---
 
 ## NEVER MIX
 
-* business logic
-* UI refactor
-* backend changes
+- business logic
+- UI refactor
+- backend changes
 
 ---
 
@@ -922,21 +922,21 @@ feat/workflow-ops
 
 ## ALWAYS
 
-* reuse shadcn components
-* use semantic tokens
-* support dark/light mode
-* preserve accessibility
-* preserve responsive behavior
+- reuse shadcn components
+- use semantic tokens
+- support dark/light mode
+- preserve accessibility
+- preserve responsive behavior
 
 ---
 
 ## NEVER
 
-* hardcode values
-* rewrite stores
-* create duplicate components
-* bypass patterns
-* introduce inconsistent spacing
+- hardcode values
+- rewrite stores
+- create duplicate components
+- bypass patterns
+- introduce inconsistent spacing
 
 ---
 
@@ -944,16 +944,16 @@ feat/workflow-ops
 
 A page is considered refactored only if:
 
-* supports loading/empty/error/success states
-* responsive
-* accessible
-* tokenized
-* follows layout system
-* uses shared patterns
-* has keyboard support
-* has consistent spacing
-* has motion states
-* works in dark/light mode
+- supports loading/empty/error/success states
+- responsive
+- accessible
+- tokenized
+- follows layout system
+- uses shared patterns
+- has keyboard support
+- has consistent spacing
+- has motion states
+- works in dark/light mode
 
 ---
 
@@ -961,20 +961,20 @@ A page is considered refactored only if:
 
 Poko should feel like:
 
-* Linear × Notion × n8n
-* operational
-* intelligent
-* fast
-* cinematic
-* workflow-native
-* AI-assisted
-* content-production-first
+- Linear × Notion × n8n
+- operational
+- intelligent
+- fast
+- cinematic
+- workflow-native
+- AI-assisted
+- content-production-first
 
 NOT:
 
-* generic admin dashboard
-* template SaaS clone
-* component showcase
+- generic admin dashboard
+- template SaaS clone
+- component showcase
 
 The UI should communicate:
 

@@ -9,11 +9,11 @@
 /**
  * What triggered this execution
  */
-export type ExecuteWorkflowDtoTriggeredBy = typeof ExecuteWorkflowDtoTriggeredBy[keyof typeof ExecuteWorkflowDtoTriggeredBy];
-
+export type ExecuteWorkflowDtoTriggeredBy =
+  (typeof ExecuteWorkflowDtoTriggeredBy)[keyof typeof ExecuteWorkflowDtoTriggeredBy]
 
 export const ExecuteWorkflowDtoTriggeredBy = {
   manual: 'manual',
   schedule: 'schedule',
   webhook: 'webhook',
-} as const;
+} as const

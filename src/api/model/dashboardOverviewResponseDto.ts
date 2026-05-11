@@ -5,21 +5,21 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { AttentionItemDto } from './attentionItemDto';
-import type { DashboardOverviewResponseDtoRange } from './dashboardOverviewResponseDtoRange';
-import type { PipelineSnapshotDto } from './pipelineSnapshotDto';
-import type { SummaryCardDto } from './summaryCardDto';
-import type { TopBreakdownDto } from './topBreakdownDto';
-import type { TrendSeriesDto } from './trendSeriesDto';
-import type { UpcomingPostDto } from './upcomingPostDto';
+import type { AttentionItemDto } from './attentionItemDto'
+import type { DashboardOverviewResponseDtoRange } from './dashboardOverviewResponseDtoRange'
+import type { PipelineSnapshotDto } from './pipelineSnapshotDto'
+import type { SummaryCardDto } from './summaryCardDto'
+import type { TopBreakdownDto } from './topBreakdownDto'
+import type { TrendSeriesDto } from './trendSeriesDto'
+import type { UpcomingPostDto } from './upcomingPostDto'
 
 export interface DashboardOverviewResponseDto {
-  range: DashboardOverviewResponseDtoRange;
-  dataAsOf: string;
-  summaryCards: SummaryCardDto[];
-  pipelineSnapshot: PipelineSnapshotDto;
-  trendSeries: TrendSeriesDto[];
-  attentionItems: AttentionItemDto[];
-  upcomingSchedule: UpcomingPostDto[];
-  topBreakdowns: TopBreakdownDto[];
+  range: DashboardOverviewResponseDtoRange
+  dataAsOf: string
+  summaryCards: SummaryCardDto[]
+  pipelineSnapshot: PipelineSnapshotDto
+  trendSeries: TrendSeriesDto[]
+  attentionItems: AttentionItemDto[]
+  upcomingSchedule: UpcomingPostDto[]
+  topBreakdowns: TopBreakdownDto[]
 }

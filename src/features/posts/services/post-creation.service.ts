@@ -19,9 +19,7 @@ export class PostCreationService {
     return contentPostsControllerCreate(payload)
   }
 
-  transformFormDataToPayload(
-    data: CreatePayloadInput,
-  ): CreatePayloadOutput {
+  transformFormDataToPayload(data: CreatePayloadInput): CreatePayloadOutput {
     const { platformTargets, ...rest } = data
     return {
       ...rest,

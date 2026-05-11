@@ -5,17 +5,17 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { SaveWorkflowCanvasBodyDtoStatus } from './saveWorkflowCanvasBodyDtoStatus';
-import type { SaveWorkflowCanvasBodyDtoVersionType } from './saveWorkflowCanvasBodyDtoVersionType';
-import type { WorkflowEdgeInputDto } from './workflowEdgeInputDto';
-import type { WorkflowNodeInputDto } from './workflowNodeInputDto';
+import type { SaveWorkflowCanvasBodyDtoStatus } from './saveWorkflowCanvasBodyDtoStatus'
+import type { SaveWorkflowCanvasBodyDtoVersionType } from './saveWorkflowCanvasBodyDtoVersionType'
+import type { WorkflowEdgeInputDto } from './workflowEdgeInputDto'
+import type { WorkflowNodeInputDto } from './workflowNodeInputDto'
 
 export interface SaveWorkflowCanvasBodyDto {
   /** @maxLength 255 */
-  name?: string;
-  description?: string;
-  status?: SaveWorkflowCanvasBodyDtoStatus;
-  nodes?: WorkflowNodeInputDto[];
-  edges?: WorkflowEdgeInputDto[];
-  versionType?: SaveWorkflowCanvasBodyDtoVersionType;
+  name?: string
+  description?: string
+  status?: SaveWorkflowCanvasBodyDtoStatus
+  nodes?: WorkflowNodeInputDto[]
+  edges?: WorkflowEdgeInputDto[]
+  versionType?: SaveWorkflowCanvasBodyDtoVersionType
 }

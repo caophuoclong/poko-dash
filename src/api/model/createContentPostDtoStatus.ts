@@ -9,8 +9,8 @@
 /**
  * Content status
  */
-export type CreateContentPostDtoStatus = typeof CreateContentPostDtoStatus[keyof typeof CreateContentPostDtoStatus];
-
+export type CreateContentPostDtoStatus =
+  (typeof CreateContentPostDtoStatus)[keyof typeof CreateContentPostDtoStatus]
 
 export const CreateContentPostDtoStatus = {
   draft: 'draft',
@@ -18,4 +18,4 @@ export const CreateContentPostDtoStatus = {
   queued: 'queued',
   published: 'published',
   archived: 'archived',
-} as const;
+} as const

@@ -5,11 +5,11 @@
  * Monorepo-based NestJS API with modular architecture, Zod validation, and multiple auth strategies.
  * OpenAPI spec version: 1.0
  */
-import type { CreateWorkflowBodyDtoStatus } from './createWorkflowBodyDtoStatus';
+import type { CreateWorkflowBodyDtoStatus } from './createWorkflowBodyDtoStatus'
 
 export interface CreateWorkflowBodyDto {
   /** @maxLength 255 */
-  name?: string;
-  description?: string;
-  status?: CreateWorkflowBodyDtoStatus;
+  name?: string
+  description?: string
+  status?: CreateWorkflowBodyDtoStatus
 }

@@ -13,7 +13,9 @@ function makeEdge(overrides: Partial<Edge> = {}): Edge {
   }
 }
 
-function makeDtoEdge(overrides: Partial<WorkflowEdgeDto> = {}): WorkflowEdgeDto {
+function makeDtoEdge(
+  overrides: Partial<WorkflowEdgeDto> = {},
+): WorkflowEdgeDto {
   return {
     id: 'e1',
     source_node_id: 'node-a',
@@ -45,19 +47,25 @@ describe('mapCanvasEdgeToDtoEdge', () => {
   })
 
   it('maps condition_true edgeType to type=true and leaves edge_type undefined', () => {
-    const dto = mapCanvasEdgeToDtoEdge(makeEdge({ data: { edgeType: 'condition_true' } }))
+    const dto = mapCanvasEdgeToDtoEdge(
+      makeEdge({ data: { edgeType: 'condition_true' } }),
+    )
     expect(dto.type).toBe('true')
     expect(dto.edge_type).toBeUndefined()
   })
 
   it('maps condition_false edgeType to type=false and leaves edge_type undefined', () => {
-    const dto = mapCanvasEdgeToDtoEdge(makeEdge({ data: { edgeType: 'condition_false' } }))
+    const dto = mapCanvasEdgeToDtoEdge(
+      makeEdge({ data: { edgeType: 'condition_false' } }),
+    )
     expect(dto.type).toBe('false')
     expect(dto.edge_type).toBeUndefined()
   })
 
   it('maps error edgeType to type=error edge_type=error', () => {
-    const dto = mapCanvasEdgeToDtoEdge(makeEdge({ data: { edgeType: 'error' } }))
+    const dto = mapCanvasEdgeToDtoEdge(
+      makeEdge({ data: { edgeType: 'error' } }),
+    )
     expect(dto.type).toBe('error')
     expect(dto.edge_type).toBe('error')
   })
@@ -127,8 +135,12 @@ describe('mapDtoEdgeToCanvasEdge', () => {
   it('maps condition types to edgeType for UI coloring', () => {
     const trueDto = makeDtoEdge({ type: 'true' })
     const falseDto = makeDtoEdge({ type: 'false' })
-    expect(mapDtoEdgeToCanvasEdge(trueDto).data?.edgeType).toBe('condition_true')
-    expect(mapDtoEdgeToCanvasEdge(falseDto).data?.edgeType).toBe('condition_false')
+    expect(mapDtoEdgeToCanvasEdge(trueDto).data?.edgeType).toBe(
+      'condition_true',
+    )
+    expect(mapDtoEdgeToCanvasEdge(falseDto).data?.edgeType).toBe(
+      'condition_false',
+    )
   })
 
   it('maps error type to edgeType for UI coloring', () => {

@@ -9,4 +9,4 @@
 /**
  * Owner identifier
  */
-export type UpdateContentIdeaDtoOwner = { [key: string]: unknown };
+export type UpdateContentIdeaDtoOwner = { [key: string]: unknown }

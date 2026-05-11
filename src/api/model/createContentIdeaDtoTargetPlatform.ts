@@ -9,8 +9,8 @@
 /**
  * Target platform
  */
-export type CreateContentIdeaDtoTargetPlatform = typeof CreateContentIdeaDtoTargetPlatform[keyof typeof CreateContentIdeaDtoTargetPlatform];
-
+export type CreateContentIdeaDtoTargetPlatform =
+  (typeof CreateContentIdeaDtoTargetPlatform)[keyof typeof CreateContentIdeaDtoTargetPlatform]
 
 export const CreateContentIdeaDtoTargetPlatform = {
   facebook: 'facebook',
@@ -18,4 +18,4 @@ export const CreateContentIdeaDtoTargetPlatform = {
   instagram: 'instagram',
   youtube: 'youtube',
   blog: 'blog',
-} as const;
+} as const

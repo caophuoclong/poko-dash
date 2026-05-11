@@ -31,8 +31,15 @@ export function ExecutionStatusBanner({
       )}
     >
       <div className="flex items-center gap-2 min-w-0">
-        {isRunning && <Loader2 size={14} className="text-accent-blue animate-spin shrink-0" />}
-        {isSuccess && <CheckCircle2 size={14} className="text-accent-green shrink-0" />}
+        {isRunning && (
+          <Loader2
+            size={14}
+            className="text-accent-blue animate-spin shrink-0"
+          />
+        )}
+        {isSuccess && (
+          <CheckCircle2 size={14} className="text-accent-green shrink-0" />
+        )}
         {isError && <XCircle size={14} className="text-accent-red shrink-0" />}
         <span
           className={cn(
@@ -52,7 +59,12 @@ export function ExecutionStatusBanner({
       </div>
       <div className="flex items-center gap-2 shrink-0">
         {isRunning && onCancel && (
-          <Button size="xs" variant="ghost" onClick={onCancel} className="text-accent-blue">
+          <Button
+            size="xs"
+            variant="ghost"
+            onClick={onCancel}
+            className="text-accent-blue"
+          >
             Cancel
           </Button>
         )}

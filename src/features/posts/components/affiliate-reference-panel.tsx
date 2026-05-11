@@ -1,10 +1,16 @@
-import { Autocomplete } from '@/components/ui/autocomplete'
-import type { AutocompleteOption } from '@/components/ui/autocomplete'
+import { useRef, useState } from 'react'
+import {
+  Combobox, ComboboxChips, ComboboxChip, ComboboxChipsInput,
+  ComboboxContent, ComboboxList, ComboboxCollection,
+  ComboboxItem, ComboboxEmpty, useComboboxAnchor,
+} from '@/components/ui/combobox'
+import type { ComboboxOption } from '@/components/ui/combobox-utils'
+import { filterOptionsByLabel } from '@/components/ui/combobox-utils'
 
 interface AffiliateReferencePanelProps {
   affiliateLinks?: string
   onAffiliateLinksChange: (links: string) => void
-  availableLinks: AutocompleteOption[]
+  availableLinks: ComboboxOption[]
 }
 
 export default function AffiliateReferencePanel({
@@ -12,24 +18,61 @@ export default function AffiliateReferencePanel({
   onAffiliateLinksChange,
   availableLinks = [],
 }: AffiliateReferencePanelProps) {
+  const anchorRef = useComboboxAnchor()
+  const [open, setOpen] = useState(false)
+  const [inputValue, setInputValue] = useState('')
+  const preventCloseRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
   const selectedLinks = affiliateLinks ? affiliateLinks.split('|') : []
+  const selectedOptions = selectedLinks
+    .map((id) => availableLinks.find((l) => l.value === id))
+    .filter((x): x is ComboboxOption => x !== undefined)
+  const filtered = filterOptionsByLabel(availableLinks, inputValue)
 
   return (
     <div>
       <label className="block text-sm text-near-white mb-2 font-medium">
         Link affiliate
       </label>
-      <Autocomplete
-        options={availableLinks}
-        value={selectedLinks
-          .map((id) => availableLinks.find((l) => l.value === id))
-          .filter((x): x is AutocompleteOption => x !== undefined)}
-        onChange={(options) =>
-          onAffiliateLinksChange(options.map((o) => o.value).join('|'))
-        }
-        placeholder="Chọn link affiliate"
+      <Combobox
         multiple
-      />
+        value={selectedOptions}
+        onValueChange={(items) => {
+          const raw = (items as ComboboxOption[]).map((o) => o.value)
+          onAffiliateLinksChange(raw.join('|'))
+          if (preventCloseRef.current) clearTimeout(preventCloseRef.current)
+          preventCloseRef.current = setTimeout(() => { preventCloseRef.current = null }, 50)
+        }}
+        inputValue={inputValue}
+        onInputValueChange={setInputValue}
+        open={open}
+        onOpenChange={(next) => {
+          if (!next && preventCloseRef.current) setOpen(true)
+          else setOpen(next)
+        }}
+        items={filtered}
+        itemToStringLabel={(item) => item.label}
+        isItemEqualToValue={(item, value) => item?.value === value?.value}
+      >
+        <div ref={anchorRef}>
+          <ComboboxChips>
+            {selectedOptions.map((item) => (
+              <ComboboxChip key={String(item.value)}>
+                {item.label}
+              </ComboboxChip>
+            ))}
+            <ComboboxChipsInput placeholder="Chọn link affiliate" />
+          </ComboboxChips>
+        </div>
+        <ComboboxContent anchor={anchorRef}>
+          <ComboboxList>
+            <ComboboxCollection>
+              {(item) => <ComboboxItem value={item}>{item.label}</ComboboxItem>}
+            </ComboboxCollection>
+            <ComboboxEmpty>No results found</ComboboxEmpty>
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
 
       {selectedLinks.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-2">
