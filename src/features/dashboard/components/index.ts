@@ -1,5 +1,4 @@
 export { default as DashboardPage } from './DashboardPage'
-export { DashboardHeader } from './DashboardHeader'
 export { SummaryCardGrid } from './SummaryCardGrid'
 export { PipelineSnapshot } from './PipelineSnapshot'
 export { TrendChartsSection } from './TrendChartsSection'

@@ -19,7 +19,11 @@ export function CommonTableHeader<TData>({
   return (
     <thead>
       {headerGroups.map((hg) => (
-        <tr key={hg.id} className="border-b border-frost/50 bg-surface/50">
+        <tr
+          key={hg.id}
+          className="border-b border-[var(--color-hairline)] bg-[var(--color-canvas)]"
+        >
+
           {hg.headers.map((header) => {
             const pinned = pinnedOffsets.get(header.column.id)
             const isPinned = pinned?.side ?? false
@@ -32,16 +36,19 @@ export function CommonTableHeader<TData>({
               <th
                 key={header.id}
                 className={cn(
-                  'text-left text-[11px] font-medium uppercase tracking-wider text-dark-muted whitespace-nowrap',
+                  'text-left text-[11px] font-medium uppercase tracking-wider text-[var(--color-muted)] whitespace-nowrap bg-[var(--color-canvas)]',
                   compact ? 'px-3 py-2' : 'px-5 py-3',
                   header.column.getCanSort() &&
-                    'cursor-pointer select-none hover:text-muted-text transition-colors',
-                  isPinned && 'border-r border-frost/30',
+                    'cursor-pointer select-none hover:text-[var(--color-ink)] transition-colors',
+                  isPinned && 'border-r border-[var(--color-hairline)]',
                 )}
                 style={{
                   width: header.getSize(),
                   minWidth: header.getSize(),
                   maxWidth: header.getSize(),
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 2,
                   ...pinnedStyles,
                 }}
                 onClick={header.column.getToggleSortingHandler()}

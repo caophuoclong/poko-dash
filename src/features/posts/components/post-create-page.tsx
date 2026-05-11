@@ -14,6 +14,7 @@ import type { ContentPostCreateFormData } from '#/features/posts/schemas/content
 import type { PlatformTargetConfig } from '../types/publication'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '#/components/ui/button'
+import { usePageHeader } from '#/components/ui/page-header-context'
 
 export function PostCreatePage() {
   const navigate = useNavigate()
@@ -99,45 +100,35 @@ export function PostCreatePage() {
 
   const status = watch('status')
 
+  usePageHeader({
+    title: 'Tạo bài viết mới',
+    backHref: '/dash/posts',
+    // backLabel: 'Quay lại',
+    actions: (
+      <div className="flex items-center gap-3">
+        {hasUnsavedChanges && (
+          <span className="text-xs text-accent-orange">
+            • Có thay đổi chưa lưu
+          </span>
+        )}
+        <span className="text-sm text-muted-text">
+          {statusOptions.find((s) => s.value === status)?.label}
+        </span>
+        <Button
+          size="xs"
+          type="submit"
+          disabled={isSaving || !hasUnsavedChanges}
+        >
+          {isSaving ? 'Đang tạo...' : 'Tạo bài viết'}
+        </Button>
+      </div>
+    ),
+  })
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(handleSave)}>
         <div className="max-w-full space-y-6">
-          <div className="bg-surface border border-frost rounded-2xl p-4 md:p-5">
-            <div className="flex items-center justify-between">
-              <a
-                href="/dash/posts"
-                className="inline-flex items-center gap-2 text-sm text-muted-text hover:text-near-white transition-colors"
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <path d="M10 12L6 8L10 4" />
-                </svg>
-                Quay lại
-              </a>
-
-              <div className="flex items-center gap-3">
-                {hasUnsavedChanges && (
-                  <span className="text-xs text-accent-orange">
-                    • Có thay đổi chưa lưu
-                  </span>
-                )}
-                <span className="text-sm text-muted-text">
-                  {statusOptions.find((s) => s.value === status)?.label}
-                </span>
-                <Button type="submit" disabled={isSaving || !hasUnsavedChanges}>
-                  {isSaving ? 'Đang tạo...' : 'Tạo bài viết'}
-                </Button>
-              </div>
-            </div>
-          </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
               <MainContent control={methods.control} />

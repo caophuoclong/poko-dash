@@ -44,6 +44,16 @@ export interface NodeTypeDefinition {
   defaultData: WorkflowNodeData
 }
 
+export interface WorkflowExecutionStats {
+  totalRuns?: number
+  successRate?: number
+  avgDurationMs?: number
+  lastStatus?: 'success' | 'error' | 'running'
+  lastDurationMs?: number
+}
+
+export type WorkflowHealth = 'healthy' | 'degraded' | 'failing' | 'unknown'
+
 export interface WorkflowSummary {
   id: string
   name: string
@@ -53,6 +63,7 @@ export interface WorkflowSummary {
   lastRunAt?: string
   createdAt: string
   updatedAt: string
+  executionStats?: WorkflowExecutionStats
 }
 
 export interface WorkflowVariable {

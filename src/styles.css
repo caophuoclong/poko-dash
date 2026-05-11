@@ -204,7 +204,7 @@
   --t-dark-muted: #a8a29e;
   --t-frost: rgba(0, 0, 0, 0.07);
   --t-frost-hover: rgba(0, 0, 0, 0.14);
-  --t-accent-on: #ffffff;
+  --t-accent-on: #000000;
   --t-accent-orange: #ea7317;
   --t-accent-orange-light: #f59e3d;
   --t-accent-orange-dim: rgba(234, 115, 23, 0.08);

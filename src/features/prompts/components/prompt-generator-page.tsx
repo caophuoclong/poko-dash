@@ -125,10 +125,13 @@ function PromptGeneratorInner() {
       ? null
       : {
           title: 'Prompt Generator',
-          subtitle:
-            'Browse, create, and compile AI prompts for your content',
+          subtitle: 'Browse, create, and compile AI prompts for your content',
           actions: (
-            <Button color="blue" onClick={() => setShowCreateForm(true)}>
+            <Button
+              size="xs"
+              color="blue"
+              onClick={() => setShowCreateForm(true)}
+            >
               <Plus className="size-4" /> New Prompt
             </Button>
           ),

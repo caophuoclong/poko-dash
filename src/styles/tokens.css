@@ -1,24 +1,15 @@
-/* DESIGN.md Color Tokens */
 :root {
-  --color-primary: #ff385c;
-  --color-primary-active: #e00b41;
-  --color-primary-disabled: #ffd1da;
-  --color-primary-error: #c13515;
-  --color-ink: #222222;
-  --color-body: #3f3f3f;
-  --color-muted: #6a6a6a;
-  --color-muted-soft: #929292;
-  --color-hairline: #dddddd;
-  --color-hairline-soft: #ebebeb;
-  --color-border-strong: #c1c1c1;
-  --color-canvas: #ffffff;
-  --color-surface-soft: #f7f7f7;
-  --color-surface-strong: #f2f2f2;
-  --color-on-primary: #ffffff;
-  --color-legal-link: #428bff;
-  --color-scrim: rgba(0, 0, 0, 0.5);
+  /* primitives */
+  --color-primary: #ff801f;
+  --color-on-primary: #1a0f00;
+  --color-ink: #f0f0f0;
+  --color-muted: #a1a4a5;
+  --color-hairline: rgba(214, 235, 253, 0.19);
+  --color-canvas: #0a0a08;
+  --color-surface-soft: #111110;
+  --color-surface-strong: #1a1a18;
+  --color-primary-error: #ff2047;
 
-  /* DESIGN.md Border Radius Tokens */
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 14px;
@@ -26,8 +17,28 @@
   --radius-xl: 32px;
   --radius-full: 9999px;
 
-  /* DESIGN.md Elevation (single shadow tier) */
   --shadow-card: rgba(0, 0, 0, 0.02) 0 0 0 1px,
     rgba(0, 0, 0, 0.04) 0 2px 6px 0,
     rgba(0, 0, 0, 0.1) 0 4px 8px 0;
+
+  /* semantic */
+  --t-background: #000000;
+  --t-foreground: #f0f0f0;
+  --t-card: #0a0a08;
+  --t-card-foreground: #f0f0f0;
+  --t-popover: #0a0a08;
+  --t-popover-foreground: #f0f0f0;
+  --t-primary: var(--color-primary);
+  --t-primary-foreground: var(--color-on-primary);
+  --t-secondary: var(--color-canvas);
+  --t-secondary-foreground: var(--color-ink);
+  --t-muted: var(--color-surface-soft);
+  --t-muted-foreground: var(--color-muted);
+  --t-accent: var(--color-surface-strong);
+  --t-accent-foreground: var(--color-ink);
+  --t-destructive: var(--color-primary-error);
+  --t-destructive-foreground: var(--color-on-primary);
+  --t-border: var(--color-hairline);
+  --t-input: var(--color-hairline);
+  --t-ring: transparent;
 }

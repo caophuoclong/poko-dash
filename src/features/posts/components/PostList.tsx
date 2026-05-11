@@ -1,33 +1,46 @@
 import { useState, useMemo } from 'react'
-import { FileText } from 'lucide-react'
+import type { SortingState, RowSelectionState } from '@tanstack/react-table'
+import { FileText, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
 import PostsToolbar from './posts-toolbar'
 import PostsFilterBar from './posts-filter-bar'
 import { CommonTable } from '@/components/table'
-import { useReactTable, getCoreRowModel } from '@tanstack/react-table'
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  getPaginationRowModel,
+  getFilteredRowModel,
+} from '@tanstack/react-table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { usePageHeader } from '@/components/ui/page-header-context'
 import { EmptyState } from '@/components/ui/empty-state'
+import { BulkActionsBar } from '@/components/patterns/bulk-actions-bar'
 import { formatRelativeTime } from '@/shared/utils/date'
 import { StatusCell } from './post-list/StatusCell'
 import { statusOptions } from './post-edit-page/constants'
 import { useContentIdeas } from '#/features/contents/hooks/use-content-ideas'
 import type { ContentPostParsed } from '../schemas/content-post.schema'
 
+const PAGE_SIZE = 20
 const NO_IDEA_SENTINEL = '__none__'
-
 type PostSummary = any[number]
 
 interface Props {
   posts: ContentPostParsed[]
   ideaId?: string
 }
+
 export default function PostList(props: Props) {
   const { posts, ideaId } = props
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedPlatform, setSelectedPlatform] = useState<string>()
   const [selectedStatus, setSelectedStatus] = useState<string>()
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [compact, setCompact] = useState(false)
   const selectedIdea = ideaId
   const navigate = useNavigate()
   const { data } = useContentIdeas()
@@ -51,7 +64,6 @@ export default function PostList(props: Props) {
     }))
   }, [posts])
 
-  // Build postId → ideaId map from ideas' postIds arrays
   const postIdeaMap = useMemo(() => {
     const map = new Map<string, string>()
     for (const idea of ideas) {
@@ -79,35 +91,45 @@ export default function PostList(props: Props) {
       const matchesSearch =
         !searchTerm ||
         post.title.toLowerCase().includes(searchTerm.toLowerCase())
-
       const matchesPlatform =
         !selectedPlatform || post.platform === selectedPlatform
-
       const matchesStatus = !selectedStatus || post.status === selectedStatus
-
       const matchesIdea =
         !selectedIdea ||
         (selectedIdea === NO_IDEA_SENTINEL
           ? !postIdeaMap.has(post.postId)
           : postIdeaMap.get(post.postId) === selectedIdea)
-
       return matchesSearch && matchesPlatform && matchesStatus && matchesIdea
     })
-  }, [
-    posts,
-    searchTerm,
-    selectedPlatform,
-    selectedStatus,
-    selectedIdea,
-    postIdeaMap,
-  ])
+  }, [posts, searchTerm, selectedPlatform, selectedStatus, selectedIdea, postIdeaMap])
 
-  const formatDate = (dateString: string) => {
-    return formatRelativeTime(dateString)
-  }
+  const formatDate = (dateString: string) => formatRelativeTime(dateString)
 
   const columns = useMemo<ColumnDef<PostSummary>[]>(
     () => [
+      {
+        id: 'select',
+        size: 40,
+        enableSorting: false,
+        header: ({ table }) => (
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && 'indeterminate')
+            }
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            onClick={(e) => e.stopPropagation()}
+          />
+        ),
+      },
       {
         accessorKey: 'status',
         header: 'Trạng thái',
@@ -211,7 +233,7 @@ export default function PostList(props: Props) {
             >
               Xem
             </Button>
-            <span className="text-muted-text">|</span>
+            <span className="text-[var(--color-muted)]">|</span>
             <Button
               variant="ghost"
               size="sm"
@@ -235,8 +257,17 @@ export default function PostList(props: Props) {
   const table = useReactTable({
     data: filteredPosts,
     columns,
+    state: { sorting, rowSelection },
+    onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: { pagination: { pageSize: PAGE_SIZE } },
   })
+
+  const selectedCount = Object.keys(rowSelection).length
 
   usePageHeader({
     title:
@@ -251,6 +282,7 @@ export default function PostList(props: Props) {
     primaryAction: (
       <Button
         color="orange"
+        size={'xs'}
         onClick={() => navigate({ to: '/dash/posts/new' })}
       >
         Tạo bài viết
@@ -262,7 +294,12 @@ export default function PostList(props: Props) {
     <div className="max-w-full space-y-6">
       {/* Filter workspace */}
       <div className="bg-[var(--color-canvas)] border border-[var(--color-hairline)] rounded-[var(--radius-md)] p-4 md:p-5 space-y-4">
-        <PostsToolbar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+        <PostsToolbar
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          compact={compact}
+          onCompactChange={setCompact}
+        />
         <PostsFilterBar
           platforms={platforms}
           statuses={statusOptions}
@@ -276,6 +313,12 @@ export default function PostList(props: Props) {
         />
       </div>
 
+      {/* Bulk actions */}
+      <BulkActionsBar
+        selectedCount={selectedCount}
+        onClear={() => setRowSelection({})}
+      />
+
       {/* Results workspace */}
       <div className="bg-[var(--color-canvas)] border border-[var(--color-hairline)] rounded-[var(--radius-md)] overflow-hidden">
         {filteredPosts.length === 0 ? (
@@ -288,7 +331,7 @@ export default function PostList(props: Props) {
                   ? 'Thử thay đổi bộ lọc hoặc từ khoá tìm kiếm'
                   : undefined
               }
-              action={
+              primaryAction={
                 searchTerm ||
                 selectedPlatform ||
                 selectedStatus ||
@@ -318,16 +361,46 @@ export default function PostList(props: Props) {
             />
           </div>
         ) : (
-          <CommonTable
-            table={table}
-            onRowClick={(row) => {
-              navigate({
-                to: '/dash/posts/$postId',
-                params: { postId: row.postId },
-              })
-            }}
-            className="rounded-2xl"
-          />
+          <>
+            <CommonTable
+              table={table}
+              onRowClick={(row) => {
+                navigate({
+                  to: '/dash/posts/$postId',
+                  params: { postId: row.postId },
+                })
+              }}
+              className="rounded-[var(--radius-md)]"
+              compact={compact}
+            />
+            {/* Pagination */}
+            <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--color-hairline)]">
+              <span className="text-xs text-[var(--color-muted)]">
+                Page {table.getState().pagination.pageIndex + 1} of{' '}
+                {table.getPageCount()}
+              </span>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-7"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  <ChevronLeft size={14} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-7"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  <ChevronRight size={14} />
+                </Button>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </div>

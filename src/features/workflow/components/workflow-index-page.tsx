@@ -8,6 +8,9 @@ import {
   Trash2,
   Loader2,
   MoreHorizontal,
+  HeartPulse,
+  Clock3,
+  Activity,
 } from 'lucide-react'
 import { Badge } from '#/components/ui/badge'
 import { Button } from '#/components/ui/button'
@@ -20,7 +23,7 @@ import {
 import { cn } from '#/shared/utils'
 import { useWorkflowIndexPage } from '../hooks/use-workflow-index-page'
 import { formatRelative, formatDate } from '../utils/workflow-index-utils'
-import type { WorkflowSummary } from '../types'
+import type { WorkflowSummary, WorkflowHealth } from '../types'
 import { usePageHeader } from '@/components/ui/page-header-context'
 import { EmptyState } from '@/components/ui/empty-state'
 import { WorkflowSkeleton } from '@/components/feedback'
@@ -33,6 +36,39 @@ const statusConfig: Record<
   paused: { label: 'Paused', tone: 'yellow' },
   draft: { label: 'Draft', tone: 'neutral' },
   archived: { label: 'Archived', tone: 'neutral' },
+}
+
+function getWorkflowHealth(wf: WorkflowSummary): WorkflowHealth {
+  const successRate = wf.executionStats?.successRate
+  const lastStatus = wf.executionStats?.lastStatus
+
+  if (!successRate && !lastStatus) return 'unknown'
+  if (lastStatus === 'error' || (successRate ?? 100) < 50) return 'failing'
+  if ((successRate ?? 100) < 80) return 'degraded'
+  return 'healthy'
+}
+
+const healthTone: Record<WorkflowHealth, 'green' | 'yellow' | 'orange' | 'neutral'> = {
+  healthy: 'green',
+  degraded: 'yellow',
+  failing: 'orange',
+  unknown: 'neutral',
+}
+
+const healthLabel: Record<WorkflowHealth, string> = {
+  healthy: 'Healthy',
+  degraded: 'Degraded',
+  failing: 'Failing',
+  unknown: 'Unknown',
+}
+
+function formatDuration(ms?: number) {
+  if (!ms) return '—'
+  const sec = Math.round(ms / 1000)
+  if (sec < 60) return `${sec}s`
+  const min = Math.floor(sec / 60)
+  const rem = sec % 60
+  return `${min}m ${rem}s`
 }
 
 export function WorkflowIndexPage() {
@@ -101,6 +137,8 @@ export function WorkflowIndexPage() {
         <div className="space-y-2">
           {filtered.map((wf) => {
             const status = statusConfig[wf.status]
+            const health = getWorkflowHealth(wf)
+
             return (
               <div
                 key={wf.id}
@@ -122,18 +160,36 @@ export function WorkflowIndexPage() {
                       <GitBranch size={17} className="text-accent-blue" />
                     </div>
 
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2.5">
+                    <div className="min-w-0 space-y-1">
+                      <div className="flex items-center gap-2.5 flex-wrap">
                         <span className="text-sm font-medium text-[var(--color-ink)] truncate">
                           {wf.name}
                         </span>
                         <Badge tone={status.tone} size="sm">
                           {status.label}
                         </Badge>
+                        <Badge tone={healthTone[health]} size="sm">
+                          <HeartPulse size={11} className="mr-1" />
+                          {healthLabel[health]}
+                        </Badge>
                       </div>
-                      <p className="text-xs text-[var(--color-muted)] mt-0.5 truncate">
+                      <p className="text-xs text-[var(--color-muted)] truncate">
                         {wf.description}
                       </p>
+
+                      <div className="flex items-center gap-3 text-[11px] text-[var(--color-muted-soft)]">
+                        <span className="inline-flex items-center gap-1">
+                          <Activity size={12} />
+                          {wf.executionStats?.totalRuns ?? 0} runs
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <Clock3 size={12} />
+                          avg {formatDuration(wf.executionStats?.avgDurationMs)}
+                        </span>
+                        <span>
+                          success {wf.executionStats?.successRate ?? 0}%
+                        </span>
+                      </div>
                     </div>
                   </div>
 

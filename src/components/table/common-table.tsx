@@ -31,7 +31,7 @@ export function CommonTable<TData>({
   return (
     <div
       className={cn(
-        'border border-frost/50 rounded-xl overflow-hidden',
+        'border border-[var(--color-hairline)] rounded-[var(--radius-md)] overflow-hidden bg-[var(--color-canvas)]',
         className,
       )}
     >

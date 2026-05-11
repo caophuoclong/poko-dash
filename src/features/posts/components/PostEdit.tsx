@@ -5,7 +5,6 @@ import {
   useContentPost,
   useUpdateContentPost,
 } from '@/features/posts/hooks/use-content-posts'
-import PageHeader from './post-edit-page/PageHeader'
 import MainContent from './post-edit-page/MainContent'
 import PreferenceContent from './post-edit-page/PreferenceContent'
 import PlatformTargetConfigPanel from './platform-target-config-panel'
@@ -109,15 +108,6 @@ export function PostEditPage({ postId }: PostEditPageProps) {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(handleSave)}>
         <div className="max-w-full space-y-6">
-          <div className="bg-surface border border-frost rounded-2xl p-4 md:p-5">
-            <PageHeader
-              postId={post.postId}
-              status={status || ''}
-              hasUnsavedChanges={hasUnsavedChanges}
-              isSaving={isSaving}
-            />
-          </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
               <MainContent
