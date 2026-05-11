@@ -38,7 +38,7 @@ export default function Sidebar() {
   const isActive = (to?: string) => {
     if (!to) return false
     if (activePath === to) return true
-    if (to !== '/dash' && activePath.startsWith(to)) return true
+    // if (to !== '/dash' && activePath.startsWith(to)) return true
     return false
   }
 
@@ -157,7 +157,7 @@ export default function Sidebar() {
               <svg viewBox="0 0 18 18" fill="none" className="h-4.5 w-4.5">
                 <path
                   d="M4 9h10M4 6h7M4 12h5"
-                  style={{ stroke: 'var(--t-accent-on)' }}
+                  style={{ stroke: 'var(--color-ink)' }}
                   strokeWidth="1.8"
                   strokeLinecap="round"
                 />

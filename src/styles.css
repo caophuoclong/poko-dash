@@ -272,6 +272,80 @@
   }
 }
 
+:root {
+  --color-background: var(--t-background);
+  --color-foreground: var(--t-foreground);
+  --color-card: var(--t-card);
+  --color-card-foreground: var(--t-card-foreground);
+  --color-popover: var(--t-popover);
+  --color-popover-foreground: var(--t-popover-foreground);
+  --color-primary: var(--t-primary);
+  --color-primary-foreground: var(--t-primary-foreground);
+  --color-primary-active: var(--t-accent-orange-light);
+  --color-secondary: var(--t-secondary);
+  --color-secondary-foreground: var(--t-secondary-foreground);
+  --color-muted: var(--t-muted-foreground);
+  --color-muted-soft: var(--t-muted-text);
+  --color-muted-foreground: var(--t-muted-foreground);
+  --color-accent: var(--t-accent);
+  --color-accent-foreground: var(--t-accent-foreground);
+  --color-destructive: var(--t-destructive);
+  --color-destructive-foreground: var(--t-destructive-foreground);
+  --color-border: var(--t-border);
+  --color-border-strong: var(--t-frost-hover);
+  --color-input: var(--t-input);
+  --color-ring: var(--t-ring);
+  --color-chart-1: var(--t-chart-1);
+  --color-chart-2: var(--t-chart-2);
+  --color-chart-3: var(--t-chart-3);
+  --color-chart-4: var(--t-chart-4);
+  --color-chart-5: var(--t-chart-5);
+  --color-sidebar: var(--t-sidebar);
+  --color-sidebar-foreground: var(--t-sidebar-foreground);
+  --color-sidebar-primary: var(--t-sidebar-primary);
+  --color-sidebar-primary-foreground: var(--t-sidebar-primary-foreground);
+  --color-sidebar-accent: var(--t-sidebar-accent);
+  --color-sidebar-accent-foreground: var(--t-sidebar-accent-foreground);
+  --color-sidebar-border: var(--t-sidebar-border);
+  --color-sidebar-ring: var(--t-sidebar-ring);
+
+  --color-void: var(--t-void);
+  --color-surface: var(--t-surface);
+  --color-surface-2: var(--t-surface-2);
+  --color-near-white: var(--t-near-white);
+  --color-silver: var(--t-silver);
+  --color-muted-text: var(--t-muted-text);
+  --color-dark-muted: var(--t-dark-muted);
+  --color-frost: var(--t-frost);
+  --color-frost-hover: var(--t-frost-hover);
+  --color-accent-on: var(--t-accent-on);
+  --color-accent-orange: var(--t-accent-orange);
+  --color-accent-orange-light: var(--t-accent-orange-light);
+  --color-accent-orange-dim: var(--t-accent-orange-dim);
+  --color-accent-orange-border: var(--t-accent-orange-border);
+  --color-accent-green: var(--t-accent-green);
+  --color-accent-green-dim: var(--t-accent-green-dim);
+  --color-accent-green-border: var(--t-accent-green-border);
+  --color-accent-blue: var(--t-accent-blue);
+  --color-accent-blue-dim: var(--t-accent-blue-dim);
+  --color-accent-yellow: var(--t-accent-yellow);
+  --color-accent-red: var(--t-accent-red);
+  --color-accent-purple: var(--t-accent-purple);
+  --color-accent-purple-dim: var(--t-accent-purple-dim);
+  --color-accent-purple-border: var(--t-accent-purple-border);
+
+  --color-canvas: var(--t-surface);
+  --color-ink: var(--t-foreground);
+  --color-hairline: var(--t-frost);
+  --color-hairline-soft: var(--t-frost);
+  --color-primary-error: var(--t-destructive);
+  --color-on-primary: var(--t-primary-foreground);
+  --color-surface-soft: var(--t-surface-2);
+  --color-surface-strong: var(--t-accent);
+  --color-legal-link: var(--t-accent-blue);
+  --color-scrim: color-mix(in srgb, var(--t-void) 65%, transparent);
+}
+
 @layer base {
   * {
     @apply border-border;

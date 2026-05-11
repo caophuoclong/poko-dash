@@ -90,7 +90,11 @@ export function WorkflowIndexPage() {
     title: 'Workflows',
     description: 'Manage your content automation pipelines',
     primaryAction: (
-      <Button size="sm" onClick={handleCreate} disabled={createWorkflow.isPending}>
+      <Button
+        size="xs"
+        onClick={handleCreate}
+        disabled={createWorkflow.isPending}
+      >
         {createWorkflow.isPending ? (
           <Loader2 size={15} className="animate-spin" />
         ) : (

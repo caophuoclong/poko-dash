@@ -42,11 +42,6 @@ export const NAV_SECTIONS: NavSection[] = [
         children: [
           { id: 'posts-all', label: 'All posts', to: '/dash/posts' },
           { id: 'posts-new', label: 'Create post', to: '/dash/posts/new' },
-          {
-            id: 'posts-scheduled',
-            label: 'Scheduled',
-            to: '/dash/posts/scheduled',
-          },
         ],
       },
       {

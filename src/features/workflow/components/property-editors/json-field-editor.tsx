@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import { Loader2 } from 'lucide-react'
 import { FieldLabel } from './field-label'
 import type { PropertyEditorProps } from './property-editor'
@@ -6,6 +6,20 @@ import type { PropertyEditorProps } from './property-editor'
 const MonacoEditor = lazy(() => import('@monaco-editor/react'))
 
 export function JsonFieldEditor({ schema, value, onChange }: PropertyEditorProps) {
+  const editorRef = useRef<any>(null)
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      if (!editorRef.current) return
+      const isDark = document.documentElement.classList.contains('dark')
+      const monaco = (window as any).monaco
+      monaco?.editor?.setTheme(isDark ? 'poko-dark' : 'poko-light')
+    })
+
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    return () => observer.disconnect()
+  }, [])
+
   const jsonString = typeof value === 'string'
     ? value
     : value != null
@@ -38,7 +52,7 @@ export function JsonFieldEditor({ schema, value, onChange }: PropertyEditorProps
             language="json"
             value={jsonString}
             onChange={handleChange}
-            theme="vs-dark"
+            theme="vs"
             options={{
               minimap: { enabled: false },
               scrollBeyondLastLine: false,
@@ -53,23 +67,40 @@ export function JsonFieldEditor({ schema, value, onChange }: PropertyEditorProps
               padding: { top: 10 },
             }}
             beforeMount={(monaco) => {
+              const styles = getComputedStyle(document.documentElement)
+              const isDark = document.documentElement.classList.contains('dark')
+
               monaco.editor.defineTheme('poko-dark', {
                 base: 'vs-dark',
                 inherit: true,
                 rules: [],
                 colors: {
-                  'editor.background': '#000000',
-                  'editor.foreground': '#f0f0f0',
-                  'editorLineNumber.foreground': '#888780',
-                  'editorLineNumber.activeForeground': '#a1a4a5',
-                  'editorCursor.foreground': '#3b9eff',
-                  'editor.selectionBackground': '#3b9eff33',
-                  'editor.inactiveSelectionBackground': '#3b9eff22',
+                  'editor.background': styles.getPropertyValue('--t-void').trim(),
+                  'editor.foreground': styles.getPropertyValue('--t-foreground').trim(),
+                  'editorLineNumber.foreground': styles.getPropertyValue('--t-muted-text').trim(),
+                  'editorLineNumber.activeForeground': styles.getPropertyValue('--t-silver').trim(),
+                  'editorCursor.foreground': styles.getPropertyValue('--t-accent-blue').trim(),
+                  'editor.selectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}33`,
+                  'editor.inactiveSelectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}22`,
                 },
               })
-            }}
-            onMount={(editor, monaco) => {
-              monaco.editor.setTheme('poko-dark')
+
+              monaco.editor.defineTheme('poko-light', {
+                base: 'vs',
+                inherit: true,
+                rules: [],
+                colors: {
+                  'editor.background': styles.getPropertyValue('--t-void').trim(),
+                  'editor.foreground': styles.getPropertyValue('--t-foreground').trim(),
+                  'editorLineNumber.foreground': styles.getPropertyValue('--t-muted-text').trim(),
+                  'editorLineNumber.activeForeground': styles.getPropertyValue('--t-silver').trim(),
+                  'editorCursor.foreground': styles.getPropertyValue('--t-accent-blue').trim(),
+                  'editor.selectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}33`,
+                  'editor.inactiveSelectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}22`,
+                },
+              })
+
+              monaco.editor.setTheme(isDark ? 'poko-dark' : 'poko-light')
             }}
           />
         </Suspense>

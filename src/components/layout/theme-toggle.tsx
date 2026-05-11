@@ -13,7 +13,7 @@ function applyTheme(dark: boolean) {
 }
 
 export default function ThemeToggle({ className }: { className?: string }) {
-  const [dark, setDark] = useState(true)
+  const [dark, setDark] = useState(false)
 
   useEffect(() => {
     setDark(isDark())

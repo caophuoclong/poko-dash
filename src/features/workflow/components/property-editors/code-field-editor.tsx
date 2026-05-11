@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef, useCallback, useState } from 'react'
+import { lazy, Suspense, useRef, useCallback, useState, useEffect } from 'react'
 import { Loader2, Variable } from 'lucide-react'
 import { FieldLabel } from './field-label'
 import { VariablePicker } from '../variable-picker'
@@ -30,6 +30,18 @@ export function CodeFieldEditor({ schema, value, onChange, availableVars }: Prop
   const completionRef = useRef<any>(null)
   const [pickerOpen, setPickerOpen] = useState(false)
 
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      if (!editorRef.current) return
+      const isDark = document.documentElement.classList.contains('dark')
+      const monaco = (window as any).monaco
+      monaco?.editor?.setTheme(isDark ? 'poko-dark' : 'poko-light')
+    })
+
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    return () => observer.disconnect()
+  }, [])
+
   const handleInsert = useCallback((varRef: string) => {
     const editor = editorRef.current
     if (!editor) return
@@ -53,7 +65,8 @@ export function CodeFieldEditor({ schema, value, onChange, availableVars }: Prop
 
   const handleEditorMount = useCallback(
     (ed: any, monaco: Monaco) => {
-      monaco.editor.setTheme('poko-dark')
+      const isDark = document.documentElement.classList.contains('dark')
+      monaco.editor.setTheme(isDark ? 'poko-dark' : 'poko-light')
       editorRef.current = ed
 
       // Dispose previous provider if remounting
@@ -146,7 +159,7 @@ export function CodeFieldEditor({ schema, value, onChange, availableVars }: Prop
             language={language}
             value={codeValue}
             onChange={(val) => onChange(schema.key, val ?? '')}
-            theme="vs-dark"
+            theme="vs"
             options={{
               minimap: { enabled: false },
               scrollBeyondLastLine: false,
@@ -160,18 +173,35 @@ export function CodeFieldEditor({ schema, value, onChange, availableVars }: Prop
               padding: { top: 10 },
             }}
             beforeMount={(monaco) => {
+              const styles = getComputedStyle(document.documentElement)
+
               monaco.editor.defineTheme('poko-dark', {
                 base: 'vs-dark',
                 inherit: true,
                 rules: [],
                 colors: {
-                  'editor.background': '#000000',
-                  'editor.foreground': '#f0f0f0',
-                  'editorLineNumber.foreground': '#888780',
-                  'editorLineNumber.activeForeground': '#a1a4a5',
-                  'editorCursor.foreground': '#3b9eff',
-                  'editor.selectionBackground': '#3b9eff33',
-                  'editor.inactiveSelectionBackground': '#3b9eff22',
+                  'editor.background': styles.getPropertyValue('--t-void').trim(),
+                  'editor.foreground': styles.getPropertyValue('--t-foreground').trim(),
+                  'editorLineNumber.foreground': styles.getPropertyValue('--t-muted-text').trim(),
+                  'editorLineNumber.activeForeground': styles.getPropertyValue('--t-silver').trim(),
+                  'editorCursor.foreground': styles.getPropertyValue('--t-accent-blue').trim(),
+                  'editor.selectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}33`,
+                  'editor.inactiveSelectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}22`,
+                },
+              })
+
+              monaco.editor.defineTheme('poko-light', {
+                base: 'vs',
+                inherit: true,
+                rules: [],
+                colors: {
+                  'editor.background': styles.getPropertyValue('--t-void').trim(),
+                  'editor.foreground': styles.getPropertyValue('--t-foreground').trim(),
+                  'editorLineNumber.foreground': styles.getPropertyValue('--t-muted-text').trim(),
+                  'editorLineNumber.activeForeground': styles.getPropertyValue('--t-silver').trim(),
+                  'editorCursor.foreground': styles.getPropertyValue('--t-accent-blue').trim(),
+                  'editor.selectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}33`,
+                  'editor.inactiveSelectionBackground': `${styles.getPropertyValue('--t-accent-blue').trim()}22`,
                 },
               })
             }}
