@@ -320,8 +320,8 @@ function StepPill({
       <span
         className={cn(
           'w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-semibold shrink-0',
-          active && 'bg-accent-blue text-white',
-          done && 'bg-accent-green text-white',
+          active && 'bg-accent-blue text-near-white',
+          done && 'bg-accent-green text-near-white',
           !active && !done && 'bg-surface-2 text-muted-text',
         )}
       >

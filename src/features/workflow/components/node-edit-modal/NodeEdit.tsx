@@ -140,7 +140,7 @@ export function NodeEdit({
               <TabIcon size={13} />
               {tab.label}
               {tab.id === 'validation' && errorCount > 0 && (
-                <span className="flex items-center justify-center w-4 h-4 rounded-full bg-accent-red text-[9px] font-bold text-white">
+                <span className="flex items-center justify-center w-4 h-4 rounded-full bg-accent-red text-[9px] font-bold text-near-white">
                   {errorCount}
                 </span>
               )}

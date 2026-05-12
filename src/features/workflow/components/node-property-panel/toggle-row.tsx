@@ -30,7 +30,7 @@ export function ToggleRow({
       >
         <span
           className={cn(
-            'pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform',
+            'pointer-events-none inline-block h-4 w-4 rounded-full bg-near-white shadow-sm transition-transform',
             checked ? 'translate-x-4' : 'translate-x-0',
           )}
         />

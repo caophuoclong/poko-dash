@@ -455,7 +455,7 @@ function SeedProductsGenerationSection({
                 />
               ) : (
                 <div
-                  className="w-8 h-8 rounded shrink-0 flex items-center justify-center text-[10px] font-bold text-white border border-frost/20"
+                  className="w-8 h-8 rounded shrink-0 flex items-center justify-center text-[10px] font-bold text-near-white border border-frost/20"
                   style={{ backgroundColor: getProductColor(idx) }}
                 >
                   {product.canonicalTitle.charAt(0).toUpperCase()}

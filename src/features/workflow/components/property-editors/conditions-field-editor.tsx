@@ -126,7 +126,7 @@ export function ConditionsFieldEditor({
                 onClick={() => handleCombineChange('AND')}
                 className={`px-2 py-0.5 rounded text-[10px] font-medium ${
                   data.combineWith === 'AND'
-                    ? 'bg-accent-blue text-white'
+                    ? 'bg-accent-blue text-near-white'
                     : 'bg-surface-2 text-muted-text hover:text-near-white'
                 }`}
               >
@@ -136,7 +136,7 @@ export function ConditionsFieldEditor({
                 onClick={() => handleCombineChange('OR')}
                 className={`px-2 py-0.5 rounded text-[10px] font-medium ${
                   data.combineWith === 'OR'
-                    ? 'bg-accent-blue text-white'
+                    ? 'bg-accent-blue text-near-white'
                     : 'bg-surface-2 text-muted-text hover:text-near-white'
                 }`}
               >

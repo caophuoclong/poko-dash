@@ -22,7 +22,7 @@ function Checkbox({
       className={cn(
         'flex size-4 shrink-0 items-center justify-center rounded border transition-colors',
         checked
-          ? 'border-accent-blue bg-accent-blue text-white'
+          ? 'border-accent-blue bg-accent-blue text-near-white'
           : 'border-frost bg-surface hover:border-accent-blue/30',
         disabled && 'cursor-not-allowed opacity-50',
         className,

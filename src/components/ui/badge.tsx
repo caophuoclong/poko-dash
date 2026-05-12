@@ -41,7 +41,7 @@ const badgeVariants = cva(
       {
         variant: 'solid',
         tone: 'blue',
-        className: 'bg-accent-blue text-white',
+        className: 'bg-accent-blue text-near-white',
       },
       {
         variant: 'solid',
@@ -51,7 +51,7 @@ const badgeVariants = cva(
       {
         variant: 'solid',
         tone: 'red',
-        className: 'bg-accent-red text-white',
+        className: 'bg-accent-red text-near-white',
       },
       {
         variant: 'solid',

@@ -31,7 +31,7 @@ export default function CreatePreferenceContent({
   return (
     <div className="lg:col-span-1">
       <div className="sticky top-22 space-y-4">
-        <div className="rounded-[var(--radius-md)] border border-accent-orange-border bg-[linear-gradient(180deg,rgba(234,115,23,0.12),rgba(234,115,23,0.04))] overflow-hidden">
+        <div className="rounded-[var(--radius-md)] border border-accent-orange-border bg-accent-orange-dim overflow-hidden">
           <button
             type="button"
             onClick={() => setAiOpen(!aiOpen)}

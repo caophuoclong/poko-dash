@@ -35,17 +35,17 @@ const buttonVariants = cva(
         'icon-lg': 'size-10 rounded-[var(--radius-sm)]',
       },
       color: {
-        blue: 'bg-accent-blue text-white hover:bg-accent-blue/90',
+        blue: 'bg-accent-blue text-near-white hover:bg-accent-blue/90',
         'blue-dim':
           'bg-accent-blue-dim text-accent-blue hover:bg-accent-blue-dim/80 border border-accent-blue/20',
-        red: 'bg-accent-red text-white hover:bg-accent-red/90',
-        green: 'bg-accent-green text-white hover:bg-accent-green/90',
+        red: 'bg-accent-red text-near-white hover:bg-accent-red/90',
+        green: 'bg-accent-green text-near-white hover:bg-accent-green/90',
         'green-dim':
           'bg-accent-green-dim text-accent-green hover:bg-accent-green-dim/80 border border-accent-green-border',
-        yellow: 'bg-accent-yellow text-white hover:bg-accent-yellow/90',
-        orange: 'bg-accent-orange text-white hover:bg-accent-orange/90',
+        yellow: 'bg-accent-yellow text-near-white hover:bg-accent-yellow/90',
+        orange: 'bg-accent-orange text-near-white hover:bg-accent-orange/90',
         'orange-light':
-          'bg-accent-orange-light text-white hover:bg-accent-orange-light/90',
+          'bg-accent-orange-light text-near-white hover:bg-accent-orange-light/90',
         'orange-dim':
           'bg-accent-orange-dim text-accent-orange hover:bg-accent-orange-dim/80 border border-accent-orange-border',
       },

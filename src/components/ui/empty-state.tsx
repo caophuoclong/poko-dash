@@ -60,7 +60,7 @@ function PageEmptyState({
         aria-hidden
         className="pointer-events-none absolute inset-0 flex items-center justify-center"
       >
-        <div className="h-96 w-96 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(59,158,255,0.05)_0%,transparent_65%)]" />
+        <div className="h-96 w-96 rounded-full bg-[radial-gradient(ellipse_at_center,var(--color-accent-blue-dim)_0%,transparent_65%)]" />
       </div>
 
       {icon ? (

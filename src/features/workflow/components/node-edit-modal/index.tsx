@@ -78,7 +78,7 @@ export function NodeEditModal({
     <div className="fixed inset-0 z-50">
       <div
         className="absolute inset-0"
-        style={{ background: 'rgba(0,0,0,0.5)' }}
+        className="bg-scrim"
         onClick={onClose}
       />
       <div

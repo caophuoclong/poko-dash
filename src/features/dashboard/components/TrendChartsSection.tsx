@@ -5,10 +5,10 @@ interface TrendChartsSectionProps {
   trendSeries: TrendSeriesDto[]
 }
 const TREND_SERIES_COLORS = [
-  '#F97316', // orange-500
-  '#3B82F6', // blue-500
-  '#10B981', // green-500
-  '#8B5CF6', // purple-500
+  'var(--color-accent-orange)',
+  'var(--color-accent-blue)',
+  'var(--color-accent-green)',
+  'var(--color-accent-purple)',
 ]
 export function TrendChartsSection({ trendSeries }: TrendChartsSectionProps) {
   return (
