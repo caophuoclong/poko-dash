@@ -1,11 +1,6 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useRef } from 'react'
-import {
-  Handle,
-  Position,
-  useUpdateNodeInternals
-  
-} from '@xyflow/react'
-import type {NodeProps} from '@xyflow/react';
+import { Handle, Position, useUpdateNodeInternals } from '@xyflow/react'
+import type { NodeProps } from '@xyflow/react'
 import { Loader2, CheckCircle2, XCircle, Copy } from 'lucide-react'
 import { cn } from '#/shared/utils'
 import type { NodeExecutionData, WorkflowNodeData } from '../../types'
@@ -63,10 +58,7 @@ function WorkflowNode({ data, selected, id }: NodeProps) {
 
   const summaryItems =
     def && nodeData.config
-      ? definitionStore.getNodeSummaryData(
-          def.identity.typeId,
-          nodeData.config,
-        )
+      ? definitionStore.getNodeSummaryData(def.identity.typeId, nodeData.config)
       : null
   const hasMultiPort = inputs.length > 1 || outputs.length > 1
 

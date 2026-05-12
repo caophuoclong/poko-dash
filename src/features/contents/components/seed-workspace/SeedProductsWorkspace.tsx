@@ -166,7 +166,9 @@ export function SeedProductsWorkspace({
                 const anchorRef = useComboboxAnchor()
                 const [cbOpen, setCbOpen] = useState(false)
                 const [inputValue, setInputValue] = useState('')
-                const preventCloseRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+                const preventCloseRef = useRef<ReturnType<
+                  typeof setTimeout
+                > | null>(null)
 
                 const selectedOpts = (field.value ?? [])
                   .map((v: string) => productOptions.find((o) => o.value === v))
@@ -185,7 +187,9 @@ export function SeedProductsWorkspace({
                     multiple
                     value={selectedOpts}
                     onValueChange={(items) => {
-                      const raw = (items as ComboboxOption[]).map((o) => o.value)
+                      const raw = (items).map(
+                        (o) => o.value,
+                      )
                       field.onChange(raw)
                       if (preventCloseRef.current)
                         clearTimeout(preventCloseRef.current)
@@ -236,7 +240,9 @@ export function SeedProductsWorkspace({
                       <ComboboxList>
                         <ComboboxCollection>
                           {(item) => (
-                            <ComboboxItem value={item}>{item.label}</ComboboxItem>
+                            <ComboboxItem value={item}>
+                              {item.label}
+                            </ComboboxItem>
                           )}
                         </ComboboxCollection>
                         <ComboboxEmpty>No results found</ComboboxEmpty>

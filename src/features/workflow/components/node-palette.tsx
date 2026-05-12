@@ -2,7 +2,6 @@ import { useState, useCallback, useMemo } from 'react'
 import {
   PanelLeftClose,
   Search,
-  
   Play,
   Clock,
   ListPlus,
@@ -16,21 +15,17 @@ import {
   BarChart3,
   GitBranch,
   Timer,
-  Bell
+  Bell,
 } from 'lucide-react'
-import type {LucideIcon} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react'
 import { cn } from '#/shared/utils'
-import {
-  useNodeRegistryStore
-  
-} from '../stores/node-registry/use-node-registry.store'
-import type {NodeDefinition} from '../stores/node-registry/use-node-registry.store';
+import { useNodeRegistryStore } from '../stores/node-registry/use-node-registry.store'
+import type { NodeDefinition } from '../stores/node-registry/use-node-registry.store'
 import {
   CATEGORY_CONFIG,
-  CATEGORY_ORDER
-  
+  CATEGORY_ORDER,
 } from '../stores/node-registry/constants'
-import type {WorkflowNodeCategory} from '../stores/node-registry/constants';
+import type { WorkflowNodeCategory } from '../stores/node-registry/constants'
 
 const ICON_MAP: Record<string, LucideIcon> = {
   play: Play,

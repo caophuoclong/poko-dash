@@ -94,11 +94,7 @@ export function buildCreateCandidate<TValue>(
 export function isCreateCandidate<TValue>(
   item: ComboboxOption<TValue> | CreateCandidate<TValue> | null,
 ): item is CreateCandidate<TValue> {
-  return (
-    item !== null &&
-    '__meta' in item &&
-    (item).__meta?.kind === 'create'
-  )
+  return item !== null && '__meta' in item && item.__meta?.kind === 'create'
 }
 
 export function toRawValues<TValue>(

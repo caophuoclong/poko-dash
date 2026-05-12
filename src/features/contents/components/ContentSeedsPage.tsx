@@ -12,10 +12,8 @@ import {
   ComboboxItem,
   ComboboxEmpty,
 } from '@/components/ui/combobox'
-import {
-  filterOptionsByLabel,
-  type ComboboxOption,
-} from '@/components/ui/combobox-utils'
+import { filterOptionsByLabel } from '@/components/ui/combobox-utils'
+import type { ComboboxOption as ComboboxOptionType } from '@/components/ui/combobox-utils'
 import { useFilteredList } from '@/shared/hooks/use-filtered-list'
 import { CommonTable } from '@/components/table'
 import { EmptyState, emptyStatePresets } from '@/components/ui/empty-state'
@@ -40,7 +38,7 @@ import { useProducts } from '@/features/products/hooks/use-products'
 import type { Product } from '@/features/products/types/product'
 import { contentPostsControllerGenerateFromProducts } from '#/api/client'
 
-const STATUS_OPTIONS: ComboboxOption[] = [
+const STATUS_OPTIONS: ComboboxOptionType[] = [
   { value: 'draft', label: 'Draft' },
   { value: 'approved', label: 'Approved' },
   { value: 'queued', label: 'Queued' },
@@ -48,7 +46,7 @@ const STATUS_OPTIONS: ComboboxOption[] = [
   { value: 'rejected', label: 'Rejected' },
 ]
 
-const PLATFORM_OPTIONS: ComboboxOption[] = [
+const PLATFORM_OPTIONS: ComboboxOptionType[] = [
   { value: 'facebook', label: 'Facebook' },
   { value: 'tiktok', label: 'TikTok' },
   { value: 'instagram', label: 'Instagram' },
@@ -56,7 +54,7 @@ const PLATFORM_OPTIONS: ComboboxOption[] = [
   { value: 'blog', label: 'Blog' },
 ]
 
-const CATEGORY_OPTIONS: ComboboxOption[] = [
+const CATEGORY_OPTIONS: ComboboxOptionType[] = [
   { value: 'Điện tử', label: 'Điện tử' },
   { value: 'Phụ kiện', label: 'Phụ kiện' },
   { value: 'Gia dụng', label: 'Gia dụng' },
@@ -73,7 +71,7 @@ function FilterCombobox({
   placeholder,
   className,
 }: {
-  options: ComboboxOption[]
+  options: ComboboxOptionType[]
   selectedValue?: string
   onChange: (value: string | undefined) => void
   placeholder: string
@@ -81,8 +79,7 @@ function FilterCombobox({
 }) {
   const [open, setOpen] = useState(false)
   const [inputValue, setInputValue] = useState('')
-  const selectedOption =
-    options.find((o) => o.value === selectedValue) ?? null
+  const selectedOption = options.find((o) => o.value === selectedValue) ?? null
   const filtered = filterOptionsByLabel(options, inputValue)
 
   return (
@@ -99,9 +96,13 @@ function FilterCombobox({
       }}
       items={filtered}
       itemToStringLabel={(item) => item.label}
-      isItemEqualToValue={(item, value) => item?.value === value?.value}
+      isItemEqualToValue={(item, value) => item.value === value.value}
     >
-      <ComboboxInput className={className} placeholder={placeholder} showClear />
+      <ComboboxInput
+        className={className}
+        placeholder={placeholder}
+        showClear
+      />
       <ComboboxContent>
         <ComboboxList>
           <ComboboxCollection>
@@ -424,7 +425,7 @@ export default function ContentSeedsPage({
 
             <FilterCombobox
               options={PLATFORM_OPTIONS}
-              selectedValue={filteredIdeas.activeFilters.targetPlatform}
+              selectedValue={filteredIdeas.activeFilters.targetPlatform as string | undefined}
               onChange={(value) =>
                 filteredIdeas.setActiveFilters({
                   ...filteredIdeas.activeFilters,
@@ -437,7 +438,7 @@ export default function ContentSeedsPage({
 
             <FilterCombobox
               options={CATEGORY_OPTIONS}
-              selectedValue={filteredIdeas.activeFilters.category}
+              selectedValue={filteredIdeas.activeFilters.category as string | undefined}
               onChange={(value) =>
                 filteredIdeas.setActiveFilters({
                   ...filteredIdeas.activeFilters,
@@ -450,7 +451,7 @@ export default function ContentSeedsPage({
 
             <FilterCombobox
               options={STATUS_OPTIONS}
-              selectedValue={filteredIdeas.activeFilters.status}
+              selectedValue={filteredIdeas.activeFilters.status as string | undefined}
               onChange={(value) =>
                 filteredIdeas.setActiveFilters({
                   ...filteredIdeas.activeFilters,
@@ -479,12 +480,15 @@ export default function ContentSeedsPage({
             </div>
           </div>
 
-          <CommonTable
-            table={ideaTable}
-            minWidth={1200}
-            compact
-            onRowClick={handleRowClick}
-          />
+          <div className="h-[calc(100vh-18rem)] min-h-[420px]">
+            <CommonTable
+              table={ideaTable}
+              minWidth={1200}
+              compact
+              onRowClick={handleRowClick}
+              className="h-full"
+            />
+          </div>
 
           <div ref={sentinelRef} className="h-2" aria-hidden />
 

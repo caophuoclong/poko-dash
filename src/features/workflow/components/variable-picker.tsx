@@ -1,11 +1,8 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
 import { Variable } from 'lucide-react'
 import { cn } from '#/shared/utils'
-import {
-  groupVariables
-  
-} from '../utils/variable-system-utils'
-import type {VariableRef} from '../utils/variable-system-utils';
+import { groupVariables } from '../utils/variable-system-utils'
+import type { VariableRef } from '../utils/variable-system-utils'
 
 interface VariablePickerProps {
   variables: VariableRef[]

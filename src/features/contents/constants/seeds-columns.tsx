@@ -243,7 +243,7 @@ export function getSeedsColumns({
 
         return (
           <div
-            className="flex items-center gap-0.5 group/actions"
+            className="flex items-center gap-0.5 group/actions justify-end"
             onClick={(e) => e.stopPropagation()}
           >
             {genState.canGenerateAll && (

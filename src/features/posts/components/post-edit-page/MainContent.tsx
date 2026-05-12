@@ -15,11 +15,8 @@ import type {
   ContentPostCreateFormData,
   ContentPostEditFormData,
 } from '#/features/posts/schemas/content-post.schema'
-import {
-  Autocomplete
-  
-} from '#/components/ui/autocomplete'
-import type {AutocompleteOption} from '#/components/ui/autocomplete';
+import { Autocomplete } from '#/components/ui/autocomplete'
+import type { AutocompleteOption } from '#/components/ui/autocomplete'
 import { Button } from '#/components/ui/button'
 import { Input } from '#/components/ui/input'
 import TiptapEditorWrapper from '#/components/editor/tiptap-editor-wrapper'

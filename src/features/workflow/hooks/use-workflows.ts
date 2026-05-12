@@ -134,13 +134,13 @@ export function useSaveWorkflowCanvas() {
         nodes: params.nodes.map((n) => ({
           xyflow_id: n.id,
           type: n.type ?? 'workflow-node',
-          node_type_id: (n.data).nodeTypeId ?? '',
+          node_type_id: n.data.nodeTypeId ?? '',
           position_x: n.position.x,
           position_y: n.position.y,
-          title: (n.data).title,
-          subtitle: (n.data).subtitle,
-          icon: (n.data).icon,
-          config: (n.data).config ?? {},
+          title: n.data.title,
+          subtitle: n.data.subtitle,
+          icon: n.data.icon,
+          config: n.data.config ?? {},
         })),
         edges: params.edges.map(mapCanvasEdgeToDtoEdge),
       }
@@ -153,10 +153,7 @@ export function useSaveWorkflowCanvas() {
         dto.versionType = params.versionType
       }
 
-      return workflowsControllerSaveCanvas(
-        params.id,
-        dto,
-      )
+      return workflowsControllerSaveCanvas(params.id, dto)
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
@@ -183,22 +180,19 @@ export function useUpdateWorkflowVariables() {
         nodes: params.nodes.map((n) => ({
           xyflow_id: n.id,
           type: n.type ?? 'workflow-node',
-          node_type_id: (n.data).nodeTypeId ?? '',
+          node_type_id: n.data.nodeTypeId ?? '',
           position_x: n.position.x,
           position_y: n.position.y,
-          title: (n.data).title,
-          subtitle: (n.data).subtitle,
-          icon: (n.data).icon,
-          config: (n.data).config ?? {},
+          title: n.data.title,
+          subtitle: n.data.subtitle,
+          icon: n.data.icon,
+          config: n.data.config ?? {},
         })),
         edges: params.edges.map(mapCanvasEdgeToDtoEdge),
         variables: params.variables,
         versionType: 'auto' as const,
       }
-      return workflowsControllerSaveCanvas(
-        params.id,
-        dto,
-      )
+      return workflowsControllerSaveCanvas(params.id, dto)
     },
     onSuccess: (_data, params) => {
       queryClient.invalidateQueries({
@@ -254,13 +248,13 @@ export function useCreateWorkflowVersion() {
         nodes: params.nodes.map((n) => ({
           xyflow_id: n.id,
           type: n.type ?? 'workflow-node',
-          node_type_id: (n.data).nodeTypeId ?? '',
+          node_type_id: n.data.nodeTypeId ?? '',
           position_x: n.position.x,
           position_y: n.position.y,
-          title: (n.data).title,
-          subtitle: (n.data).subtitle,
-          icon: (n.data).icon,
-          config: (n.data).config ?? {},
+          title: n.data.title,
+          subtitle: n.data.subtitle,
+          icon: n.data.icon,
+          config: n.data.config ?? {},
         })),
         edges: params.edges.map(mapCanvasEdgeToDtoEdge),
         message: params.message || undefined,
@@ -271,10 +265,7 @@ export function useCreateWorkflowVersion() {
         dto.variables = params.variables
       }
 
-      return workflowsControllerSaveCanvas(
-        params.id,
-        dto,
-      )
+      return workflowsControllerSaveCanvas(params.id, dto)
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({

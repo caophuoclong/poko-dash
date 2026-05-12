@@ -967,10 +967,9 @@ import { query } from '$lib/server/db'
 
 // ❌ 不要禁用 CSRF 检查（除非有充分理由）
 // src/hooks.server.js
-export const handle =
-  sequence()
-  // do NOT do this without understanding the implications
-  // ({ event, resolve }) => resolve(event, { filterSerializedResponseHeaders: () => true })
+export const handle = sequence()
+// do NOT do this without understanding the implications
+// ({ event, resolve }) => resolve(event, { filterSerializedResponseHeaders: () => true })
 ```
 
 ### Cookie 安全设置

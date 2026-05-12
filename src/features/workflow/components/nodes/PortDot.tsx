@@ -1,8 +1,8 @@
 import type { PortDto } from '#/api/model'
 import React from 'react'
 import { PORT_KIND_COLOR } from './workflow-node.constants'
-import { Handle  } from '@xyflow/react'
-import type {Position} from '@xyflow/react';
+import { Handle } from '@xyflow/react'
+import type { Position } from '@xyflow/react'
 import { cn } from '#/shared/utils'
 
 export function PortDot({

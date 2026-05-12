@@ -152,7 +152,7 @@ export function LeftSide({
   }, [prevNode, prevExecInfo])
 
   const upstreamDef = prevNode
-    ? getNodeDefinition((prevNode.data).nodeTypeId ?? '')
+    ? getNodeDefinition(prevNode.data.nodeTypeId ?? '')
     : null
   const upstreamIcon = upstreamDef
     ? ICON_MAP[upstreamDef.identity.icon ?? '']
@@ -166,9 +166,7 @@ export function LeftSide({
         total={3}
         title={
           prevNode
-            ? ((prevNode.data).title ??
-              upstreamDef?.identity.title ??
-              'Unknown')
+            ? (prevNode.data.title ?? upstreamDef?.identity.title ?? 'Unknown')
             : 'No upstream'
         }
         subtitle={
@@ -241,10 +239,7 @@ export function LeftSide({
         {prevNode ? (
           <UpstreamDataView
             data={upstreamData}
-            nodeName={((prevNode.data).title ?? '').replace(
-              /\s+/g,
-              '_',
-            )}
+            nodeName={(prevNode.data.title ?? '').replace(/\s+/g, '_')}
           />
         ) : (
           <div className="flex items-center justify-center h-full p-6 text-center">

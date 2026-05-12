@@ -88,10 +88,7 @@ export function useUpdateAffiliateLink() {
   return {
     ...rest,
     mutate: (variables: any, options?: any) =>
-      origMutate(
-        { linkId: variables.linkId, data: variables.data },
-        options,
-      ),
+      origMutate({ linkId: variables.linkId, data: variables.data }, options),
     mutateAsync: (variables: any, options?: any) =>
       origMutateAsync(
         { linkId: variables.linkId, data: variables.data },

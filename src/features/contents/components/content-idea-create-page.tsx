@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Sparkles } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
 import { usePageHeader } from '#/components/ui/page-header-context'
 import {
@@ -11,6 +12,7 @@ import {
 import { Button } from '#/components/ui/button'
 import { FormField } from '#/components/ui/form-field'
 import { Select } from '#/components/ui/select'
+import { Separator } from '#/components/ui/separator'
 import {
   Combobox,
   ComboboxChips,
@@ -38,11 +40,11 @@ import {
 } from '../schemas/content.schema'
 import type { ContentSchemaFormData } from '../schemas/content.schema'
 
-const IDEA_TYPE_OPTIONS = [
+const CONTENT_TYPE_OPTIONS = [
   { value: IdeaType.Review, label: 'Review' },
-  { value: IdeaType.Comparison, label: 'So sánh' },
-  { value: IdeaType.Roundup, label: 'Tổng hợp' },
-  { value: IdeaType.Tutorial, label: 'Hướng dẫn' },
+  { value: IdeaType.Comparison, label: 'Comparison' },
+  { value: IdeaType.Roundup, label: 'Roundup' },
+  { value: IdeaType.Tutorial, label: 'Tutorial' },
   { value: IdeaType.Deal, label: 'Deal' },
   { value: IdeaType.Trending, label: 'Trending' },
 ]
@@ -66,11 +68,8 @@ const CATEGORY_OPTIONS = [
 ]
 
 const STATUS_OPTIONS = [
-  { value: IdeaStatus.Draft, label: 'Nháp' },
-  { value: IdeaStatus.Approved, label: 'Đã duyệt' },
-  { value: IdeaStatus.Queued, label: 'Đã xếp hàng' },
-  { value: IdeaStatus.Produced, label: 'Đã sản xuất' },
-  { value: IdeaStatus.Rejected, label: 'Từ chối' },
+  { value: IdeaStatus.Draft, label: 'Draft' },
+  { value: IdeaStatus.Approved, label: 'Active' },
 ]
 
 export function ContentIdeaCreatePage() {
@@ -115,59 +114,46 @@ export function ContentIdeaCreatePage() {
 
   usePageHeader({
     backHref: '/dash/content',
-    backLabel: 'Quay lại',
-    title: 'Tạo ý tưởng mới',
-    actions: (
-      <div className="flex items-center gap-3">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => void navigate({ to: '/dash/content' })}
-        >
-          Hủy
-        </Button>
-        <Button
-          type="submit"
-          form="content-idea-create-form"
-          disabled={isSaving || !isDirty}
-        >
-          {isSaving ? 'Đang tạo...' : 'Tạo ý tưởng'}
-        </Button>
-      </div>
-    ),
+    backLabel: 'Back',
+    title: 'Create Content Seed',
   })
 
   return (
     <form id="content-idea-create-form" onSubmit={handleSubmit(onSubmit)}>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main content */}
-        <div className="lg:col-span-2 space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[65%_35%] gap-6 items-start">
+        {/* Left column */}
+        <div className="space-y-4">
           <SectionCard>
-            <SectionCardHeader title="Nội dung chính" />
+            <SectionCardHeader title="Main Content" />
             <SectionCardBody className="p-5 space-y-4">
               <FormField
-                label="Hook"
+                label="HOOK"
                 required
                 error={errors.hook?.message}
-                placeholder="Tiêu đề / hook hấp dẫn cho ý tưởng..."
+                placeholder="Enter a compelling hook or headline..."
                 {...register('hook')}
               />
               <FormField
-                label="Góc nhìn (Angle)"
+                label="ANGLE"
                 as="textarea"
                 textareaRows={3}
                 error={errors.angle?.message}
-                placeholder="Mô tả góc nhìn, cách khai thác ý tưởng này..."
+                placeholder="Describe the angle or approach for this content..."
                 {...register('angle')}
               />
             </SectionCardBody>
           </SectionCard>
 
-          {/* Product assignment */}
           <SectionCard>
             <SectionCardHeader
-              title="Sản phẩm liên kết"
-              description="Gán một hoặc nhiều sản phẩm cho ý tưởng này"
+              title="Linked Products"
+              description="Attach one or more products to this seed"
+              actions={
+                <Button type="button" variant="ghost" color="orange" size="sm">
+                  <Sparkles size={14} className="mr-1.5" />
+                  Suggest hook &amp; angle
+                </Button>
+              }
             />
             <SectionCardBody className="p-5">
               <Controller
@@ -177,10 +163,14 @@ export function ContentIdeaCreatePage() {
                   const anchorRef = useComboboxAnchor()
                   const [cbOpen, setCbOpen] = useState(false)
                   const [inputValue, setInputValue] = useState('')
-                  const preventCloseRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+                  const preventCloseRef = useRef<ReturnType<
+                    typeof setTimeout
+                  > | null>(null)
 
                   const selectedOpts = (field.value ?? [])
-                    .map((v: string) => productOptions.find((o) => o.value === v))
+                    .map((v: string) =>
+                      productOptions.find((o) => o.value === v),
+                    )
                     .filter(Boolean) as ComboboxOption[]
                   const filtered = sortSelectedFirst(
                     filterOptionsByLabel(productOptions, inputValue),
@@ -193,10 +183,13 @@ export function ContentIdeaCreatePage() {
                         multiple
                         value={selectedOpts}
                         onValueChange={(items) => {
-                          const raw = (items as ComboboxOption[]).map((o) => o.value)
+                          const raw = items.map((o) => o.value)
                           field.onChange(raw)
-                          if (preventCloseRef.current) clearTimeout(preventCloseRef.current)
-                          preventCloseRef.current = setTimeout(() => { preventCloseRef.current = null }, 50)
+                          if (preventCloseRef.current)
+                            clearTimeout(preventCloseRef.current)
+                          preventCloseRef.current = setTimeout(() => {
+                            preventCloseRef.current = null
+                          }, 50)
                         }}
                         inputValue={inputValue}
                         onInputValueChange={setInputValue}
@@ -207,68 +200,96 @@ export function ContentIdeaCreatePage() {
                         }}
                         items={filtered}
                         itemToStringLabel={(item) => item.label}
-                        isItemEqualToValue={(item, value) => item?.value === value?.value}
+                        isItemEqualToValue={(item, value) =>
+                          item.value === value.value
+                        }
                         disabled={productsLoading}
                       >
                         <div ref={anchorRef}>
                           <ComboboxChips>
                             {selectedOpts.map((item) => (
                               <ComboboxChip key={String(item.value)}>
-                                <span className="min-w-0 truncate" title={item.label}>
+                                <span
+                                  className="min-w-0 truncate"
+                                  title={item.label}
+                                >
                                   {item.label}
                                 </span>
                               </ComboboxChip>
                             ))}
-                            <ComboboxChipsInput placeholder="Tìm và chọn sản phẩm..." />
+                            <ComboboxChipsInput placeholder="Search products..." />
                           </ComboboxChips>
                         </div>
                         <ComboboxContent anchor={anchorRef}>
                           <ComboboxList>
                             <ComboboxCollection>
-                              {(item) => <ComboboxItem value={item}>{item.label}</ComboboxItem>}
+                              {(item) => (
+                                <ComboboxItem value={item}>
+                                  {item.label}
+                                </ComboboxItem>
+                              )}
                             </ComboboxCollection>
-                            <ComboboxEmpty>No results found</ComboboxEmpty>
+                            <ComboboxEmpty>No products found</ComboboxEmpty>
                           </ComboboxList>
                         </ComboboxContent>
                       </Combobox>
-                    {(field.value?.length ?? 0) > 0 && (
-                      <ul className="space-y-1.5">
-                        {field.value?.map((productId) => {
-                          const product = productOptions.find(
-                            (p) => p.value === productId,
-                          )
-                          return (
-                            <li
-                              key={productId}
-                              className="flex items-center justify-between rounded-lg bg-surface-2 border border-frost px-3 py-2 text-sm"
-                            >
-                              <span className="text-near-white truncate">
-                                {product?.label ?? productId}
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  field.onChange(
-                                    (field.value ?? []).filter(
-                                      (id) => id !== productId,
-                                    ),
-                                  )
-                                }
-                                className="ml-3 shrink-0 text-muted-text hover:text-accent-red transition-colors"
+                      {(field.value?.length ?? 0) > 0 && (
+                        <ul className="space-y-1.5">
+                          {field.value?.map((productId) => {
+                            const product = productOptions.find(
+                              (p) => p.value === productId,
+                            )
+                            const matchedProduct = products.find(
+                              (p) => p.productId === productId,
+                            )
+                            const thumbnail =
+                              (matchedProduct as any)?.imageCover ??
+                              (matchedProduct as any)?.thumbnail
+                            return (
+                              <li
+                                key={productId}
+                                className="flex items-center gap-3 rounded-lg bg-surface-2 border border-frost px-3 py-2 text-sm"
                               >
-                                ×
-                              </button>
-                            </li>
-                          )
-                        })}
-                      </ul>
-                    )}
-                    {(field.value?.length ?? 0) === 0 && (
-                      <p className="text-xs text-muted-text">
-                        Chưa có sản phẩm nào được gán.
-                      </p>
-                    )}
-                  </div>
+                                {thumbnail ? (
+                                  <img
+                                    src={thumbnail}
+                                    alt=""
+                                    className="size-8 rounded object-cover shrink-0"
+                                  />
+                                ) : (
+                                  <div className="size-8 rounded bg-accent-orange-dim shrink-0 flex items-center justify-center">
+                                    <span className="text-[10px] font-semibold text-accent-orange">
+                                      {(product?.label ?? '?')[0].toUpperCase()}
+                                    </span>
+                                  </div>
+                                )}
+                                <span className="flex-1 min-w-0 truncate text-near-white">
+                                  {product?.label ?? productId}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    field.onChange(
+                                      (field.value ?? []).filter(
+                                        (id) => id !== productId,
+                                      ),
+                                    )
+                                  }
+                                  className="shrink-0 text-muted-text hover:text-accent-red transition-colors"
+                                >
+                                  &times;
+                                </button>
+                              </li>
+                            )
+                          })}
+                        </ul>
+                      )}
+                      {(field.value?.length ?? 0) === 0 && (
+                        <p className="text-xs text-muted-text">
+                          No products attached.
+                        </p>
+                      )}
+                    </div>
                   )
                 }}
               />
@@ -276,21 +297,21 @@ export function ContentIdeaCreatePage() {
           </SectionCard>
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-4">
+        {/* Right column — sticky sidebar */}
+        <div className="sticky top-6">
           <SectionCard>
-            <SectionCardHeader title="Phân loại" />
+            <SectionCardHeader title="Classification" />
             <SectionCardBody className="p-5 space-y-4">
               <div>
                 <label className="text-xs font-semibold text-muted-text uppercase tracking-wider mb-1.5 block">
-                  Loại ý tưởng <span className="text-accent-red">*</span>
+                  Content Type <span className="text-accent-red">*</span>
                 </label>
                 <Controller
                   name="ideaType"
                   control={control}
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      {IDEA_TYPE_OPTIONS.map((opt) => (
+                      {CONTENT_TYPE_OPTIONS.map((opt) => (
                         <option key={opt.value} value={opt.value}>
                           {opt.label}
                         </option>
@@ -302,7 +323,7 @@ export function ContentIdeaCreatePage() {
 
               <div>
                 <label className="text-xs font-semibold text-muted-text uppercase tracking-wider mb-1.5 block">
-                  Nền tảng <span className="text-accent-red">*</span>
+                  Platform <span className="text-accent-red">*</span>
                 </label>
                 <Controller
                   name="targetPlatform"
@@ -321,7 +342,7 @@ export function ContentIdeaCreatePage() {
 
               <div>
                 <label className="text-xs font-semibold text-muted-text uppercase tracking-wider mb-1.5 block">
-                  Danh mục <span className="text-accent-red">*</span>
+                  Category <span className="text-accent-red">*</span>
                 </label>
                 <Controller
                   name="category"
@@ -330,7 +351,7 @@ export function ContentIdeaCreatePage() {
                     <Select value={field.value} onValueChange={field.onChange}>
                       {CATEGORY_OPTIONS.map((cat) => (
                         <option key={cat} value={cat}>
-                          {cat === 'uncategorized' ? 'Khác' : cat}
+                          {cat}
                         </option>
                       ))}
                     </Select>
@@ -345,16 +366,13 @@ export function ContentIdeaCreatePage() {
 
               <div>
                 <label className="text-xs font-semibold text-muted-text uppercase tracking-wider mb-1.5 block">
-                  Trạng thái
+                  Status
                 </label>
                 <Controller
                   name="status"
                   control={control}
                   render={({ field }) => (
-                    <Select
-                      value={field.value ?? IdeaStatus.Draft}
-                      onValueChange={field.onChange}
-                    >
+                    <Select value={field.value} onValueChange={field.onChange}>
                       {STATUS_OPTIONS.map((opt) => (
                         <option key={opt.value} value={opt.value}>
                           {opt.label}
@@ -367,14 +385,32 @@ export function ContentIdeaCreatePage() {
 
               <div>
                 <label className="text-xs font-semibold text-muted-text uppercase tracking-wider mb-1.5 block">
-                  Độ ưu tiên (0–100)
+                  Priority
                 </label>
-                <input
-                  type="number"
-                  min={0}
-                  max={100}
-                  className="flex h-9 w-full rounded-md border border-frost bg-surface-2 px-3 py-2 text-sm text-near-white placeholder:text-muted-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue"
-                  {...register('priority', { valueAsNumber: true })}
+                <Controller
+                  name="priority"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="space-y-2">
+                      <input
+                        type="range"
+                        min={0}
+                        max={100}
+                        value={field.value}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        className="w-full h-1.5 rounded-full appearance-none bg-surface-strong cursor-pointer
+                          [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent-orange [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:cursor-pointer
+                          [&::-moz-range-thumb]:size-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-accent-orange [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
+                      />
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-text">0</span>
+                        <span className="text-sm font-semibold text-near-white tabular-nums">
+                          {field.value}
+                        </span>
+                        <span className="text-xs text-muted-text">100</span>
+                      </div>
+                    </div>
+                  )}
                 />
                 {errors.priority && (
                   <p className="text-xs text-accent-red mt-1">
@@ -383,6 +419,27 @@ export function ContentIdeaCreatePage() {
                 )}
               </div>
             </SectionCardBody>
+
+            <Separator />
+
+            <div className="p-5 flex items-center gap-3">
+              <Button
+                type="button"
+                variant="ghost"
+                className="flex-1"
+                onClick={() => void navigate({ to: '/dash/content' })}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                color="orange"
+                className="flex-1"
+                disabled={isSaving}
+              >
+                {isSaving ? 'Saving...' : 'Save Seed'}
+              </Button>
+            </div>
           </SectionCard>
         </div>
       </div>

@@ -419,16 +419,16 @@ export function buildVariableList(
       vars.push({
         id: 'previous.output',
         display: '{{previous.output}}',
-        description: `Full output from: ${(prev.data).title || prev.id}`,
+        description: `Full output from: ${prev.data.title || prev.id}`,
         source: 'previous',
         namespace: 'previous',
         sourceNodeId: prev.id,
-        sourceNodeName: (prev.data).title,
+        sourceNodeName: prev.data.title,
       })
 
       // Add nested previous.output.* paths from upstream execution output or suggested variables
-      const prevDef = (prev.data).nodeTypeId
-        ? getNodeDefinition((prev.data).nodeTypeId ?? '')
+      const prevDef = prev.data.nodeTypeId
+        ? getNodeDefinition(prev.data.nodeTypeId ?? '')
         : null
       if (prevDef?.config?.suggestedVariables) {
         for (const sv of prevDef.config.suggestedVariables) {
@@ -448,7 +448,7 @@ export function buildVariableList(
             source: 'previous',
             namespace: 'previous',
             sourceNodeId: prev.id,
-            sourceNodeName: (prev.data).title,
+            sourceNodeName: prev.data.title,
           })
         }
       }

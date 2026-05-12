@@ -114,10 +114,7 @@ export function useUpdateContentPost() {
   return {
     ...rest,
     mutate: (variables: any, options?: any) =>
-      origMutate(
-        { postId: variables.postId, data: variables.data },
-        options,
-      ),
+      origMutate({ postId: variables.postId, data: variables.data }, options),
     mutateAsync: (variables: any, options?: any) =>
       origMutateAsync(
         { postId: variables.postId, data: variables.data },

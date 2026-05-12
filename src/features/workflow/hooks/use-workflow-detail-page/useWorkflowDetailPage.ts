@@ -51,10 +51,7 @@ export function useWorkflowDetailPage(workflow: WorkflowDetail) {
     WorkflowVariable[]
   >(workflow.variables ?? [])
 
-  const editor = useWorkflowEditorState(
-    workflow.nodes,
-    workflow.edges,
-  )
+  const editor = useWorkflowEditorState(workflow.nodes, workflow.edges)
 
   const prevWorkflowId = useRef(workflow.id)
   const rfInstance = useRef<ReactFlowInstance<
@@ -272,10 +269,7 @@ export function useWorkflowDetailPage(workflow: WorkflowDetail) {
 
   useEffect(() => {
     if (prevWorkflowId.current !== workflow.id) {
-      editor.replaceState(
-        workflow.nodes,
-        workflow.edges,
-      )
+      editor.replaceState(workflow.nodes, workflow.edges)
       setWorkflowVariables(workflow.variables ?? [])
       setSelectedNodeId(null)
       setEditingNodeId(null)
@@ -311,9 +305,7 @@ export function useWorkflowDetailPage(workflow: WorkflowDetail) {
       editor.skipNextHistory()
       editor.setNodes((prev: Node<WorkflowNodeData>[]) =>
         prev.map((n) =>
-          n.id === nodeId
-            ? { ...n, data: { ...n.data, ...patch } }
-            : n,
+          n.id === nodeId ? { ...n, data: { ...n.data, ...patch } } : n,
         ),
       )
     },

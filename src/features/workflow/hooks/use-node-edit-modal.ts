@@ -4,11 +4,8 @@ import type { WorkflowNodeData, WorkflowVariable } from '../types'
 import { buildVariableList } from '../utils/variable-system-utils'
 import { ICON_MAP } from '../components/nodes/workflow-node.constants'
 import type { LucideIcon } from 'lucide-react'
-import {
-  getNodeDefinition
-  
-} from '../stores/node-registry/use-node-registry.store'
-import type {ValidationError} from '../stores/node-registry/use-node-registry.store';
+import { getNodeDefinition } from '../stores/node-registry/use-node-registry.store'
+import type { ValidationError } from '../stores/node-registry/use-node-registry.store'
 import { CATEGORY_CONFIG } from '../stores/node-registry/constants'
 
 interface UseNodeEditModalProps {

@@ -14,7 +14,10 @@ import {
   ComboboxEmpty,
   useComboboxAnchor,
 } from '@/components/ui/combobox'
-import type { ComboboxOption, CreateCandidate } from '@/components/ui/combobox-utils'
+import type {
+  ComboboxOption,
+  CreateCandidate,
+} from '@/components/ui/combobox-utils'
 import {
   filterOptionsByLabel,
   buildCreateCandidate,
@@ -239,8 +242,12 @@ function AngleMultiSelect({
     .filter(Boolean) as ComboboxOption[]
 
   const filtered = filterOptionsByLabel(allOptions, inputValue)
-  const createCandidate = allowCreate ? buildCreateCandidate(inputValue, allOptions) : null
-  const displayItems = createCandidate ? [createCandidate, ...filtered] : filtered
+  const createCandidate = allowCreate
+    ? buildCreateCandidate(inputValue, allOptions)
+    : null
+  const displayItems = createCandidate
+    ? [createCandidate, ...filtered]
+    : filtered
 
   return (
     <Combobox<ComboboxOption | CreateCandidate, true>
@@ -291,7 +298,9 @@ function AngleMultiSelect({
         <ComboboxChips>
           {selectedOpts.map((item) => (
             <ComboboxChip key={String(item.value)}>
-              <span className="min-w-0 truncate" title={item.label}>{item.label}</span>
+              <span className="min-w-0 truncate" title={item.label}>
+                {item.label}
+              </span>
             </ComboboxChip>
           ))}
           <ComboboxChipsInput placeholder={placeholder} />

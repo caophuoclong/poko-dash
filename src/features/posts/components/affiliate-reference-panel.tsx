@@ -1,8 +1,15 @@
 import { useRef, useState } from 'react'
 import {
-  Combobox, ComboboxChips, ComboboxChip, ComboboxChipsInput,
-  ComboboxContent, ComboboxList, ComboboxCollection,
-  ComboboxItem, ComboboxEmpty, useComboboxAnchor,
+  Combobox,
+  ComboboxChips,
+  ComboboxChip,
+  ComboboxChipsInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxCollection,
+  ComboboxItem,
+  ComboboxEmpty,
+  useComboboxAnchor,
 } from '@/components/ui/combobox'
 import type { ComboboxOption } from '@/components/ui/combobox-utils'
 import { filterOptionsByLabel } from '@/components/ui/combobox-utils'
@@ -38,10 +45,12 @@ export default function AffiliateReferencePanel({
         multiple
         value={selectedOptions}
         onValueChange={(items) => {
-          const raw = (items as ComboboxOption[]).map((o) => o.value)
+          const raw = (items).map((o) => o.value)
           onAffiliateLinksChange(raw.join('|'))
           if (preventCloseRef.current) clearTimeout(preventCloseRef.current)
-          preventCloseRef.current = setTimeout(() => { preventCloseRef.current = null }, 50)
+          preventCloseRef.current = setTimeout(() => {
+            preventCloseRef.current = null
+          }, 50)
         }}
         inputValue={inputValue}
         onInputValueChange={setInputValue}
@@ -57,9 +66,7 @@ export default function AffiliateReferencePanel({
         <div ref={anchorRef}>
           <ComboboxChips>
             {selectedOptions.map((item) => (
-              <ComboboxChip key={String(item.value)}>
-                {item.label}
-              </ComboboxChip>
+              <ComboboxChip key={String(item.value)}>{item.label}</ComboboxChip>
             ))}
             <ComboboxChipsInput placeholder="Chọn link affiliate" />
           </ComboboxChips>

@@ -5,10 +5,9 @@ import {
   getBezierPath,
   getSmoothStepPath,
   getStraightPath,
-  Position
-  
+  Position,
 } from '@xyflow/react'
-import type {EdgeProps} from '@xyflow/react';
+import type { EdgeProps } from '@xyflow/react'
 import { X } from 'lucide-react'
 import { cn } from '#/shared/utils'
 import type { EdgeType } from '../../node-types.old.abcd'

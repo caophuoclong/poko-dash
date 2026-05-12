@@ -127,7 +127,7 @@ export default function ProductReferencePanel({
           multiple
           value={selectedSupporting}
           onValueChange={(items) => {
-            const raw = (items as ComboboxOption[]).map((o) => o.value)
+            const raw = (items).map((o) => o.value)
             onSupportingProductsChange(raw)
             if (preventCloseRef.current) clearTimeout(preventCloseRef.current)
             preventCloseRef.current = setTimeout(() => {
@@ -166,7 +166,9 @@ export default function ProductReferencePanel({
           <ComboboxContent anchor={anchorRef}>
             <ComboboxList>
               <ComboboxCollection>
-                {(item) => <ComboboxItem value={item}>{item.label}</ComboboxItem>}
+                {(item) => (
+                  <ComboboxItem value={item}>{item.label}</ComboboxItem>
+                )}
               </ComboboxCollection>
               <ComboboxEmpty>No results found</ComboboxEmpty>
             </ComboboxList>

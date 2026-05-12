@@ -15,11 +15,8 @@ import { Button } from '#/components/ui/button'
 
 import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
-import {
-  useExecutionStore
-  
-} from '../stores/execution-store/useExecutionStore'
-import type {ExecutionLog} from '../stores/execution-store/useExecutionStore';
+import { useExecutionStore } from '../stores/execution-store/useExecutionStore'
+import type { ExecutionLog } from '../stores/execution-store/useExecutionStore'
 import { getExecutionControllerGetNodeOutputQueryOptions } from '#/api/client'
 
 interface ExecutionDrawerProps {

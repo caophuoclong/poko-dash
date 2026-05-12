@@ -3,12 +3,13 @@ import { useNavigate } from '@tanstack/react-router'
 import {
   useReactTable,
   getCoreRowModel,
-  getSortedRowModel
-  
-  
-  
+  getSortedRowModel,
 } from '@tanstack/react-table'
-import type {ColumnDef, RowSelectionState, SortingState} from '@tanstack/react-table';
+import type {
+  ColumnDef,
+  RowSelectionState,
+  SortingState,
+} from '@tanstack/react-table'
 import {
   Check,
   ChevronsUpDown,
@@ -40,8 +41,13 @@ import { Input } from '@/components/ui/input'
 import { usePageHeader } from '@/components/ui/page-header-context'
 import { BulkActionsBar } from '@/components/patterns/bulk-actions-bar'
 import {
-  Combobox, ComboboxInput, ComboboxContent, ComboboxList,
-  ComboboxCollection, ComboboxItem, ComboboxEmpty,
+  Combobox,
+  ComboboxInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxCollection,
+  ComboboxItem,
+  ComboboxEmpty,
 } from '@/components/ui/combobox'
 import type { ComboboxOption } from '@/components/ui/combobox-utils'
 import { filterOptionsByLabel } from '@/components/ui/combobox-utils'
@@ -517,7 +523,11 @@ function FilterCombobox({
       itemToStringLabel={(item) => item.label}
       isItemEqualToValue={(item, value) => item?.value === value?.value}
     >
-      <ComboboxInput className={className} placeholder={placeholder} showClear />
+      <ComboboxInput
+        className={className}
+        placeholder={placeholder}
+        showClear
+      />
       <ComboboxContent>
         <ComboboxList>
           <ComboboxCollection>

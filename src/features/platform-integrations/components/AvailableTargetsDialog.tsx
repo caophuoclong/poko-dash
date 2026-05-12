@@ -10,10 +10,10 @@ import {
 } from '#/components/ui/dialog'
 import { Button } from '#/components/ui/button'
 import { Checkbox } from '#/components/ui/checkbox'
-import { Loader2, AlertCircle, CheckCircle2  } from 'lucide-react'
+import { Loader2, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { LoadingState } from '#/components/ui/loading-state'
 import { cn } from '#/shared/utils'
-import type { AvailableTarget, Provider  } from '../types'
+import type { AvailableTarget, Provider } from '../types'
 
 interface AvailableTargetsDialogProps {
   open: boolean

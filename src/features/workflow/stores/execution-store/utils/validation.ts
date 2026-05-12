@@ -47,7 +47,7 @@ export function validateExecutionPath(
       continue
     }
 
-    const config = (data.config ?? {})
+    const config = data.config ?? {}
     const errors = def.validate(config)
     const blockingErrors = errors.filter((e) => e.severity === 'error')
     if (blockingErrors.length > 0) {

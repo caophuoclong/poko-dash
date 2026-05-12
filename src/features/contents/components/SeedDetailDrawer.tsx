@@ -31,11 +31,8 @@ import {
   isProductGenerating,
   generateActionTooltip,
 } from '../utils/generation-state'
-import {
-  useGenerateContentPosts
-  
-} from '#/features/posts'
-import type {ContentPostParsed} from '#/features/posts';
+import { useGenerateContentPosts } from '#/features/posts'
+import type { ContentPostParsed } from '#/features/posts'
 
 const PRODUCT_COLORS = [
   'var(--color-primary)',

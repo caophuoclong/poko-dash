@@ -228,8 +228,9 @@ function ContentIdeaDetailPageInner({ ideaId }: ContentIdeaDetailPageProps) {
                   const anchorRef = useComboboxAnchor()
                   const [cbOpen, setCbOpen] = useState(false)
                   const [inputValue, setInputValue] = useState('')
-                  const preventCloseRef =
-                    useRef<ReturnType<typeof setTimeout> | null>(null)
+                  const preventCloseRef = useRef<ReturnType<
+                    typeof setTimeout
+                  > | null>(null)
 
                   const selectedOpts = (field.value ?? [])
                     .map((v: string) =>
@@ -247,7 +248,7 @@ function ContentIdeaDetailPageInner({ ideaId }: ContentIdeaDetailPageProps) {
                         multiple
                         value={selectedOpts}
                         onValueChange={(items) => {
-                          const raw = (items as ComboboxOption[]).map(
+                          const raw = (items).map(
                             (o) => o.value,
                           )
                           field.onChange(raw)
@@ -299,50 +300,50 @@ function ContentIdeaDetailPageInner({ ideaId }: ContentIdeaDetailPageProps) {
                           </ComboboxList>
                         </ComboboxContent>
                       </Combobox>
-                    {(field.value?.length ?? 0) > 0 ? (
-                      <ul className="space-y-1.5">
-                        {field.value?.map((productId) => {
-                          const product = productOptions.find(
-                            (p) => p.value === productId,
-                          )
-                          return (
-                            <li
-                              key={productId}
-                              className="flex items-center justify-between rounded-lg bg-surface-2 border border-frost px-3 py-2 text-sm"
-                            >
-                              <Link
-                                to="/dash/products/$productId"
-                                params={{ productId }}
-                                className="text-near-white hover:text-accent-blue transition-colors truncate"
+                      {(field.value?.length ?? 0) > 0 ? (
+                        <ul className="space-y-1.5">
+                          {field.value?.map((productId) => {
+                            const product = productOptions.find(
+                              (p) => p.value === productId,
+                            )
+                            return (
+                              <li
+                                key={productId}
+                                className="flex items-center justify-between rounded-lg bg-surface-2 border border-frost px-3 py-2 text-sm"
                               >
-                                {product?.label ?? productId}
-                              </Link>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  field.onChange(
-                                    (field.value ?? []).filter(
-                                      (id) => id !== productId,
-                                    ),
-                                  )
-                                }
-                                className="ml-3 shrink-0 text-muted-text hover:text-accent-red transition-colors"
-                              >
-                                ×
-                              </button>
-                            </li>
-                          )
-                        })}
-                      </ul>
-                    ) : (
-                      <p className="text-xs text-muted-text">
-                        Chưa có sản phẩm nào được gán.
-                      </p>
-                    )}
-                  </div>
-                )
-              }}
-            />
+                                <Link
+                                  to="/dash/products/$productId"
+                                  params={{ productId }}
+                                  className="text-near-white hover:text-accent-blue transition-colors truncate"
+                                >
+                                  {product?.label ?? productId}
+                                </Link>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    field.onChange(
+                                      (field.value ?? []).filter(
+                                        (id) => id !== productId,
+                                      ),
+                                    )
+                                  }
+                                  className="ml-3 shrink-0 text-muted-text hover:text-accent-red transition-colors"
+                                >
+                                  ×
+                                </button>
+                              </li>
+                            )
+                          })}
+                        </ul>
+                      ) : (
+                        <p className="text-xs text-muted-text">
+                          Chưa có sản phẩm nào được gán.
+                        </p>
+                      )}
+                    </div>
+                  )
+                }}
+              />
             </SectionCardBody>
           </SectionCard>
 

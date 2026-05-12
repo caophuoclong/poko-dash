@@ -9,20 +9,26 @@ import {
   GitBranch,
 } from 'lucide-react'
 import { Button } from '#/components/ui/button'
+import { Badge } from '#/components/ui/badge'
 import { cn } from '#/shared/utils'
 import type { Prompt } from '../types'
 
 import { TYPE_LABELS, CATEGORY_LABELS } from '../types'
 import { STATUS_COLORS } from '#/shared/constants'
 
-const typeColors: Record<string, string> = {
-  content_generation:
-    'bg-accent-blue-dim text-accent-blue border border-accent-blue/20',
-  analysis:
-    'bg-accent-green-dim text-accent-green border border-accent-green-border',
-  refinement:
-    'bg-accent-orange-dim text-accent-orange border border-accent-orange-border',
-  custom: 'bg-surface-2 text-muted-text border border-frost',
+const typeTones: Record<string, 'blue' | 'green' | 'orange' | 'neutral'> = {
+  content_generation: 'blue',
+  analysis: 'green',
+  refinement: 'orange',
+  custom: 'neutral',
+}
+
+const categoryTones: Record<string, 'purple' | 'neutral'> = {
+  social_media: 'purple',
+  blog: 'neutral',
+  video: 'neutral',
+  email: 'neutral',
+  general: 'neutral',
 }
 
 interface PromptCardProps {
@@ -57,83 +63,54 @@ export default function PromptCard({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [menuOpen])
 
-  const templatePreview =
-    prompt.template.length > 120
-      ? prompt.template.slice(0, 120) + '…'
-      : prompt.template
-
   return (
-    <div className="bg-surface border border-frost rounded-2xl p-5 flex flex-col gap-3 hover:border-accent-blue/40 transition-colors group">
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex flex-wrap gap-1.5">
-          <span
-            className={cn(
-              'text-xs px-2 py-0.5 rounded-full font-medium',
-              typeColors[prompt.promptType] || 'bg-surface-2 text-muted-text',
-            )}
-          >
-            {TYPE_LABELS[prompt.promptType] || prompt.promptType}
-          </span>
-          <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-surface-2 text-muted-text border border-frost">
-            {CATEGORY_LABELS[prompt.category] || prompt.category}
-          </span>
-          <span
-            className={cn(
-              'text-xs px-2 py-0.5 rounded-full font-medium',
-              prompt.role === 'system'
-                ? 'bg-accent-orange-dim text-accent-orange border border-accent-orange-border'
-                : 'bg-surface-2 text-muted-text border border-frost',
-            )}
-          >
-            {prompt.role ?? 'user'}
-          </span>
-          {prompt.status !== 'active' && (
-            <span
-              className={cn(
-                'text-xs px-2 py-0.5 rounded-full font-medium',
-                STATUS_COLORS[prompt.status],
-              )}
-            >
-              {prompt.status}
-            </span>
-          )}
-        </div>
-        <span className="text-xs text-muted-text shrink-0">
-          v{prompt.version}
-        </span>
-      </div>
-
-      <div>
-        <h3 className="font-semibold text-near-white text-sm leading-snug mb-1">
+    <div className="bg-surface border border-[var(--color-hairline)] rounded-[var(--radius-md)] p-5 flex flex-col gap-3.5 hover:border-accent-orange/40 transition-colors group">
+      {/* ── Name + description ─────────────────────────── */}
+      <div className="space-y-1">
+        <h3 className="font-semibold text-sm leading-snug text-[var(--color-ink)]">
           {prompt.name}
         </h3>
         {prompt.description && (
-          <p className="text-xs text-muted-text line-clamp-1">
+          <p className="text-xs text-[var(--color-muted)] line-clamp-2 leading-relaxed">
             {prompt.description}
           </p>
         )}
       </div>
 
-      <div className="bg-surface-2 rounded-lg px-3 py-2 border border-frost">
-        <p className="text-xs text-muted-text font-mono leading-relaxed line-clamp-3">
-          {templatePreview}
-        </p>
+      {/* ── Type + Category badges ─────────────────────── */}
+      <div className="flex flex-wrap items-center gap-1.5">
+        <Badge
+          tone={typeTones[prompt.promptType] ?? 'neutral'}
+          variant="soft"
+          size="sm"
+        >
+          {TYPE_LABELS[prompt.promptType] || prompt.promptType}
+        </Badge>
+        <Badge
+          tone={categoryTones[prompt.category] ?? 'neutral'}
+          variant="soft"
+          size="sm"
+        >
+          {CATEGORY_LABELS[prompt.category] || prompt.category}
+        </Badge>
       </div>
 
-      {prompt.variables && prompt.variables.length > 0 && (
+      {/* ── Tags as chips ──────────────────────────────── */}
+      {prompt.tags && prompt.tags.length > 0 && (
         <div className="flex flex-wrap gap-1">
-          {prompt.variables.map((v) => (
+          {prompt.tags.map((t) => (
             <span
-              key={v}
-              className="text-xs px-1.5 py-0.5 rounded bg-accent-blue-dim text-accent-blue font-mono border border-accent-blue/20"
+              key={t}
+              className="text-caption-sm px-2 py-0.5 rounded-full bg-[var(--color-surface-strong)] text-[var(--color-muted)] border border-[var(--color-hairline)]"
             >
-              {`{{${v}}}`}
+              {t}
             </span>
           ))}
         </div>
       )}
 
-      <div className="flex items-center gap-3 text-xs text-muted-text">
+      {/* ── Stats row ───────────────────────────────────── */}
+      <div className="flex items-center gap-3 text-xs text-[var(--color-muted)] mt-auto">
         {prompt.avgRating !== undefined && (
           <span className="flex items-center gap-1">
             <Star className="size-3 text-accent-yellow fill-accent-yellow" />
@@ -142,83 +119,90 @@ export default function PromptCard({
         )}
         <span className="flex items-center gap-1">
           <Flame className="size-3 text-accent-orange" />
-          {prompt.usageCount} uses
+          {prompt.usageCount}
         </span>
-        {prompt.tags && prompt.tags.length > 0 && (
-          <span className="truncate">
-            {prompt.tags.map((t) => `#${t}`).join(' ')}
-          </span>
-        )}
       </div>
 
-      <div className="flex items-center justify-between gap-2 pt-1 border-t border-frost">
-        <Button
-          size="sm"
-          color="blue-dim"
-          onClick={() => onUse(prompt)}
-          className="flex-1"
-        >
-          Use Prompt
-        </Button>
-
-        <div className="relative" ref={menuRef}>
-          <Button
-            size="icon-sm"
-            variant="ghost"
-            onClick={() => setMenuOpen((v) => !v)}
-            className="text-muted-text hover:text-near-white"
-          >
-            <MoreHorizontal />
-          </Button>
-          {menuOpen && (
-            <div className="absolute right-0 bottom-full mb-1 z-20 bg-surface border border-frost rounded-xl shadow-lg py-1 min-w-[160px]">
-              <button
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-near-white hover:bg-surface-2 transition-colors"
-                onClick={() => {
-                  onEdit(prompt)
-                  setMenuOpen(false)
-                }}
-              >
-                <Pencil className="size-3.5" /> Edit
-              </button>
-              <button
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-near-white hover:bg-surface-2 transition-colors"
-                onClick={() => {
-                  onRefine(prompt)
-                  setMenuOpen(false)
-                }}
-              >
-                <GitBranch className="size-3.5" /> Refine (new version)
-              </button>
-              <button
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-near-white hover:bg-surface-2 transition-colors"
-                onClick={() => {
-                  onRate(prompt)
-                  setMenuOpen(false)
-                }}
-              >
-                <Star className="size-3.5" /> Rate
-              </button>
-              <button
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-near-white hover:bg-surface-2 transition-colors"
-                onClick={() => {
-                  onViewVersions(prompt)
-                  setMenuOpen(false)
-                }}
-              >
-                <History className="size-3.5" /> Version History
-              </button>
-              <button
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-accent-red hover:bg-surface-2 transition-colors"
-                onClick={() => {
-                  onDelete(prompt)
-                  setMenuOpen(false)
-                }}
-              >
-                <Trash2 className="size-3.5" /> Delete
-              </button>
-            </div>
+      {/* ── Footer: status + use button + menu ─────────── */}
+      <div className="flex items-center justify-between gap-2 pt-3 border-t border-[var(--color-hairline)]">
+        <span
+          className={cn(
+            'text-badge px-2 py-0.5 rounded-full',
+            STATUS_COLORS[prompt.status],
           )}
+        >
+          {prompt.status}
+        </span>
+
+        <div className="flex items-center gap-1">
+          <Button
+            size="xs"
+            variant="ghost"
+            color="orange-dim"
+            onClick={() => onUse(prompt)}
+          >
+            Use Prompt
+          </Button>
+
+          <div className="relative" ref={menuRef}>
+            <Button
+              size="icon-xs"
+              variant="ghost"
+              onClick={() => setMenuOpen((v) => !v)}
+              className="text-[var(--color-muted)] hover:text-[var(--color-ink)]"
+            >
+              <MoreHorizontal className="size-4" />
+            </Button>
+            {menuOpen && (
+              <div className="absolute right-0 bottom-full mb-1 z-20 bg-surface border border-[var(--color-hairline)] rounded-[var(--radius-sm)] shadow-lg py-1 min-w-[160px]">
+                <button
+                  className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[var(--color-ink)] hover:bg-[var(--color-surface-strong)] transition-colors"
+                  onClick={() => {
+                    onEdit(prompt)
+                    setMenuOpen(false)
+                  }}
+                >
+                  <Pencil className="size-3.5" /> Edit
+                </button>
+                <button
+                  className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[var(--color-ink)] hover:bg-[var(--color-surface-strong)] transition-colors"
+                  onClick={() => {
+                    onRefine(prompt)
+                    setMenuOpen(false)
+                  }}
+                >
+                  <GitBranch className="size-3.5" /> Refine (new version)
+                </button>
+                <button
+                  className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[var(--color-ink)] hover:bg-[var(--color-surface-strong)] transition-colors"
+                  onClick={() => {
+                    onRate(prompt)
+                    setMenuOpen(false)
+                  }}
+                >
+                  <Star className="size-3.5" /> Rate
+                </button>
+                <button
+                  className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[var(--color-ink)] hover:bg-[var(--color-surface-strong)] transition-colors"
+                  onClick={() => {
+                    onViewVersions(prompt)
+                    setMenuOpen(false)
+                  }}
+                >
+                  <History className="size-3.5" /> Version History
+                </button>
+                <button
+                  className="flex items-center gap-2 w-full px-3 py-2 text-sm text-accent-red hover:bg-[var(--color-surface-strong)] transition-colors"
+                  onClick={() => {
+                    onDelete(prompt)
+                    setMenuOpen(false)
+                  }}
+                >
+                  <Trash2 className="size-3.5" /> Delete
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

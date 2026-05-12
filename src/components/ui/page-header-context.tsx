@@ -4,10 +4,9 @@ import {
   useState,
   useLayoutEffect,
   useRef,
-  useMemo
-  
+  useMemo,
 } from 'react'
-import type {ReactNode} from 'react';
+import type { ReactNode } from 'react'
 import { ChevronLeft } from 'lucide-react'
 
 export interface PageHeaderConfig {

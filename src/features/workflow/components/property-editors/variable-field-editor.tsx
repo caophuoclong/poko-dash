@@ -5,10 +5,9 @@ import { FieldLabel } from './field-label'
 import {
   VariablePicker,
   extractVariables,
-  highlightVariables
-  
+  highlightVariables,
 } from '../variable-system'
-import type {VariableRef} from '../variable-system';
+import type { VariableRef } from '../variable-system'
 
 interface VariableFieldEditorProps {
   label: string

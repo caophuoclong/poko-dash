@@ -14,11 +14,8 @@ import {
 import { cn } from '#/shared/utils'
 import type { Node } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
-import {
-  groupVariables
-  
-} from '../utils/variable-system-utils'
-import type {VariableRef} from '../utils/variable-system-utils';
+import { groupVariables } from '../utils/variable-system-utils'
+import type { VariableRef } from '../utils/variable-system-utils'
 
 type ExplorerTab = 'schema' | 'table' | 'json'
 

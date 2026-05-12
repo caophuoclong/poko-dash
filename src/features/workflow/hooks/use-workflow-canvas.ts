@@ -1,16 +1,14 @@
 import { useCallback, useRef, useMemo, useEffect } from 'react'
-import {
-  
-  
-  
-  
-  
-  
-  
-  applyNodeChanges,
-  applyEdgeChanges
+import { applyNodeChanges, applyEdgeChanges } from '@xyflow/react'
+import type {
+  Node,
+  Edge,
+  OnNodesChange,
+  OnEdgesChange,
+  Connection,
+  OnSelectionChangeParams,
+  ReactFlowInstance,
 } from '@xyflow/react'
-import type {Node, Edge, OnNodesChange, OnEdgesChange, Connection, OnSelectionChangeParams, ReactFlowInstance} from '@xyflow/react';
 import type { WorkflowNodeData } from '../types'
 
 import type { EdgeStyle } from '../components/edges/workflow-edge'
@@ -142,8 +140,7 @@ export function useWorkflowCanvasLogic({
           targetHandle: connection.targetHandle ?? edge.targetHandle,
           data: {
             ...(edge.data as Record<string, unknown>),
-            style: ((edge.data)?.style ??
-              'auto'),
+            style: edge.data?.style ?? 'auto',
           },
         }
       })

@@ -68,10 +68,7 @@ export function useUpdateContentIdea() {
   return {
     ...rest,
     mutate: (variables: any, options?: any) =>
-      origMutate(
-        { ideaId: variables.ideaId, data: variables.data },
-        options,
-      ),
+      origMutate({ ideaId: variables.ideaId, data: variables.data }, options),
     mutateAsync: (variables: any, options?: any) =>
       origMutateAsync(
         { ideaId: variables.ideaId, data: variables.data },

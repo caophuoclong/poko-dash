@@ -1,11 +1,10 @@
 import { AlertCircle } from 'lucide-react'
 import { useMemo } from 'react'
-import {
-  validateTemplateExpression
-  
-  
+import { validateTemplateExpression } from '../../utils/variable-system-utils'
+import type {
+  VariableRef,
+  TemplateValidationIssue,
 } from '../../utils/variable-system-utils'
-import type {VariableRef, TemplateValidationIssue} from '../../utils/variable-system-utils';
 
 interface TemplateLintProps {
   value: string

@@ -11,13 +11,10 @@ import { cn } from '#/shared/utils'
 import type { Node } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
 import { resolveInputs, resolveOutputs } from '../node-registry.utils'
-import type {VariableRef} from '../utils/variable-system-utils';
+import type { VariableRef } from '../utils/variable-system-utils'
 import { ICON_MAP } from './nodes/workflow-node.constants'
-import {
-  getNodeDefinition
-  
-} from '../stores/node-registry/use-node-registry.store'
-import type {NodeDefinition} from '../stores/node-registry/use-node-registry.store';
+import { getNodeDefinition } from '../stores/node-registry/use-node-registry.store'
+import type { NodeDefinition } from '../stores/node-registry/use-node-registry.store'
 import { CATEGORY_CONFIG } from '../stores/node-registry/constants'
 
 interface OutputPreviewPanelProps {

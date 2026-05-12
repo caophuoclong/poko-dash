@@ -25,10 +25,9 @@ import type { Node, Edge } from '@xyflow/react'
 import type { WorkflowNodeData } from '../types'
 import {
   canExecuteSingleNode,
-  useExecutionStore
-  
+  useExecutionStore,
 } from '../stores/execution-store/useExecutionStore'
-import type {ExecutionMode} from '../stores/execution-store/useExecutionStore';
+import type { ExecutionMode } from '../stores/execution-store/useExecutionStore'
 import { useExecutionControllerExecuteWorkflow } from '#/api/client'
 
 interface ExecutionDockProps {

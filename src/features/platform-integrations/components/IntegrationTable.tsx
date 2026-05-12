@@ -2,11 +2,9 @@ import { useState, useMemo } from 'react'
 import {
   useReactTable,
   getCoreRowModel,
-  getSortedRowModel
-  
-  
+  getSortedRowModel,
 } from '@tanstack/react-table'
-import type {ColumnDef, SortingState} from '@tanstack/react-table';
+import type { ColumnDef, SortingState } from '@tanstack/react-table'
 import { Button } from '#/components/ui/button'
 import { CommonTable } from '#/components/table/common-table'
 import { IntegrationStatusBadge } from './IntegrationStatusBadge'

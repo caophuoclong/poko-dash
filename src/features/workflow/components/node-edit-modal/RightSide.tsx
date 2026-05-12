@@ -74,7 +74,7 @@ export function RightSide({
   availableVars,
 }: RightSideProps) {
   const nextDef = nextNode
-    ? getNodeDefinition((nextNode.data).nodeTypeId ?? '')
+    ? getNodeDefinition(nextNode.data.nodeTypeId ?? '')
     : null
   const nextIcon = nextDef ? ICON_MAP[nextDef.identity.icon ?? ''] : undefined
 
@@ -86,9 +86,7 @@ export function RightSide({
         total={3}
         title={
           nextNode
-            ? ((nextNode.data).title ??
-              nextDef?.identity.title ??
-              'Unknown')
+            ? (nextNode.data.title ?? nextDef?.identity.title ?? 'Unknown')
             : 'No downstream'
         }
         subtitle={

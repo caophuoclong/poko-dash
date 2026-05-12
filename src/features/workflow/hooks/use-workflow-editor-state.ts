@@ -270,13 +270,7 @@ function deepEqualNodes(
     if (na.data.subtitle !== nb.data.subtitle) return false
     if (na.data.nodeTypeId !== nb.data.nodeTypeId) return false
     if (na.data.status !== nb.data.status) return false
-    if (
-      !deepEqualConfig(
-        na.data.config,
-        nb.data.config,
-      )
-    )
-      return false
+    if (!deepEqualConfig(na.data.config, nb.data.config)) return false
   }
   return true
 }

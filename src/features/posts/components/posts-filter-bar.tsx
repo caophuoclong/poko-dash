@@ -59,7 +59,11 @@ function FilterCombobox({
       itemToStringLabel={(item) => item.label}
       isItemEqualToValue={(item, value) => item?.value === value?.value}
     >
-      <ComboboxInput className={className} placeholder={placeholder} showClear />
+      <ComboboxInput
+        className={className}
+        placeholder={placeholder}
+        showClear
+      />
       <ComboboxContent>
         <ComboboxList>
           <ComboboxCollection>

@@ -135,13 +135,10 @@ export function generateMockContentIdeas(count = 25): ContentIdeaEntity[] {
     const ideaId = nextId()
     const status = pick(STATUSES)
     const hasProducts = Math.random() > 0.15
-    const ideaProducts = hasProducts
-      ? pickN(PRODUCT_ID_POOL, 1, 4)
-      : undefined
-    const hasPosts = status === IdeaStatus.Produced || status === IdeaStatus.Queued
-    const postIds = hasPosts
-      ? pickN(POST_ID_POOL, 1, 5)
-      : undefined
+    const ideaProducts = hasProducts ? pickN(PRODUCT_ID_POOL, 1, 4) : undefined
+    const hasPosts =
+      status === IdeaStatus.Produced || status === IdeaStatus.Queued
+    const postIds = hasPosts ? pickN(POST_ID_POOL, 1, 5) : undefined
 
     ideas.push({
       ideaId,
