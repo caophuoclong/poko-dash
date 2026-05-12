@@ -27,9 +27,12 @@ export function CommonTableRow<TData>({
       onClick={() => onRowClick?.(row.original)}
       onDoubleClick={() => onRowDoubleClick?.(row.original)}
       className={cn(
-        'border-b border-frost/30 transition-colors group',
+        'group border-b border-frost/30 transition-colors',
         onRowClick && 'cursor-pointer',
-        !isDirty && (compact ? 'hover:bg-frost/3' : 'hover:bg-surface-2'),
+        !isDirty &&
+          (compact
+            ? 'hover:bg-frost/3'
+            : 'hover:bg-[color-mix(in_srgb,var(--color-accent-orange)_5%,var(--color-surface-soft))]'),
         isDirty && 'bg-(--dirty-bg) color-(--dirty-fg) border-(--dirty-border)',
         rowClassName,
       )}

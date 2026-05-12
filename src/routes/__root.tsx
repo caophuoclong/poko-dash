@@ -28,7 +28,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'TanStack Start Starter',
+        title: 'Poko',
       },
     ],
     links: [
@@ -42,6 +42,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const showDevtools =
+    import.meta.env.DEV && import.meta.env.VITE_SHOW_DEVTOOLS === 'true'
+
   return (
     <html lang="en">
       <head>
@@ -50,18 +53,20 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body suppressHydrationWarning>
         <PageHeaderProvider>
           {children}
-          <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
-            plugins={[
-              {
-                name: 'Tanstack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-              TanStackQueryDevtools,
-            ]}
-          />
+          {showDevtools ? (
+            <TanStackDevtools
+              config={{
+                position: 'bottom-right',
+              }}
+              plugins={[
+                {
+                  name: 'Tanstack Router',
+                  render: <TanStackRouterDevtoolsPanel />,
+                },
+                TanStackQueryDevtools,
+              ]}
+            />
+          ) : null}
         </PageHeaderProvider>
         <Scripts />
       </body>

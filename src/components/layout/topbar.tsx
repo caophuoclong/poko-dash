@@ -24,7 +24,7 @@ export function Topbar() {
   return (
     <div
       data-slot="topbar"
-      className="sticky top-0 z-10 flex items-center justify-between bg-surface gap-4 border-b border-[var(--color-hairline)] px-4 lg:px-6 h-12 shrink-0"
+      className="sticky top-0 z-10 flex h-12 shrink-0 items-center justify-between gap-4 border-b border-[var(--color-hairline)] bg-[color-mix(in_srgb,var(--color-surface)_88%,transparent)] px-4 backdrop-blur-xl lg:px-6"
     >
       {/* Left: Sidebar trigger + breadcrumb */}
       <div className="flex items-center gap-2 min-w-0">
@@ -53,7 +53,7 @@ export function Topbar() {
                 <span className="text-[var(--color-muted)] shrink-0">/</span>
               </>
             ) : null}
-            <span className="text-[var(--color-ink)] truncate font-medium">
+            <span className="truncate font-display text-[15px] font-semibold text-[var(--color-ink)]">
               {title}
             </span>
           </div>

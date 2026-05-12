@@ -19,7 +19,7 @@ export function CommonTableHeader<TData>({
   return (
     <thead>
       {headerGroups.map((hg) => (
-        <tr key={hg.id} className="bg-[var(--color-canvas)]">
+        <tr key={hg.id} className="bg-[var(--color-surface-soft)]">
           {hg.headers.map((header) => {
             const pinned = pinnedOffsets.get(header.column.id)
             const isPinned = pinned?.side ?? false
@@ -32,7 +32,7 @@ export function CommonTableHeader<TData>({
               <th
                 key={header.id}
                 className={cn(
-                  'text-left text-[11px] font-medium uppercase tracking-wider text-[var(--color-muted)] whitespace-nowrap bg-[var(--color-canvas)] border-b border-[var(--color-hairline)]',
+                  'whitespace-nowrap border-b border-[var(--color-hairline)] bg-[var(--color-surface-soft)] text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--color-muted)]',
                   compact ? 'px-3 py-2' : 'px-5 py-3',
                   header.column.getCanSort() &&
                     'cursor-pointer select-none hover:text-[var(--color-ink)] transition-colors',

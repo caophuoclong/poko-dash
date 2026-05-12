@@ -11,7 +11,19 @@ import { DashboardSkeleton } from './DashboardSkeleton'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Button } from '@/components/ui/button'
 import { useNavigate } from '@tanstack/react-router'
-import { Plus, RefreshCw } from 'lucide-react'
+import {
+  ArrowRight,
+  Bot,
+  CalendarClock,
+  CheckCircle2,
+  Link2,
+  Package,
+  PenLine,
+  Plus,
+  RefreshCw,
+  Rocket,
+  Sparkles,
+} from 'lucide-react'
 import { cn } from '#/shared/utils'
 import type { DashboardOverviewResponseDtoRange } from '#/api/model'
 
@@ -102,30 +114,7 @@ export default function DashboardPage() {
     (data.upcomingSchedule || []).length === 0
 
   if (isEmpty) {
-    return (
-      <div className="space-y-6">
-        <EmptyState
-          variant="page"
-          icon="rocket"
-          title="Welcome to your dashboard"
-          description="Start by creating content seeds, adding products, and generating posts to see your pipeline metrics here."
-          primaryAction={
-            <Button onClick={() => navigate({ to: '/dash/content/new' })}>
-              <Plus size={16} className="mr-1.5" />
-              Create first seed
-            </Button>
-          }
-          secondaryAction={
-            <Button
-              variant="ghost"
-              onClick={() => navigate({ to: '/dash/products' })}
-            >
-              Add products
-            </Button>
-          }
-        />
-      </div>
-    )
+    return <DashboardEmptyState navigate={navigate} />
   }
   const [] = data.trendSeries.map((series) => {})
   return (
@@ -147,6 +136,157 @@ export default function DashboardPage() {
 
       {/* Top breakdowns */}
       <TopBreakdownsSection categories={data.topBreakdowns} />
+    </div>
+  )
+}
+
+const pipelineSteps = [
+  {
+    label: 'Seed',
+    detail: 'Capture hook',
+    icon: <Sparkles size={16} />,
+  },
+  {
+    label: 'Draft',
+    detail: 'Generate post',
+    icon: <PenLine size={16} />,
+  },
+  {
+    label: 'Schedule',
+    detail: 'Pick channel',
+    icon: <CalendarClock size={16} />,
+  },
+  {
+    label: 'Track',
+    detail: 'Measure links',
+    icon: <Link2 size={16} />,
+  },
+]
+
+const starterCards = [
+  {
+    title: 'Content seeds',
+    value: '0',
+    detail: 'Start with a hook, product, and target platform.',
+  },
+  {
+    title: 'Scheduled posts',
+    value: '0',
+    detail: 'Generated posts will queue here before publishing.',
+  },
+  {
+    title: 'Tracked products',
+    value: '0',
+    detail: 'Products power reviews, deals, and comparisons.',
+  },
+]
+
+function DashboardEmptyState({
+  navigate,
+}: {
+  navigate: ReturnType<typeof useNavigate>
+}) {
+  return (
+    <div className="grid min-h-[calc(100vh-7rem)] items-start gap-6 pt-6 md:pt-16 lg:grid-cols-[minmax(0,0.9fr)_minmax(520px,1.1fr)] lg:pt-24">
+      <section className="max-w-xl space-y-6">
+        <div className="inline-flex items-center gap-2 rounded-full border border-accent-orange-border bg-accent-orange-dim px-3 py-1 text-xs font-semibold text-accent-orange">
+          <Rocket size={14} />
+          Affiliate pipeline cockpit
+        </div>
+        <div className="space-y-3">
+          <h1 className="font-display text-4xl font-semibold leading-tight tracking-tight text-[var(--color-ink)] md:text-5xl">
+            Build the first content pipeline.
+          </h1>
+          <p className="max-w-lg text-sm leading-6 text-[var(--color-muted)] md:text-base">
+            Create a seed, attach products, generate channel-ready posts, and
+            watch publishing metrics appear here as the pipeline starts moving.
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button
+            onClick={() => navigate({ to: '/dash/content/new' })}
+            className="h-11 px-4"
+          >
+            <Plus size={16} />
+            Create first seed
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => navigate({ to: '/dash/products/manual-import' })}
+            className="h-11 px-4"
+          >
+            <Package size={16} />
+            Import products
+          </Button>
+        </div>
+      </section>
+
+      <section className="rounded-[var(--radius-md)] border border-[var(--color-hairline)] bg-[color-mix(in_srgb,var(--color-surface)_88%,var(--color-accent-orange)_4%)] p-4 shadow-[0_24px_70px_color-mix(in_srgb,var(--color-void)_18%,transparent)]">
+        <div className="mb-4 flex items-center justify-between gap-3 border-b border-[var(--color-hairline)] pb-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-muted)]">
+              Launch plan
+            </p>
+            <h2 className="mt-1 font-display text-xl font-semibold text-[var(--color-ink)]">
+              Today&apos;s pipeline
+            </h2>
+          </div>
+          <div className="rounded-full border border-accent-green-border bg-accent-green-dim px-3 py-1 text-xs font-semibold text-accent-green">
+            Ready
+          </div>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-4">
+          {pipelineSteps.map((step, index) => (
+            <div
+              key={step.label}
+              className="relative rounded-[var(--radius-sm)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-3"
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex size-8 items-center justify-center rounded-[var(--radius-xs)] bg-accent-orange-dim text-accent-orange">
+                  {step.icon}
+                </div>
+                {index < pipelineSteps.length - 1 ? (
+                  <ArrowRight
+                    size={15}
+                    className="hidden text-[var(--color-muted)] md:block"
+                  />
+                ) : (
+                  <CheckCircle2 size={15} className="text-accent-green" />
+                )}
+              </div>
+              <p className="text-sm font-semibold text-[var(--color-ink)]">
+                {step.label}
+              </p>
+              <p className="mt-1 text-xs text-[var(--color-muted)]">
+                {step.detail}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          {starterCards.map((card) => (
+            <div
+              key={card.title}
+              className="rounded-[var(--radius-sm)] border border-[var(--color-hairline)] bg-[var(--color-surface-soft)] p-4"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-muted)]">
+                  {card.title}
+                </p>
+                <Bot size={15} className="text-[var(--color-muted-soft)]" />
+              </div>
+              <p className="mt-5 font-body text-3xl font-semibold tabular-nums text-[var(--color-ink)]">
+                {card.value}
+              </p>
+              <p className="mt-2 text-xs leading-5 text-[var(--color-muted)]">
+                {card.detail}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }

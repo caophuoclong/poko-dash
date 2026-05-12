@@ -12,8 +12,10 @@ import type { Product } from '../types/product'
 import { cn, formatPriceNum, parsePrice, parsePriceRange } from '#/shared/utils'
 
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { usePageHeader } from '@/components/ui/page-header-context'
 import { getStatusMeta, PRODUCT_STATUS } from '#/shared/constants'
+import { ArrowRight, Link2, PackagePlus, Plus, Sparkles } from 'lucide-react'
 
 interface ProductRow extends Product {
   linkCount: number
@@ -167,7 +169,25 @@ export function ProductList() {
     getSortedRowModel: getSortedRowModel(),
   })
 
-  usePageHeader({ title: 'Sản phẩm', subtitle: `${rows.length} sản phẩm` })
+  usePageHeader({
+    title: 'Sản phẩm',
+    subtitle: `${rows.length} sản phẩm`,
+    actions: (
+      <Button
+        size="sm"
+        onClick={() => {
+          void navigate({ to: '/dash/products/manual-import' })
+        }}
+      >
+        <Plus size={15} />
+        Import product
+      </Button>
+    ),
+  })
+
+  if (!isLoading && rows.length === 0) {
+    return <ProductsEmptyState navigate={navigate} />
+  }
 
   return (
     <div>
@@ -180,8 +200,109 @@ export function ProductList() {
             params: { productId: row.productId },
           })
         }}
-        className="bg-surface border border-frost rounded-2xl w-full"
+        className="w-full"
       />
+    </div>
+  )
+}
+
+const productStarterSteps = [
+  {
+    title: 'Import product',
+    detail: 'Paste a product URL or add details manually.',
+    icon: <PackagePlus size={16} />,
+  },
+  {
+    title: 'Attach links',
+    detail: 'Store affiliate URLs, coupons, and tracking status.',
+    icon: <Link2 size={16} />,
+  },
+  {
+    title: 'Generate angles',
+    detail: 'Turn products into reviews, deals, and comparisons.',
+    icon: <Sparkles size={16} />,
+  },
+]
+
+function ProductsEmptyState({
+  navigate,
+}: {
+  navigate: ReturnType<typeof useNavigate>
+}) {
+  return (
+    <div className="grid min-h-[calc(100vh-8rem)] items-start gap-6 pt-6 md:pt-16 lg:grid-cols-[minmax(0,0.85fr)_minmax(480px,1.15fr)] lg:pt-24">
+      <section className="max-w-xl space-y-5">
+        <div className="inline-flex items-center gap-2 rounded-full border border-accent-orange-border bg-accent-orange-dim px-3 py-1 text-xs font-semibold text-accent-orange">
+          <PackagePlus size={14} />
+          Product source
+        </div>
+        <div className="space-y-3">
+          <h1 className="font-display text-3xl font-semibold leading-tight tracking-tight text-[var(--color-ink)] md:text-4xl">
+            Add products before generating affiliate content.
+          </h1>
+          <p className="max-w-lg text-sm leading-6 text-[var(--color-muted)]">
+            Products are the source material for hooks, comparisons, reviews,
+            deal posts, and affiliate link tracking.
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button
+            onClick={() => {
+              void navigate({ to: '/dash/products/manual-import' })
+            }}
+            className="h-11 px-4"
+          >
+            <Plus size={16} />
+            Import first product
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              void navigate({ to: '/dash/content/new' })
+            }}
+            className="h-11 px-4"
+          >
+            Create seed
+          </Button>
+        </div>
+      </section>
+
+      <section className="rounded-[var(--radius-md)] border border-[var(--color-hairline)] bg-[var(--color-surface)] p-4 shadow-[0_20px_55px_color-mix(in_srgb,var(--color-void)_14%,transparent)]">
+        <div className="border-b border-[var(--color-hairline)] pb-4">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-muted)]">
+            Setup path
+          </p>
+          <h2 className="mt-1 font-display text-xl font-semibold text-[var(--color-ink)]">
+            From product to publishable idea
+          </h2>
+        </div>
+        <div className="mt-4 grid gap-3">
+          {productStarterSteps.map((step, index) => (
+            <div
+              key={step.title}
+              className="flex items-center gap-4 rounded-[var(--radius-sm)] border border-[var(--color-hairline)] bg-[var(--color-canvas)] p-4"
+            >
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-xs)] bg-accent-orange-dim text-accent-orange">
+                {step.icon}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-[var(--color-ink)]">
+                  {step.title}
+                </p>
+                <p className="mt-1 text-xs leading-5 text-[var(--color-muted)]">
+                  {step.detail}
+                </p>
+              </div>
+              {index < productStarterSteps.length - 1 ? (
+                <ArrowRight
+                  size={16}
+                  className="hidden shrink-0 text-[var(--color-muted)] sm:block"
+                />
+              ) : null}
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }
