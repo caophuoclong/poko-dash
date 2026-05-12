@@ -20,6 +20,7 @@ export interface PageHeaderConfig {
   backHref?: string
   backLabel?: ReactNode
   actions?: ReactNode
+  center?: ReactNode
   custom?: ReactNode
 }
 
@@ -96,6 +97,7 @@ export function usePageHeader(config: PageHeaderConfig | null) {
       String(normalizedConfig.primaryAction ?? ''),
       String(normalizedConfig.secondaryActions ?? ''),
       String(normalizedConfig.actions ?? ''),
+      String(normalizedConfig.center ?? ''),
     ].join('|')
   }, [
     normalizedConfig?.title,
@@ -105,6 +107,7 @@ export function usePageHeader(config: PageHeaderConfig | null) {
     normalizedConfig?.primaryAction,
     normalizedConfig?.secondaryActions,
     normalizedConfig?.actions,
+    normalizedConfig?.center,
   ])
 
   const configRef = useRef(normalizedConfig)

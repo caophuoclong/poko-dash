@@ -17,6 +17,7 @@ export function Topbar() {
   const breadcrumb = ctx?.config?.breadcrumb
   const title = ctx?.config?.title
   const action = ctx?.config?.actions
+  const center = ctx?.config?.center
   const backHref = ctx?.config?.backHref
   const backLabel = ctx?.config?.backLabel
   const navigate = useNavigate()
@@ -58,6 +59,12 @@ export function Topbar() {
           </div>
         ) : null}
       </div>
+      {/* Center */}
+      {center ? (
+        <div className="absolute inset-x-0 flex justify-center pointer-events-none">
+          <div className="pointer-events-auto">{center}</div>
+        </div>
+      ) : null}
       {/* Right: Utilities */}
       <div className="flex items-center gap-1 shrink-0">
         {action}

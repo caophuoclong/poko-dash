@@ -1,19 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { usePageHeader } from '#/components/ui/page-header-context'
+import { SettingsPage } from '#/features/settings/components/SettingsPage'
 
 export const Route = createFileRoute('/dash/settings')({
-  component: SettingsPage,
+  component: RouteComponent,
 })
 
-function SettingsPage() {
-  usePageHeader({
-    title: 'Cài đặt',
-    subtitle: 'Quản lý cấu hình hệ thống',
-  })
-
-  return (
-    <div className="p-6 text-center text-muted-text">
-      Settings coming soon...
-    </div>
-  )
+function RouteComponent() {
+  return <SettingsPage />
 }
